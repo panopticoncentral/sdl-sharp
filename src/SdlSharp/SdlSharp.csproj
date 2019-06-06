@@ -4,13 +4,12 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>preview</LangVersion>
     <Nullable>enable</Nullable>
-    <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.3.0</Version>
+    <Version>0.3.0-alpha</Version>
     <Authors>Paul Vick</Authors>
     <Company>Paul Vick</Company>
     <Description>A C# binding for the Simple DirectMedia Layer library (http://www.libsdl.org).</Description>
