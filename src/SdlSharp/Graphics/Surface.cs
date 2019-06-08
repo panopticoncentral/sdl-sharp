@@ -73,6 +73,27 @@ namespace SdlSharp.Graphics
         }
 
         /// <summary>
+        /// The color key defines a pixel value that will be treated as transparent in a blit.
+        /// </summary>
+        public PixelColor? ColorKey
+        {
+            get
+            {
+                if (!Native.SDL_HasColorKey(Pointer))
+                {
+                    return null;
+                }
+
+                _ = Native.CheckError(Native.SDL_GetColorKey(Pointer, out var key));
+                return key;
+            }
+            set
+            {
+                _ = Native.CheckError(Native.SDL_SetColorKey(Pointer, value == null, value ?? (default)));
+            }
+        }
+
+        /// <summary>
         /// The pixel format.
         /// </summary>
         public PixelFormat PixelFormat =>
@@ -212,31 +233,6 @@ namespace SdlSharp.Graphics
         /// <param name="flag">The flag.</param>
         public void SetRle(bool flag) =>
             Native.CheckError(Native.SDL_SetSurfaceRLE(Pointer, flag));
-
-        /// <summary>
-        /// Sets the color key.
-        /// </summary>
-        /// <param name="enabled">Whether the key is enabled.</param>
-        /// <param name="key">The key.</param>
-        public void SetColorKey(bool enabled, uint key) =>
-            Native.CheckError(Native.SDL_SetColorKey(Pointer, enabled, key));
-
-        /// <summary>
-        /// Gets the color key.
-        /// </summary>
-        /// <returns></returns>
-        public uint GetColorKey()
-        {
-            _ = Native.CheckError(Native.SDL_GetColorKey(Pointer, out var key));
-            return key;
-        }
-
-        /// <summary>
-        /// Whether the surface has a color key.
-        /// </summary>
-        /// <returns></returns>
-        public bool HasColorKey() =>
-            Native.SDL_HasColorKey(Pointer);
 
         /// <summary>
         /// Gets the clipping rectangle.
