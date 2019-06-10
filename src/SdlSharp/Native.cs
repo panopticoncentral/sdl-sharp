@@ -2730,13 +2730,13 @@ namespace SdlSharp
         public static extern int SDL_SetSurfaceRLE(SDL_Surface* surface, bool flag);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetColorKey(SDL_Surface* surface, bool flag, uint key);
+        public static extern int SDL_SetColorKey(SDL_Surface* surface, bool flag, PixelColor key);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_HasColorKey(SDL_Surface* surface);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetColorKey(SDL_Surface* surface, out uint key);
+        public static extern int SDL_GetColorKey(SDL_Surface* surface, out PixelColor key);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SetSurfaceColorMod(SDL_Surface* surface, byte r, byte g, byte b);
