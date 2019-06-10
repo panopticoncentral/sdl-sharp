@@ -38,10 +38,40 @@ namespace SdlSharp
         /// Creates a storage over a block of memory.
         /// </summary>
         /// <param name="memory">The memory.</param>
-        /// <param name="isReadOnly">Whether the memory is read-only.</param>
         /// <returns>The storage.</returns>
-        public static RWOps Create(NativeMemoryBlock memory, bool isReadOnly = false) =>
-            PointerToInstanceNotNull(isReadOnly ? Native.SDL_RWFromConstMem(memory.Pointer, (int)memory.Size) : Native.SDL_RWFromMem(memory.Pointer, (int)memory.Size));
+        public static RWOps Create(NativeMemoryBlock memory) =>
+            PointerToInstanceNotNull(Native.SDL_RWFromMem(memory.Pointer, (int)memory.Size));
+
+        /// <summary>
+        /// Creates a storage over a read-only block of memory.
+        /// </summary>
+        /// <param name="memory">The memory.</param>
+        /// <returns>The storage.</returns>
+        public static RWOps CreateReadOnly(NativeMemoryBlock memory) =>
+            PointerToInstanceNotNull(Native.SDL_RWFromConstMem(memory.Pointer, (int)memory.Size));
+
+        /// <summary>
+        /// Creates a storage over a read-only byte array.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <returns>The storage.</returns>
+        public static RWOps CreateReadOnly(byte[] array)
+        {
+            var instance = PointerToInstanceNotNull(Native.SDL_AllocRW());
+            var wrapper = new ReadOnlyByteArrayWrapper(array);
+            instance.Pointer->Type = Native.SDL_RWOpsType.Unknown;
+            instance._size = wrapper.Size;
+            instance.Pointer->Size = Marshal.GetFunctionPointerForDelegate<Native.SizeRWOps>(wrapper.Size);
+            instance._seek = wrapper.Seek;
+            instance.Pointer->Seek = Marshal.GetFunctionPointerForDelegate<Native.SeekRWOps>(wrapper.Seek);
+            instance._read = wrapper.Read;
+            instance.Pointer->Read = Marshal.GetFunctionPointerForDelegate<Native.ReadRWOps>(wrapper.Read);
+            instance._write = wrapper.Write;
+            instance.Pointer->Write = Marshal.GetFunctionPointerForDelegate<Native.WriteRWOps>(wrapper.Write);
+            instance._close = wrapper.Close;
+            instance.Pointer->Close = Marshal.GetFunctionPointerForDelegate<Native.CloseRWOps>(wrapper.Close);
+            return instance;
+        }
 
         /// <summary>
         /// Seeks to a point in the storage.
@@ -164,5 +194,89 @@ namespace SdlSharp
         /// </summary>
         /// <param name="value">The value.</param>
         public void WriteBE64(ulong value) => Native.CheckErrorZero(Native.SDL_WriteBE64(Pointer, value));
+
+        private sealed class ReadOnlyByteArrayWrapper
+        {
+            private readonly byte[] _array;
+            private int _index;
+            private bool _isClosed;
+
+            public ReadOnlyByteArrayWrapper(byte[] array)
+            {
+                _array = array;
+            }
+
+            public long Size(Native.SDL_RWops* _) => _isClosed ? -1 : _array.Length;
+
+            internal int Close(Native.SDL_RWops* _)
+            {
+                if (_isClosed)
+                {
+                    return -1;
+                }
+                _isClosed = true;
+                return 0;
+            }
+
+            internal long Seek(Native.SDL_RWops* _, long offset, SeekType whence)
+            {
+                var newIndex = _index;
+
+                switch (whence)
+                {
+                    case SeekType.Set:
+                        newIndex = (int)offset;
+                        break;
+
+                    case SeekType.Current:
+                        newIndex += (int)offset;
+                        break;
+
+                    case SeekType.End:
+                        newIndex = _array.Length + (int)offset;
+                        break;
+                }
+
+                if (newIndex < 0 || newIndex >= _array.Length)
+                {
+                    return -1;
+                }
+
+                _index = newIndex;
+                return _index;
+            }
+
+            internal UIntPtr Read(Native.SDL_RWops* _, void* ptr, UIntPtr size, UIntPtr maxnum)
+            {
+                uint numberRead = 0;
+                var sizeNumber = (uint)size;
+                var maxNumNumber = (uint)maxnum;
+                var bytePointer = (byte*)ptr;
+                var byteIndex = 0;
+
+                bool InBounds() => _index + sizeNumber < _array.Length;
+
+                if (_isClosed || !InBounds())
+                {
+                    return UIntPtr.Zero;
+                }
+
+                while (maxNumNumber > 0 && InBounds())
+                {
+                    maxNumNumber--;
+                    numberRead++;
+
+                    for (var index = 0; index < sizeNumber; index++)
+                    {
+                        bytePointer[byteIndex++] = _array[_index++];
+                    }
+                }
+
+                return (UIntPtr)numberRead;
+            }
+
+#pragma warning disable IDE1006, RCS1163
+            internal UIntPtr Write(Native.SDL_RWops* _1, void* _2, UIntPtr _3, UIntPtr _4) => UIntPtr.Zero;
+        }
     }
 }

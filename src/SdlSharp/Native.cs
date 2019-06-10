@@ -2453,18 +2453,18 @@ namespace SdlSharp
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int CloseRWOps(SDL_RWops* context);
 
-        public readonly struct SDL_RWops
+        public struct SDL_RWops
         {
-            public readonly IntPtr Size;
-            public readonly IntPtr Seek;
-            public readonly IntPtr Read;
-            public readonly IntPtr Write;
-            public readonly IntPtr Close;
+            public IntPtr Size { get; set; }
+            public IntPtr Seek { get; set; }
+            public IntPtr Read { get; set; }
+            public IntPtr Write { get; set; }
+            public IntPtr Close { get; set; }
 
-            public readonly SDL_RWOpsType Type;
+            public SDL_RWOpsType Type { get; set; }
 
-            public readonly void* Data1;
-            public readonly void* Data2;
+            public void* Data1 { get; set; }
+            public void* Data2 { get; set; }
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
