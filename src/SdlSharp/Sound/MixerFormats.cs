@@ -6,6 +6,11 @@
     public enum MixerFormats
     {
         /// <summary>
+        /// None.
+        /// </summary>
+        None = 0x0,
+
+        /// <summary>
         /// FLAC
         /// </summary>
         Flac = 0x1,

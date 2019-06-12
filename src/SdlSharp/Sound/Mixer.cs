@@ -46,12 +46,6 @@ namespace SdlSharp.Sound
         private static Native.MusicChannelFinishedDelegate s_channelFinishedHook;
 
         /// <summary>
-        /// The version of SDL_mixer that is being used.
-        /// </summary>
-        public static Version Version =>
-            *Native.Mix_Linked_Version();
-
-        /// <summary>
         /// The user data of the current music hook.
         /// </summary>
         public static IntPtr PlayMusicHookData =>
@@ -92,19 +86,6 @@ namespace SdlSharp.Sound
         /// </summary>
         public static bool Playing =>
             Native.Mix_PlayingMusic();
-
-        /// <summary>
-        /// Initialize the mixer with support for the specified formats.
-        /// </summary>
-        /// <param name="flags"></param>
-        public static void Initialize(MixerFormats flags) =>
-            Native.CheckError(Native.Mix_Init(flags));
-
-        /// <summary>
-        /// Uninitializes the mixer.
-        /// </summary>
-        public static void Quit() =>
-            Native.Mix_Quit();
 
         /// <summary>
         /// Initializes the mixer.

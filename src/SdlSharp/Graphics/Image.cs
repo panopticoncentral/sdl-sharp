@@ -6,25 +6,6 @@
     public unsafe static class Image
     {
         /// <summary>
-        /// The version of SDL_image being used.
-        /// </summary>
-        public static Version Version =>
-            *Native.IMG_Linked_Version();
-
-        /// <summary>
-        /// Initializes the image library to handle the specified formats.
-        /// </summary>
-        /// <param name="formats">The formats to be used.</param>
-        public static void Initialize(ImageFormats formats) =>
-            Native.CheckError(Native.IMG_Init(formats));
-
-        /// <summary>
-        /// Quits the image library.
-        /// </summary>
-        public static void Quit() =>
-            Native.IMG_Quit();
-
-        /// <summary>
         /// Loads an image from a file.
         /// </summary>
         /// <param name="filename">The filename.</param>

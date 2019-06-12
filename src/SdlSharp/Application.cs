@@ -8,11 +8,15 @@ using SdlSharp.Touch;
 namespace SdlSharp
 {
     /// <summary>
-    /// A class that manages the overall SDL state.
+    /// A class representing the SDL application.
     /// </summary>
-    public unsafe static class Sdl
+    public sealed unsafe class Application : IDisposable
     {
-        private static bool s_quitReceived = false;
+        private bool _quitReceived = false;
+
+        private readonly bool _initializedImage;
+        private readonly bool _initializedMixer;
+        private readonly bool _initializedFont;
 
         /// <summary>
         /// The version of SDL that is being used.
@@ -39,88 +43,9 @@ namespace SdlSharp
             Native.SDL_GetRevisionNumber();
 
         /// <summary>
-        /// The platform the application is running on.
-        /// </summary>
-        public static string Platform =>
-            Native.SDL_GetPlatform();
-
-        /// <summary>
-        /// The base path of the application.
-        /// </summary>
-        public static string BasePath =>
-            Native.CheckNotNull(Native.SDL_GetBasePath().ToString());
-
-        /// <summary>
-        /// Information about the power state of the computer.
-        /// </summary>
-        public static (PowerState State, int Seconds, int Percent) PowerInfo
-        {
-            get
-            {
-                var state = Native.SDL_GetPowerInfo(out var seconds, out var percent);
-                return (state, seconds, percent);
-            }
-        }
-
-        /// <summary>
-        /// An event that fires when a drop begins.
-        /// </summary>
-        public static event EventHandler<DropEventArgs> DropBegin;
-
-        /// <summary>
-        /// An event that fires when a drop completes.
-        /// </summary>
-        public static event EventHandler<DropEventArgs> DropComplete;
-
-        /// <summary>
-        /// An event that fires when a file is dropped.
-        /// </summary>
-        public static event EventHandler<DroppedEventArgs> FileDropped;
-
-        /// <summary>
-        /// An event that fires when text is dropped.
-        /// </summary>
-        public static event EventHandler<DroppedEventArgs> TextDropped;
-
-        /// <summary>
-        /// An event that fires when the application is quit.
-        /// </summary>
-        public static event EventHandler<SdlEventArgs> Quitting;
-
-        /// <summary>
-        /// An event that fires when the application is terminating.
-        /// </summary>
-        public static event EventHandler<SdlEventArgs> ApplicationTerminating;
-
-        /// <summary>
-        /// An event that fires when the application is low on memory.
-        /// </summary>
-        public static event EventHandler<SdlEventArgs> ApplicationLowMemory;
-
-        /// <summary>
-        /// An event that fires when the application is going to enter the background.
-        /// </summary>
-        public static event EventHandler<SdlEventArgs> ApplicationWillEnterBackground;
-
-        /// <summary>
-        /// An event that fires when the application entered the background.
-        /// </summary>
-        public static event EventHandler<SdlEventArgs> ApplicationDidEnterBackground;
-
-        /// <summary>
-        /// An event that fires when the application is going to enter the foreground.
-        /// </summary>
-        public static event EventHandler<SdlEventArgs> ApplicationWillEnterForeground;
-
-        /// <summary>
-        /// An event that fires when the application entered the foreground.
-        /// </summary>
-        public static event EventHandler<SdlEventArgs> ApplicationDidEnterForeground;
-
-        /// <summary>
         /// The SDL subsystems that have been initialized.
         /// </summary>
-        public static Subsystems InitializedSubystems
+        public Subsystems InitializedSubystems
         {
             get => Native.SDL_WasInit(Subsystems.None);
             set
@@ -133,17 +58,166 @@ namespace SdlSharp
         }
 
         /// <summary>
-        /// Initializes SDL with the specified subsystems.
+        /// The version of SDL_image being used.
         /// </summary>
-        /// <param name="subsystems">The subsystems to initialize.</param>
-        public static void Initialize(Subsystems subsystems) =>
-            Native.CheckError(Native.SDL_Init(subsystems));
+        public static Version ImageVersion =>
+            *Native.IMG_Linked_Version();
 
         /// <summary>
-        /// Uninitializes SDL.
+        /// The version of SDL_mixer that is being used.
         /// </summary>
-        public static void Quit() =>
+        public static Version MixerVersion =>
+            *Native.Mix_Linked_Version();
+
+        /// <summary>
+        /// The version of SDL_ttf in use.
+        /// </summary>
+        public static Version FontVersion =>
+            *Native.TTF_Linked_Version();
+
+        /// <summary>
+        /// Whether the font subsystem is initialized.
+        /// </summary>
+        public bool FontIsInitialized =>
+            Native.TTF_WasInit();
+
+        /// <summary>
+        /// The platform the application is running on.
+        /// </summary>
+        public string Platform =>
+            Native.SDL_GetPlatform();
+
+        /// <summary>
+        /// The base path of the application.
+        /// </summary>
+        public string BasePath =>
+            Native.CheckNotNull(Native.SDL_GetBasePath().ToString());
+
+        /// <summary>
+        /// Information about the power state of the computer.
+        /// </summary>
+        public (PowerState State, int Seconds, int Percent) PowerInfo
+        {
+            get
+            {
+                var state = Native.SDL_GetPowerInfo(out var seconds, out var percent);
+                return (state, seconds, percent);
+            }
+        }
+
+        /// <summary>
+        /// Starts the application with the specified capabilities.
+        /// </summary>
+        /// <param name="subsystems">The subsystems to initialize.</param>
+        /// <param name="imageFormats">The image formats to initialize.</param>
+        /// <param name="mixerFormats">The mixer formats to initialize.</param>
+        /// <param name="fontSupport">Whether font support should be initialized.</param>
+        /// <param name="hints">Hints.</param>
+        public Application(Subsystems subsystems, ImageFormats imageFormats = ImageFormats.None, MixerFormats mixerFormats = MixerFormats.None, bool fontSupport = false, params (Hint Hint, string Value)[] hints)
+        {
+            _ = Native.CheckError(Native.SDL_Init(subsystems));
+
+            if (hints != null)
+            {
+                foreach (var hint in hints)
+                {
+                    _ = hint.Hint.Set(hint.Value);
+                }
+            }
+
+            if (imageFormats != ImageFormats.None)
+            {
+                _ = Native.CheckError(Native.IMG_Init(imageFormats));
+                _initializedImage = true;
+            }
+
+            if (mixerFormats != MixerFormats.None)
+            {
+                _ = Native.CheckError(Native.Mix_Init(mixerFormats));
+                _initializedMixer = true;
+            }
+
+            if (fontSupport)
+            {
+                _ = Native.CheckError(Native.TTF_Init());
+                _initializedFont = true;
+            }
+        }
+
+        /// <summary>
+        /// An event that fires when a drop begins.
+        /// </summary>
+        public event EventHandler<DropEventArgs> DropBegin;
+
+        /// <summary>
+        /// An event that fires when a drop completes.
+        /// </summary>
+        public event EventHandler<DropEventArgs> DropComplete;
+
+        /// <summary>
+        /// An event that fires when a file is dropped.
+        /// </summary>
+        public event EventHandler<DroppedEventArgs> FileDropped;
+
+        /// <summary>
+        /// An event that fires when text is dropped.
+        /// </summary>
+        public event EventHandler<DroppedEventArgs> TextDropped;
+
+        /// <summary>
+        /// An event that fires when the application is quit.
+        /// </summary>
+        public event EventHandler<SdlEventArgs> Quitting;
+
+        /// <summary>
+        /// An event that fires when the application is terminating.
+        /// </summary>
+        public event EventHandler<SdlEventArgs> Terminating;
+
+        /// <summary>
+        /// An event that fires when the application is low on memory.
+        /// </summary>
+        public event EventHandler<SdlEventArgs> LowMemory;
+
+        /// <summary>
+        /// An event that fires when the application is going to enter the background.
+        /// </summary>
+        public event EventHandler<SdlEventArgs> WillEnterBackground;
+
+        /// <summary>
+        /// An event that fires when the application entered the background.
+        /// </summary>
+        public event EventHandler<SdlEventArgs> DidEnterBackground;
+
+        /// <summary>
+        /// An event that fires when the application is going to enter the foreground.
+        /// </summary>
+        public event EventHandler<SdlEventArgs> WillEnterForeground;
+
+        /// <summary>
+        /// An event that fires when the application entered the foreground.
+        /// </summary>
+        public event EventHandler<SdlEventArgs> DidEnterForeground;
+
+        public void Dispose()
+        {
+            if (_initializedFont)
+            {
+                Native.TTF_Quit();
+            }
+
+            if (_initializedMixer)
+            {
+                Native.Mix_Quit();
+            }
+
+            if (_initializedImage)
+            {
+                Native.IMG_Quit();
+            }
+
             Native.SDL_Quit();
+        }
 
         /// <summary>
         /// Shows a message box.
@@ -155,7 +229,7 @@ namespace SdlSharp
         /// <param name="buttons">The buttons.</param>
         /// <param name="colorScheme">The color scheme.</param>
         /// <returns>The ID of the button that was selected.</returns>
-        public static int ShowMessageBox(MessageBoxFlags flags, Window? window, string title, string message, MessageBoxButton[] buttons, MessageBoxColorScheme? colorScheme)
+        public int ShowMessageBox(MessageBoxFlags flags, Window? window, string title, string message, MessageBoxButton[] buttons, MessageBoxColorScheme? colorScheme)
         {
             var nativeButtons = new Native.SDL_MessageBoxButtonData[buttons.Length];
 
@@ -192,7 +266,7 @@ namespace SdlSharp
         /// <param name="title">The title.</param>
         /// <param name="message">The message.</param>
         /// <param name="window">The parent window, if any.</param>
-        public static void ShowMessageBox(MessageBoxFlags flags, string title, string message, Window? window)
+        public void ShowMessageBox(MessageBoxFlags flags, string title, string message, Window? window)
         {
             using var utf8Title = Utf8String.ToUtf8String(title);
             using var utf8Message = Utf8String.ToUtf8String(message);
@@ -206,7 +280,7 @@ namespace SdlSharp
         /// <param name="organization">Organization name.</param>
         /// <param name="application">Application name.</param>
         /// <returns>The path to store preferences.</returns>
-        public static string GetPreferencesPath(string organization, string application)
+        public string GetPreferencesPath(string organization, string application)
         {
             using var organizationString = Utf8String.ToUtf8String(organization);
             using var applicationString = Utf8String.ToUtf8String(application);
@@ -218,7 +292,7 @@ namespace SdlSharp
         /// </summary>
         /// <param name="timeout">How long to wait for an event.</param>
         /// <returns><c>true</c> if the quit event has been received, <c>false</c> otherwise.</returns>
-        public static bool DispatchEvent(int timeout = 0)
+        public bool DispatchEvent(int timeout = 0)
         {
             Native.SDL_Event e;
 
@@ -227,7 +301,7 @@ namespace SdlSharp
                 case 0:
                     if (!Native.SDL_PollEvent(out e))
                     {
-                        return !s_quitReceived;
+                        return !_quitReceived;
                     }
                     break;
 
@@ -328,7 +402,7 @@ namespace SdlSharp
 
                 case Native.SDL_EventType.Quit:
                     Quitting?.Invoke(null, new SdlEventArgs(e.Common));
-                    s_quitReceived = true;
+                    _quitReceived = true;
                     break;
 
                 case Native.SDL_EventType.UserEvent:
@@ -336,27 +410,27 @@ namespace SdlSharp
                     throw new InvalidOperationException();
 
                 case Native.SDL_EventType.ApplicationTerminating:
-                    ApplicationTerminating?.Invoke(null, new SdlEventArgs(e.Common));
+                    Terminating?.Invoke(null, new SdlEventArgs(e.Common));
                     break;
 
                 case Native.SDL_EventType.ApplicationLowMemory:
-                    ApplicationLowMemory?.Invoke(null, new SdlEventArgs(e.Common));
+                    LowMemory?.Invoke(null, new SdlEventArgs(e.Common));
                     break;
 
                 case Native.SDL_EventType.ApplicationWillEnterBackground:
-                    ApplicationWillEnterBackground?.Invoke(null, new SdlEventArgs(e.Common));
+                    WillEnterBackground?.Invoke(null, new SdlEventArgs(e.Common));
                     break;
 
                 case Native.SDL_EventType.ApplicationDidEnterBackground:
-                    ApplicationDidEnterBackground?.Invoke(null, new SdlEventArgs(e.Common));
+                    DidEnterBackground?.Invoke(null, new SdlEventArgs(e.Common));
                     break;
 
                 case Native.SDL_EventType.ApplicationWillEnterForeground:
-                    ApplicationWillEnterForeground?.Invoke(null, new SdlEventArgs(e.Common));
+                    WillEnterForeground?.Invoke(null, new SdlEventArgs(e.Common));
                     break;
 
                 case Native.SDL_EventType.ApplicationDidEnterForeground:
-                    ApplicationDidEnterForeground?.Invoke(null, new SdlEventArgs(e.Common));
+                    DidEnterForeground?.Invoke(null, new SdlEventArgs(e.Common));
                     break;
 
                 case Native.SDL_EventType.ClipboardUpdate:
@@ -367,7 +441,7 @@ namespace SdlSharp
                     throw new InvalidOperationException();
             }
 
-            return !s_quitReceived;
+            return !_quitReceived;
         }
     }
 }

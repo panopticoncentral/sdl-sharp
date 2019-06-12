@@ -16,19 +16,6 @@
         public const int UnicodeBomSwapped = '\xFFFE';
 
         /// <summary>
-        /// The version of SDL_ttf in use.
-        /// </summary>
-        public static Version Version =>
-            *Native.TTF_Linked_Version();
-
-
-        /// <summary>
-        /// Whether the font subsystem is initialized.
-        /// </summary>
-        public static bool IsInitialized =>
-            Native.TTF_WasInit();
-
-        /// <summary>
         /// The style of the font.
         /// </summary>
         public FontStyle Style
@@ -143,18 +130,6 @@
         /// <returns>The font.</returns>
         public static Font Create(RWOps rwops, bool shouldDispose, int pointSize, int index) =>
             PointerToInstanceNotNull(Native.TTF_OpenFontIndexRW(rwops.Pointer, shouldDispose, pointSize, index));
-
-        /// <summary>
-        /// Initializes the font subsystem.
-        /// </summary>
-        public static void Initialize() =>
-            Native.CheckError(Native.TTF_Init());
-
-        /// <summary>
-        /// Quits the font subsystem.
-        /// </summary>
-        public static void Quit() =>
-            Native.TTF_Quit();
 
         /// <summary>
         /// Sets whether the bytes are swapped relative to the system's endedness.
