@@ -214,14 +214,17 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The gamma ramp of the window.
         /// </summary>
-        public (ushort Red, ushort Green, ushort Blue) GammaRamp
+        public (ushort[] Red, ushort[] Green, ushort[] Blue) GammaRamp
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetWindowGammaRamp(Pointer, out var red, out var green, out var blue));
+                var red = new ushort[256];
+                var green = new ushort[256];
+                var blue = new ushort[256];
+                _ = Native.CheckError(Native.SDL_GetWindowGammaRamp(Pointer, red, green, blue));
                 return (red, green, blue);
             }
-            set => Native.CheckError(Native.SDL_SetWindowGammaRamp(Pointer, ref value.Red, ref value.Green, ref value.Blue));
+            set => Native.CheckError(Native.SDL_SetWindowGammaRamp(Pointer, value.Red, value.Green, value.Blue));
         }
 
         /// <summary>

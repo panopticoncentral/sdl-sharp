@@ -1,4 +1,6 @@
-﻿namespace SdlSharp
+﻿using System;
+
+namespace SdlSharp
 {
     /// <summary>
     /// A point.
@@ -36,5 +38,36 @@
         }
 
         public static implicit operator Point((int X, int Y) tuple) => new Point(tuple.X, tuple.Y);
+
+        /// <summary>
+        /// Bounds a point to a given size.
+        /// </summary>
+        /// <param name="bound">The bound.</param>
+        /// <returns>The bounded point.</returns>
+        public Point Bound(Size bound)
+        {
+            int newX = X;
+            int newY = Y;
+
+            if (X < 0)
+            {
+                newX = 0;
+            }
+            else if (X >= bound.Width)
+            {
+                newX = bound.Width - 1;
+            }
+
+            if (Y < 0)
+            {
+                newY = 0;
+            }
+            else if (Y >= bound.Height)
+            {
+                newY = bound.Height - 1;
+            }
+
+            return (newX, newY);
+        }
     }
 }

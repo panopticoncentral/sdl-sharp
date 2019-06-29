@@ -217,6 +217,7 @@ namespace SdlSharp
             }
 
             Native.SDL_Quit();
+            _quitReceived = true;
         }
 
         /// <summary>

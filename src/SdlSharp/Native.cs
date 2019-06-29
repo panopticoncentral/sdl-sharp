@@ -3191,10 +3191,10 @@ namespace SdlSharp
         public static extern int SDL_SetWindowInputFocus(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetWindowGammaRamp(SDL_Window* window, ref ushort red, ref ushort green, ref ushort blue);
+        public static extern int SDL_SetWindowGammaRamp(SDL_Window* window, [In, MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] red, [In, MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] green, [In, MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] blue);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetWindowGammaRamp(SDL_Window* window, out ushort red, out ushort green, out ushort blue);
+        public static extern int SDL_GetWindowGammaRamp(SDL_Window* window, [MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] red, [MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] green, [MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] blue);
 
         // SDL_HitTestResult is covered by HitTestResult.cs
 
