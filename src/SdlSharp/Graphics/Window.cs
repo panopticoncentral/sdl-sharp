@@ -234,10 +234,10 @@ namespace SdlSharp.Graphics
             Native.SDL_IsScreenKeyboardShown(Pointer);
 
         /// <summary>
-        /// Gets the renderer for this window.
+        /// Gets the renderer for this window, if any.
         /// </summary>
-        public Renderer Renderer =>
-            Renderer.PointerToInstanceNotNull(Native.SDL_GetRenderer(Pointer));
+        public Renderer? Renderer =>
+            Renderer.PointerToInstance(Native.SDL_GetRenderer(Pointer));
 
         /// <summary>
         /// Whether the window is shaped.
@@ -249,11 +249,18 @@ namespace SdlSharp.Graphics
         /// Gets the window's shape mode.
         /// </summary>
         /// <returns></returns>
-        public WindowShapeMode ShapeMode
+        public WindowShapeMode? ShapeMode
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetShapedWindowMode(Pointer, out var mode));
+                var result = Native.SDL_GetShapedWindowMode(Pointer, out var mode);
+
+                if (result == Native.SDL_NonShapeableWindow || result == Native.SDL_WindowLacksShape)
+                {
+                    return null;
+                }
+
+                _ = Native.CheckError(result);
                 return WindowShapeMode.FromNative(mode);
             }
         }

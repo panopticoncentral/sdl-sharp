@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace SdlSharp
 {
     /// <summary>
     /// A point.
     /// </summary>
+    [DebuggerDisplay("({X}, {Y})")]
     public readonly struct Point
     {
         /// <summary>

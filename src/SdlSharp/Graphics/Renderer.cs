@@ -22,7 +22,7 @@ namespace SdlSharp.Graphics
             Native.SDL_GetNumRenderDrivers));
 
         /// <summary>
-        /// The driver for this renderer.
+        /// Information about this renderer.
         /// </summary>
         public RendererInfo Driver
         {
@@ -46,7 +46,7 @@ namespace SdlSharp.Graphics
         }
 
         /// <summary>
-        /// Whether the renderer supports a taret.
+        /// Whether the renderer supports a target.
         /// </summary>
         public bool TargetSupported =>
             Native.SDL_RenderTargetSupported(Pointer);
@@ -54,10 +54,10 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The target of the renderer.
         /// </summary>
-        public Texture Target
+        public Texture? Target
         {
-            get => Texture.PointerToInstanceNotNull(Native.SDL_GetRenderTarget(Pointer));
-            set => Native.CheckError(Native.SDL_SetRenderTarget(Pointer, value.Pointer));
+            get => Texture.PointerToInstance(Native.SDL_GetRenderTarget(Pointer));
+            set => Native.CheckError(Native.SDL_SetRenderTarget(Pointer, value == null ? null : value.Pointer));
         }
 
         /// <summary>

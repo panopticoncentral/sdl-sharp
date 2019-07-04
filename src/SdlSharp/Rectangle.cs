@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace SdlSharp
 {
     /// <summary>
     /// A rectangle.
     /// </summary>
+    [DebuggerDisplay("({Location.X}, {Location.Y}, {Size.Width}, {Size.Height})")]
     public struct Rectangle : IEquatable<Rectangle>
     {
         public Point Location { get; }

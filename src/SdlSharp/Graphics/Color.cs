@@ -1,8 +1,11 @@
-﻿namespace SdlSharp.Graphics
+﻿using System.Diagnostics;
+
+namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A color.
     /// </summary>
+    [DebuggerDisplay("({Red}, {Green}, {Blue}, {Alpha})")]
     public readonly struct Color
     {
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace SdlSharp.Graphics
 {
@@ -7,11 +8,12 @@ namespace SdlSharp.Graphics
     /// </summary>
     public unsafe struct RendererInfo
     {
+        private readonly IntPtr _name;
+
         /// <summary>
         /// The name of the renderer.
         /// </summary>
-        [field: MarshalAs(UnmanagedType.LPStr)]
-        public string Name { get; }
+        public string? Name => _name == IntPtr.Zero ? null : Marshal.PtrToStringAnsi(_name);
 
         /// <summary>
         /// The flags of the renderer.

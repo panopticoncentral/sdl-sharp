@@ -2267,7 +2267,7 @@ namespace SdlSharp
         public static extern SDL_Renderer* SDL_GetRenderer(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetRendererInfo(SDL_Renderer* renderer, out RendererInfo info);
+        public static extern int SDL_GetRendererInfo(SDL_Renderer* renderer, [Out] out RendererInfo info);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetRendererOutputSize(SDL_Renderer* renderer, out int w, out int h);
@@ -2601,6 +2601,10 @@ namespace SdlSharp
         #endregion
 
         #region SDL_shape.h
+
+        public const int SDL_NonShapeableWindow = -1;
+        public const int SDL_InvalidShapeArgument = -2;
+        public const int SDL_WindowLacksShape = -3;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Window* SDL_CreateShapedWindow(Utf8String title, uint x, uint y, uint w, uint h, WindowFlags flags);
