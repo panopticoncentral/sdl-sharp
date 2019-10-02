@@ -41,6 +41,10 @@ namespace SdlSharp
 
         public static implicit operator Point((int X, int Y) tuple) => new Point(tuple.X, tuple.Y);
 
+        public static Point operator +(Point left, Point right) => (left.X + right.X, left.Y + right.Y);
+
+        public static Point operator -(Point left, Point right) => (left.X - right.X, left.Y - right.Y);
+
         /// <summary>
         /// Bounds a point to a given size.
         /// </summary>
@@ -48,8 +52,8 @@ namespace SdlSharp
         /// <returns>The bounded point.</returns>
         public Point Bound(Size bound)
         {
-            int newX = X;
-            int newY = Y;
+            var newX = X;
+            var newY = Y;
 
             if (X < 0)
             {

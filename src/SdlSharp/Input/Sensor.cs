@@ -28,7 +28,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// An event fired when a sensor is updated.
         /// </summary>
-        public event EventHandler<SensorUpdatedEventArgs> Updated;
+        public event EventHandler<SensorUpdatedEventArgs>? Updated;
 
         internal static Sensor Get(Native.SDL_SensorID instanceId) =>
             PointerToInstanceNotNull(Native.SDL_SensorFromInstanceID(instanceId));

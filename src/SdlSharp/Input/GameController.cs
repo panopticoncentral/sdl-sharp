@@ -67,32 +67,32 @@ namespace SdlSharp.Input
         /// <summary>
         /// An event fired when a game controller is added to the system.
         /// </summary>
-        public static event EventHandler<GameControllerAddedEventArgs> Added;
+        public static event EventHandler<GameControllerAddedEventArgs>? Added;
 
         /// <summary>
         /// An event fired when the game controller axis is moved.
         /// </summary>
-        public event EventHandler<GameControllerAxisMotionEventArgs> AxisMotion;
+        public event EventHandler<GameControllerAxisMotionEventArgs>? AxisMotion;
 
         /// <summary>
         /// An event fired when the game controller button is pressed.
         /// </summary>
-        public event EventHandler<GameControllerButtonEventArgs> ButtonDown;
+        public event EventHandler<GameControllerButtonEventArgs>? ButtonDown;
 
         /// <summary>
         /// An event fired when the game controller button is released.
         /// </summary>
-        public event EventHandler<GameControllerButtonEventArgs> ButtonUp;
+        public event EventHandler<GameControllerButtonEventArgs>? ButtonUp;
 
         /// <summary>
         /// An event fired when a game controller is removed.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Removed;
+        public event EventHandler<SdlEventArgs>? Removed;
 
         /// <summary>
         /// An event fired when a game controller is remapped.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Remapped;
+        public event EventHandler<SdlEventArgs>? Remapped;
 
         internal static GameController? Get(Native.SDL_JoystickID joystickId) =>
             PointerToInstance(Native.SDL_GameControllerFromInstanceID(joystickId));
@@ -245,21 +245,21 @@ namespace SdlSharp.Input
                 case Native.SDL_EventType.ControllerAxisMotion:
                     {
                         var controller = Get(e.Caxis.Which);
-                        controller?.AxisMotion.Invoke(controller, new GameControllerAxisMotionEventArgs(e.Caxis));
+                        controller?.AxisMotion?.Invoke(controller, new GameControllerAxisMotionEventArgs(e.Caxis));
                         break;
                     }
 
                 case Native.SDL_EventType.ControllerButtonDown:
                     {
                         var controller = Get(e.Cbutton.Which);
-                        controller?.ButtonDown.Invoke(controller, new GameControllerButtonEventArgs(e.Cbutton));
+                        controller?.ButtonDown?.Invoke(controller, new GameControllerButtonEventArgs(e.Cbutton));
                         break;
                     }
 
                 case Native.SDL_EventType.ControllerButtonUp:
                     {
                         var controller = Get(e.Cbutton.Which);
-                        controller?.ButtonUp.Invoke(controller, new GameControllerButtonEventArgs(e.Cbutton));
+                        controller?.ButtonUp?.Invoke(controller, new GameControllerButtonEventArgs(e.Cbutton));
                         break;
                     }
 

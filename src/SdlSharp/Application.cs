@@ -147,57 +147,57 @@ namespace SdlSharp
         /// <summary>
         /// An event that fires when a drop begins.
         /// </summary>
-        public event EventHandler<DropEventArgs> DropBegin;
+        public event EventHandler<DropEventArgs>? DropBegin;
 
         /// <summary>
         /// An event that fires when a drop completes.
         /// </summary>
-        public event EventHandler<DropEventArgs> DropComplete;
+        public event EventHandler<DropEventArgs>? DropComplete;
 
         /// <summary>
         /// An event that fires when a file is dropped.
         /// </summary>
-        public event EventHandler<DroppedEventArgs> FileDropped;
+        public event EventHandler<DroppedEventArgs>? FileDropped;
 
         /// <summary>
         /// An event that fires when text is dropped.
         /// </summary>
-        public event EventHandler<DroppedEventArgs> TextDropped;
+        public event EventHandler<DroppedEventArgs>? TextDropped;
 
         /// <summary>
         /// An event that fires when the application is quit.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Quitting;
+        public event EventHandler<SdlEventArgs>? Quitting;
 
         /// <summary>
         /// An event that fires when the application is terminating.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Terminating;
+        public event EventHandler<SdlEventArgs>? Terminating;
 
         /// <summary>
         /// An event that fires when the application is low on memory.
         /// </summary>
-        public event EventHandler<SdlEventArgs> LowMemory;
+        public event EventHandler<SdlEventArgs>? LowMemory;
 
         /// <summary>
         /// An event that fires when the application is going to enter the background.
         /// </summary>
-        public event EventHandler<SdlEventArgs> WillEnterBackground;
+        public event EventHandler<SdlEventArgs>? WillEnterBackground;
 
         /// <summary>
         /// An event that fires when the application entered the background.
         /// </summary>
-        public event EventHandler<SdlEventArgs> DidEnterBackground;
+        public event EventHandler<SdlEventArgs>? DidEnterBackground;
 
         /// <summary>
         /// An event that fires when the application is going to enter the foreground.
         /// </summary>
-        public event EventHandler<SdlEventArgs> WillEnterForeground;
+        public event EventHandler<SdlEventArgs>? WillEnterForeground;
 
         /// <summary>
         /// An event that fires when the application entered the foreground.
         /// </summary>
-        public event EventHandler<SdlEventArgs> DidEnterForeground;
+        public event EventHandler<SdlEventArgs>? DidEnterForeground;
 
         public void Dispose()
         {

@@ -101,17 +101,17 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// An event that is fired when the device has been reset and textures need to be recreated.
         /// </summary>
-        public static event EventHandler<SdlEventArgs> RenderDeviceReset;
+        public static event EventHandler<SdlEventArgs>? RenderDeviceReset;
 
         /// <summary>
         /// An event that is fired when the targets have been reset and textures need to be recreated.
         /// </summary>
-        public static event EventHandler<SdlEventArgs> RenderTargetsReset;
+        public static event EventHandler<SdlEventArgs>? RenderTargetsReset;
 
         /// <summary>
         /// An event that is fired when a device's orientation changes.
         /// </summary>
-        public event EventHandler<OrientationChangedEventArgs> OrientationChanged;
+        public event EventHandler<OrientationChangedEventArgs>? OrientationChanged;
 
         /// <summary>
         /// Gets the closest supported display mode to the specified one.

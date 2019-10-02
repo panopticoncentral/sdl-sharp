@@ -55,27 +55,27 @@ namespace SdlSharp.Input
         /// <summary>
         /// An event that is fired when a key is pressed.
         /// </summary>
-        public static event EventHandler<KeyboardEventArgs> KeyUp;
+        public static event EventHandler<KeyboardEventArgs>? KeyUp;
 
         /// <summary>
         /// An event that is fired when a key is released.
         /// </summary>
-        public static event EventHandler<KeyboardEventArgs> KeyDown;
+        public static event EventHandler<KeyboardEventArgs>? KeyDown;
 
         /// <summary>
         /// An event that is fired when text is edited.
         /// </summary>
-        public static event EventHandler<TextEditedEventArgs> TextEdited;
+        public static event EventHandler<TextEditedEventArgs>? TextEdited;
 
         /// <summary>
         /// An event that is fired when text is input.
         /// </summary>
-        public static event EventHandler<TextInputEventArgs> TextInput;
+        public static event EventHandler<TextInputEventArgs>? TextInput;
 
         /// <summary>
         /// An event that is fired when the keymap is changed.
         /// </summary>
-        public static event EventHandler<SdlEventArgs> KeymapChanged;
+        public static event EventHandler<SdlEventArgs>? KeymapChanged;
 
         /// <summary>
         /// Starts text input.

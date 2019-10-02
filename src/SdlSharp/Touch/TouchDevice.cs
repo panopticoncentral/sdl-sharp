@@ -29,17 +29,17 @@ namespace SdlSharp.Touch
         /// <summary>
         /// An event fired when a finger is put down.
         /// </summary>
-        public event EventHandler<TouchFingerEventArgs> FingerDown;
+        public event EventHandler<TouchFingerEventArgs>? FingerDown;
 
         /// <summary>
         /// An event fired when a finger is pulled up.
         /// </summary>
-        public event EventHandler<TouchFingerEventArgs> FingerUp;
+        public event EventHandler<TouchFingerEventArgs>? FingerUp;
 
         /// <summary>
         /// An event fired when a finger is moved.
         /// </summary>
-        public event EventHandler<TouchFingerEventArgs> FingerMotion;
+        public event EventHandler<TouchFingerEventArgs>? FingerMotion;
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {

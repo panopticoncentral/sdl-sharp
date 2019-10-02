@@ -40,10 +40,10 @@ namespace SdlSharp.Sound
         /// </summary>
         public const string EffectsMaxSpeedEnvironmentVariable = "MIX_EFFECTSMAXSPEED";
 
-        private static Native.MixFunctionDelegate s_postMixHook;
-        private static Native.MixFunctionDelegate s_playMusicHook;
-        private static MusicFinishedDelegate s_musicFinishedHook;
-        private static Native.MusicChannelFinishedDelegate s_channelFinishedHook;
+        private static Native.MixFunctionDelegate? s_postMixHook;
+        private static Native.MixFunctionDelegate? s_playMusicHook;
+        private static MusicFinishedDelegate? s_musicFinishedHook;
+        private static Native.MusicChannelFinishedDelegate? s_channelFinishedHook;
 
         /// <summary>
         /// The user data of the current music hook.

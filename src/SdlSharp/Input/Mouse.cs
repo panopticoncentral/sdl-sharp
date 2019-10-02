@@ -95,22 +95,22 @@ namespace SdlSharp.Input
         /// <summary>
         /// Event fired when a mouse button is pressed.
         /// </summary>
-        public static event EventHandler<MouseButtonEventArgs> ButtonDown;
+        public static event EventHandler<MouseButtonEventArgs>? ButtonDown;
 
         /// <summary>
         /// Event fired when a mouse button is released.
         /// </summary>
-        public static event EventHandler<MouseButtonEventArgs> ButtonUp;
+        public static event EventHandler<MouseButtonEventArgs>? ButtonUp;
 
         /// <summary>
         /// Event fired when a mouse moves.
         /// </summary>
-        public static event EventHandler<MouseMotionEventArgs> Motion;
+        public static event EventHandler<MouseMotionEventArgs>? Motion;
 
         /// <summary>
         /// Event fired when a mouse wheel moves.
         /// </summary>
-        public static event EventHandler<MouseWheelEventArgs> Wheel;
+        public static event EventHandler<MouseWheelEventArgs>? Wheel;
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {

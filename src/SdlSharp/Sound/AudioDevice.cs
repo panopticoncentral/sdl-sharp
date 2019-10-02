@@ -35,12 +35,12 @@ namespace SdlSharp.Sound
         /// <summary>
         /// Event fired when an audio device is added to the system.
         /// </summary>
-        public static event EventHandler<AudioDeviceAddedEventArgs> Added;
+        public static event EventHandler<AudioDeviceAddedEventArgs>? Added;
 
         /// <summary>
         /// Event fired when an audio device is removed from the system.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Removed;
+        public event EventHandler<SdlEventArgs>? Removed;
 
         /// <summary>
         ///  Pauses the audio device.

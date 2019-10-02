@@ -10,17 +10,17 @@ namespace SdlSharp.Touch
         /// <summary>
         /// An event fired when a multi-finger gesture was made.
         /// </summary>
-        public static event EventHandler<MultiGestureEventArgs> MultiGesture;
+        public static event EventHandler<MultiGestureEventArgs>? MultiGesture;
 
         /// <summary>
         /// An event fired when a dollar gesture was made.
         /// </summary>
-        public static event EventHandler<DollarGestureEventArgs> DollarGesture;
+        public static event EventHandler<DollarGestureEventArgs>? DollarGesture;
 
         /// <summary>
         /// An event fired when a dollar gesture was recorded.
         /// </summary>
-        public static event EventHandler<DollarGestureEventArgs> DollarRecord;
+        public static event EventHandler<DollarGestureEventArgs>? DollarRecord;
 
         /// <summary>
         /// Records a gesture on a touch device.

@@ -10,7 +10,7 @@ namespace SdlSharp
     /// </summary>
     public static class Log
     {
-        private static LogOutputFunction s_holder;
+        private static LogOutputFunction? s_holder;
 
         /// <summary>
         /// The output function for log messages.

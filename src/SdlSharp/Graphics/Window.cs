@@ -268,87 +268,87 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// An event that's fired when a system window message comes in.
         /// </summary>
-        public static event EventHandler<SystemWindowMessageEventArgs> SystemWindowMessage;
+        public static event EventHandler<SystemWindowMessageEventArgs>? SystemWindowMessage;
 
         /// <summary>
         /// An event that's fired when the window is shown.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Shown;
+        public event EventHandler<SdlEventArgs>? Shown;
 
         /// <summary>
         /// An event that's fired when the window is hidden.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Hidden;
+        public event EventHandler<SdlEventArgs>? Hidden;
 
         /// <summary>
         /// An event that's fired when the window is exposed.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Exposed;
+        public event EventHandler<SdlEventArgs>? Exposed;
 
         /// <summary>
         /// An event that's fired when the window is minimized.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Minimized;
+        public event EventHandler<SdlEventArgs>? Minimized;
 
         /// <summary>
         /// An event that's fired when the window is maximized.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Maximized;
+        public event EventHandler<SdlEventArgs>? Maximized;
 
         /// <summary>
         /// An event that's fired when the window is restored.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Restored;
+        public event EventHandler<SdlEventArgs>? Restored;
 
         /// <summary>
         /// An event that's fired when the window is entered.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Entered;
+        public event EventHandler<SdlEventArgs>? Entered;
 
         /// <summary>
         /// An event that's fired when the window is left.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Left;
+        public event EventHandler<SdlEventArgs>? Left;
 
         /// <summary>
         /// An event that's fired when the window gains focus.
         /// </summary>
-        public event EventHandler<SdlEventArgs> FocusGained;
+        public event EventHandler<SdlEventArgs>? FocusGained;
 
         /// <summary>
         /// An event that's fired when the window loses focus.
         /// </summary>
-        public event EventHandler<SdlEventArgs> FocusLost;
+        public event EventHandler<SdlEventArgs>? FocusLost;
 
         /// <summary>
         /// An event that's fired when the window is closed.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Closed;
+        public event EventHandler<SdlEventArgs>? Closed;
 
         /// <summary>
         /// An event that's fired when the window takes focus.
         /// </summary>
-        public event EventHandler<SdlEventArgs> TookFocus;
+        public event EventHandler<SdlEventArgs>? TookFocus;
 
         /// <summary>
         /// An event that's fired when the window has a hit test.
         /// </summary>
-        public event EventHandler<SdlEventArgs> HitTest;
+        public event EventHandler<SdlEventArgs>? HitTest;
 
         /// <summary>
         /// An event that's fired when the window is moved.
         /// </summary>
-        public event EventHandler<LocationEventArgs> Moved;
+        public event EventHandler<LocationEventArgs>? Moved;
 
         /// <summary>
         /// An event that's fired when the window is resized.
         /// </summary>
-        public event EventHandler<SizeEventArgs> Resized;
+        public event EventHandler<SizeEventArgs>? Resized;
 
         /// <summary>
         /// An event that's fired when the window's size changes.
         /// </summary>
-        public event EventHandler<SizeEventArgs> SizeChanged;
+        public event EventHandler<SizeEventArgs>? SizeChanged;
 
         /// <summary>
         /// Creates a new window.

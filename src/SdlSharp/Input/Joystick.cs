@@ -95,37 +95,37 @@ namespace SdlSharp.Input
         /// <summary>
         /// An event that is fired when a joystick is added.
         /// </summary>
-        public static event EventHandler<JoystickAddedEventArgs> Added;
+        public static event EventHandler<JoystickAddedEventArgs>? Added;
 
         /// <summary>
         /// An event that fires when there is motion on an axis.
         /// </summary>
-        public event EventHandler<JoystickAxisMotionEventArgs> AxisMotion;
+        public event EventHandler<JoystickAxisMotionEventArgs>? AxisMotion;
 
         /// <summary>
         /// An event that fires when there is motion on a ball.
         /// </summary>
-        public event EventHandler<JoystickBallMotionEventArgs> BallMotion;
+        public event EventHandler<JoystickBallMotionEventArgs>? BallMotion;
 
         /// <summary>
         /// An event that fires when a button is pressed.
         /// </summary>
-        public event EventHandler<JoystickButtonEventArgs> ButtonDown;
+        public event EventHandler<JoystickButtonEventArgs>? ButtonDown;
 
         /// <summary>
         /// An event that fires when a button is released.
         /// </summary>
-        public event EventHandler<JoystickButtonEventArgs> ButtonUp;
+        public event EventHandler<JoystickButtonEventArgs>? ButtonUp;
 
         /// <summary>
         /// An event that is fired when a joystick is removed.
         /// </summary>
-        public event EventHandler<SdlEventArgs> Removed;
+        public event EventHandler<SdlEventArgs>? Removed;
 
         /// <summary>
         /// An event that fires when a hat moves.
         /// </summary>
-        public event EventHandler<JoystickHatMotionEventArgs> HatMotion;
+        public event EventHandler<JoystickHatMotionEventArgs>? HatMotion;
 
         internal static Joystick Get(Native.SDL_JoystickID instanceId) =>
             PointerToInstanceNotNull(Native.SDL_JoystickFromInstanceID(instanceId));
@@ -223,28 +223,28 @@ namespace SdlSharp.Input
                 case Native.SDL_EventType.JoystickAxisMotion:
                     {
                         var joystick = Get(e.Jaxis.Which);
-                        joystick?.AxisMotion.Invoke(joystick, new JoystickAxisMotionEventArgs(e.Jaxis));
+                        joystick?.AxisMotion?.Invoke(joystick, new JoystickAxisMotionEventArgs(e.Jaxis));
                         break;
                     }
 
                 case Native.SDL_EventType.JoystickBallMotion:
                     {
                         var joystick = Get(e.Jball.Which);
-                        joystick?.BallMotion.Invoke(joystick, new JoystickBallMotionEventArgs(e.Jball));
+                        joystick?.BallMotion?.Invoke(joystick, new JoystickBallMotionEventArgs(e.Jball));
                         break;
                     }
 
                 case Native.SDL_EventType.JoystickButtonDown:
                     {
                         var joystick = Get(e.Jbutton.Which);
-                        joystick?.ButtonDown.Invoke(joystick, new JoystickButtonEventArgs(e.Jbutton));
+                        joystick?.ButtonDown?.Invoke(joystick, new JoystickButtonEventArgs(e.Jbutton));
                         break;
                     }
 
                 case Native.SDL_EventType.JoystickButtonUp:
                     {
                         var joystick = Get(e.Jbutton.Which);
-                        joystick?.ButtonUp.Invoke(joystick, new JoystickButtonEventArgs(e.Jbutton));
+                        joystick?.ButtonUp?.Invoke(joystick, new JoystickButtonEventArgs(e.Jbutton));
                         break;
                     }
 
@@ -264,7 +264,7 @@ namespace SdlSharp.Input
                 case Native.SDL_EventType.JoystickHatMotion:
                     {
                         var joystick = Get(e.Jhat.Which);
-                        joystick?.HatMotion.Invoke(joystick, new JoystickHatMotionEventArgs(e.Jhat));
+                        joystick?.HatMotion?.Invoke(joystick, new JoystickHatMotionEventArgs(e.Jhat));
                         break;
                     }
 
