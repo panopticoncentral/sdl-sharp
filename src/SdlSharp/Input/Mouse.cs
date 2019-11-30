@@ -6,7 +6,7 @@ namespace SdlSharp.Input
     /// <summary>
     /// Mouse related APIs.
     /// </summary>
-    public unsafe static class Mouse
+    public static unsafe class Mouse
     {
         /// <summary>
         /// The window that has mouse focus, if any.

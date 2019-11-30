@@ -3,7 +3,7 @@
     /// <summary>
     /// An instance of a haptic effect.
     /// </summary>
-    public unsafe sealed class HapticEffectInstance : NativeIndexBase<Native.SDL_Haptic, int, HapticEffectInstance>
+    public sealed unsafe class HapticEffectInstance : NativeIndexBase<Native.SDL_Haptic, int, HapticEffectInstance>
     {
         /// <summary>
         /// Whether the effect instance is currently running.
@@ -35,9 +35,6 @@
             Native.CheckError(Native.SDL_HapticStopEffect(Pointer, Index));
 
         /// <inheritdoc/>
-        public override void Dispose()
-        {
-            Native.SDL_HapticDestroyEffect(Pointer, Index);
-        }
+        public override void Dispose() => Native.SDL_HapticDestroyEffect(Pointer, Index);
     }
 }

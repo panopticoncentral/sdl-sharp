@@ -6,7 +6,7 @@ namespace SdlSharp.Sound
     /// <summary>
     /// Audio processing routines.
     /// </summary>
-    public unsafe static class Audio
+    public static unsafe class Audio
     {
         private static ItemCollection<string>? s_drivers;
         private static ItemCollection<string>? s_captureDevices;

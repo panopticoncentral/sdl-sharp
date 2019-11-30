@@ -5,7 +5,7 @@ namespace SdlSharp.Graphics
     /// <summary>
     /// A pixel format.
     /// </summary>
-    public unsafe readonly struct EnumeratedPixelFormat
+    public readonly unsafe struct EnumeratedPixelFormat
     {
         public static readonly EnumeratedPixelFormat Unknown = new EnumeratedPixelFormat(0);
 

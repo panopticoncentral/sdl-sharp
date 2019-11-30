@@ -2,7 +2,7 @@
 
 namespace SdlSharp.Input
 {
-    public unsafe sealed class GameController : NativePointerBase<Native.SDL_GameController, GameController>
+    public sealed unsafe class GameController : NativePointerBase<Native.SDL_GameController, GameController>
     {
         /// <summary>
         /// The number of mappings for game controllers.

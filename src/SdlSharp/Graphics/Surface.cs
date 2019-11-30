@@ -5,7 +5,7 @@ namespace SdlSharp.Graphics
     /// <summary>
     /// A surface.
     /// </summary>
-    public unsafe sealed class Surface : NativePointerBase<Native.SDL_Surface, Surface>
+    public sealed unsafe class Surface : NativePointerBase<Native.SDL_Surface, Surface>
     {
         /// <summary>
         /// The YUV conversion mode.
@@ -36,10 +36,7 @@ namespace SdlSharp.Graphics
                 _ = Native.CheckError(Native.SDL_GetSurfaceColorMod(Pointer, out var red, out var green, out var blue));
                 return (red, green, blue);
             }
-            set
-            {
-                _ = Native.CheckError(Native.SDL_SetSurfaceColorMod(Pointer, value.Red, value.Green, value.Blue));
-            }
+            set => _ = Native.CheckError(Native.SDL_SetSurfaceColorMod(Pointer, value.Red, value.Green, value.Blue));
         }
 
         /// <summary>
@@ -52,10 +49,7 @@ namespace SdlSharp.Graphics
                 _ = Native.CheckError(Native.SDL_GetSurfaceAlphaMod(Pointer, out var alpha));
                 return alpha;
             }
-            set
-            {
-                _ = Native.CheckError(Native.SDL_SetSurfaceAlphaMod(Pointer, value));
-            }
+            set => _ = Native.CheckError(Native.SDL_SetSurfaceAlphaMod(Pointer, value));
         }
 
         /// <summary>
@@ -87,10 +81,7 @@ namespace SdlSharp.Graphics
                 _ = Native.CheckError(Native.SDL_GetColorKey(Pointer, out var key));
                 return key;
             }
-            set
-            {
-                _ = Native.CheckError(Native.SDL_SetColorKey(Pointer, value == null, value ?? (default)));
-            }
+            set => _ = Native.CheckError(Native.SDL_SetColorKey(Pointer, value == null, value ?? (default)));
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace SdlSharp
     /// <summary>
     /// Interop methods to call native SDL APIs.
     /// </summary>
-    public unsafe static class Native
+    public static unsafe class Native
     {
         private const string Sdl2 = "SDL2";
         private const string Sdl2Image = "SDL2_image";

@@ -82,7 +82,7 @@ namespace SdlSharp.Sound
                 Callback == null ? (Native.SDL_AudioCallback?)null : new CallbackWrapper(Callback).Callback,
                 Userdata);
 
-        private unsafe sealed class CallbackWrapper
+        private sealed unsafe class CallbackWrapper
         {
             private readonly AudioCallback _callback;
 
@@ -91,13 +91,10 @@ namespace SdlSharp.Sound
                 _callback = callback;
             }
 
-            public void Callback(IntPtr userdata, byte* stream, int length)
-            {
-                _callback(new Span<byte>(stream, length), userdata);
-            }
+            public void Callback(IntPtr userdata, byte* stream, int length) => _callback(new Span<byte>(stream, length), userdata);
         }
 
-        private unsafe sealed class ReverseCallbackWrapper
+        private sealed unsafe class ReverseCallbackWrapper
         {
             private readonly Native.SDL_AudioCallback _callback;
 

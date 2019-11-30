@@ -8,7 +8,7 @@ namespace SdlSharp
     /// </summary>
     /// <typeparam name="TIndex">The index type.</typeparam>
     /// <typeparam name="TManaged">The managed type.</typeparam>
-    public unsafe abstract class NativeStaticIndexBase<TIndex, TManaged>
+    public abstract unsafe class NativeStaticIndexBase<TIndex, TManaged>
         where TIndex : struct
         where TManaged : NativeStaticIndexBase<TIndex, TManaged>, new()
     {

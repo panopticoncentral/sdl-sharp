@@ -33,7 +33,7 @@ namespace SdlSharp.Sound
             {
                 if (refCount == 1)
                 {
-                    s_instances.Remove(this);
+                    _ = s_instances.Remove(this);
                 }
                 else
                 {
@@ -65,9 +65,6 @@ namespace SdlSharp.Sound
         /// Unregisters the effect in the channel.
         /// </summary>
         /// <param name="channel">The channel.</param>
-        public void Unregister(MixChannel channel)
-        {
-            _ = Native.CheckErrorZero(Native.Mix_UnregisterEffect(channel.Index, _effect));
-        }
+        public void Unregister(MixChannel channel) => _ = Native.CheckErrorZero(Native.Mix_UnregisterEffect(channel.Index, _effect));
     }
 }

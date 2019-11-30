@@ -6,7 +6,7 @@ namespace SdlSharp.Graphics
     /// <summary>
     /// A graphics renderer.
     /// </summary>
-    public unsafe sealed class Renderer : NativePointerBase<Native.SDL_Renderer, Renderer>
+    public sealed unsafe class Renderer : NativePointerBase<Native.SDL_Renderer, Renderer>
     {
         private static ItemCollection<RendererInfo>? s_renderDrivers;
 

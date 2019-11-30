@@ -3,7 +3,7 @@
     /// <summary>
     /// A mixer channels.
     /// </summary>
-    public unsafe sealed class MixChannel : NativeStaticIndexBase<int, MixChannel>
+    public sealed unsafe class MixChannel : NativeStaticIndexBase<int, MixChannel>
     {
         /// <summary>
         /// The fading status of the channel.

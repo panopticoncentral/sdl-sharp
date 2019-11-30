@@ -6,7 +6,7 @@ namespace SdlSharp
     /// <summary>
     /// A class that represents a haptic effect.
     /// </summary>
-    public unsafe sealed class Haptic : NativePointerBase<Native.SDL_Haptic, Haptic>
+    public sealed unsafe class Haptic : NativePointerBase<Native.SDL_Haptic, Haptic>
     {
         private static ItemCollection<HapticInfo>? s_hapticInfos;
 

@@ -25,17 +25,11 @@ namespace SdlSharp.Graphics
         /// Initializes the video subsystem.
         /// </summary>
         /// <param name="driver">The video driver to use.</param>
-        public static void Init(string driver)
-        {
-            _ = Native.CheckError(Native.SDL_VideoInit(driver));
-        }
-        
+        public static void Init(string driver) => _ = Native.CheckError(Native.SDL_VideoInit(driver));
+
         /// <summary>
         /// Quits the video subsystem.
         /// </summary>
-        public static void Quit()
-        {
-            Native.SDL_VideoQuit();
-        }
+        public static void Quit() => Native.SDL_VideoQuit();
     }
 }

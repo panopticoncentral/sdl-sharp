@@ -6,7 +6,7 @@ namespace SdlSharp
     /// <summary>
     /// A UTF-8 string from native code.
     /// </summary>
-    public unsafe readonly struct Utf8String : IDisposable
+    public readonly unsafe struct Utf8String : IDisposable
     {
         private readonly byte* _pointer;
 
@@ -39,10 +39,7 @@ namespace SdlSharp
         /// <summary>
         /// Frees the string's storage.
         /// </summary>
-        public void Dispose()
-        {
-            Native.SDL_free(_pointer);
-        }
+        public void Dispose() => Native.SDL_free(_pointer);
 
         /// <summary>
         /// Convert a regular string to a UTF-8 string.

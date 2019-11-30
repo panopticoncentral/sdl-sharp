@@ -6,7 +6,7 @@ namespace SdlSharp.Touch
     /// <summary>
     /// A device that supports touch input.
     /// </summary>
-    public unsafe sealed class TouchDevice : NativeStaticIndexBase<Native.SDL_TouchID, TouchDevice>
+    public sealed unsafe class TouchDevice : NativeStaticIndexBase<Native.SDL_TouchID, TouchDevice>
     {
         private static ItemCollection<TouchDevice>? s_devices;
 

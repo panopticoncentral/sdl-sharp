@@ -7,20 +7,16 @@
     {
         internal static GameControllerBinding? FromNative(Native.SDL_GameControllerButtonBind binding)
         {
-            switch (binding.Type)
+            return binding.Type switch
             {
-                case Native.SDL_ControllerBindType.Button:
-                    return new GameControllerButtonBinding(binding.Value.Button);
+                Native.SDL_ControllerBindType.Button => new GameControllerButtonBinding(binding.Value.Button),
 
-                case Native.SDL_ControllerBindType.Axis:
-                    return new GameControllerAxisBinding(binding.Value.Axis);
+                Native.SDL_ControllerBindType.Axis => new GameControllerAxisBinding(binding.Value.Axis),
 
-                case Native.SDL_ControllerBindType.Hat:
-                    return new GameControllerHatBinding(binding.Value.Hat.Hat, binding.Value.Hat.HatMask);
+                Native.SDL_ControllerBindType.Hat => new GameControllerHatBinding(binding.Value.Hat.Hat, binding.Value.Hat.HatMask),
 
-                default:
-                    return null;
-            }
+                _ => null,
+            };
         }
     }
 }

@@ -3,7 +3,7 @@
     /// <summary>
     /// Image handling from SDL_image
     /// </summary>
-    public unsafe static class Image
+    public static unsafe class Image
     {
         /// <summary>
         /// Loads an image from a file.

@@ -6,7 +6,7 @@ namespace SdlSharp
     /// <summary>
     /// A class that represents storage.
     /// </summary>
-    public unsafe sealed class RWOps : NativePointerBase<Native.SDL_RWops, RWOps>
+    public sealed unsafe class RWOps : NativePointerBase<Native.SDL_RWops, RWOps>
     {
         private Native.SizeRWOps? _size;
         private Native.SeekRWOps? _seek;
@@ -99,10 +99,7 @@ namespace SdlSharp
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> if the value was written, <c>false</c> otherwise.</returns>
-        public bool Write<T>(T value) where T : unmanaged
-        {
-            return WriteMethod(Pointer, &value, new UIntPtr((uint)sizeof(T)), new UIntPtr(1)) != UIntPtr.Zero;
-        }
+        public bool Write<T>(T value) where T : unmanaged => WriteMethod(Pointer, &value, new UIntPtr((uint)sizeof(T)), new UIntPtr(1)) != UIntPtr.Zero;
 
         /// <inheritdoc/>
         public override void Dispose()

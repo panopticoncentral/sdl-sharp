@@ -5,7 +5,7 @@ namespace SdlSharp.Input
     /// <summary>
     /// A sensor device.
     /// </summary>
-    public unsafe sealed class SensorDevice : NativeStaticIndexBase<int, SensorDevice>
+    public sealed unsafe class SensorDevice : NativeStaticIndexBase<int, SensorDevice>
     {
         private static ItemCollection<SensorDevice>? s_devices;
 

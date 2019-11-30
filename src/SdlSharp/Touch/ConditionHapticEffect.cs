@@ -12,28 +12,18 @@ namespace SdlSharp.Touch
         /// </summary>
         public HapticEffectType Type { get; }
 
-        private Native.SDL_HapticFlags NativeFlags
+        private Native.SDL_HapticFlags NativeFlags => Type switch
         {
-            get
-            {
-                switch (Type)
-                {
-                    case HapticEffectType.Spring:
-                        return Native.SDL_HapticFlags.Spring;
+            HapticEffectType.Spring => Native.SDL_HapticFlags.Spring,
 
-                    case HapticEffectType.Damper:
-                        return Native.SDL_HapticFlags.Damper;
+            HapticEffectType.Damper => Native.SDL_HapticFlags.Damper,
 
-                    case HapticEffectType.Inertia:
-                        return Native.SDL_HapticFlags.Inertia;
+            HapticEffectType.Inertia => Native.SDL_HapticFlags.Inertia,
 
-                    case HapticEffectType.Friction:
-                        return Native.SDL_HapticFlags.Friction;
-                }
+            HapticEffectType.Friction => Native.SDL_HapticFlags.Friction,
 
-                return Native.SDL_HapticFlags.None;
-            }
-        }
+            _ => Native.SDL_HapticFlags.None,
+        };
 
         /// <summary>
         /// The direction of the effect.

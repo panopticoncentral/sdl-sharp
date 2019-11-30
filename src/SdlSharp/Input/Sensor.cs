@@ -5,7 +5,7 @@ namespace SdlSharp.Input
     /// <summary>
     /// A sensor in the device.
     /// </summary>
-    public unsafe sealed class Sensor : NativePointerBase<Native.SDL_Sensor, Sensor>
+    public sealed unsafe class Sensor : NativePointerBase<Native.SDL_Sensor, Sensor>
     {
         /// <summary>
         /// The sensor's name.

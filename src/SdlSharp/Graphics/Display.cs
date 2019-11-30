@@ -6,7 +6,7 @@ namespace SdlSharp.Graphics
     /// <summary>
     /// A display in the system.
     /// </summary>
-    public unsafe sealed class Display : NativeStaticIndexBase<int, Display>
+    public sealed unsafe class Display : NativeStaticIndexBase<int, Display>
     {
         private static ItemCollection<Display>? s_displays;
 

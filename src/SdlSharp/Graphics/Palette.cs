@@ -3,7 +3,7 @@
     /// <summary>
     /// A palette of colors.
     /// </summary>
-    public unsafe sealed class Palette : NativePointerBase<Native.SDL_Palette, Palette>
+    public sealed unsafe class Palette : NativePointerBase<Native.SDL_Palette, Palette>
     {
         /// <summary>
         /// Creates a new palette.

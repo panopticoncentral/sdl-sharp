@@ -8,7 +8,7 @@ namespace SdlSharp.Sound
     /// <summary>
     /// An audio mixer.
     /// </summary>
-    public unsafe static class Mixer
+    public static unsafe class Mixer
     {
         /// <summary>
         /// The default frequency.
@@ -339,10 +339,7 @@ namespace SdlSharp.Sound
         {
             private readonly MusicChannelFinishedDelegate _finishedDelegate;
 
-            public void MusicChannelFinished(int channel)
-            {
-                _finishedDelegate(MixChannel.Get(channel));
-            }
+            public void MusicChannelFinished(int channel) => _finishedDelegate(MixChannel.Get(channel));
 
             public MusicChannelFinishedWrapper(MusicChannelFinishedDelegate finishedDelegate)
             {
@@ -354,10 +351,7 @@ namespace SdlSharp.Sound
         {
             private readonly MixFunctionDelegate _mixDelegate;
 
-            public void MixFunction(IntPtr udata, IntPtr stream, int len)
-            {
-                _mixDelegate(new Span<byte>((void*)stream, len), udata);
-            }
+            public void MixFunction(IntPtr udata, IntPtr stream, int len) => _mixDelegate(new Span<byte>((void*)stream, len), udata);
 
             public MixFunctionWrapper(MixFunctionDelegate mixDelegate)
             {

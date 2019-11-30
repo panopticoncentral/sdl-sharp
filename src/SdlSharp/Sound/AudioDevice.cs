@@ -6,7 +6,7 @@ namespace SdlSharp.Sound
     /// <summary>
     /// An audio device.
     /// </summary>
-    public unsafe sealed class AudioDevice : NativeStaticIndexBase<Native.SDL_AudioDeviceID, AudioDevice>, IDisposable
+    public sealed unsafe class AudioDevice : NativeStaticIndexBase<Native.SDL_AudioDeviceID, AudioDevice>, IDisposable
     {
         private List<Native.SDL_AudioCallback>? _callbacks;
 

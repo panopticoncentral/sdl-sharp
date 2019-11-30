@@ -5,7 +5,7 @@ namespace SdlSharp.Sound
     /// <summary>
     /// An audio stream that converts audio from one format to another.
     /// </summary>
-    public unsafe sealed class AudioStream : NativePointerBase<Native.SDL_AudioStream, AudioStream>
+    public sealed unsafe class AudioStream : NativePointerBase<Native.SDL_AudioStream, AudioStream>
     {
         /// <summary>
         /// The number of bytes available in the stream.

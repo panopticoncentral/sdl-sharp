@@ -6,7 +6,7 @@ namespace SdlSharp.Input
     /// <summary>
     /// Keyboard related APIs.
     /// </summary>
-    public unsafe static class Keyboard
+    public static unsafe class Keyboard
     {
         /// <summary>
         /// The window that has keyboard focus, if any.

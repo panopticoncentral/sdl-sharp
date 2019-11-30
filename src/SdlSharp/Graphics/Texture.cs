@@ -5,7 +5,7 @@ namespace SdlSharp.Graphics
     /// <summary>
     /// A texture.
     /// </summary>
-    public unsafe sealed class Texture : NativePointerBase<Native.SDL_Texture, Texture>
+    public sealed unsafe class Texture : NativePointerBase<Native.SDL_Texture, Texture>
     {
         /// <summary>
         /// The pixel format.
@@ -53,10 +53,7 @@ namespace SdlSharp.Graphics
                 _ = Native.CheckError(Native.SDL_GetTextureColorMod(Pointer, out var red, out var green, out var blue));
                 return (red, green, blue);
             }
-            set
-            {
-                _ = Native.CheckError(Native.SDL_SetTextureColorMod(Pointer, value.Red, value.Green, value.Blue));
-            }
+            set => _ = Native.CheckError(Native.SDL_SetTextureColorMod(Pointer, value.Red, value.Green, value.Blue));
         }
 
         /// <summary>
@@ -69,10 +66,7 @@ namespace SdlSharp.Graphics
                 _ = Native.CheckError(Native.SDL_GetTextureAlphaMod(Pointer, out var alpha));
                 return alpha;
             }
-            set
-            {
-                _ = Native.CheckError(Native.SDL_SetTextureAlphaMod(Pointer, value));
-            }
+            set => _ = Native.CheckError(Native.SDL_SetTextureAlphaMod(Pointer, value));
         }
 
         /// <summary>

@@ -3,7 +3,7 @@
     /// <summary>
     /// A finger on a touch device.
     /// </summary>
-    public unsafe sealed class Finger : NativePointerBase<Native.SDL_Finger, Finger>
+    public sealed unsafe class Finger : NativePointerBase<Native.SDL_Finger, Finger>
     {
         internal Native.SDL_FingerID Id => Pointer->Id;
 

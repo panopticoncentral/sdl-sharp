@@ -3,7 +3,7 @@
     /// <summary>
     /// A pixel format.
     /// </summary>
-    public unsafe sealed class PixelFormat : NativePointerBase<Native.SDL_PixelFormat, PixelFormat>
+    public sealed unsafe class PixelFormat : NativePointerBase<Native.SDL_PixelFormat, PixelFormat>
     {
         /// <inheritdoc/>
         public override void Dispose()

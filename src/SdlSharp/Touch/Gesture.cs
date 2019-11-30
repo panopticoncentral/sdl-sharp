@@ -5,7 +5,7 @@ namespace SdlSharp.Touch
     /// <summary>
     /// A touch gesture.
     /// </summary>
-    public unsafe sealed class Gesture : NativeStaticIndexBase<Native.SDL_GestureID, Gesture>
+    public sealed unsafe class Gesture : NativeStaticIndexBase<Native.SDL_GestureID, Gesture>
     {
         /// <summary>
         /// An event fired when a multi-finger gesture was made.

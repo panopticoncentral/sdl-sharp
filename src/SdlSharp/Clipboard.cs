@@ -15,7 +15,7 @@ namespace SdlSharp
         /// <summary>
         /// The text on the clipboard.
         /// </summary>
-        public unsafe static string? Text
+        public static unsafe string? Text
         {
             get => Native.SDL_GetClipboardText().ToString();
             set

@@ -6,7 +6,7 @@ namespace SdlSharp.Graphics
     /// <summary>
     /// Event arguments for a system window message event.
     /// </summary>
-    public unsafe sealed class SystemWindowMessageEventArgs : SdlEventArgs
+    public sealed unsafe class SystemWindowMessageEventArgs : SdlEventArgs
     {
         /// <summary>
         /// The message.

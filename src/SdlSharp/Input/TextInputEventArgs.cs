@@ -7,7 +7,7 @@ namespace SdlSharp.Input
     /// </summary>
     public sealed class TextInputEventArgs : SdlEventArgs
     {
-        private uint _windowId;
+        private readonly uint _windowId;
 
         /// <summary>
         /// The window that had focus, if any.

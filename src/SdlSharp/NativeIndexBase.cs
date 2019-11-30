@@ -9,7 +9,7 @@ namespace SdlSharp
     /// <typeparam name="TNative">The native pointer type.</typeparam>
     /// <typeparam name="TIndex">The index type.</typeparam>
     /// <typeparam name="TManaged">The managed type.</typeparam>
-    public unsafe abstract class NativeIndexBase<TNative, TIndex, TManaged> : IDisposable
+    public abstract unsafe class NativeIndexBase<TNative, TIndex, TManaged> : IDisposable
         where TNative : unmanaged
         where TIndex : struct
         where TManaged : NativeIndexBase<TNative, TIndex, TManaged>, new()

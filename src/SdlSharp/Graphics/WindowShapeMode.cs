@@ -11,23 +11,18 @@ namespace SdlSharp.Graphics
 
         internal static WindowShapeMode FromNative(Native.SDL_WindowShapeMode mode)
         {
-            switch (mode.Mode)
+            return mode.Mode switch
             {
-                case Native.WindowShapeMode.Default:
-                    return new DefaultWindowShapeMode();
+                Native.WindowShapeMode.Default => new DefaultWindowShapeMode(),
 
-                case Native.WindowShapeMode.BinarizeAlpha:
-                    return new BinarizeAlphaWindowShapeMode(false, mode.Parameters._binarizationCutoff);
+                Native.WindowShapeMode.BinarizeAlpha => new BinarizeAlphaWindowShapeMode(false, mode.Parameters._binarizationCutoff),
 
-                case Native.WindowShapeMode.ReverseBinarizeAlpha:
-                    return new BinarizeAlphaWindowShapeMode(true, mode.Parameters._binarizationCutoff);
+                Native.WindowShapeMode.ReverseBinarizeAlpha => new BinarizeAlphaWindowShapeMode(true, mode.Parameters._binarizationCutoff),
 
-                case Native.WindowShapeMode.ColorKey:
-                    return new ColorKeyWindowShapeMode(mode.Parameters._colorKey);
+                Native.WindowShapeMode.ColorKey => new ColorKeyWindowShapeMode(mode.Parameters._colorKey),
 
-                default:
-                    throw new InvalidOperationException();
-            }
+                _ => throw new InvalidOperationException(),
+            };
         }
     }
 }

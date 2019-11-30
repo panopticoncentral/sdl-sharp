@@ -5,7 +5,7 @@ namespace SdlSharp.Input
     /// <summary>
     /// Information about a specific joystick
     /// </summary>
-    public unsafe sealed class JoystickInfo : NativeStaticIndexBase<int, JoystickInfo>
+    public sealed unsafe class JoystickInfo : NativeStaticIndexBase<int, JoystickInfo>
     {
         /// <summary>
         /// The name of the joystick, if any.

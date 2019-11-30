@@ -3,7 +3,7 @@
     /// <summary>
     /// A font.
     /// </summary>
-    public unsafe sealed class Font : NativePointerBase<Native.TTF_Font, Font>
+    public sealed unsafe class Font : NativePointerBase<Native.TTF_Font, Font>
     {
         /// <summary>
         /// The native byte order mark.

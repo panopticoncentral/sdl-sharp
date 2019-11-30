@@ -5,7 +5,7 @@ namespace SdlSharp.Sound
     /// <summary>
     /// A WAV audio file.
     /// </summary>
-    public unsafe sealed class WavData : IDisposable
+    public sealed unsafe class WavData : IDisposable
     {
         private byte* _data;
         private uint _length;

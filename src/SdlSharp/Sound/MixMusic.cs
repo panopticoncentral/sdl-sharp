@@ -5,7 +5,7 @@ namespace SdlSharp.Sound
     /// <summary>
     /// Music that can be played through the mixer.
     /// </summary>
-    public unsafe sealed class MixMusic : NativePointerBase<Native.Mix_Music, MixMusic>
+    public sealed unsafe class MixMusic : NativePointerBase<Native.Mix_Music, MixMusic>
     {
         private static ItemCollection<string>? s_decoders;
 

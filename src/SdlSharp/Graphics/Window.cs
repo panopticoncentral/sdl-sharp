@@ -5,7 +5,7 @@ namespace SdlSharp.Graphics
     /// <summary>
     /// A SDL window.
     /// </summary>
-    public unsafe sealed class Window : NativePointerBase<Native.SDL_Window, Window>
+    public sealed unsafe class Window : NativePointerBase<Native.SDL_Window, Window>
     {
         /// <summary>
         /// A window position that is undefined.
@@ -77,10 +77,7 @@ namespace SdlSharp.Graphics
                 return mode;
             }
 
-            set
-            {
-                _ = Native.CheckError(Native.SDL_SetWindowDisplayMode(Pointer, ref value));
-            }
+            set => _ = Native.CheckError(Native.SDL_SetWindowDisplayMode(Pointer, ref value));
         }
 
         /// <summary>

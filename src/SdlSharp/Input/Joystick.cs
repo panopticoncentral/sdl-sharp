@@ -6,7 +6,7 @@ namespace SdlSharp.Input
     /// <summary>
     /// A joystick.
     /// </summary>
-    public unsafe sealed class Joystick : NativePointerBase<Native.SDL_Joystick, Joystick>
+    public sealed unsafe class Joystick : NativePointerBase<Native.SDL_Joystick, Joystick>
     {
         private static ItemCollection<JoystickInfo>? s_infos;
 

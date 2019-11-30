@@ -242,7 +242,7 @@ namespace SdlSharp
             using var utf8Title = Utf8String.ToUtf8String(title);
             using var utf8Message = Utf8String.ToUtf8String(message);
 
-            MessageBoxColorScheme colorSchemeValue = colorScheme.GetValueOrDefault();
+            var colorSchemeValue = colorScheme.GetValueOrDefault();
             int buttonId;
 
             fixed (Native.SDL_MessageBoxButtonData* buttonBuffer = nativeButtons)

@@ -3,7 +3,7 @@
     /// <summary>
     /// Information about a haptic effect.
     /// </summary>
-    public unsafe sealed class HapticInfo : NativeStaticIndexBase<int, HapticInfo>
+    public sealed unsafe class HapticInfo : NativeStaticIndexBase<int, HapticInfo>
     {
         /// <summary>
         /// The name of the effect.

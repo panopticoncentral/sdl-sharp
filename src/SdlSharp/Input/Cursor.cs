@@ -6,7 +6,7 @@ namespace SdlSharp.Input
     /// <summary>
     /// A mouse cursor.
     /// </summary>
-    public unsafe sealed class Cursor : NativePointerBase<Native.SDL_Cursor, Cursor>
+    public sealed unsafe class Cursor : NativePointerBase<Native.SDL_Cursor, Cursor>
     {
         /// <summary>
         /// The current cursor.
@@ -20,10 +20,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// The default cursor.
         /// </summary>
-        public static Cursor Default
-        {
-            get => PointerToInstanceNotNull(Native.SDL_GetDefaultCursor());
-        }
+        public static Cursor Default => PointerToInstanceNotNull(Native.SDL_GetDefaultCursor());
 
         /// <summary>
         /// Creates a new cursor.

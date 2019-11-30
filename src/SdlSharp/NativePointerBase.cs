@@ -8,7 +8,7 @@ namespace SdlSharp
     /// </summary>
     /// <typeparam name="TNative">The native pointer type.</typeparam>
     /// <typeparam name="TManaged">The managed type.</typeparam>
-    public unsafe abstract class NativePointerBase<TNative, TManaged> : IDisposable
+    public abstract unsafe class NativePointerBase<TNative, TManaged> : IDisposable
         where TNative : unmanaged
         where TManaged : NativePointerBase<TNative, TManaged>, new()
     {

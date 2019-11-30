@@ -5,14 +5,14 @@ namespace SdlSharp.Sound
     /// <summary>
     /// An audio sample.
     /// </summary>
-    public unsafe sealed class MixChunk : NativePointerBase<Native.Mix_Chunk, MixChunk>
+    public sealed unsafe class MixChunk : NativePointerBase<Native.Mix_Chunk, MixChunk>
     {
-        private static ItemCollection<string>? _decoders;
+        private static ItemCollection<string>? s_decoders;
 
         /// <summary>
         /// The decoders for samples.
         /// </summary>
-        public static IReadOnlyList<string> Decoders => _decoders ?? (_decoders = new ItemCollection<string>(
+        public static IReadOnlyList<string> Decoders => s_decoders ?? (s_decoders = new ItemCollection<string>(
             index => Native.CheckNotNull(Native.Mix_GetChunkDecoder(index)),
             Native.Mix_GetNumChunkDecoders));
 
