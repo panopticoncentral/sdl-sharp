@@ -9,10 +9,21 @@ namespace SdlSharp
     [DebuggerDisplay("({Location.X}, {Location.Y}, {Size.Width}, {Size.Height})")]
     public struct Rectangle : IEquatable<Rectangle>
     {
+        /// <summary>
+        /// The location of the upper-left corner of the rectangle.
+        /// </summary>
         public Point Location { get; }
 
+        /// <summary>
+        /// The size of the rectangle.
+        /// </summary>
         public Size Size { get; }
 
+        /// <summary>
+        /// Constructs a new rectangle.
+        /// </summary>
+        /// <param name="location">The location of the upper-left corner of the rectangle.</param>
+        /// <param name="size">The size of the rectangle.</param>
         public Rectangle(Point location, Size size)
         {
             Location = location;
@@ -21,30 +32,71 @@ namespace SdlSharp
 
         public static implicit operator Rectangle((Point location, Size size) tuple) => new Rectangle(tuple.location, tuple.size);
 
+        /// <summary>
+        /// Whether the rectangle is empty.
+        /// </summary>
         public bool IsEmpty => Size.Width == 0 && Size.Height == 0;
 
         public bool Equals(Rectangle other) =>
             Location.X == other.Location.X && Location.Y == other.Location.Y
             && Size.Width == other.Size.Width && Size.Height == other.Size.Height;
 
+        /// <summary>
+        /// Whether there is an intersection between the two rectangles.
+        /// </summary>
+        /// <param name="other">The other rectangle.</param>
+        /// <returns>true if there is, false otherwise.</returns>
         public bool HasIntersection(Rectangle other) =>
             Native.SDL_HasIntersection(in this, in other);
 
+        /// <summary>
+        /// Returns the intersection of two rectangles.
+        /// </summary>
+        /// <param name="other">The other rectangle.</param>
+        /// <param name="intersection">The intersection of the two rectangles.</param>
+        /// <returns>true if there was an intersection, false otherwise.</returns>
         public bool Intersect(Rectangle other, out Rectangle intersection) =>
             Native.SDL_IntersectRect(in this, in other, out intersection);
 
+        /// <summary>
+        /// Returns the union of two rectangles.
+        /// </summary>
+        /// <param name="other">The other rectangle.</param>
+        /// <param name="union">The union of the two rectangles.</param>
         public void Union(Rectangle other, out Rectangle union) =>
             Native.SDL_UnionRect(in this, in other, out union);
 
+        /// <summary>
+        /// Calculates the minumum recangle that encloses a set of points.
+        /// </summary>
+        /// <param name="points">The points.</param>
+        /// <param name="clip">A clipping rectangle.</param>
+        /// <param name="result">The enclosing rectangle.</param>
+        /// <returns>true of all the points were enclosed, false otherwise.</returns>
         public bool EnclosePoints(Point[] points, Rectangle clip, out Rectangle result) =>
             Native.SDL_EnclosePoints(points, points.Length, in clip, out result);
 
-        public bool IntersectLine(Point location1, Point location2)
+        /// <summary>
+        /// Returns whether the rectangle contains the point.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <returns>true if it does, false otherwise.</returns>
+        public bool Contains(Point point) =>
+            point.X >= Location.X && point.X < Location.X + Size.Width
+            && point.Y >= Location.Y && point.Y < Location.Y + Size.Height;
+
+        /// <summary>
+        /// Determines if there is an intersection between a line and the rectangle.
+        /// </summary>
+        /// <param name="start">The start of the line.</param>
+        /// <param name="end">The end of the line.</param>
+        /// <returns>true if they intersect, false otherwise.</returns>
+        public bool IntersectLine(Point start, Point end)
         {
-            var x1 = location1.X;
-            var y1 = location1.Y;
-            var x2 = location2.X;
-            var y2 = location2.Y;
+            var x1 = start.X;
+            var y1 = start.Y;
+            var x2 = end.X;
+            var y2 = end.Y;
             return Native.SDL_IntersectRectAndLine(in this, in x1, in y1, in x2, in y2);
         }
     }

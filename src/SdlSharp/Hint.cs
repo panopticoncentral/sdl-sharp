@@ -34,6 +34,7 @@ namespace SdlSharp
         public static readonly Hint MouseRelativeModeWarp = new Hint("SDL_MOUSE_RELATIVE_MODE_WARP");
         public static readonly Hint MouseFocusClickthrough = new Hint("SDL_MOUSE_FOCUS_CLICKTHROUGH");
         public static readonly Hint TouchMouseEvents = new Hint("SDL_TOUCH_MOUSE_EVENTS");
+        public static readonly Hint MouseTouchEvents = new Hint("SDL_MOUSE_TOUCH_EVENTS");
         public static readonly Hint VideoMinimizeOnFocusLoss = new Hint("SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS");
         public static readonly Hint IosIdleTimerDisabled = new Hint("SDL_IOS_IDLE_TIMER_DISABLED");
         public static readonly Hint IosOrientations = new Hint("SDL_IOS_ORIENTATIONS");
@@ -45,6 +46,7 @@ namespace SdlSharp
         public static readonly Hint XinputEnabled = new Hint("SDL_XINPUT_ENABLED");
         public static readonly Hint XInputUseOldJoystickMapping = new Hint("SDL_XINPUT_USE_OLD_JOYSTICK_MAPPING");
         public static readonly Hint GameControllerConfig = new Hint("SDL_GAMECONTROLLERCONFIG");
+        public static readonly Hint GameControllerConfigFile = new Hint("SDL_GAMECONTROLLERCONFIG_FILE");
         public static readonly Hint GameControllerIgnoreDevices = new Hint("SDL_GAMECONTROLLER_IGNORE_DEVICES");
         public static readonly Hint GameControllerIgnoreDevicesExcept = new Hint("SDL_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT");
         public static readonly Hint JoystickAllowBackgroundEvents = new Hint("SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS");
@@ -72,8 +74,8 @@ namespace SdlSharp
         public static readonly Hint AndroidApkExpansionMainFileVersion = new Hint("SDL_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION");
         public static readonly Hint AndroidApkExpansionPatchFileVersion = new Hint("SDL_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION");
         public static readonly Hint ImeInternalEditing = new Hint("SDL_IME_INTERNAL_EDITING");
-        public static readonly Hint AndroidSeparateMouseAndTouch = new Hint("SDL_ANDROID_SEPARATE_MOUSE_AND_TOUCH");
         public static readonly Hint AndroidTrapBackButton = new Hint("SDL_ANDROID_TRAP_BACK_BUTTON");
+        public static readonly Hint AndroidBlockOnPause = new Hint("SDL_ANDROID_BLOCK_ON_PAUSE");
         public static readonly Hint ReturnKeyHidesIme = new Hint("SDL_RETURN_KEY_HIDES_IME");
         public static readonly Hint EmscriptenKeyboardElement = new Hint("SDL_EMSCRIPTEN_KEYBOARD_ELEMENT");
         public static readonly Hint NoSignalHandlers = new Hint("SDL_NO_SIGNAL_HANDLERS");
@@ -85,6 +87,11 @@ namespace SdlSharp
         public static readonly Hint OpenglEsDriver = new Hint("SDL_OPENGL_ES_DRIVER");
         public static readonly Hint AudioResamplingMode = new Hint("SDL_AUDIO_RESAMPLING_MODE");
         public static readonly Hint AudioCategory = new Hint("SDL_AUDIO_CATEGORY");
+        public static readonly Hint RenderBatching = new Hint("SDL_RENDER_BATCHING");
+        public static readonly Hint EventLogging = new Hint("SDL_EVENT_LOGGING");
+        public static readonly Hint WaveRiffChunkSize = new Hint("SDL_WAVE_RIFF_CHUNK_SIZE");
+        public static readonly Hint WaveTruncation = new Hint("SDL_WAVE_TRUNCATION");
+        public static readonly Hint WaveFactChunk = new Hint("SDL_WAVE_FACT_CHUNK");
 
         private readonly string _name;
         private Dictionary<HintCallback, int>? _callbacks;

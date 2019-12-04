@@ -6,41 +6,41 @@ namespace SdlSharp
     /// A point.
     /// </summary>
     [DebuggerDisplay("({X}, {Y})")]
-    public readonly struct Point
+    public readonly struct PointF
     {
         /// <summary>
         /// The X value of the point.
         /// </summary>
-        public int X { get; }
+        public float X { get; }
 
         /// <summary>
         /// The Y value of the point.
         /// </summary>
-        public int Y { get; }
+        public float Y { get; }
 
         /// <summary>
         /// Constructs a new point.
         /// </summary>
         /// <param name="x">The x value.</param>
         /// <param name="y">The y value.</param>
-        public Point(int x, int y)
+        public PointF(float x, float y)
         {
             X = x;
             Y = y;
         }
 
-        public static implicit operator Point((int X, int Y) tuple) => new Point(tuple.X, tuple.Y);
+        public static implicit operator PointF((float X, float Y) tuple) => new PointF(tuple.X, tuple.Y);
 
-        public static Point operator +(Point left, Point right) => (left.X + right.X, left.Y + right.Y);
+        public static PointF operator +(PointF left, PointF right) => (left.X + right.X, left.Y + right.Y);
 
-        public static Point operator -(Point left, Point right) => (left.X - right.X, left.Y - right.Y);
+        public static PointF operator -(PointF left, PointF right) => (left.X - right.X, left.Y - right.Y);
 
         /// <summary>
         /// Bounds a point to a given size.
         /// </summary>
         /// <param name="bound">The bound.</param>
         /// <returns>The bounded point.</returns>
-        public Point Bound(Size bound)
+        public PointF Bound(SizeF bound)
         {
             var newX = X;
             var newY = Y;

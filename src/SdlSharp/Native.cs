@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
+using SdlSharp.Touch;
 
 // There are going to be unused fields in some of the interop structures
 #pragma warning disable CS0169, RCS1213, IDE0051, IDE0052
@@ -428,6 +429,11 @@ namespace SdlSharp
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetSystemRAM();
+
+        // SIMD should be used through .NET support, no direct support otherwise
+        //public static extern UIntPtr SDL_SIMDGetAlignment();
+        //public static extern IntPtr SDL_SIMDAlloc(UIntPtr len);
+        //public static extern void SDL_SIMDFree(IntPtr ptr);
 
         #endregion
 
@@ -2213,7 +2219,9 @@ namespace SdlSharp
         #region SDL_rect.h
 
         // SDL_Point is covered by Point.cs
+        // SDL_FPoint is covered by PointF.cs
         // SDL_Rect is covered by Rectangle.cs
+        // SDL_FRect is covered by RectangleF.cs
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_HasIntersection(in Rectangle a, in Rectangle b);
@@ -2399,6 +2407,36 @@ namespace SdlSharp
         public static extern int SDL_RenderCopyEx(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, Rectangle* dstrect, double angle, Point* center, RendererFlip flip);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderDrawPointF(SDL_Renderer* renderer, float x, float y);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderDrawPointsF(SDL_Renderer* renderer, PointF[] points, int count);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderDrawLineF(SDL_Renderer* renderer, float x1, float y1, float x2, float y2);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderDrawLinesF(SDL_Renderer* renderer, PointF[] points, int count);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderDrawRectF(SDL_Renderer* renderer, RectangleF* rect);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderDrawRectsF(SDL_Renderer* renderer, RectangleF[] rects, int count);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderFillRectF(SDL_Renderer* renderer, RectangleF* rect);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderFillRectsF(SDL_Renderer* renderer, RectangleF[] rects, int count);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderCopyF(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, RectangleF* dstrect);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderCopyExF(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, RectangleF* dstrect, double angle, PointF* center, RendererFlip flip);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RenderReadPixels(SDL_Renderer* renderer, Rectangle* rect, EnumeratedPixelFormat format, byte* pixels, int pitch);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -2410,6 +2448,9 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_DestroyRenderer(SDL_Renderer* renderer);
 
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderFlush(SDL_Renderer* renderer);
+        
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GL_BindTexture(SDL_Texture* texture, out float texw, out float texh);
 
@@ -2467,6 +2508,21 @@ namespace SdlSharp
             public void* Data2 { get; set; }
         }
 
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern long SDL_RWsize(SDL_RWops* context);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern long SDL_RWseek(SDL_RWops* context, long offset, SeekType whence);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern UIntPtr SDL_RWread(SDL_RWops* context, void* ptr, UIntPtr size, UIntPtr maxnum);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern UIntPtr SDL_RWwrite(SDL_RWops* context, void* ptr, UIntPtr size, UIntPtr num);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RWclose(SDL_RWops* context);
+
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern SDL_RWops* SDL_RWFromFile(string file, string mode);
 
@@ -2490,8 +2546,8 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void* SDL_LoadFile_RW(SDL_RWops* src, out UIntPtr datasize, bool freesrc);
 
-        public static void* SDL_LoadFile(string file, out UIntPtr datasize) =>
-            SDL_LoadFile_RW(SDL_RWFromFile(file, "rb"), out datasize, true);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern void* SDL_LoadFile(string file, out UIntPtr datasize);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern byte SDL_ReadU8(SDL_RWops* src);
@@ -2672,7 +2728,8 @@ namespace SdlSharp
             None = 0,
             Prealloc = 0x00000001,
             RleAccel = 0x00000002,
-            DontFree = Prealloc | RleAccel
+            DontFree = 0x00000004,
+            SimdAligned = 0x00000008
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -2926,6 +2983,8 @@ namespace SdlSharp
             public long Id { get; }
         }
 
+        // SDL_TouchDeviceType is covered by TouchDeviceType.cs
+
         public struct SDL_Finger
         {
             public readonly SDL_FingerID Id;
@@ -2943,6 +3002,9 @@ namespace SdlSharp
         public static extern SDL_TouchID SDL_GetTouchDevice(int index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TouchDeviceType SDL_GetTouchDeviceType(SDL_TouchID touchID);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumTouchFingers(SDL_TouchID touchID);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -2952,7 +3014,7 @@ namespace SdlSharp
 
         #region SDL_version.h
 
-        public static Version IntegratedSdl2Version = new Version(2, 0, 9);
+        public static Version IntegratedSdl2Version = new Version(2, 0, 10);
 
         public static int SDL_VersionNumber(Version version) =>
             (version.Major * 1000) + (version.Minor * 100) + version.Patch;
@@ -3243,7 +3305,7 @@ namespace SdlSharp
 
         #region SDL_image.h
 
-        public static Version IntegratedSdl2ImageVersion = new Version(2, 0, 4);
+        public static Version IntegratedSdl2ImageVersion = new Version(2, 0, 5);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern Version* IMG_Linked_Version();

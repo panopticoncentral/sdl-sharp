@@ -221,11 +221,25 @@ namespace SdlSharp.Graphics
             Native.CheckError(Native.SDL_RenderDrawPoint(Pointer, p.X, p.Y));
 
         /// <summary>
+        /// Draws a point on the renderer.
+        /// </summary>
+        /// <param name="p">The point.</param>
+        public void DrawPoint(PointF p) =>
+            Native.CheckError(Native.SDL_RenderDrawPointF(Pointer, p.X, p.Y));
+
+        /// <summary>
         /// Draws points on a renderer.
         /// </summary>
         /// <param name="points">The points.</param>
         public void DrawPoints(Point[] points) =>
             Native.CheckError(Native.SDL_RenderDrawPoints(Pointer, points, points.Length));
+
+        /// <summary>
+        /// Draws points on a renderer.
+        /// </summary>
+        /// <param name="points">The points.</param>
+        public void DrawPoints(PointF[] points) =>
+            Native.CheckError(Native.SDL_RenderDrawPointsF(Pointer, points, points.Length));
 
         /// <summary>
         /// Draws a line on a renderer.
@@ -236,11 +250,26 @@ namespace SdlSharp.Graphics
             Native.CheckError(Native.SDL_RenderDrawLine(Pointer, p1.X, p1.Y, p2.X, p2.Y));
 
         /// <summary>
+        /// Draws a line on a renderer.
+        /// </summary>
+        /// <param name="p1">The beginning of the line.</param>
+        /// <param name="p2">The end of the line.</param>
+        public void DrawLine(PointF p1, PointF p2) =>
+            Native.CheckError(Native.SDL_RenderDrawLineF(Pointer, p1.X, p1.Y, p2.X, p2.Y));
+
+        /// <summary>
         /// Draws multiple lines on a renderer.
         /// </summary>
         /// <param name="points">The beginning/end points of the lines.</param>
         public void DrawLines(Point[] points) =>
             Native.CheckError(Native.SDL_RenderDrawLines(Pointer, points, points.Length));
+
+        /// <summary>
+        /// Draws multiple lines on a renderer.
+        /// </summary>
+        /// <param name="points">The beginning/end points of the lines.</param>
+        public void DrawLines(PointF[] points) =>
+            Native.CheckError(Native.SDL_RenderDrawLinesF(Pointer, points, points.Length));
 
         /// <summary>
         /// Draws a rectangle on a renderer.
@@ -260,11 +289,35 @@ namespace SdlSharp.Graphics
         }
 
         /// <summary>
+        /// Draws a rectangle on a renderer.
+        /// </summary>
+        /// <param name="rectangle">The rectangle.</param>
+        public void DrawRectangle(RectangleF? rectangle)
+        {
+            var rectPointer = (RectangleF*)null;
+
+            if (rectangle.HasValue)
+            {
+                var rect = rectangle.Value;
+                rectPointer = &rect;
+            }
+
+            _ = Native.CheckError(Native.SDL_RenderDrawRectF(Pointer, rectPointer));
+        }
+
+        /// <summary>
         /// Draws rectangles on a renderer.
         /// </summary>
         /// <param name="rectangles">The rectangles.</param>
         public void DrawRectangles(Rectangle[] rectangles) =>
             Native.CheckError(Native.SDL_RenderDrawRects(Pointer, rectangles, rectangles.Length));
+
+        /// <summary>
+        /// Draws rectangles on a renderer.
+        /// </summary>
+        /// <param name="rectangles">The rectangles.</param>
+        public void DrawRectangles(RectangleF[] rectangles) =>
+            Native.CheckError(Native.SDL_RenderDrawRectsF(Pointer, rectangles, rectangles.Length));
 
         /// <summary>
         /// Fills a rectangle on a renderer.
@@ -284,11 +337,35 @@ namespace SdlSharp.Graphics
         }
 
         /// <summary>
+        /// Fills a rectangle on a renderer.
+        /// </summary>
+        /// <param name="rectangle">The rectangle.</param>
+        public void FillRectangle(RectangleF? rectangle)
+        {
+            var rectPointer = (RectangleF*)null;
+
+            if (rectangle.HasValue)
+            {
+                var rect = rectangle.Value;
+                rectPointer = &rect;
+            }
+
+            _ = Native.CheckError(Native.SDL_RenderFillRectF(Pointer, rectPointer));
+        }
+
+        /// <summary>
         /// Fills rectangles on the renderer.
         /// </summary>
         /// <param name="rectangles">The rectangles.</param>
         public void FillRectangles(Rectangle[] rectangles) =>
             Native.CheckError(Native.SDL_RenderFillRects(Pointer, rectangles, rectangles.Length));
+
+        /// <summary>
+        /// Fills rectangles on the renderer.
+        /// </summary>
+        /// <param name="rectangles">The rectangles.</param>
+        public void FillRectangles(RectangleF[] rectangles) =>
+            Native.CheckError(Native.SDL_RenderFillRectsF(Pointer, rectangles, rectangles.Length));
 
         /// <summary>
         /// Copies a texture onto a renderer.
@@ -314,6 +391,32 @@ namespace SdlSharp.Graphics
             }
 
             _ = Native.CheckError(Native.SDL_RenderCopy(Pointer, texture.Pointer, sourcePointer, destPointer));
+        }
+
+        /// <summary>
+        /// Copies a texture onto a renderer.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        /// <param name="source">The source rectangle.</param>
+        /// <param name="destination">The destination rectangle.</param>
+        public void Copy(Texture texture, Rectangle? source = null, RectangleF? destination = null)
+        {
+            var sourcePointer = (Rectangle*)null;
+            var destPointer = (RectangleF*)null;
+
+            if (source.HasValue)
+            {
+                var sourceRect = source.Value;
+                sourcePointer = &sourceRect;
+            }
+
+            if (destination.HasValue)
+            {
+                var destRect = destination.Value;
+                destPointer = &destRect;
+            }
+
+            _ = Native.CheckError(Native.SDL_RenderCopyF(Pointer, texture.Pointer, sourcePointer, destPointer));
         }
 
         /// <summary>
@@ -350,6 +453,42 @@ namespace SdlSharp.Graphics
             }
 
             _ = Native.CheckError(Native.SDL_RenderCopyEx(Pointer, texture.Pointer, sourcePointer, destPointer, angle, centerPointer, flip));
+        }
+
+        /// <summary>
+        /// Copies a texture onto renderer.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        /// <param name="source">The source rectangle.</param>
+        /// <param name="destination">The destination rectangle.</param>
+        /// <param name="angle">The rotation angle.</param>
+        /// <param name="center">The center.</param>
+        /// <param name="flip">Whether to flip the texture.</param>
+        public void Copy(Texture texture, Rectangle? source, RectangleF? destination, double angle, PointF? center, RendererFlip flip)
+        {
+            var sourcePointer = (Rectangle*)null;
+            var destPointer = (RectangleF*)null;
+            var centerPointer = (PointF*)null;
+
+            if (source.HasValue)
+            {
+                var sourceRect = source.Value;
+                sourcePointer = &sourceRect;
+            }
+
+            if (destination.HasValue)
+            {
+                var destRect = destination.Value;
+                destPointer = &destRect;
+            }
+
+            if (center.HasValue)
+            {
+                var centerRect = center.Value;
+                centerPointer = &centerRect;
+            }
+
+            _ = Native.CheckError(Native.SDL_RenderCopyExF(Pointer, texture.Pointer, sourcePointer, destPointer, angle, centerPointer, flip));
         }
 
         /// <summary>
@@ -397,5 +536,10 @@ namespace SdlSharp.Graphics
         /// <returns>The texture.</returns>
         public Texture CreateTexture(Surface surface) =>
             Texture.PointerToInstanceNotNull(Native.SDL_CreateTextureFromSurface(Pointer, surface.Pointer));
+
+        /// <summary>
+        /// Flushes all pending draws in the renderer.
+        /// </summary>
+        public void Flush() => Native.CheckError(Native.SDL_RenderFlush(Pointer));
     }
 }

@@ -8,22 +8,10 @@ namespace SdlSharp
     /// </summary>
     public sealed unsafe class RWOps : NativePointerBase<Native.SDL_RWops, RWOps>
     {
-        private Native.SizeRWOps? _size;
-        private Native.SeekRWOps? _seek;
-        private Native.ReadRWOps? _read;
-        private Native.WriteRWOps? _write;
-        private Native.CloseRWOps? _close;
-
-        private Native.SizeRWOps SizeMethod => _size ?? (_size = Marshal.GetDelegateForFunctionPointer<Native.SizeRWOps>(Pointer->Size));
-        private Native.SeekRWOps SeekMethod => _seek ?? (_seek = Marshal.GetDelegateForFunctionPointer<Native.SeekRWOps>(Pointer->Seek));
-        private Native.ReadRWOps ReadMethod => _read ?? (_read = Marshal.GetDelegateForFunctionPointer<Native.ReadRWOps>(Pointer->Read));
-        private Native.WriteRWOps WriteMethod => _write ?? (_write = Marshal.GetDelegateForFunctionPointer<Native.WriteRWOps>(Pointer->Write));
-        private Native.CloseRWOps CloseMethod => _close ?? (_close = Marshal.GetDelegateForFunctionPointer<Native.CloseRWOps>(Pointer->Close));
-
         /// <summary>
         /// Returns the size of the storage.
         /// </summary>
-        public long Size => SizeMethod(Pointer);
+        public long Size => Native.SDL_RWsize(Pointer);
 
         /// <summary>
         /// Creates a storage from a filename.
@@ -60,15 +48,10 @@ namespace SdlSharp
             var instance = PointerToInstanceNotNull(Native.SDL_AllocRW());
             var wrapper = new ReadOnlyByteArrayWrapper(array);
             instance.Pointer->Type = Native.SDL_RWOpsType.Unknown;
-            instance._size = wrapper.Size;
             instance.Pointer->Size = Marshal.GetFunctionPointerForDelegate<Native.SizeRWOps>(wrapper.Size);
-            instance._seek = wrapper.Seek;
             instance.Pointer->Seek = Marshal.GetFunctionPointerForDelegate<Native.SeekRWOps>(wrapper.Seek);
-            instance._read = wrapper.Read;
             instance.Pointer->Read = Marshal.GetFunctionPointerForDelegate<Native.ReadRWOps>(wrapper.Read);
-            instance._write = wrapper.Write;
             instance.Pointer->Write = Marshal.GetFunctionPointerForDelegate<Native.WriteRWOps>(wrapper.Write);
-            instance._close = wrapper.Close;
             instance.Pointer->Close = Marshal.GetFunctionPointerForDelegate<Native.CloseRWOps>(wrapper.Close);
             return instance;
         }
@@ -80,7 +63,7 @@ namespace SdlSharp
         /// <param name="type">The type of seek to perform.</param>
         /// <returns>The new location.</returns>
         public long Seek(long offset, SeekType type) =>
-            SeekMethod(Pointer, offset, type);
+            Native.SDL_RWseek(Pointer, offset, type);
 
         /// <summary>
         /// Reads a value from the storage.
@@ -90,7 +73,7 @@ namespace SdlSharp
         public T? Read<T>() where T : unmanaged
         {
             T value = default;
-            return ReadMethod(Pointer, &value, new UIntPtr((uint)sizeof(T)), new UIntPtr(1)) == UIntPtr.Zero ? (T?)null : value;
+            return Native.SDL_RWread(Pointer, &value, new UIntPtr((uint)sizeof(T)), new UIntPtr(1)) == UIntPtr.Zero ? (T?)null : value;
         }
 
         /// <summary>
@@ -99,12 +82,12 @@ namespace SdlSharp
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> if the value was written, <c>false</c> otherwise.</returns>
-        public bool Write<T>(T value) where T : unmanaged => WriteMethod(Pointer, &value, new UIntPtr((uint)sizeof(T)), new UIntPtr(1)) != UIntPtr.Zero;
+        public bool Write<T>(T value) where T : unmanaged => Native.SDL_RWwrite(Pointer, &value, new UIntPtr((uint)sizeof(T)), new UIntPtr(1)) != UIntPtr.Zero;
 
         /// <inheritdoc/>
         public override void Dispose()
         {
-            _ = Native.CheckError(CloseMethod(Pointer));
+            _ = Native.CheckError(Native.SDL_RWclose(Pointer));
             base.Dispose();
         }
 

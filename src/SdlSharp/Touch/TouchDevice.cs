@@ -26,6 +26,12 @@ namespace SdlSharp.Touch
             index => Finger.PointerToInstanceNotNull(Native.SDL_GetTouchFinger(Index, index)),
             () => Native.SDL_GetNumTouchFingers(Index)));
 
+
+        /// <summary>
+        /// The device type.
+        /// </summary>
+        public TouchDeviceType DeviceType => Native.SDL_GetTouchDeviceType(Index);
+
         /// <summary>
         /// An event fired when a finger is put down.
         /// </summary>
