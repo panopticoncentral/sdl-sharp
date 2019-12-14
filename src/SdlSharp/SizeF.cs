@@ -36,6 +36,6 @@ namespace SdlSharp
         /// <returns>The scaled size.</returns>
         public SizeF Scale(float scale) => new SizeF(Width * scale, Height * scale);
 
-        public static implicit operator SizeF((float Width, float Height) tuple) => new SizeF(tuple.Width, tuple.Height);
+        public static explicit operator SizeF((float Width, float Height) tuple) => new SizeF(tuple.Width, tuple.Height);
     }
 }

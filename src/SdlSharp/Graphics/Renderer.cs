@@ -399,7 +399,7 @@ namespace SdlSharp.Graphics
         /// <param name="texture">The texture.</param>
         /// <param name="source">The source rectangle.</param>
         /// <param name="destination">The destination rectangle.</param>
-        public void Copy(Texture texture, Rectangle? source = null, RectangleF? destination = null)
+        public void Copy(Texture texture, Rectangle? source, RectangleF? destination)
         {
             var sourcePointer = (Rectangle*)null;
             var destPointer = (RectangleF*)null;

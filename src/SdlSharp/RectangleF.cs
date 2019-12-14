@@ -30,7 +30,7 @@ namespace SdlSharp
             Size = size;
         }
 
-        public static implicit operator RectangleF((PointF location, SizeF size) tuple) => new RectangleF(tuple.location, tuple.size);
+        public static explicit operator RectangleF((PointF location, SizeF size) tuple) => new RectangleF(tuple.location, tuple.size);
 
         /// <summary>
         /// Whether the rectangle is empty.

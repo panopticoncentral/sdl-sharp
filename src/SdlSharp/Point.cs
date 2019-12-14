@@ -9,6 +9,11 @@ namespace SdlSharp
     public readonly struct Point
     {
         /// <summary>
+        /// A point representing the origin (0, 0).
+        /// </summary>
+        public static readonly Point Origin = (0, 0);
+
+        /// <summary>
         /// The X value of the point.
         /// </summary>
         public int X { get; }

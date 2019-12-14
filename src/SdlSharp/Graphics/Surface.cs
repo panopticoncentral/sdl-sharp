@@ -81,7 +81,7 @@ namespace SdlSharp.Graphics
                 _ = Native.CheckError(Native.SDL_GetColorKey(Pointer, out var key));
                 return key;
             }
-            set => _ = Native.CheckError(Native.SDL_SetColorKey(Pointer, value == null, value ?? (default)));
+            set => _ = Native.CheckError(Native.SDL_SetColorKey(Pointer, value != null, value ?? (default)));
         }
 
         /// <summary>

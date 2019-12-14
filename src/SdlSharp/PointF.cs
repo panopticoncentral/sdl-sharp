@@ -9,6 +9,11 @@ namespace SdlSharp
     public readonly struct PointF
     {
         /// <summary>
+        /// A point representing the origin (0, 0).
+        /// </summary>
+        public static readonly PointF Origin = (PointF)(0.0f, 0.0f);
+
+        /// <summary>
         /// The X value of the point.
         /// </summary>
         public float X { get; }
@@ -29,11 +34,11 @@ namespace SdlSharp
             Y = y;
         }
 
-        public static implicit operator PointF((float X, float Y) tuple) => new PointF(tuple.X, tuple.Y);
+        public static explicit operator PointF((float X, float Y) tuple) => new PointF(tuple.X, tuple.Y);
 
-        public static PointF operator +(PointF left, PointF right) => (left.X + right.X, left.Y + right.Y);
+        public static PointF operator +(PointF left, PointF right) => (PointF)(left.X + right.X, left.Y + right.Y);
 
-        public static PointF operator -(PointF left, PointF right) => (left.X - right.X, left.Y - right.Y);
+        public static PointF operator -(PointF left, PointF right) => (PointF)(left.X - right.X, left.Y - right.Y);
 
         /// <summary>
         /// Bounds a point to a given size.
@@ -63,7 +68,7 @@ namespace SdlSharp
                 newY = bound.Height - 1;
             }
 
-            return (newX, newY);
+            return (PointF)(newX, newY);
         }
     }
 }
