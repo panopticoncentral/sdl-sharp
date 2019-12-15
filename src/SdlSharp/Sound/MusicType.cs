@@ -34,7 +34,7 @@
         /// OGG
         /// </summary>
         Ogg,
-        
+
         /// <summary>
         /// MP3
         /// </summary>

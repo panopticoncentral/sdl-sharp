@@ -24,12 +24,12 @@
         /// MP3
         /// </summary>
         Mp3 = 0x8,
-        
+
         /// <summary>
         /// OGG
         /// </summary>
         Ogg = 0x10,
-        
+
         /// <summary>
         /// MID
         /// </summary>

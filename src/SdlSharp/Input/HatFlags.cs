@@ -27,7 +27,7 @@ namespace SdlSharp.Input
         /// Right and up.
         /// </summary>
         RightUp = Right | Up,
-        
+
         /// <summary>
         /// Down.
         /// </summary>

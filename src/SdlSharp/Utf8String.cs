@@ -55,7 +55,7 @@ namespace SdlSharp
                 var terminatedString = s + '\0';
                 var byteCount = Encoding.UTF8.GetByteCount(terminatedString);
 
-                pointer = (byte *)Native.SDL_malloc((UIntPtr)byteCount);
+                pointer = (byte*)Native.SDL_malloc((UIntPtr)byteCount);
 
                 fixed (char* terminatedStringBuffer = terminatedString)
                 {

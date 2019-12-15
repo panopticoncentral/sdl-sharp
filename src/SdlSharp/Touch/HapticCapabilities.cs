@@ -32,7 +32,7 @@ namespace SdlSharp.Touch
         /// Devices supports being paused.
         /// </summary>
         Pause = 1u << 15,
-        
+
         /// <summary>
         /// All capabilities.
         /// </summary>

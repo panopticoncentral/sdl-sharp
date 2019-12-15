@@ -9,7 +9,7 @@
         /// Invalid button.
         /// </summary>
         Invalid = -1,
-        
+
         /// <summary>
         /// A button.
         /// </summary>

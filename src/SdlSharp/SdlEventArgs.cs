@@ -17,7 +17,7 @@ namespace SdlSharp
             Timestamp = timestamp;
         }
 
-        internal SdlEventArgs(Native.SDL_CommonEvent e) : this (e.Timestamp)
+        internal SdlEventArgs(Native.SDL_CommonEvent e) : this(e.Timestamp)
         {
         }
     }

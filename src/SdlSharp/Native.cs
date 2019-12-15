@@ -768,7 +768,7 @@ namespace SdlSharp
             public readonly uint Timestamp { get; }
             public readonly uint Which { get; }
 
-            [field:MarshalAs(UnmanagedType.I1)]
+            [field: MarshalAs(UnmanagedType.I1)]
             public readonly bool IsCapture { get; }
 
             private readonly byte _padding1;
@@ -1164,7 +1164,7 @@ namespace SdlSharp
         public static extern SDL_GameControllerButtonBind SDL_GameControllerGetBindForButton(SDL_GameController* gamecontroller, GameControllerButton button);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        [return:MarshalAs(UnmanagedType.I1)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool SDL_GameControllerGetButton(SDL_GameController* gamecontroller, GameControllerButton button);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -2450,7 +2450,7 @@ namespace SdlSharp
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RenderFlush(SDL_Renderer* renderer);
-        
+
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GL_BindTexture(SDL_Texture* texture, out float texw, out float texh);
 
@@ -2628,10 +2628,10 @@ namespace SdlSharp
         public static extern SDL_SensorID SDL_SensorGetDeviceInstanceID(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Sensor *SDL_SensorOpen(int device_index);
+        public static extern SDL_Sensor* SDL_SensorOpen(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Sensor *SDL_SensorFromInstanceID(SDL_SensorID instance_id);
+        public static extern SDL_Sensor* SDL_SensorFromInstanceID(SDL_SensorID instance_id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern string SDL_SensorGetName(SDL_Sensor* sensor);

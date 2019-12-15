@@ -9,7 +9,7 @@
         /// Unknown.
         /// </summary>
         Unknown = -1,
-        
+
         /// <summary>
         /// Empty.
         /// </summary>

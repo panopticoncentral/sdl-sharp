@@ -51,7 +51,7 @@
         /// The font ascent.
         /// </summary>
         public int Ascent => Native.TTF_FontAscent(Pointer);
-        
+
         /// <summary>
         /// The font descent.
         /// </summary>

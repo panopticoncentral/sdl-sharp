@@ -84,7 +84,7 @@ namespace SdlSharp.Graphics
         /// High DPI is allowed on this window.
         /// </summary>
         AllowHighDpi = 0x00002000,
-        
+
         /// <summary>
         /// Window has captured the mouse.
         /// </summary>
