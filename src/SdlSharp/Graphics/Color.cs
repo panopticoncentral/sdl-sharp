@@ -14,7 +14,7 @@ namespace SdlSharp.Graphics
         public const byte AlphaOpaque = 255;
 
         /// <summary>
-        /// The transparent alpah value.
+        /// The transparent alpha value.
         /// </summary>
         public const byte AlphaTransparent = 0;
 

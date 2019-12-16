@@ -14,6 +14,43 @@
             Surface.PointerToInstanceNotNull(Native.IMG_Load(filename));
 
         /// <summary>
+        /// Loads an image from a file compatible with a target surface.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="targetSurface">The target surface.</param>
+        /// <returns>The image.</returns>
+        public static Surface Load(string filename, Surface targetSurface)
+        {
+            using var loadedSurface = Load(filename);
+            return loadedSurface.Convert(targetSurface.PixelFormat);
+        }
+
+        /// <summary>
+        /// Loads an image from a file into a texture.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="renderer">The renderer.</param>
+        /// <returns>The image.</returns>
+        public static Texture Load(string filename, Renderer renderer)
+        {
+            using var loadedSurface = Load(filename);
+            return renderer.CreateTexture(loadedSurface);
+        }
+
+        /// <summary>
+        /// Loads an image from a file into a texture.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="renderer">The renderer.</param>
+        /// <returns>The image.</returns>
+        public static Texture Load(string filename, Renderer renderer, Color colorKey)
+        {
+            using var loadedSurface = Load(filename);
+            loadedSurface.ColorKey = loadedSurface.PixelFormat.MapRgba(colorKey.Red, colorKey.Green, colorKey.Blue, colorKey.Alpha);
+            return renderer.CreateTexture(loadedSurface);
+        }
+
+        /// <summary>
         /// Loads an image from a storage.
         /// </summary>
         /// <param name="rwops">The storage.</param>

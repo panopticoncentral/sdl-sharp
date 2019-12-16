@@ -177,6 +177,18 @@ namespace SdlSharp.Graphics
             PointerToInstanceNotNull(Native.SDL_LoadBMP_RW(rwops.Pointer, shouldDispose));
 
         /// <summary>
+        /// Loads a BMP into a surface compatible with a target surface.
+        /// </summary>
+        /// <param name="filename">The file name.</param>
+        /// <param name="targetSurface">The target surface.</param>
+        /// <returns>The surface.</returns>
+        public static Surface LoadBmp(string filename, Surface targetSurface)
+        {
+            using var loadedSurface = LoadBmp(filename);
+            return loadedSurface.Convert(targetSurface.PixelFormat);
+        }
+
+        /// <summary>
         /// Sets the palette.
         /// </summary>
         /// <param name="palette">The palette.</param>
