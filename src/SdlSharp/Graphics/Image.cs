@@ -46,7 +46,7 @@
         public static Texture Load(string filename, Renderer renderer, Color colorKey)
         {
             using var loadedSurface = Load(filename);
-            loadedSurface.ColorKey = loadedSurface.PixelFormat.MapRgba(colorKey.Red, colorKey.Green, colorKey.Blue, colorKey.Alpha);
+            loadedSurface.ColorKey = loadedSurface.PixelFormat.Map(colorKey.Red, colorKey.Green, colorKey.Blue, colorKey.Alpha);
             return renderer.CreateTexture(loadedSurface);
         }
 

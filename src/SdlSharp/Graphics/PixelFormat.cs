@@ -26,7 +26,7 @@
         /// <param name="green">The green value.</param>
         /// <param name="blue">The blue value.</param>
         /// <returns>The pixel color.</returns>
-        public PixelColor MapRgb(byte red, byte green, byte blue) =>
+        public PixelColor Map(byte red, byte green, byte blue) =>
             Native.SDL_MapRGB(Pointer, red, green, blue);
 
         /// <summary>
@@ -37,8 +37,16 @@
         /// <param name="blue">The blue value.</param>
         /// <param name="alpha">The alpha value.</param>
         /// <returns>The pixel color.</returns>
-        public PixelColor MapRgba(byte red, byte green, byte blue, byte alpha) =>
+        public PixelColor Map(byte red, byte green, byte blue, byte alpha) =>
             Native.SDL_MapRGBA(Pointer, red, green, blue, alpha);
+
+        /// <summary>
+        /// Maps a color to a pixel color in this format.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>The pixel color.</returns>
+        public PixelColor Map(Color color) =>
+            Native.SDL_MapRGBA(Pointer, color.Red, color.Green, color.Blue, color.Alpha);
 
         /// <summary>
         /// Converts a pixel color to red, green, and blue values.
