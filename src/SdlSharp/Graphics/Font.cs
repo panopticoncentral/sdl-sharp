@@ -188,6 +188,19 @@
             Surface.PointerToInstanceNotNull(Native.TTF_RenderUNICODE_Solid(Pointer, s, foreground));
 
         /// <summary>
+        /// Renders a string in solid text.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="renderer">The renderer to use.</param>
+        /// <returns>The rendered texture.</returns>
+        public Texture RenderSolid(string s, Color foreground, Renderer renderer)
+        {
+            using var surface = Surface.PointerToInstanceNotNull(Native.TTF_RenderUNICODE_Solid(Pointer, s, foreground));
+            return renderer.CreateTexture(surface);
+        }
+
+        /// <summary>
         /// Renders a character in solid text.
         /// </summary>
         /// <param name="ch">The character.</param>
@@ -195,6 +208,19 @@
         /// <returns>The rendered surface.</returns>
         public Surface RenderSolid(char ch, Color foreground) =>
             Surface.PointerToInstanceNotNull(Native.TTF_RenderGlyph_Solid(Pointer, ch, foreground));
+
+        /// <summary>
+        /// Renders a character in solid text.
+        /// </summary>
+        /// <param name="ch">The character.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="renderer">The renderer to use.</param>
+        /// <returns>The rendered texture.</returns>
+        public Texture RenderSolid(char ch, Color foreground, Renderer renderer)
+        {
+            using var surface = Surface.PointerToInstanceNotNull(Native.TTF_RenderGlyph_Solid(Pointer, ch, foreground));
+            return renderer.CreateTexture(surface);
+        }
 
         /// <summary>
         /// Renders a string in shaded text.
@@ -207,6 +233,20 @@
             Surface.PointerToInstanceNotNull(Native.TTF_RenderUNICODE_Shaded(Pointer, s, foreground, background));
 
         /// <summary>
+        /// Renders a string in shaded text.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="renderer">The renderer to use.</param>
+        /// <returns>The rendered texture.</returns>
+        public Texture RenderShaded(string s, Color foreground, Color background, Renderer renderer)
+        {
+            using var surface = Surface.PointerToInstanceNotNull(Native.TTF_RenderUNICODE_Shaded(Pointer, s, foreground, background));
+            return renderer.CreateTexture(surface);
+        }
+
+        /// <summary>
         /// Renders a character in shaded text.
         /// </summary>
         /// <param name="ch">The character.</param>
@@ -217,6 +257,20 @@
             Surface.PointerToInstanceNotNull(Native.TTF_RenderGlyph_Shaded(Pointer, ch, foreground, background));
 
         /// <summary>
+        /// Renders a character in shaded text.
+        /// </summary>
+        /// <param name="ch">The character.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="renderer">The renderer to use.</param>
+        /// <returns>The rendered texture.</returns>
+        public Texture RenderShaded(char ch, Color foreground, Color background, Renderer renderer)
+        {
+            using var surface = Surface.PointerToInstanceNotNull(Native.TTF_RenderGlyph_Shaded(Pointer, ch, foreground, background));
+            return renderer.CreateTexture(surface);
+        }
+
+        /// <summary>
         /// Renders a string in blended text.
         /// </summary>
         /// <param name="s">The string.</param>
@@ -224,6 +278,19 @@
         /// <returns>The rendered surface.</returns>
         public Surface RenderBlended(string s, Color foreground) =>
             Surface.PointerToInstanceNotNull(Native.TTF_RenderUNICODE_Blended(Pointer, s, foreground));
+
+        /// <summary>
+        /// Renders a string in blended text.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="renderer">The renderer to use.</param>
+        /// <returns>The rendered texture.</returns>
+        public Texture RenderBlended(string s, Color foreground, Renderer renderer)
+        {
+            using var surface = Surface.PointerToInstanceNotNull(Native.TTF_RenderUNICODE_Blended(Pointer, s, foreground));
+            return renderer.CreateTexture(surface);
+        }
 
         /// <summary>
         /// Renders a string in blended text with wrap.
@@ -236,6 +303,20 @@
             Surface.PointerToInstanceNotNull(Native.TTF_RenderUNICODE_Blended_Wrapped(Pointer, s, foreground, wrapLength));
 
         /// <summary>
+        /// Renders a string in blended text with wrap.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="wrapLength">The wrap length.</param>
+        /// <param name="renderer">The renderer to use.</param>
+        /// <returns>The rendered texture.</returns>
+        public Texture RenderBlended(string s, Color foreground, uint wrapLength, Renderer renderer)
+        {
+            using var surface = Surface.PointerToInstanceNotNull(Native.TTF_RenderUNICODE_Blended_Wrapped(Pointer, s, foreground, wrapLength));
+            return renderer.CreateTexture(surface);
+        }
+
+        /// <summary>
         /// Renders a character in blended text.
         /// </summary>
         /// <param name="ch">The character.</param>
@@ -243,6 +324,19 @@
         /// <returns>The rendered surface.</returns>
         public Surface RenderBlended(char ch, Color foreground) =>
             Surface.PointerToInstanceNotNull(Native.TTF_RenderGlyph_Blended(Pointer, ch, foreground));
+
+        /// <summary>
+        /// Renders a character in blended text.
+        /// </summary>
+        /// <param name="ch">The character.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="renderer">The renderer to use.</param>
+        /// <returns>The rendered texture.</returns>
+        public Texture RenderBlended(char ch, Color foreground, Renderer renderer)
+        {
+            using var surface = Surface.PointerToInstanceNotNull(Native.TTF_RenderGlyph_Blended(Pointer, ch, foreground));
+            return renderer.CreateTexture(surface);
+        }
 
         /// <summary>
         /// Gets the kerning size for a character.
