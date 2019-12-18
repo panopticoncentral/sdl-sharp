@@ -30,23 +30,15 @@
         /// </summary>
         /// <param name="filename">The filename.</param>
         /// <param name="renderer">The renderer.</param>
+        /// <param name="colorKey">The color key for the image.</param>
         /// <returns>The image.</returns>
-        public static Texture Load(string filename, Renderer renderer)
+        public static Texture Load(string filename, Renderer renderer, Color? colorKey = default)
         {
             using var loadedSurface = Load(filename);
-            return renderer.CreateTexture(loadedSurface);
-        }
-
-        /// <summary>
-        /// Loads an image from a file into a texture.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <param name="renderer">The renderer.</param>
-        /// <returns>The image.</returns>
-        public static Texture Load(string filename, Renderer renderer, Color colorKey)
-        {
-            using var loadedSurface = Load(filename);
-            loadedSurface.ColorKey = loadedSurface.PixelFormat.Map(colorKey.Red, colorKey.Green, colorKey.Blue, colorKey.Alpha);
+            if (colorKey != null)
+            {
+                loadedSurface.ColorKey = loadedSurface.PixelFormat.Map(colorKey.Value.Red, colorKey.Value.Green, colorKey.Value.Blue, colorKey.Value.Alpha);
+            }
             return renderer.CreateTexture(loadedSurface);
         }
 
@@ -59,6 +51,25 @@
         /// <returns>The image.</returns>
         public static Surface Load(RWOps rwops, bool shouldDispose, string type) =>
             Surface.PointerToInstanceNotNull(Native.IMG_LoadTyped_RW(rwops.Pointer, shouldDispose, type));
+
+        /// <summary>
+        /// Loads an image from a storage into a texture.
+        /// </summary>
+        /// <param name="rwops">The storage.</param>
+        /// <param name="shouldDispose">Whether the storage should be disposed when loading is finished.</param>
+        /// <param name="type">The type of the image.</param>
+        /// <param name="renderer">The renderer.</param>
+        /// <param name="colorKey">The color key for the image.</param>
+        /// <returns>The image.</returns>
+        public static Texture Load(RWOps rwops, bool shouldDispose, string type, Renderer renderer, Color? colorKey = default)
+        {
+            using var loadedSurface = Load(rwops, shouldDispose, type);
+            if (colorKey != null)
+            {
+                loadedSurface.ColorKey = loadedSurface.PixelFormat.Map(colorKey.Value.Red, colorKey.Value.Green, colorKey.Value.Blue, colorKey.Value.Alpha);
+            }
+            return renderer.CreateTexture(loadedSurface);
+        }
 
         /// <summary>
         /// Loads an image from a storage.

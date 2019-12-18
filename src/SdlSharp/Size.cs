@@ -38,5 +38,7 @@ namespace SdlSharp
         public static Size operator *(Size left, int scale) => (left.Width * scale, left.Height * scale);
 
         public static Size operator *(Size left, float scale) => ((int)(left.Width * scale), (int)(left.Height * scale));
+
+        public static Size operator *(Size left, Size right) => (left.Width * right.Width, left.Height * right.Height);
     }
 }
