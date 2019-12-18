@@ -29,13 +29,14 @@ namespace SdlSharp
             Height = height;
         }
 
-        /// <summary>
-        /// Scales a size by a factor.
-        /// </summary>
-        /// <param name="scale">The scaling factor.</param>
-        /// <returns>The scaled size.</returns>
-        public Size Scale(float scale) => new Size((int)(Width * scale), (int)(Height * scale));
-
         public static implicit operator Size((int Width, int Height) tuple) => new Size(tuple.Width, tuple.Height);
+
+        public static Size operator +(Size left, Size right) => (left.Width + right.Width, left.Height + right.Height);
+
+        public static Size operator -(Size left, Size right) => (left.Width - right.Width, left.Height - right.Height);
+
+        public static Size operator *(Size left, int scale) => (left.Width * scale, left.Height * scale);
+
+        public static Size operator *(Size left, float scale) => ((int)(left.Width * scale), (int)(left.Height * scale));
     }
 }

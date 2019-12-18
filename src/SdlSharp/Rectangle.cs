@@ -86,6 +86,15 @@ namespace SdlSharp
             && point.Y >= Location.Y && point.Y < Location.Y + Size.Height;
 
         /// <summary>
+        /// Returns whether this rectangle contains another rectangle.
+        /// </summary>
+        /// <param name="other">The other rectangle.</param>
+        /// <returns>true if it does, false otherwise.</returns>
+        public bool Contains(Rectangle other) =>
+            other.Location.X >= Location.X && (other.Location.X + other.Size.Width) <= (Location.X + Size.Width)
+            && other.Location.Y >= Location.Y && (other.Location.Y + other.Size.Height) <= (Location.Y + Size.Height);
+
+        /// <summary>
         /// Determines if there is an intersection between a line and the rectangle.
         /// </summary>
         /// <param name="start">The start of the line.</param>
