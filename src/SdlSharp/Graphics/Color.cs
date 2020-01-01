@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace SdlSharp.Graphics
 {
@@ -6,7 +7,7 @@ namespace SdlSharp.Graphics
     /// A color.
     /// </summary>
     [DebuggerDisplay("({Red}, {Green}, {Blue}, {Alpha})")]
-    public readonly struct Color
+    public readonly struct Color : IEquatable<Color>
     {
         /// <summary>
         /// The opaque alpha value.
@@ -56,5 +57,15 @@ namespace SdlSharp.Graphics
         public static implicit operator Color((byte Red, byte Green, byte Blue) tuple) => new Color(tuple.Red, tuple.Green, tuple.Blue);
 
         public static implicit operator Color((byte Red, byte Green, byte Blue, byte Alpha) tuple) => new Color(tuple.Red, tuple.Green, tuple.Blue, tuple.Alpha);
+
+        public static bool operator ==(Color left, Color right) => left.Equals(right);
+
+        public static bool operator !=(Color left, Color right) => !left.Equals(right);
+
+        public bool Equals(Color other) => Red == other.Red && Green == other.Green && Blue == other.Blue;
+
+        public override bool Equals(object obj) => obj is Color other && Equals(other);
+
+        public override int GetHashCode() => HashCode.Combine(Red, Green, Blue);
     }
 }
