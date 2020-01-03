@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace SdlSharp
 {
@@ -6,7 +7,7 @@ namespace SdlSharp
     /// A point.
     /// </summary>
     [DebuggerDisplay("({X}, {Y})")]
-    public readonly struct Point
+    public readonly struct Point : IEquatable<Point>
     {
         /// <summary>
         /// A point representing the origin (0, 0).
@@ -70,5 +71,16 @@ namespace SdlSharp
 
             return (newX, newY);
         }
+
+        /// <inheritdoc/>
+        public bool Equals(Point other) => other.X == X && other.Y == Y;
+
+        public override bool Equals(object obj) => obj is Point other && Equals(other);
+
+        public override int GetHashCode() => HashCode.Combine(X, Y);
+
+        public static bool operator ==(Point left, Point right) => left.Equals(right);
+
+        public static bool operator !=(Point left, Point right) => !left.Equals(right);
     }
 }
