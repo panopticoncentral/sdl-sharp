@@ -95,6 +95,13 @@ namespace SdlSharp
             && other.Location.Y >= Location.Y && (other.Location.Y + other.Size.Height) <= (Location.Y + Size.Height);
 
         /// <summary>
+        /// Returns the center of the rectangle.
+        /// </summary>
+        /// <returns>The center point.</returns>
+        public Point Center() =>
+            (Location.X + (Size.Width / 2), Location.Y + (Size.Height / 2));
+
+        /// <summary>
         /// Determines if there is an intersection between a line and the rectangle.
         /// </summary>
         /// <param name="start">The start of the line.</param>
