@@ -30,6 +30,16 @@ namespace SdlSharp
             Size = size;
         }
 
+        /// <summary>
+        /// Constructs a new rectangle with an origin location.
+        /// </summary>
+        /// <param name="size">The size of the rectangle.</param>
+        public Rectangle(Size size)
+        {
+            Location = Point.Origin;
+            Size = size;
+        }
+
         public static implicit operator Rectangle((Point location, Size size) tuple) => new Rectangle(tuple.location, tuple.size);
 
         /// <summary>
