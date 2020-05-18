@@ -20,21 +20,21 @@ namespace SdlSharp.Sound
         /// <summary>
         /// The audio drivers on the system.
         /// </summary>
-        public static IReadOnlyList<string> Drivers => s_drivers ?? (s_drivers = new ItemCollection<string>(Native.SDL_GetAudioDriver, Native.SDL_GetNumAudioDrivers));
+        public static IReadOnlyList<string> Drivers => s_drivers ??= new ItemCollection<string>(Native.SDL_GetAudioDriver, Native.SDL_GetNumAudioDrivers);
 
         /// <summary>
         /// The capture devices supported by the current driver.
         /// </summary>
-        public static IReadOnlyList<string> CaptureDevices => s_captureDevices ?? (s_captureDevices = new ItemCollection<string>(
+        public static IReadOnlyList<string> CaptureDevices => s_captureDevices ??= new ItemCollection<string>(
             index => Native.CheckNotNull(Native.SDL_GetAudioDeviceName(index, true).ToString()),
-            () => Native.SDL_GetNumAudioDevices(true)));
+            () => Native.SDL_GetNumAudioDevices(true));
 
         /// <summary>
         /// The non-capture devices supported by the current drive.
         /// </summary>
-        public static IReadOnlyList<string> NonCaptureDevices => s_nonCaptureDevices ?? (s_nonCaptureDevices = new ItemCollection<string>(
+        public static IReadOnlyList<string> NonCaptureDevices => s_nonCaptureDevices ??= new ItemCollection<string>(
             index => Native.CheckNotNull(Native.SDL_GetAudioDeviceName(index, false).ToString()),
-            () => Native.SDL_GetNumAudioDevices(false)));
+            () => Native.SDL_GetNumAudioDevices(false));
 
         /// <summary>
         /// The current audio driver in use.

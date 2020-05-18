@@ -30,6 +30,9 @@ namespace SdlSharp.Graphics
         public static readonly EnumeratedPixelFormat Rgb444 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Xrgb, (uint)Native.SDL_PackedLayout.Layout4444, 12, 2);
 
+        public static readonly EnumeratedPixelFormat Bgr444 =
+            new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Xbgr, (uint)Native.SDL_PackedLayout.Layout4444, 12, 2);
+
         public static readonly EnumeratedPixelFormat Rgb555 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Xrgb, (uint)Native.SDL_PackedLayout.Layout1555, 15, 2);
 

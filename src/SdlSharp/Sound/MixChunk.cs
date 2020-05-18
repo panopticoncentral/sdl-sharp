@@ -12,9 +12,9 @@ namespace SdlSharp.Sound
         /// <summary>
         /// The decoders for samples.
         /// </summary>
-        public static IReadOnlyList<string> Decoders => s_decoders ?? (s_decoders = new ItemCollection<string>(
+        public static IReadOnlyList<string> Decoders => s_decoders ??= new ItemCollection<string>(
             index => Native.CheckNotNull(Native.Mix_GetChunkDecoder(index)),
-            Native.Mix_GetNumChunkDecoders));
+            Native.Mix_GetNumChunkDecoders);
 
         /// <inheritdoc/>
         public override void Dispose()

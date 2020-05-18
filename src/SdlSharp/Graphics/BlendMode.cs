@@ -29,6 +29,11 @@ namespace SdlSharp.Graphics
         public static readonly BlendMode Mod = new BlendMode(0x00000004);
 
         /// <summary>
+        /// Color multiple blending.
+        /// </summary>
+        public static readonly BlendMode Mul = new BlendMode(0x00000008);
+
+        /// <summary>
         /// Invalid blend mode.
         /// </summary>
         public static readonly BlendMode Invalid = new BlendMode(0x7FFFFFFF);

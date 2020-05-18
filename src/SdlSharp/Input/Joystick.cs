@@ -13,7 +13,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// The joysticks in the system.
         /// </summary>
-        public static IReadOnlyList<JoystickInfo> Infos => s_infos ?? (s_infos = new ItemCollection<JoystickInfo>(JoystickInfo.Get, Native.SDL_NumJoysticks));
+        public static IReadOnlyList<JoystickInfo> Infos => s_infos ??= new ItemCollection<JoystickInfo>(JoystickInfo.Get, Native.SDL_NumJoysticks);
 
         /// <summary>
         /// The name of the joystick, if any.
@@ -23,7 +23,11 @@ namespace SdlSharp.Input
         /// <summary>
         /// The player index assigned to this joystick.
         /// </summary>
-        public int PlayerIndex => Native.SDL_JoystickGetPlayerIndex(Pointer);
+        public int PlayerIndex
+        {
+            get => Native.SDL_JoystickGetPlayerIndex(Pointer);
+            set => Native.SDL_JoystickSetPlayerIndex(Pointer, value);
+        }
 
         /// <summary>
         /// The GUID of this joystick.
@@ -129,6 +133,14 @@ namespace SdlSharp.Input
 
         internal static Joystick Get(Native.SDL_JoystickID instanceId) =>
             PointerToInstanceNotNull(Native.SDL_JoystickFromInstanceID(instanceId));
+
+        /// <summary>
+        /// Gets the joystick that corresponds to the player index.
+        /// </summary>
+        /// <param name="playerIndex">The player index.</param>
+        /// <returns>The joystick that corresponds to the player index.</returns>
+        public static Joystick Get(int playerIndex) =>
+            PointerToInstanceNotNull(Native.SDL_JoystickFromPlayerIndex(playerIndex));
 
         /// <summary>
         /// Locks the joysticks.

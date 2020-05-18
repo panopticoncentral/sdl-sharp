@@ -1,10 +1,14 @@
-﻿namespace SdlSharp.Touch
+﻿using SdlSharp.Graphics;
+
+namespace SdlSharp.Touch
 {
     /// <summary>
     /// Event arguments for a finger touch event.
     /// </summary>
     public sealed class TouchFingerEventArgs : SdlEventArgs
     {
+        private readonly uint _windowId;
+
         /// <summary>
         /// The finger.
         /// </summary>
@@ -35,6 +39,11 @@
         /// </summary>
         public float Pressure { get; }
 
+        /// <summary>
+        /// The window that had focus, if any.
+        /// </summary>
+        public Window Window => Window.Get(_windowId);
+
         internal TouchFingerEventArgs(Native.SDL_TouchFingerEvent touchFinger, Finger finger) : base(touchFinger.Timestamp)
         {
             Finger = finger;
@@ -43,6 +52,7 @@
             Dx = touchFinger.Dx;
             Dy = touchFinger.Dy;
             Pressure = touchFinger.Pressure;
+            _windowId = touchFinger.WindowId;
         }
     }
 }

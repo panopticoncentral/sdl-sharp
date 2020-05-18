@@ -12,9 +12,9 @@ namespace SdlSharp.Sound
         /// <summary>
         /// The decoders for music.
         /// </summary>
-        public static IReadOnlyList<string> Decoders => s_decoders ?? (s_decoders = new ItemCollection<string>(
+        public static IReadOnlyList<string> Decoders => s_decoders ??= new ItemCollection<string>(
             index => Native.CheckNotNull(Native.Mix_GetMusicDecoder(index)),
-            Native.Mix_GetNumMusicDecoders));
+            Native.Mix_GetNumMusicDecoders);
 
         /// <summary>
         /// The type of the music.

@@ -18,6 +18,16 @@
         /// <summary>
         /// Information message box.
         /// </summary>
-        Information = 0x00000040
+        Information = 0x00000040,
+
+        /// <summary>
+        /// Buttons placed left to right.
+        /// </summary>
+        ButtonsLeftToRight = 0x00000080,
+
+        /// <summary>
+        /// Buttons placed right to left.
+        /// </summary>
+        ButtonsRightToLeft = 0x00000100,
     }
 }

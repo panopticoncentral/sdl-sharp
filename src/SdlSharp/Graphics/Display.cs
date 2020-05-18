@@ -15,7 +15,7 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The displays in the system.
         /// </summary>
-        public static IReadOnlyList<Display> Displays => s_displays ?? (s_displays = new ItemCollection<Display>(IndexToInstance, Native.SDL_GetNumVideoDisplays));
+        public static IReadOnlyList<Display> Displays => s_displays ??= new ItemCollection<Display>(IndexToInstance, Native.SDL_GetNumVideoDisplays);
 
         /// <summary>
         /// The display name, if any.
@@ -66,13 +66,13 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The display's supported modes.
         /// </summary>
-        public IReadOnlyList<DisplayMode> DisplayModes => _displayModes ?? (_displayModes = new ItemCollection<DisplayMode>(
+        public IReadOnlyList<DisplayMode> DisplayModes => _displayModes ??= new ItemCollection<DisplayMode>(
             index =>
             {
                 _ = Native.CheckError(Native.SDL_GetDisplayMode(Index, index, out var mode));
                 return mode;
             },
-            () => Native.SDL_GetNumDisplayModes(Index)));
+            () => Native.SDL_GetNumDisplayModes(Index));
 
         /// <summary>
         /// The display's desktop display mode.

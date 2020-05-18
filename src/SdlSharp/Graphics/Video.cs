@@ -12,9 +12,9 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The video drivers in the system.
         /// </summary>
-        public static IReadOnlyList<string> Drivers => s_drivers ?? (s_drivers = new ItemCollection<string>(
+        public static IReadOnlyList<string> Drivers => s_drivers ??= new ItemCollection<string>(
             Native.SDL_GetVideoDriver,
-            Native.SDL_GetNumVideoDrivers));
+            Native.SDL_GetNumVideoDrivers);
 
         /// <summary>
         /// The current driver.

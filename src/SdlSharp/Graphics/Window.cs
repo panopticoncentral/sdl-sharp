@@ -59,7 +59,7 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// User defined window data.
         /// </summary>
-        public WindowData Data => _data ?? (_data = new WindowData(this));
+        public WindowData Data => _data ??= new WindowData(this);
 
         /// <summary>
         /// The display this window is on.

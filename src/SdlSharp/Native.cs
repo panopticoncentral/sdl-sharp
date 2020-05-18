@@ -87,25 +87,13 @@ namespace SdlSharp
         /// <returns></returns>
         public static Span<T> PixelsToSpan<T>(void* pixels, int pitch, int height)
         {
-            int bytesPerPixel;
-
-            if (typeof(T) == typeof(byte))
-            {
-                bytesPerPixel = 1;
-            }
-            else if (typeof(T) == typeof(ushort))
-            {
-                bytesPerPixel = 2;
-            }
-            else if (typeof(T) == typeof(uint))
-            {
-                bytesPerPixel = 4;
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-
+            var bytesPerPixel = typeof(T) == typeof(byte)
+                ? 1
+                : typeof(T) == typeof(ushort) 
+                    ? 2 
+                    : typeof(T) == typeof(uint) 
+                        ? 4 
+                        : throw new InvalidOperationException();
             return new Span<T>(pixels, pitch / bytesPerPixel * height);
         }
 
@@ -423,6 +411,9 @@ namespace SdlSharp
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_HasAVX512F();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_HasARMSIMD();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_HasNEON();
@@ -787,6 +778,7 @@ namespace SdlSharp
             public readonly float Dx { get; }
             public readonly float Dy { get; }
             public readonly float Pressure { get; }
+            public readonly uint WindowId { get; }
         }
 
         public struct SDL_MultiGestureEvent
@@ -1102,6 +1094,9 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern string SDL_GameControllerNameForIndex(int joystick_index);
 
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern GameControllerType SDL_GameControllerTypeForIndex(int joystick_index);
+
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern DisposableAnsiString SDL_GameControllerMappingForDeviceIndex(int joystick_index);
 
@@ -1111,11 +1106,20 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_GameController* SDL_GameControllerFromInstanceID(SDL_JoystickID joyid);
 
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_GameController* SDL_GameControllerFromPlayerIndex(int player_index);
+
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern string? SDL_GameControllerName(SDL_GameController* gamecontroller);
 
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern GameControllerType SDL_GameControllerGetType(SDL_GameController* gamecontroller);
+
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GameControllerGetPlayerIndex(SDL_GameController* gamecontroller);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_GameControllerSetPlayerIndex(SDL_GameController* gamecontroller, int player_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern ushort SDL_GameControllerGetVendor(SDL_GameController* gamecontroller);
@@ -1681,13 +1685,19 @@ namespace SdlSharp
         public static extern SDL_Joystick* SDL_JoystickOpen(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Joystick* SDL_JoystickFromInstanceID(SDL_JoystickID joyid);
+        public static extern SDL_Joystick* SDL_JoystickFromInstanceID(SDL_JoystickID instance_id);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Joystick* SDL_JoystickFromPlayerIndex(int player_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public static extern string? SDL_JoystickName(SDL_Joystick* joystick);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_JoystickGetPlayerIndex(SDL_Joystick* joystick);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_JoystickSetPlayerIndex(SDL_Joystick* joystick, int player_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern Guid SDL_JoystickGetGUID(SDL_Joystick* joystick);
@@ -1947,6 +1957,8 @@ namespace SdlSharp
         public static extern int SDL_ShowSimpleMessageBox(MessageBoxFlags flags, Utf8String title, Utf8String message, SDL_Window* window);
 
         #endregion
+
+        // SDL_metal.h -- macOS/iOS specific window routines
 
         #region SDL_mouse.h
 
@@ -2244,6 +2256,7 @@ namespace SdlSharp
 
         // SDL_RendererFlags is covered by RendererFlags.cs
         // SDL_RendererInfo is covered by RendererInfo.cs
+        // SDL_ScaleMode is covered by ScaleMode.cs
         // SDL_TextureAccess is covered by TextureAccess.cs
         // SDL_TextureModulate is not used anywhere
         // SDL_RendererFlip is covered by RendererFlip.cs
@@ -2308,6 +2321,12 @@ namespace SdlSharp
         public static extern int SDL_GetTextureBlendMode(SDL_Texture* texture, out BlendMode blendMode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_SetTextureScaleMode(SDL_Texture* texture, ScaleMode scaleMode);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GetTextureScaleMode(SDL_Texture* texture, out ScaleMode scaleMode);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_UpdateTexture(SDL_Texture* texture, Rectangle* rect, byte* pixels, int pitch);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -2315,6 +2334,9 @@ namespace SdlSharp
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_LockTexture(SDL_Texture* texture, Rectangle* rect, out byte* pixels, out int pitch);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_LockTextureToSurface(SDL_Texture* texture, Rectangle* rect, out SDL_Surface *surface);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_UnlockTexture(SDL_Texture* texture);
@@ -2888,7 +2910,8 @@ namespace SdlSharp
             WinRT,
             Android,
             Vivante,
-            OS2
+            OS2,
+            Haiku
         }
 
         // SDL_SysWMmsg for Windows is covered by SystemWindowMessage.cs
@@ -3014,7 +3037,7 @@ namespace SdlSharp
 
         #region SDL_version.h
 
-        public static Version IntegratedSdl2Version = new Version(2, 0, 10);
+        public static Version IntegratedSdl2Version = new Version(2, 0, 12);
 
         public static int SDL_VersionNumber(Version version) =>
             (version.Major * 1000) + (version.Minor * 100) + version.Patch;

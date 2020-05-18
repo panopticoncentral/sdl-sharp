@@ -15,16 +15,16 @@ namespace SdlSharp.Touch
         /// <summary>
         /// The touch devices in the system.
         /// </summary>
-        public static IReadOnlyList<TouchDevice> Devices => s_devices ?? (s_devices = new ItemCollection<TouchDevice>(
+        public static IReadOnlyList<TouchDevice> Devices => s_devices ??= new ItemCollection<TouchDevice>(
             index => IndexToInstance(Native.SDL_GetTouchDevice(index)),
-            Native.SDL_GetNumTouchDevices));
+            Native.SDL_GetNumTouchDevices);
 
         /// <summary>
         /// The active fingers on the device.
         /// </summary>
-        public IReadOnlyList<Finger> Fingers => _fingers ?? (_fingers = new ItemCollection<Finger>(
+        public IReadOnlyList<Finger> Fingers => _fingers ??= new ItemCollection<Finger>(
             index => Finger.PointerToInstanceNotNull(Native.SDL_GetTouchFinger(Index, index)),
-            () => Native.SDL_GetNumTouchFingers(Index)));
+            () => Native.SDL_GetNumTouchFingers(Index));
 
 
         /// <summary>

@@ -76,6 +76,11 @@
         public static bool HasAvx512F => Native.SDL_HasAVX512F();
 
         /// <summary>
+        /// Whether the CPU supports ARM SIMD (ARMv6).
+        /// </summary>
+        public static bool HasARMSIMD => Native.SDL_HasARMSIMD();
+
+        /// <summary>
         /// Whether the CPU supports NEON.
         /// </summary>
         public static bool HasNeon => Native.SDL_HasNEON();

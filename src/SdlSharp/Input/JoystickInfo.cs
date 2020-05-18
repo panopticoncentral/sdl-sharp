@@ -53,6 +53,11 @@ namespace SdlSharp.Input
         public string GameControllerName => Native.SDL_GameControllerNameForIndex(Index);
 
         /// <summary>
+        /// The type of the game controller.
+        /// </summary>
+        public GameControllerType GameControllerType => Native.SDL_GameControllerTypeForIndex(Index);
+
+        /// <summary>
         /// The mapping for the game controller.
         /// </summary>
         public string? GameControllerMapping

@@ -83,6 +83,20 @@ namespace SdlSharp.Graphics
             set => Native.CheckError(Native.SDL_SetTextureBlendMode(Pointer, value));
         }
 
+        /// <summary>
+        /// The scale mode.
+        /// </summary>
+        public ScaleMode ScaleMode
+        {
+            get
+            {
+                _ = Native.CheckError(Native.SDL_GetTextureScaleMode(Pointer, out var mode));
+                return mode;
+            }
+
+            set => Native.CheckError(Native.SDL_SetTextureScaleMode(Pointer, value));
+        }
+
         /// <inheritdoc/>
         public override void Dispose()
         {
@@ -171,6 +185,26 @@ namespace SdlSharp.Graphics
 
             _ = Native.CheckError(Native.SDL_LockTexture(Pointer, rectPointer, out var pixelsPointer, out var pitch));
             return Native.PixelsToSpan<T>(pixelsPointer, pitch, height);
+        }
+
+        /// <summary>
+        /// Locks the texture for writing.
+        /// </summary>
+        /// <param name="rectangle">The area to lock.</param>
+        /// <returns>A surface representing the pixels.</returns>
+        public Surface Lock(Rectangle? rectangle)
+        {
+            var rectPointer = (Rectangle*)null;
+            Rectangle rect;
+
+            if (rectangle.HasValue)
+            {
+                rect = rectangle.Value;
+                rectPointer = &rect;
+            }
+
+            _ = Native.CheckError(Native.SDL_LockTextureToSurface(Pointer, rectPointer, out var surfacePointer));
+            return Surface.PointerToInstanceNotNull(surfacePointer);
         }
 
         /// <summary>

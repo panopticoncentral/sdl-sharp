@@ -18,9 +18,9 @@ namespace SdlSharp
         /// <summary>
         /// The current haptic effects.
         /// </summary>
-        public static IReadOnlyCollection<HapticInfo> Haptics => s_hapticInfos ?? (s_hapticInfos = new ItemCollection<HapticInfo>(
+        public static IReadOnlyCollection<HapticInfo> Haptics => s_hapticInfos ??= new ItemCollection<HapticInfo>(
             index => Native.CheckNotNull(HapticInfo.IndexToInstance(index)),
-            Native.SDL_NumHaptics));
+            Native.SDL_NumHaptics);
 
         /// <summary>
         /// Information about this effect.

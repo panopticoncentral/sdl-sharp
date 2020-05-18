@@ -10,7 +10,7 @@ namespace SdlSharp.Sound
     {
         private List<Native.SDL_AudioCallback>? _callbacks;
 
-        private List<Native.SDL_AudioCallback> Callbacks => _callbacks ?? (_callbacks = new List<Native.SDL_AudioCallback>());
+        private List<Native.SDL_AudioCallback> Callbacks => _callbacks ??= new List<Native.SDL_AudioCallback>();
 
         internal void AddAudioCallback(Native.SDL_AudioCallback? callback)
         {

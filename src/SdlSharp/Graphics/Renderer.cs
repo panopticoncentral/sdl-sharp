@@ -13,13 +13,13 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The renderer drivers available.
         /// </summary>
-        public static IReadOnlyList<RendererInfo> RenderDrivers = s_renderDrivers ?? (s_renderDrivers = new ItemCollection<RendererInfo>(
+        public static IReadOnlyList<RendererInfo> RenderDrivers = s_renderDrivers ??= new ItemCollection<RendererInfo>(
             index =>
             {
                 _ = Native.CheckError(Native.SDL_GetRenderDriverInfo(index, out var info));
                 return info;
             },
-            Native.SDL_GetNumRenderDrivers));
+            Native.SDL_GetNumRenderDrivers);
 
         /// <summary>
         /// Information about this renderer.

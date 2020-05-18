@@ -31,8 +31,11 @@ namespace SdlSharp.Input
         /// <summary>
         /// The player index assigned to the controller.
         /// </summary>
-        public int PlayerIndex =>
-            Native.SDL_GameControllerGetPlayerIndex(Pointer);
+        public int PlayerIndex
+        {
+            get => Native.SDL_GameControllerGetPlayerIndex(Pointer);
+            set => Native.SDL_GameControllerSetPlayerIndex(Pointer, value);
+        }
 
         /// <summary>
         /// The vendor code of the game controller
@@ -63,6 +66,12 @@ namespace SdlSharp.Input
         /// </summary>
         public Joystick Joystick =>
             Joystick.PointerToInstanceNotNull(Native.SDL_GameControllerGetJoystick(Pointer));
+
+        /// <summary>
+        /// Gets the type of the game controller.
+        /// </summary>
+        public GameControllerType Type =>
+            Native.SDL_GameControllerGetType(Pointer);
 
         /// <summary>
         /// An event fired when a game controller is added to the system.
@@ -96,6 +105,14 @@ namespace SdlSharp.Input
 
         internal static GameController? Get(Native.SDL_JoystickID joystickId) =>
             PointerToInstance(Native.SDL_GameControllerFromInstanceID(joystickId));
+
+        /// <summary>
+        /// Gets the game controller corresponding to the player index.
+        /// </summary>
+        /// <param name="playerIndex">The index of the player.</param>
+        /// <returns>The game controller corresponding to the player.</returns>
+        public static GameController? Get(int playerIndex) =>
+            PointerToInstance(Native.SDL_GameControllerFromPlayerIndex(playerIndex));
 
         /// <inheritdoc/>
         public override void Dispose()

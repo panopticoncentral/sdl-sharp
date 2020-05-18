@@ -17,11 +17,14 @@ namespace SdlSharp
         public static readonly Hint RenderScaleQuality = new Hint("SDL_RENDER_SCALE_QUALITY");
         public static readonly Hint RenderVsync = new Hint("SDL_RENDER_VSYNC");
         public static readonly Hint VideoAllowScreensaver = new Hint("SDL_VIDEO_ALLOW_SCREENSAVER");
+        public static readonly Hint VideoExternalContext = new Hint("SDL_VIDEO_EXTERNAL_CONTEXT");
         public static readonly Hint VideoX11XVidMode = new Hint("SDL_VIDEO_X11_XVIDMODE");
         public static readonly Hint VideoX11Xinerama = new Hint("SDL_VIDEO_X11_XINERAMA");
         public static readonly Hint VideoX11XrandR = new Hint("SDL_VIDEO_X11_XRANDR");
+        public static readonly Hint VideoX11WindowVisualId = new Hint("SDL_VIDEO_X11_WINDOW_VISUALID");
         public static readonly Hint VideoX11NetWmPing = new Hint("SDL_VIDEO_X11_NET_WM_PING");
         public static readonly Hint VideoX11NetWmBypassCompositor = new Hint("SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR");
+        public static readonly Hint VideoX11ForceEgl = new Hint("SDL_VIDEO_X11_FORCE_EGL");
         public static readonly Hint WindowFrameUsableWhileCursorHidden = new Hint("SDL_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN");
         public static readonly Hint WindowsIntResourceIcon = new Hint("SDL_WINDOWS_INTRESOURCE_ICON");
         public static readonly Hint WindowsIntResourceIconSmall = new Hint("SDL_WINDOWS_INTRESOURCE_ICON_SMALL");
@@ -45,10 +48,12 @@ namespace SdlSharp
         public static readonly Hint TvRemoteAsJoystick = new Hint("SDL_TV_REMOTE_AS_JOYSTICK");
         public static readonly Hint XinputEnabled = new Hint("SDL_XINPUT_ENABLED");
         public static readonly Hint XInputUseOldJoystickMapping = new Hint("SDL_XINPUT_USE_OLD_JOYSTICK_MAPPING");
+        public static readonly Hint GameControllerType = new Hint("SDL_GAMECONTROLLERTYPE");
         public static readonly Hint GameControllerConfig = new Hint("SDL_GAMECONTROLLERCONFIG");
         public static readonly Hint GameControllerConfigFile = new Hint("SDL_GAMECONTROLLERCONFIG_FILE");
         public static readonly Hint GameControllerIgnoreDevices = new Hint("SDL_GAMECONTROLLER_IGNORE_DEVICES");
         public static readonly Hint GameControllerIgnoreDevicesExcept = new Hint("SDL_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT");
+        public static readonly Hint GameControllerUseButtonLabels = new Hint("SDL_GAMECONTROLLER_USE_BUTTON_LABELS");
         public static readonly Hint JoystickAllowBackgroundEvents = new Hint("SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS");
         public static readonly Hint JoystickHidApi = new Hint("SDL_JOYSTICK_HIDAPI");
         public static readonly Hint JoystickHidApiPs4 = new Hint("SDL_JOYSTICK_HIDAPI_PS4");
@@ -56,6 +61,7 @@ namespace SdlSharp
         public static readonly Hint JoystickHidApiSteam = new Hint("SDL_JOYSTICK_HIDAPI_STEAM");
         public static readonly Hint JoystickHidApiSwitch = new Hint("SDL_JOYSTICK_HIDAPI_SWITCH");
         public static readonly Hint JoystickHidApiXbox = new Hint("SDL_JOYSTICK_HIDAPI_XBOX");
+        public static readonly Hint JoystickHidApiGameCube = new Hint("SDL_JOYSTICK_HIDAPI_GAMECUBE");
         public static readonly Hint EnableSteamControllers = new Hint("SDL_ENABLE_STEAM_CONTROLLERS");
         public static readonly Hint AllowTopmost = new Hint("SDL_ALLOW_TOPMOST");
         public static readonly Hint TimerResolution = new Hint("SDL_TIMER_RESOLUTION");
@@ -92,6 +98,7 @@ namespace SdlSharp
         public static readonly Hint WaveRiffChunkSize = new Hint("SDL_WAVE_RIFF_CHUNK_SIZE");
         public static readonly Hint WaveTruncation = new Hint("SDL_WAVE_TRUNCATION");
         public static readonly Hint WaveFactChunk = new Hint("SDL_WAVE_FACT_CHUNK");
+        public static readonly Hint DisplayUsableBounds = new Hint("SDL_DISPLAY_USABLE_BOUNDS");
 
         private readonly string _name;
         private Dictionary<HintCallback, int>? _callbacks;

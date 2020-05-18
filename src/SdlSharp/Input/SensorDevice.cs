@@ -17,7 +17,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// The devices in the system.
         /// </summary>
-        public static IReadOnlyList<SensorDevice> Devices => s_devices ?? (s_devices = new ItemCollection<SensorDevice>(Get, Native.SDL_NumSensors));
+        public static IReadOnlyList<SensorDevice> Devices => s_devices ??= new ItemCollection<SensorDevice>(Get, Native.SDL_NumSensors);
 
         /// <summary>
         /// The name of the device, if any.

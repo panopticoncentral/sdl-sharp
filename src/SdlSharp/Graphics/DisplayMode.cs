@@ -25,7 +25,9 @@ namespace SdlSharp.Graphics
         /// </summary>
         public readonly int RefreshRate { get; }
 
+#pragma warning disable IDE0052 // Remove unread private members
         private readonly IntPtr _driverData;
+#pragma warning restore IDE0052 // Remove unread private members
 
         public DisplayMode(uint pixelFormat, Size size, int refreshRate)
         {
