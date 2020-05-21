@@ -34,7 +34,7 @@ namespace SdlSharp
             Y = y;
         }
 
-        public static explicit operator PointF((float X, float Y) tuple) => new PointF(tuple.X, tuple.Y);
+        public static implicit operator PointF((float X, float Y) tuple) => new PointF(tuple.X, tuple.Y);
 
         public static PointF operator +(PointF left, PointF right) => (PointF)(left.X + right.X, left.Y + right.Y);
 

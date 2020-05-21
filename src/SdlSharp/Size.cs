@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace SdlSharp
 {
@@ -6,7 +7,7 @@ namespace SdlSharp
     /// A size.
     /// </summary>
     [DebuggerDisplay("({Width}, {Height})")]
-    public readonly struct Size
+    public readonly struct Size : IEquatable<Size>
     {
         /// <summary>
         /// The width.
@@ -42,5 +43,11 @@ namespace SdlSharp
         public static Size operator *(Size left, Size right) => (left.Width * right.Width, left.Height * right.Height);
 
         public static Size operator /(Size left, Size right) => (left.Width / right.Width, left.Height / right.Height);
+
+        public override bool Equals(object obj) => obj is Size size && Equals(size);
+
+        public override int GetHashCode() => HashCode.Combine(Width, Height);
+
+        public bool Equals(Size other) => Width == other.Width && Height == other.Height;
     }
 }

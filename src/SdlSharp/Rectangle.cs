@@ -51,6 +51,10 @@ namespace SdlSharp
             Location.X == other.Location.X && Location.Y == other.Location.Y
             && Size.Width == other.Size.Width && Size.Height == other.Size.Height;
 
+        public override bool Equals(object obj) => obj is Rectangle rectangle && Equals(rectangle);
+
+        public override int GetHashCode() => HashCode.Combine(Location, Size);
+
         /// <summary>
         /// Whether there is an intersection between the two rectangles.
         /// </summary>
