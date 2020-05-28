@@ -4,4 +4,4 @@ The SDL# library is a [.NET](https://dotnet.microsoft.com/) wrapper around the [
 
 Branch|Status
 ---|---
-dev|![dev](https://github.com/panopticoncentral/sdl-sharp/workflows/Continuous%20Integration/badge.svg?branch=dev)
+master|![master](https://github.com/panopticoncentral/sdl-sharp/workflows/Continuous%20Integration/badge.svg)
