@@ -8,6 +8,9 @@ using SdlSharp.Touch;
 // There are going to be unused fields in some of the interop structures
 #pragma warning disable CS0169, RCS1213, IDE0051, IDE0052
 
+// For the time being, we're not going to document all of the native APIs, see http://wiki.libsdl.org
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace SdlSharp
 {
     /// <summary>

@@ -112,7 +112,6 @@ namespace SdlSharp.Sound
         /// Loads a WAV file.
         /// </summary>
         /// <param name="filename">The filename to load.</param>
-        /// <param name="spec"></param>
         /// <param name="spec">The audio specification of the loaded audio.</param>
         /// <returns>The loaded audio data.</returns>
         public static WavData LoadWav(string filename, out AudioSpec spec)

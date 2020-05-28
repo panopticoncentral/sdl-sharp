@@ -34,6 +34,12 @@ namespace SdlSharp
             Pointer = null;
         }
 
+        /// <summary>
+        /// Converts an index and a native object to a managed object.
+        /// </summary>
+        /// <param name="pointer">The pointer.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>A managed object.</returns>
         public static TManaged IndexToInstance(TNative* pointer, TIndex index)
         {
             if (s_instances.TryGetValue(((IntPtr)pointer, index), out var weakRef)

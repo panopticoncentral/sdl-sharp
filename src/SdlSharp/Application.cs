@@ -199,6 +199,7 @@ namespace SdlSharp
         /// </summary>
         public event EventHandler<SdlEventArgs>? DidEnterForeground;
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             if (_initializedFont)

@@ -13,14 +13,27 @@ namespace SdlSharp.Sound
         private readonly Native.MixEffectDelegate _effect;
         private readonly Native.MixEffectDoneDelegate _done;
 
+        /// <summary>
+        /// User data for this effect.
+        /// </summary>
         protected virtual IntPtr UserData { get; }
 
+        /// <summary>
+        /// Creates a new mix effect.
+        /// </summary>
         protected MixEffect()
         {
             _effect = new Native.MixEffectDelegate(Effect);
             _done = new Native.MixEffectDoneDelegate(DoneWrapper);
         }
 
+        /// <summary>
+        /// Runs the effect.
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="stream">The stream.</param>
+        /// <param name="length">The length of the stream.</param>
+        /// <param name="userData">The effect's user data.</param>
         protected virtual void Effect(int channel, IntPtr stream, int length, IntPtr userData)
         {
         }
@@ -42,6 +55,11 @@ namespace SdlSharp.Sound
             }
         }
 
+        /// <summary>
+        /// Called when the effect is done.
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="userData">The effect's user data.</param>
         protected virtual void Done(int channel, IntPtr userData)
         {
         }

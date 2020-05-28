@@ -35,10 +35,26 @@ namespace SdlSharp
             Y = y;
         }
 
+        /// <summary>
+        /// Converts a tuple to a point.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
         public static implicit operator Point((int X, int Y) tuple) => new Point(tuple.X, tuple.Y);
 
+        /// <summary>
+        /// Adds two points together.
+        /// </summary>
+        /// <param name="left">One point.</param>
+        /// <param name="right">The other point.</param>
+        /// <returns>The sum of the two points.</returns>
         public static Point operator +(Point left, Point right) => (left.X + right.X, left.Y + right.Y);
 
+        /// <summary>
+        /// Subtracts two points.
+        /// </summary>
+        /// <param name="left">One point.</param>
+        /// <param name="right">The other point.</param>
+        /// <returns>The difference between the two points.</returns>
         public static Point operator -(Point left, Point right) => (left.X - right.X, left.Y - right.Y);
 
         /// <summary>
@@ -72,15 +88,33 @@ namespace SdlSharp
             return (newX, newY);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Determines if two points are equal.
+        /// </summary>
+        /// <param name="other">The other point.</param>
+        /// <returns>Whether they are equal.</returns>
         public bool Equals(Point other) => other.X == X && other.Y == Y;
 
+        /// <inheritdoc/>
         public override bool Equals(object obj) => obj is Point other && Equals(other);
 
+        /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(X, Y);
 
+        /// <summary>
+        /// Determines if two points are equal.
+        /// </summary>
+        /// <param name="left">One point.</param>
+        /// <param name="right">The other point.</param>
+        /// <returns>If they are equal.</returns>
         public static bool operator ==(Point left, Point right) => left.Equals(right);
 
+        /// <summary>
+        /// Determines if two points are not equal.
+        /// </summary>
+        /// <param name="left">One point.</param>
+        /// <param name="right">The other point.</param>
+        /// <returns>If they are not equal.</returns>
         public static bool operator !=(Point left, Point right) => !left.Equals(right);
     }
 }

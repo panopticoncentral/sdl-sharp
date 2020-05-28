@@ -40,6 +40,10 @@ namespace SdlSharp
             Size = size;
         }
 
+        /// <summary>
+        /// Converts a tuple to a recangle.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
         public static explicit operator RectangleF((PointF location, SizeF size) tuple) => new RectangleF(tuple.location, tuple.size);
 
         /// <summary>
@@ -47,10 +51,17 @@ namespace SdlSharp
         /// </summary>
         public bool IsEmpty => Size.Width == 0 && Size.Height == 0;
 
+        /// <inheritdoc/>
         public override bool Equals(object obj) => obj is RectangleF rectangle && Equals(rectangle);
 
+        /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(Location, Size);
 
+        /// <summary>
+        /// Compares two rectangles.
+        /// </summary>
+        /// <param name="other">The other rectangle.</param>
+        /// <returns>Whether the two rectangles are equal.</returns>
         public bool Equals(RectangleF other) =>
             Location.X == other.Location.X && Location.Y == other.Location.Y
             && Size.Width == other.Size.Width && Size.Height == other.Size.Height;

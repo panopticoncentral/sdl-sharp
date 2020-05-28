@@ -5,7 +5,14 @@
     /// </summary>
     public enum MouseWheelDirection
     {
+        /// <summary>
+        /// Normal
+        /// </summary>
         Normal,
+
+        /// <summary>
+        /// Flipped
+        /// </summary>
         Flipped
     }
 }

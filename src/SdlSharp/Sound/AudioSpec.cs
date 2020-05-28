@@ -47,6 +47,17 @@ namespace SdlSharp.Sound
         /// </summary>
         public readonly IntPtr Userdata { get; }
 
+        /// <summary>
+        /// Creates a new audio specification.
+        /// </summary>
+        /// <param name="frequency">The frequency.</param>
+        /// <param name="format">The audio format.</param>
+        /// <param name="channels">The number of channels.</param>
+        /// <param name="silence">The silence value.</param>
+        /// <param name="samples">The number of samples.</param>
+        /// <param name="size">The size.</param>
+        /// <param name="callback">The callback.</param>
+        /// <param name="userdata">The user data.</param>
         public AudioSpec(int frequency, AudioFormat format, byte channels, byte silence, ushort samples, uint size, AudioCallback? callback, IntPtr userdata)
         {
             Frequency = frequency;
@@ -59,6 +70,10 @@ namespace SdlSharp.Sound
             Userdata = userdata;
         }
 
+        /// <summary>
+        /// Creates a new audiospecification.
+        /// </summary>
+        /// <param name="spec">The audio specification.</param>
         public AudioSpec(Native.SDL_AudioSpec spec)
         {
             Frequency = spec.Frequency;
@@ -71,6 +86,10 @@ namespace SdlSharp.Sound
             Userdata = spec.Userdata;
         }
 
+        /// <summary>
+        /// Converts the audio specification to its native form.
+        /// </summary>
+        /// <returns>The native audio specification.</returns>
         public unsafe Native.SDL_AudioSpec ToNative() =>
             new Native.SDL_AudioSpec(
                 Frequency,

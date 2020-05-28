@@ -495,8 +495,9 @@ namespace SdlSharp.Graphics
         /// Reads pixels from the renderer.
         /// </summary>
         /// <param name="rectangle">The rectangle to read.</param>
-        /// <param name="format">The format of the </param>
-        /// <param name="plane"></param>
+        /// <param name="format">The format of the pixels.</param>
+        /// <param name="pixels">A place to put the pixels.</param>
+        /// <param name="pitch">The pitch.</param>
         public void ReadPixels(Rectangle? rectangle, EnumeratedPixelFormat format, Span<byte> pixels, int pitch)
         {
             var rectPointer = (Rectangle*)null;

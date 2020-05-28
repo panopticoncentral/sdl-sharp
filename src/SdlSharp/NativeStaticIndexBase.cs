@@ -19,6 +19,11 @@ namespace SdlSharp
         /// </summary>
         public TIndex Index { get; private set; }
 
+        /// <summary>
+        /// Converts an index to a managed object.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>A managed object.</returns>
         public static TManaged IndexToInstance(TIndex index)
         {
             if (s_instances.TryGetValue(index, out var weakRef)

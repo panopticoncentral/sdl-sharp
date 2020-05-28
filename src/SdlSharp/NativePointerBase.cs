@@ -26,6 +26,11 @@ namespace SdlSharp
             Pointer = null;
         }
 
+        /// <summary>
+        /// Converts a native object to a managed object.
+        /// </summary>
+        /// <param name="pointer">The pointer.</param>
+        /// <returns>A managed object.</returns>
         public static TManaged? PointerToInstance(TNative* pointer)
         {
             if (pointer == null)
@@ -47,6 +52,11 @@ namespace SdlSharp
             return value;
         }
 
+        /// <summary>
+        /// Converts a native object to a managed object.
+        /// </summary>
+        /// <param name="pointer">The pointer.</param>
+        /// <returns>A managed object.</returns>
         public static TManaged PointerToInstanceNotNull(TNative* pointer) =>
             PointerToInstance(pointer) ?? throw new SdlException();
     }

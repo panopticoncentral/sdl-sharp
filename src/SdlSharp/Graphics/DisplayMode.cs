@@ -29,6 +29,12 @@ namespace SdlSharp.Graphics
         private readonly IntPtr _driverData;
 #pragma warning restore IDE0052 // Remove unread private members
 
+        /// <summary>
+        /// Creates a new display mode.
+        /// </summary>
+        /// <param name="pixelFormat">The pixel format.</param>
+        /// <param name="size">The size.</param>
+        /// <param name="refreshRate">The refresh rate.</param>
         public DisplayMode(uint pixelFormat, Size size, int refreshRate)
         {
             PixelFormat = pixelFormat;

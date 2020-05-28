@@ -2,6 +2,9 @@
 
 namespace SdlSharp.Input
 {
+    /// <summary>
+    /// A game controller.
+    /// </summary>
     public sealed unsafe class GameController : NativePointerBase<Native.SDL_GameController, GameController>
     {
         /// <summary>
@@ -219,8 +222,8 @@ namespace SdlSharp.Input
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>The button.</returns>
-        public static GameControllerButton GetButtonFromString(string s) =>
-            Native.SDL_GameControllerGetButtonFromString(s);
+        public static GameControllerButton GetButtonFromString(string name) =>
+            Native.SDL_GameControllerGetButtonFromString(name);
 
         /// <summary>
         /// Maps an button to a name.

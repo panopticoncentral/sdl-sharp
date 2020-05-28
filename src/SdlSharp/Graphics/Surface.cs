@@ -211,7 +211,6 @@ namespace SdlSharp.Graphics
         /// The pixels of the surface.
         /// </summary>
         /// <typeparam name="T">The type of the pixel.</typeparam>
-        /// <param name="bytesPerPixel">The number of bytes per pixel.</param>
         /// <returns>The pixels.</returns>
         public Span<T> GetPixels<T>() => Native.PixelsToSpan<T>(Pointer->Pixels, Pointer->Pitch, Pointer->Height);
 

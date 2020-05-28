@@ -378,8 +378,7 @@ namespace SdlSharp.Graphics
         /// Create a window that can be shaped.
         /// </summary>
         /// <param name="title">The window title.</param>
-        /// <param name="location">The window location.</param>
-        /// <param name="size">The window size.</param>
+        /// <param name="rectangle">The window.</param>
         /// <param name="flags">The window flags.</param>
         /// <returns></returns>
         public static Window CreateShaped(string title, Rectangle rectangle, WindowFlags flags)
@@ -615,11 +614,16 @@ namespace SdlSharp.Graphics
         {
             private readonly Window _window;
 
-            public WindowData(Window window)
+            internal WindowData(Window window)
             {
                 _window = window;
             }
 
+            /// <summary>
+            /// Gets the named window data.
+            /// </summary>
+            /// <param name="name">The name of the data.</param>
+            /// <returns>The value of the data.</returns>
             public IntPtr this[string name]
             {
                 get => Native.SDL_GetWindowData(_window.Pointer, name);

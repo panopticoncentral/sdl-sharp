@@ -129,7 +129,7 @@ namespace SdlSharp.Sound
         /// <summary>
         /// Reserves a number of channels for mixing.
         /// </summary>
-        /// <param name="channels">The number of channels.</param>
+        /// <param name="number">The number of channels.</param>
         /// <returns>The number of channels reserved.</returns>
         public static int ReserveChannels(int number) =>
             Native.Mix_ReserveChannels(number);

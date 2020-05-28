@@ -7,128 +7,263 @@ namespace SdlSharp.Graphics
     /// </summary>
     public readonly unsafe struct EnumeratedPixelFormat
     {
+        /// <summary>
+        /// Unknown format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Unknown = new EnumeratedPixelFormat(0);
 
+        /// <summary>
+        /// Index1Lsb format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Index1Lsb =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Index1, (uint)Native.SDL_BitmapOrder.Order4321, 0, 1, 0);
 
+        /// <summary>
+        /// Index1Msb format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Index1Msb =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Index1, (uint)Native.SDL_BitmapOrder.Order1234, 0, 1, 0);
 
+        /// <summary>
+        /// Index4Lsb format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Index4Lsb =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Index4, (uint)Native.SDL_BitmapOrder.Order4321, 0, 4, 0);
 
+        /// <summary>
+        /// Index4Msb format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Index4Msb =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Index4, (uint)Native.SDL_BitmapOrder.Order1234, 0, 4, 0);
 
+        /// <summary>
+        /// Index8 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Index8 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Index8, 0, 0, 8, 1);
 
+        /// <summary>
+        /// Rgb332 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgb332 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed8, (uint)Native.SDL_PackedOrder.Xrgb, (uint)Native.SDL_PackedLayout.Layout332, 8, 1);
 
+        /// <summary>
+        /// Rgb444 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgb444 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Xrgb, (uint)Native.SDL_PackedLayout.Layout4444, 12, 2);
 
+        /// <summary>
+        /// Bgr444 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgr444 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Xbgr, (uint)Native.SDL_PackedLayout.Layout4444, 12, 2);
 
+        /// <summary>
+        /// Rgb555 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgb555 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Xrgb, (uint)Native.SDL_PackedLayout.Layout1555, 15, 2);
 
+        /// <summary>
+        /// Bgr555 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgr555 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Xbgr, (uint)Native.SDL_PackedLayout.Layout1555, 15, 2);
 
+        /// <summary>
+        /// ARgb4444 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat ARgb4444 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Argb, (uint)Native.SDL_PackedLayout.Layout4444, 16, 2);
 
+        /// <summary>
+        /// Rgba4444 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgba4444 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Rgba, (uint)Native.SDL_PackedLayout.Layout4444, 16, 2);
 
+        /// <summary>
+        /// Abgr4444 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Abgr4444 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Abgr, (uint)Native.SDL_PackedLayout.Layout4444, 16, 2);
 
+        /// <summary>
+        /// Bgra4444 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgra4444 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Bgra, (uint)Native.SDL_PackedLayout.Layout4444, 16, 2);
 
+        /// <summary>
+        /// Argb1555 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Argb1555 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Argb, (uint)Native.SDL_PackedLayout.Layout1555, 16, 2);
 
+        /// <summary>
+        /// RgbA5551 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat RgbA5551 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Rgba, (uint)Native.SDL_PackedLayout.Layout5551, 16, 2);
 
+        /// <summary>
+        /// Abgr1555 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Abgr1555 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Abgr, (uint)Native.SDL_PackedLayout.Layout1555, 16, 2);
 
+        /// <summary>
+        /// Bgra5551 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgra5551 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Bgra, (uint)Native.SDL_PackedLayout.Layout5551, 16, 2);
 
+        /// <summary>
+        /// Rgb565 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgb565 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Xrgb, (uint)Native.SDL_PackedLayout.Layout565, 16, 2);
 
+        /// <summary>
+        /// Bgr565 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgr565 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed16, (uint)Native.SDL_PackedOrder.Xbgr, (uint)Native.SDL_PackedLayout.Layout565, 16, 2);
 
+        /// <summary>
+        /// Rgb24 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgb24 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.ArrayU8, (uint)Native.SDL_ArrayOrder.Rgb, 0, 24, 3);
 
+        /// <summary>
+        /// Bgr24 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgr24 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.ArrayU8, (uint)Native.SDL_ArrayOrder.Bgr, 0, 24, 3);
 
+        /// <summary>
+        /// Rgb888 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgb888 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed32, (uint)Native.SDL_PackedOrder.Xrgb, (uint)Native.SDL_PackedLayout.Layout8888, 24, 4);
 
+        /// <summary>
+        /// Rgbx8888 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgbx8888 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed32, (uint)Native.SDL_PackedOrder.Rgbx, (uint)Native.SDL_PackedLayout.Layout8888, 24, 4);
 
+        /// <summary>
+        /// Bgr888 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgr888 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed32, (uint)Native.SDL_PackedOrder.Xbgr, (uint)Native.SDL_PackedLayout.Layout8888, 24, 4);
 
+        /// <summary>
+        /// Bgrx8888 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgrx8888 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed32, (uint)Native.SDL_PackedOrder.Bgrx, (uint)Native.SDL_PackedLayout.Layout8888, 24, 4);
 
+        /// <summary>
+        /// Argb8888 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Argb8888 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed32, (uint)Native.SDL_PackedOrder.Argb, (uint)Native.SDL_PackedLayout.Layout8888, 32, 4);
 
+        /// <summary>
+        /// Rgba8888 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgba8888 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed32, (uint)Native.SDL_PackedOrder.Rgba, (uint)Native.SDL_PackedLayout.Layout8888, 32, 4);
 
+        /// <summary>
+        /// Abgr8888 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Abgr8888 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed32, (uint)Native.SDL_PackedOrder.Abgr, (uint)Native.SDL_PackedLayout.Layout8888, 32, 4);
 
+        /// <summary>
+        /// Bgra8888 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgra8888 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed32, (uint)Native.SDL_PackedOrder.Bgra, (uint)Native.SDL_PackedLayout.Layout8888, 32, 4);
 
+        /// <summary>
+        /// Argb2101010 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Argb2101010 =
             new EnumeratedPixelFormat((uint)Native.SDL_PixelType.Packed32, (uint)Native.SDL_PackedOrder.Argb, (uint)Native.SDL_PackedLayout.Layout2101010, 32, 4);
 
+        /// <summary>
+        /// Rgba32 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Rgba32 = Abgr8888;
+
+        /// <summary>
+        /// Argb32 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Argb32 = Bgra8888;
+ 
+        /// <summary>
+        /// Bgra32 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Bgra32 = Argb8888;
+ 
+        /// <summary>
+        /// Abgr32 format
+        /// </summary>
         public static readonly EnumeratedPixelFormat Abgr32 = Rgba8888;
 
-        public static readonly EnumeratedPixelFormat Yv12 =      /**< Planar mode: Y + V + U  (3 planes) */
+        /// <summary>
+        /// Planar mode: Y + V + U  (3 planes)
+        /// </summary>
+        public static readonly EnumeratedPixelFormat Yv12 =
             new EnumeratedPixelFormat('Y', 'V', '1', '2');
 
-        public static readonly EnumeratedPixelFormat Iyuv =      /**< Planar mode: Y + U + V  (3 planes) */
+        /// <summary>
+        /// Planar mode: Y + U + V  (3 planes)
+        /// </summary>
+        public static readonly EnumeratedPixelFormat Iyuv =
             new EnumeratedPixelFormat('I', 'Y', 'U', 'V');
 
-        public static readonly EnumeratedPixelFormat Yuy2 =      /**< Packed mode: Y0+U0+Y1+V0 (1 plane) */
+        /// <summary>
+        /// Packed mode: Y0+U0+Y1+V0 (1 plane)
+        /// </summary>
+        public static readonly EnumeratedPixelFormat Yuy2 =
             new EnumeratedPixelFormat('Y', 'U', 'Y', '2');
 
-        public static readonly EnumeratedPixelFormat Uyvy =      /**< Packed mode: U0+Y0+V0+Y1 (1 plane) */
+        /// <summary>
+        /// Packed mode: U0+Y0+V0+Y1 (1 plane)
+        /// </summary>
+        public static readonly EnumeratedPixelFormat Uyvy =
             new EnumeratedPixelFormat('U', 'Y', 'V', 'Y');
 
-        public static readonly EnumeratedPixelFormat Yvyu =      /**< Packed mode: Y0+V0+Y1+U0 (1 plane) */
+        /// <summary>
+        /// Packed mode: Y0+V0+Y1+U0 (1 plane)
+        /// </summary>
+        public static readonly EnumeratedPixelFormat Yvyu =
             new EnumeratedPixelFormat('Y', 'V', 'Y', 'U');
 
-        public static readonly EnumeratedPixelFormat Nv12 =      /**< Planar mode: Y + U/V interleaved  (2 planes) */
+        /// <summary>
+        /// Planar mode: Y + U/V interleaved  (2 planes)
+        /// </summary>
+        public static readonly EnumeratedPixelFormat Nv12 =
             new EnumeratedPixelFormat('N', 'V', '1', '2');
 
-        public static readonly EnumeratedPixelFormat Nv21 =      /**< Planar mode: Y + V/U interleaved  (2 planes) */
+        /// <summary>
+        /// Planar mode: Y + V/U interleaved  (2 planes)
+        /// </summary>
+        public static readonly EnumeratedPixelFormat Nv21 =
             new EnumeratedPixelFormat('N', 'V', '2', '1');
 
-        public static readonly EnumeratedPixelFormat ExternalOes =      /**< Android video texture format */
+        /// <summary>
+        /// Android video texture format
+        /// </summary>
+        public static readonly EnumeratedPixelFormat ExternalOes =
             new EnumeratedPixelFormat('O', 'E', 'S', ' ');
 
         internal readonly uint Format { get; }

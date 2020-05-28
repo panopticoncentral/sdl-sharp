@@ -2,6 +2,9 @@
 
 namespace SdlSharp.Graphics
 {
+    /// <summary>
+    /// Flags for windows.
+    /// </summary>
     [Flags]
     public enum WindowFlags
     {
