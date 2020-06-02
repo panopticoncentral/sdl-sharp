@@ -1,0 +1,24 @@
+<Project>
+  <Choose>
+    <When Condition="'$(Platform)' == 'x86'">
+      <ItemGroup>
+        <NativeLibs Include="$(MSBuildThisFileDirectory)\x86\*.*" />
+        <None Include="@(NativeLibs)">
+          <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <Visible>false</Visible>
+        </None>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(Platform)' == 'x64'">
+      <ItemGroup>
+        <NativeLibs Include="$(MSBuildThisFileDirectory)\x64\*.*" />
+        <None Include="@(NativeLibs)">
+          <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <Visible>false</Visible>
+        </None>
+      </ItemGroup>
+    </When>
+  </Choose>
+</Project>
