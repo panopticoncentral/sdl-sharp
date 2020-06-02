@@ -1,6 +1,6 @@
 <Project>
   <Choose>
-    <When Condition="'$(Platform)' == 'x86'">
+    <When Condition="'$(PlatformTarget)' == 'x86'">
       <ItemGroup>
         <NativeLibs Include="$(MSBuildThisFileDirectory)\x86\*.*" />
         <None Include="@(NativeLibs)">
@@ -10,7 +10,7 @@
         </None>
       </ItemGroup>
     </When>
-    <When Condition="'$(Platform)' == 'x64'">
+    <When Condition="'$(PlatformTarget)' == 'x64'">
       <ItemGroup>
         <NativeLibs Include="$(MSBuildThisFileDirectory)\x64\*.*" />
         <None Include="@(NativeLibs)">
