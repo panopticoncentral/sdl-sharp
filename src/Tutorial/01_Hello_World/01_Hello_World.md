@@ -61,7 +61,7 @@ First, the `OutputType` property needs to be changed from `Exe` to `WinExe`. An 
 
 ## Step #5: Add your reference
 
-Now go back to the command-line and run the command `dotnet add package SdlSharp --version 0.5.3-alpha`. This will add a reference to the SDL# package so you can use it in your code.
+Now go back to the command-line and run the command `dotnet add package SdlSharp --version 0.6.3-alpha`. This will add a reference to the SDL# package so you can use it in your code.
 
 (**NOTE:** The `--version` argument will not be required once SDL# is more stable.)
 
@@ -98,9 +98,9 @@ This creates a SDL window at the location we defined above. We specify `WindowFl
 ```csharp
 while (app.DispatchEvent())
 {
-    window.UpdateSurface();
 }
 ```
 
-This is this application's _message loop_, where it processes incoming messages (via `DispatchEvent`) and then updates the window on the screen (via `UpdateSurface`). Right now, it doesn't do anything, and when you run it you'll see something like:
+This is this application's _message loop_, where it processes incoming messages (via `DispatchEvent`). Right now, it doesn't do anything, and when you do `dotnet run` it you'll see something like:
 
+<img src="window.png" title="Hello, World!" width="320" height="240"/>
