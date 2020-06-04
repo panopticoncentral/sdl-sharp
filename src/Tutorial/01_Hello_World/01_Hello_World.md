@@ -14,7 +14,7 @@ For the purpose of this tutorial, we'll use [Visual Studio Code](https://code.vi
 
 ## Step #3: Create a project
 
-Create a directory somewhere on your machine named `01_Hello_World` and open a command prompt in that directory. Type `dotnet new console`, which will create a new console application in that directory. You'll see `01_Hello_World.csproj`, which is the file that describes what the project is and how .NET should build it, and `Program.cs` which is where your code is going to go.
+Create a directory somewhere on your machine named `Tutorial` and open a command prompt in that directory. Type `dotnet new console`, which will create a new console application in that directory. You'll see `Tutorial.csproj`, which is the file that describes what the project is and how .NET should build it, and `Program.cs` which is where your code is going to go.
 
 ## Step #4: Hello, world!
 
@@ -23,7 +23,7 @@ Now open Visual Studio Code in that directory by typing `code .` and then click 
 ```csharp
 using System;
 
-namespace _01_Hello_World
+namespace Tutorial
 {
     class Program
     {
@@ -49,7 +49,7 @@ Now go back to Visual Studio Code and click on `01_Hello_World.csproj`. You shou
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>_01_Hello_World</RootNamespace>
+    <RootNamespace>Tutorial</RootNamespace>
   </PropertyGroup>
 
 </Project>
