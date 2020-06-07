@@ -11,7 +11,7 @@ namespace Tutorial
             using var app = new Application(Subsystems.Video);
             Size windowSize = (640, 480);
             Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
-            using var window = Window.Create("Hello, world!", windowRectangle, WindowFlags.Shown);
+            using var window = Window.Create("Event Driven Programming", windowRectangle, WindowFlags.Shown);
 
             Keyboard.KeyDown += (s, e) =>
             {
