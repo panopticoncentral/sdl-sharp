@@ -2,7 +2,7 @@
 
 OK, so now that we can respond to events, let's actually draw something!
 
-Graphics in SDL are handled by interacting with a `Surface` object that represents a region of pixels. Every SDL `Window` has a `Surface` that represents the window and, when drawn on, shows up on the actual screen. Drawing on surfaces is optimized, so when you draw something, it doesn't immediately show up on the screen. Instead, all the changes that you want to make to the surface are batched up and then you call `UpdateSurface` to cause them all to become visible at once.
+Graphics in SDL are handled by interacting with a `Surface` object that represents a region of pixels. Every SDL `Window` has a `Surface` that represents the window and, when drawn on, shows up on the actual screen. Drawing on surfaces is _batched_, so when you draw something, it doesn't immediately show up on the screen. Instead, you execute all the drawing commands you want to do, and then you call `UpdateSurface` which performs all of the drawing commands on the window at once.
 
 ## Step 1: Get an image
 

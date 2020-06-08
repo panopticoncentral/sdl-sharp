@@ -19,3 +19,5 @@ Number | Title | Description
 1 | [Hello, World!](src/Tutorial/01_Hello_World/01_Hello_World.md) | Setting up the environment and creating your first SDL window
 2 | [Event Driven Programming](src/Tutorial/02_Event_Driven_Programming/02_Event_Driven_Programming.md) | Responding to events and input
 3 | [Drawing on the Screen](src/Tutorial/03_Drawing_on_the_Screen/03_Drawing_on_the_Screen.md) | Drawing on the screen
+4 | [Working with Images](src/Tutorial/04_Working_with_Images/04_Working_with_Images.md) | Working with different image formats
+5 | [Hardware Acceleration](src/Tutorial/05_Hardware_Acceleration/05_Hardware/Acceleration.md) | Using graphics hardware to speed up drawing
