@@ -11,7 +11,7 @@ namespace SdlSharp
         /// <summary>
         /// A point representing the origin (0, 0).
         /// </summary>
-        public static readonly PointF Origin = (0.0f, 0.0f);
+        public static readonly PointF Origin = (PointF)(0.0f, 0.0f);
 
         /// <summary>
         /// The X value of the point.
@@ -38,7 +38,7 @@ namespace SdlSharp
         /// Converts a tuple to a point.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        public static implicit operator PointF((float X, float Y) tuple) => new PointF(tuple.X, tuple.Y);
+        public static explicit operator PointF((float X, float Y) tuple) => new PointF(tuple.X, tuple.Y);
 
         /// <summary>
         /// Adds two points together.
@@ -46,7 +46,7 @@ namespace SdlSharp
         /// <param name="left">One point.</param>
         /// <param name="right">The other point.</param>
         /// <returns>The sum of the two points.</returns>
-        public static PointF operator +(PointF left, PointF right) => (left.X + right.X, left.Y + right.Y);
+        public static PointF operator +(PointF left, PointF right) => (PointF)(left.X + right.X, left.Y + right.Y);
 
         /// <summary>
         /// Subtracts two points.
@@ -54,7 +54,7 @@ namespace SdlSharp
         /// <param name="left">One point.</param>
         /// <param name="right">The other point.</param>
         /// <returns>The difference between the two points.</returns>
-        public static PointF operator -(PointF left, PointF right) => (left.X - right.X, left.Y - right.Y);
+        public static PointF operator -(PointF left, PointF right) => (PointF)(left.X - right.X, left.Y - right.Y);
 
         /// <summary>
         /// Bounds a point to a given size.
@@ -84,7 +84,7 @@ namespace SdlSharp
                 newY = bound.Height - 1;
             }
 
-            return (newX, newY);
+            return (PointF)(newX, newY);
         }
     }
 }

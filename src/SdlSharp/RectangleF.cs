@@ -89,6 +89,6 @@ namespace SdlSharp
         /// </summary>
         /// <returns>The center point.</returns>
         public PointF Center() =>
-            (Location.X + (Size.Width / 2), Location.Y + (Size.Height / 2));
+            (PointF)(Location.X + (Size.Width / 2), Location.Y + (Size.Height / 2));
     }
 }

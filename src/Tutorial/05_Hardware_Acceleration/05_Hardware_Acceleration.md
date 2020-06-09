@@ -26,7 +26,17 @@ using var sunflowers = Image.Load("Sunflowers.jpg", renderer);
 
 One thing to note here is that the type of the `sunflowers` variable changes. When we were working with the software renderer, we could just copy one surface onto another. However, when working with hardware rendering, surfaces exist only at the very end of the rendering process, when the result of the rendering is presented on the screen. Before that, renderers use _textures_ to hold images that can be drawn during the rendering process. Textures are just like surfaces, but they are directly managed by the graphics hardware, and so are much more efficient than regular surfaces. (If you look at the type of the `sunflowers` variable, it has changed from `Surface` to `Texture`.)
 
-# Step 2: Utilize the hardware renderer
+# Step 2: Improve scaling
+
+There's one change we should now make to the line that initializes SDL. Replace the `new Application` line with:
+
+```csharp
+using var app = new Application(Subsystems.Video, ImageFormats.Jpg, hints: new[] { (Hint.RenderScaleQuality, "1") });
+```
+
+When you initialize SDL, you can provide _hints_ that configure SDL in various ways. In this case, we're providing a hint that indicates when SDL scales (i.e. stretches) an image that it should use _linear filtering_, which produces better results than the default way of scaling but which isn't supported on all platforms.
+
+# Step 3: Utilize the hardware renderer
 
 Now replace all of the code in the `DispatchEvent` loop with the following code:
 
@@ -37,7 +47,7 @@ renderer.Present();
 
 The methods on a `Renderer` are slightly different than a `Surface`. Here, instead of calling a blit method, we're calling a `Copy` method which copies the `sunflowers` texture onto the final result of the renderer. Then we call `Present` to do the render and copy the result to the window's surface.
 
-# Step 3: Clear the window
+# Step 4: Clear the window
 
 We'll take one further step here. As you've noticed, if you switch from stretched to non-stretched, you'll still see part of the stretched image. This is because we don't clear the renderer between each render. Let's do that now by adding the following code to the start of the loop:
 

@@ -8,12 +8,11 @@ namespace Tutorial
     {
         private static void Main()
         {
-            using var app = new Application(Subsystems.Video, ImageFormats.Jpg, hints: new[] { (Hint.RenderScaleQuality, "1") });
+            using var app = new Application(Subsystems.Video, ImageFormats.Jpg);
             Size windowSize = (640, 480);
             Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
-            using var window = Window.Create("Hardware Acceleration", windowRectangle, WindowFlags.Shown);
+            using var window = Window.Create("Drawing", windowRectangle, WindowFlags.Shown);
             using var renderer = Renderer.Create(window, -1, RendererFlags.Accelerated);
-            using var sunflowers = Image.Load("Sunflowers.jpg", renderer);
 
             var stretch = false;
 
@@ -31,7 +30,6 @@ namespace Tutorial
             {
                 renderer.DrawColor = Colors.White;
                 renderer.Clear();
-                renderer.Copy(sunflowers, null, (Point.Origin, stretch ? windowSize : sunflowers.Size));
                 renderer.Present();
             }
         }
