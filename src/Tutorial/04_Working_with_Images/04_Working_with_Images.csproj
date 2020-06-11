@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SdlSharp" Version="0.6.3-alpha" />
+    <PackageReference Include="SdlSharp" Version="$(SdlTutorialVersion)" />
   </ItemGroup>
 
 </Project>
