@@ -16,25 +16,54 @@ namespace Tutorial
             using var window = Window.Create("Drawing", windowRectangle, WindowFlags.Shown);
             using var renderer = Renderer.Create(window, -1, RendererFlags.Accelerated);
 
+            Rectangle? viewport = null;
+
+            Keyboard.KeyDown += (s, e) =>
+            {
+                switch (e.Keycode)
+                {
+                    case Keycode.Number0:
+                        viewport = null;
+                        break;
+
+                    case Keycode.Number1:
+                        viewport = (Point.Origin, (windowSize.Width / 2, windowSize.Height / 2));
+                        break;
+
+                    case Keycode.Number2:
+                        viewport = ((windowSize.Width / 2, 0), (windowSize.Width / 2, windowSize.Height / 2));
+                        break;
+
+                    case Keycode.Number3:
+                        viewport = ((0, windowSize.Height / 2), (windowSize.Width, windowSize.Height / 2));
+                        break;
+                }
+            };
+
             while (app.DispatchEvent())
             {
                 renderer.DrawColor = Colors.White;
                 renderer.Clear();
 
+                renderer.Viewport = viewport;
+                var size = viewport?.Size ?? windowSize;
+
                 renderer.DrawColor = Colors.Red;
-                renderer.FillRectangle(((windowSize.Width / 4, windowSize.Height / 4), (windowSize.Width / 2, windowSize.Height / 2)));
+                renderer.FillRectangle(((size.Width / 4, size.Height / 4), (size.Width / 2, size.Height / 2)));
 
                 renderer.DrawColor = Colors.Green;
-                renderer.DrawRectangle(((windowSize.Width / 6, windowSize.Height / 6), (windowSize.Width * 2 / 3, windowSize.Height * 2 / 3)));
+                renderer.DrawRectangle(((size.Width / 6, size.Height / 6), (size.Width * 2 / 3, size.Height * 2 / 3)));
 
                 renderer.DrawColor = Colors.Blue;
-                renderer.DrawLine((0, windowSize.Height / 2), (windowSize.Width, windowSize.Height / 2));
+                renderer.DrawLine((0, size.Height / 2), (size.Width, size.Height / 2));
 
                 renderer.DrawColor = Colors.Yellow;
-                for (var i = 0; i < windowSize.Height; i += 4)
+                for (var i = 0; i < size.Height; i += 4)
                 {
-                    renderer.DrawPoint((windowSize.Width / 2, i));
+                    renderer.DrawPoint((size.Width / 2, i));
                 }
+
+                renderer.Viewport = null;
 
                 renderer.Present();
             }
