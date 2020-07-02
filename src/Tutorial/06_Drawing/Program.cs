@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-using SdlSharp;
+﻿using SdlSharp;
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 
@@ -10,7 +8,7 @@ namespace Tutorial
     {
         private static void Main()
         {
-            using var app = new Application(Subsystems.Video, ImageFormats.Jpg);
+            using var app = new Application(Subsystems.Video, ImageFormats.Jpg, hints: new[] { (Hint.RenderScaleQuality, "1") });
             Size windowSize = (640, 480);
             Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
             using var window = Window.Create("Drawing", windowRectangle, WindowFlags.Shown);

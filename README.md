@@ -22,3 +22,4 @@ Number | Title | Description
 4 | [Working with Images](src/Tutorial/04_Working_with_Images/04_Working_with_Images.md) | Working with different image formats
 5 | [Hardware Acceleration](src/Tutorial/05_Hardware_Acceleration/05_Hardware_Acceleration.md) | Using graphics hardware to speed up drawing
 6 | [Drawing](src/Tutorial/06_Drawing/06_Drawing.md) | Other drawing primitives
+7 | [Sprites](src/Tutorial/07_Sprites/07_Sprites.md) | Working with sprites

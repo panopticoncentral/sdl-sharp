@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "05_Hardware_Acceleration", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "06_Drawing", "src\Tutorial\06_Drawing\06_Drawing.csproj", "{80DC786F-CB94-4D48-8744-BE09BB747EF1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "07_Sprites", "src\Tutorial\07_Sprites\07_Sprites.csproj", "{B5EB5732-E410-4C96-8C49-EA4D151AD068}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{80DC786F-CB94-4D48-8744-BE09BB747EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80DC786F-CB94-4D48-8744-BE09BB747EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80DC786F-CB94-4D48-8744-BE09BB747EF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5EB5732-E410-4C96-8C49-EA4D151AD068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5EB5732-E410-4C96-8C49-EA4D151AD068}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5EB5732-E410-4C96-8C49-EA4D151AD068}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5EB5732-E410-4C96-8C49-EA4D151AD068}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{931FAC76-C0B8-494D-9B36-2CB9342FD677} = {68F1F408-070A-4203-92DF-48FDDCB6C0DE}
 		{347E9B9C-F45B-4290-A27A-6AFB889EB4D6} = {68F1F408-070A-4203-92DF-48FDDCB6C0DE}
 		{80DC786F-CB94-4D48-8744-BE09BB747EF1} = {68F1F408-070A-4203-92DF-48FDDCB6C0DE}
+		{B5EB5732-E410-4C96-8C49-EA4D151AD068} = {68F1F408-070A-4203-92DF-48FDDCB6C0DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD118769-C6C1-4143-8572-DBB43A8E9A83}
