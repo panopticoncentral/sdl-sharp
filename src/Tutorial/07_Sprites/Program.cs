@@ -27,21 +27,23 @@ namespace Tutorial
 
             var last = Timer.Ticks;
             var current = 0;
+            var rotation = 0;
             while (app.DispatchEvent())
             {
                 if (Timer.Ticks - last > 500)
                 {
                     last = Timer.Ticks;
                     current = (current + 1) % 2;
+                    rotation = (rotation + 90) % 360;
                 }
 
                 renderer.DrawColor = Colors.White;
                 renderer.Clear();
 
-                renderer.Copy(floor, ((upperLeftFloor.X * 16, upperLeftFloor.Y * 16), spriteSize), (Point.Origin, spriteSize * 4));
-                renderer.Copy(floor, ((upperRightFloor.X * 16, upperRightFloor.Y * 16), spriteSize), ((spriteSize.Width * 4, 0), spriteSize * 4));
-                renderer.Copy(floor, ((lowerLeftFloor.X * 16, lowerLeftFloor.Y * 16), spriteSize), ((0, spriteSize.Height * 4), spriteSize * 4));
-                renderer.Copy(floor, ((lowerRightFloor.X * 16, lowerRightFloor.Y * 16), spriteSize), ((spriteSize.Width * 4, spriteSize.Height * 4), spriteSize * 4));
+                renderer.Copy(floor, (upperLeftFloor * 16, spriteSize), (Point.Origin, spriteSize * 4));
+                renderer.Copy(floor, (upperRightFloor * 16, spriteSize), ((spriteSize.Width * 4, 0), spriteSize * 4));
+                renderer.Copy(floor, (lowerLeftFloor * 16, spriteSize), ((0, spriteSize.Height * 4), spriteSize * 4));
+                renderer.Copy(floor, (lowerRightFloor * 16, spriteSize), ((spriteSize.Width * 4, spriteSize.Height * 4), spriteSize * 4));
 
                 var currentPlayer = current == 0 ? player0 : player1;
                 renderer.Copy(currentPlayer, (Point.Origin, spriteSize), (Point.Origin, spriteSize * 4));
@@ -50,11 +52,11 @@ namespace Tutorial
                 renderer.Copy(currentPlayer, (Point.Origin, spriteSize), ((spriteSize.Width * 4, 0), spriteSize * 4));
                 currentPlayer.ColorMod = (0xFF, 0xFF, 0xFF);
 
-                currentPlayer.AlphaMod = 0x3F;
+                currentPlayer.AlphaMod = 0x8F;
                 renderer.Copy(currentPlayer, (Point.Origin, spriteSize), ((0, spriteSize.Height * 4), spriteSize * 4));
                 currentPlayer.AlphaMod = 0xFF;
 
-                renderer.Copy(currentPlayer, (Point.Origin, spriteSize), ((spriteSize.Width * 4, spriteSize.Height * 4), spriteSize * 4), 90, null, RendererFlip.None);
+                renderer.Copy(currentPlayer, (Point.Origin, spriteSize), ((spriteSize.Width * 4, spriteSize.Height * 4), spriteSize * 4), rotation, null, RendererFlip.None);
 
                 renderer.Present();
             }
