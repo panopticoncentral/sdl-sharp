@@ -400,7 +400,7 @@ namespace SdlSharp.Graphics
         {
             if (_hitTestDelegate != null)
             {
-                _ = Native.SDL_SetWindowHitTest(Pointer, null, IntPtr.Zero);
+                _ = Native.SDL_SetWindowHitTest(Pointer, null, 0);
                 _hitTestDelegate = null;
             }
             Native.SDL_DestroyWindow(Pointer);
@@ -508,9 +508,9 @@ namespace SdlSharp.Graphics
         /// </summary>
         /// <param name="callback">The callback function.</param>
         /// <param name="data">User data.</param>
-        public void SetHitTest(Func<Window, Point, IntPtr, HitTestResult> callback, IntPtr data)
+        public void SetHitTest(Func<Window, Point, nint, HitTestResult> callback, nint data)
         {
-            HitTestResult Callback(Native.SDL_Window* w, ref Point a, IntPtr d) => callback(PointerToInstanceNotNull(w), a, d);
+            HitTestResult Callback(Native.SDL_Window* w, ref Point a, nint d) => callback(PointerToInstanceNotNull(w), a, d);
             _hitTestDelegate = callback == null ? null : new Native.HitTestDelegate(Callback);
             _ = Native.CheckError(Native.SDL_SetWindowHitTest(Pointer, _hitTestDelegate, data));
         }
@@ -624,7 +624,7 @@ namespace SdlSharp.Graphics
             /// </summary>
             /// <param name="name">The name of the data.</param>
             /// <returns>The value of the data.</returns>
-            public IntPtr this[string name]
+            public nint this[string name]
             {
                 get => Native.SDL_GetWindowData(_window.Pointer, name);
                 set => Native.SDL_SetWindowData(_window.Pointer, name, value);

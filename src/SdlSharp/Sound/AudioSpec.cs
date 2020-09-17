@@ -45,7 +45,7 @@ namespace SdlSharp.Sound
         /// <summary>
         /// User data to pass to the callback.
         /// </summary>
-        public readonly IntPtr Userdata { get; }
+        public readonly nint Userdata { get; }
 
         /// <summary>
         /// Creates a new audio specification.
@@ -58,7 +58,7 @@ namespace SdlSharp.Sound
         /// <param name="size">The size.</param>
         /// <param name="callback">The callback.</param>
         /// <param name="userdata">The user data.</param>
-        public AudioSpec(int frequency, AudioFormat format, byte channels, byte silence, ushort samples, uint size, AudioCallback? callback, IntPtr userdata)
+        public AudioSpec(int frequency, AudioFormat format, byte channels, byte silence, ushort samples, uint size, AudioCallback? callback, nint userdata)
         {
             Frequency = frequency;
             Format = format;
@@ -110,7 +110,7 @@ namespace SdlSharp.Sound
                 _callback = callback;
             }
 
-            public void Callback(IntPtr userdata, byte* stream, int length) => _callback(new Span<byte>(stream, length), userdata);
+            public void Callback(nint userdata, byte* stream, int length) => _callback(new Span<byte>(stream, length), userdata);
         }
 
         private sealed unsafe class ReverseCallbackWrapper
@@ -122,7 +122,7 @@ namespace SdlSharp.Sound
                 _callback = callback;
             }
 
-            public void Callback(Span<byte> stream, IntPtr userdata)
+            public void Callback(Span<byte> stream, nint userdata)
             {
                 fixed (byte* streamBuffer = stream)
                 {

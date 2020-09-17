@@ -7,5 +7,5 @@ namespace SdlSharp.Sound
     /// </summary>
     /// <param name="stream">The audio stream.</param>
     /// <param name="userdata">The user data specified when the device was opened.</param>
-    public delegate void AudioCallback(Span<byte> stream, IntPtr userdata);
+    public delegate void AudioCallback(Span<byte> stream, nint userdata);
 }

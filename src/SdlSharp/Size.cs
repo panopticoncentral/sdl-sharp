@@ -85,7 +85,7 @@ namespace SdlSharp
         public static Size operator /(Size left, Size right) => (left.Width / right.Width, left.Height / right.Height);
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Size size && Equals(size);
+        public override bool Equals(object? obj) => obj is Size size && Equals(size);
 
         /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(Width, Height);
@@ -96,5 +96,21 @@ namespace SdlSharp
         /// <param name="other">The other size.</param>
         /// <returns>If they are equal.</returns>
         public bool Equals(Size other) => Width == other.Width && Height == other.Height;
+
+        /// <summary>
+        /// Determines if two sizes are equal.
+        /// </summary>
+        /// <param name="left">One size.</param>
+        /// <param name="right">The other size.</param>
+        /// <returns>Whether they are equal.</returns>
+        public static bool operator ==(Size left, Size right) => left.Equals(right);
+
+        /// <summary>
+        /// Determines if two sizes are not equal.
+        /// </summary>
+        /// <param name="left">One size.</param>
+        /// <param name="right">The other size.</param>
+        /// <returns>Whether they are not equal.</returns>
+        public static bool operator !=(Size left, Size right) => !(left == right);
     }
 }

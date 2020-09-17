@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="colorCount">The number of colors in the palette.</param>
         /// <returns>The palette.</returns>
-        public Palette Create(int colorCount) =>
+        public static Palette Create(int colorCount) =>
             PointerToInstanceNotNull(Native.SDL_AllocPalette(colorCount));
 
         /// <inheritdoc/>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Graphics
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A display mode.
@@ -26,7 +24,7 @@ namespace SdlSharp.Graphics
         public readonly int RefreshRate { get; }
 
 #pragma warning disable IDE0052 // Remove unread private members
-        private readonly IntPtr _driverData;
+        private readonly nint _driverData;
 #pragma warning restore IDE0052 // Remove unread private members
 
         /// <summary>
@@ -41,7 +39,7 @@ namespace SdlSharp.Graphics
             _width = size.Width;
             _height = size.Height;
             RefreshRate = refreshRate;
-            _driverData = IntPtr.Zero;
+            _driverData = 0;
         }
     }
 }

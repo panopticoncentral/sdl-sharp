@@ -7,5 +7,5 @@ namespace SdlSharp.Sound
     /// </summary>
     /// <param name="stream">The stream.</param>
     /// <param name="userdata">User data.</param>
-    public delegate void MixFunctionDelegate(Span<byte> stream, IntPtr userdata);
+    public delegate void MixFunctionDelegate(Span<byte> stream, nint userdata);
 }

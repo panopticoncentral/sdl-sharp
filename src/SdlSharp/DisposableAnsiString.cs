@@ -22,6 +22,6 @@ namespace SdlSharp
         }
 
         /// <inheritdoc/>
-        public override string? ToString() => _string == null ? null : Marshal.PtrToStringAnsi((IntPtr)_string);
+        public override string? ToString() => _string == null ? null : Marshal.PtrToStringAnsi((nint)_string);
     }
 }

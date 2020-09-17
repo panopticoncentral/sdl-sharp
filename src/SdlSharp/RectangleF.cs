@@ -52,7 +52,7 @@ namespace SdlSharp
         public bool IsEmpty => Size.Width == 0 && Size.Height == 0;
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is RectangleF rectangle && Equals(rectangle);
+        public override bool Equals(object? obj) => obj is RectangleF rectangle && Equals(rectangle);
 
         /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(Location, Size);

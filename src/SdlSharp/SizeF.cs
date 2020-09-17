@@ -41,7 +41,7 @@ namespace SdlSharp
         public override int GetHashCode() => HashCode.Combine(Width, Height);
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is SizeF sizef && Equals(sizef);
+        public override bool Equals(object? obj) => obj is SizeF sizef && Equals(sizef);
 
         /// <summary>
         /// Determines if two sizes are equal.
@@ -103,5 +103,21 @@ namespace SdlSharp
         /// <param name="right">The other.</param>
         /// <returns>The size divided by the other size.</returns>
         public static SizeF operator /(SizeF left, SizeF right) => (left.Width / right.Width, left.Height / right.Height);
+
+        /// <summary>
+        /// Determines if two sizes are equal.
+        /// </summary>
+        /// <param name="left">One size.</param>
+        /// <param name="right">The other size.</param>
+        /// <returns>Whether they are equal.</returns>
+        public static bool operator ==(SizeF left, SizeF right) => left.Equals(right);
+
+        /// <summary>
+        /// Determines if two sizes are not equal.
+        /// </summary>
+        /// <param name="left">One size.</param>
+        /// <param name="right">The other size.</param>
+        /// <returns>Whether they are not equal.</returns>
+        public static bool operator !=(SizeF left, SizeF right) => !(left == right);
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SdlSharp
 {
@@ -508,7 +507,7 @@ namespace SdlSharp
         /// </summary>
         /// <param name="callback">The callback.</param>
         /// <param name="data">Data to pass to the callback.</param>
-        public void AddCallback(HintCallback callback, IntPtr data)
+        public void AddCallback(HintCallback callback, nint data)
         {
             Native.SDL_AddHintCallback(_name, callback, data);
 
@@ -530,7 +529,7 @@ namespace SdlSharp
         /// </summary>
         /// <param name="callback">The callback.</param>
         /// <param name="data">Data to pass to the callback.</param>
-        public void DeleteCallback(HintCallback callback, IntPtr data)
+        public void DeleteCallback(HintCallback callback, nint data)
         {
             Native.SDL_DelHintCallback(_name, callback, data);
 

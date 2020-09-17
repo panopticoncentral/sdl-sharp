@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Graphics
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A system window message.
@@ -10,7 +8,7 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The HWND.
         /// </summary>
-        public readonly IntPtr Hwnd;
+        public readonly nint Hwnd;
 
         /// <summary>
         /// The message.
@@ -20,14 +18,14 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The WParam parameter.
         /// </summary>
-        public readonly UIntPtr WParam;
+        public readonly nuint WParam;
 
         /// <summary>
         /// The LParam parameter.
         /// </summary>
-        public readonly IntPtr LParam;
+        public readonly nint LParam;
 
-        internal SystemWindowMessage(IntPtr hwnd, uint msg, UIntPtr wParam, IntPtr lParam)
+        internal SystemWindowMessage(nint hwnd, uint msg, nuint wParam, nint lParam)
         {
             Hwnd = hwnd;
             Msg = msg;

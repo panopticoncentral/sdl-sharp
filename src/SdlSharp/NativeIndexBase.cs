@@ -14,7 +14,7 @@ namespace SdlSharp
         where TIndex : struct
         where TManaged : NativeIndexBase<TNative, TIndex, TManaged>, new()
     {
-        private static readonly Dictionary<(IntPtr, TIndex), WeakReference<TManaged>> s_instances = new Dictionary<(IntPtr, TIndex), WeakReference<TManaged>>();
+        private static readonly Dictionary<(nint, TIndex), WeakReference<TManaged>> s_instances = new Dictionary<(nint, TIndex), WeakReference<TManaged>>();
 
         /// <summary>
         /// The pointer.
@@ -29,7 +29,8 @@ namespace SdlSharp
         /// <inheritdoc/>
         public virtual void Dispose()
         {
-            _ = s_instances.Remove(((IntPtr)Pointer, Index));
+            GC.SuppressFinalize(this);
+            _ = s_instances.Remove(((nint)Pointer, Index));
             Index = default;
             Pointer = null;
         }
@@ -42,14 +43,14 @@ namespace SdlSharp
         /// <returns>A managed object.</returns>
         public static TManaged IndexToInstance(TNative* pointer, TIndex index)
         {
-            if (s_instances.TryGetValue(((IntPtr)pointer, index), out var weakRef)
+            if (s_instances.TryGetValue(((nint)pointer, index), out var weakRef)
                 && weakRef.TryGetTarget(out var value))
             {
                 return value;
             }
 
             value = new TManaged() { Pointer = pointer, Index = index };
-            s_instances[((IntPtr)pointer, index)] = new WeakReference<TManaged>(value);
+            s_instances[((nint)pointer, index)] = new WeakReference<TManaged>(value);
             return value;
         }
     }

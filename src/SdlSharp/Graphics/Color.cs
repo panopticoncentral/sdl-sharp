@@ -90,7 +90,7 @@ namespace SdlSharp.Graphics
         public bool Equals(Color other) => Red == other.Red && Green == other.Green && Blue == other.Blue;
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Color other && Equals(other);
+        public override bool Equals(object? obj) => obj is Color other && Equals(other);
 
         /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(Red, Green, Blue);

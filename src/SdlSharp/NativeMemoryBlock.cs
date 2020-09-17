@@ -23,7 +23,7 @@ namespace SdlSharp
         /// <param name="size">The size of the block of memory to allocate.</param>
         public NativeMemoryBlock(uint size)
         {
-            Pointer = Native.SDL_malloc((UIntPtr)size);
+            Pointer = Native.SDL_malloc((nuint)size);
             Size = size;
 
             if (Pointer == null)

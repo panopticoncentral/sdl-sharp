@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace SdlSharp.Graphics
 {
@@ -15,7 +14,7 @@ namespace SdlSharp.Graphics
 
         internal SystemWindowMessageEventArgs(Native.SDL_SysWMEvent wmevent) : base(wmevent.Timestamp)
         {
-            Message = wmevent.Msg == null ? new SystemWindowMessage() : Marshal.PtrToStructure<SystemWindowMessage>((IntPtr)wmevent.Msg);
+            Message = wmevent.Msg == null ? new SystemWindowMessage() : Marshal.PtrToStructure<SystemWindowMessage>((nint)wmevent.Msg);
         }
     }
 }

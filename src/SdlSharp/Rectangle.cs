@@ -61,7 +61,7 @@ namespace SdlSharp
             && Size.Width == other.Size.Width && Size.Height == other.Size.Height;
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Rectangle rectangle && Equals(rectangle);
+        public override bool Equals(object? obj) => obj is Rectangle rectangle && Equals(rectangle);
 
         /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(Location, Size);
@@ -98,7 +98,7 @@ namespace SdlSharp
         /// <param name="clip">A clipping rectangle.</param>
         /// <param name="result">The enclosing rectangle.</param>
         /// <returns>true of all the points were enclosed, false otherwise.</returns>
-        public bool EnclosePoints(Point[] points, Rectangle clip, out Rectangle result) =>
+        public static bool EnclosePoints(Point[] points, Rectangle clip, out Rectangle result) =>
             Native.SDL_EnclosePoints(points, points.Length, in clip, out result);
 
         /// <summary>

@@ -11,6 +11,9 @@ using SdlSharp.Touch;
 // For the time being, we're not going to document all of the native APIs, see http://wiki.libsdl.org
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
+// We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
+#pragma warning disable CA1401
+
 namespace SdlSharp
 {
     /// <summary>
@@ -54,7 +57,7 @@ namespace SdlSharp
         /// <param name="returnValue">The return value of the API.</param>
         /// <returns>The return value.</returns>
         /// <exception cref="SdlException">Thrown if method returned an error.</exception>
-        public static UIntPtr CheckErrorZero(UIntPtr returnValue) => (returnValue == UIntPtr.Zero) ? throw new SdlException() : returnValue;
+        public static nuint CheckErrorZero(nuint returnValue) => (returnValue == 0) ? throw new SdlException() : returnValue;
 
         /// <summary>
         /// Check that the pointer returned from a method is not null.
@@ -70,7 +73,7 @@ namespace SdlSharp
         /// <param name="returnValue">The return value of the API.</param>
         /// <returns>The return value.</returns>
         /// <exception cref="SdlException">Thrown if method returned an error.</exception>
-        public static IntPtr CheckPointer(IntPtr returnValue) => (returnValue == IntPtr.Zero) ? throw new SdlException() : returnValue;
+        public static nint CheckPointer(nint returnValue) => (returnValue == 0) ? throw new SdlException() : returnValue;
 
         /// <summary>
         /// Checks that a class instance is not null.
@@ -140,7 +143,7 @@ namespace SdlSharp
         // SDL_AUDIO_ALLOW_* is covered by AudioAllowChange.cs
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void SDL_AudioCallback(IntPtr userdata, byte* stream, int length);
+        public delegate void SDL_AudioCallback(nint userdata, byte* stream, int length);
 
         public readonly struct SDL_AudioSpec
         {
@@ -160,9 +163,9 @@ namespace SdlSharp
 
             public readonly SDL_AudioCallback? Callback { get; }
 
-            public readonly IntPtr Userdata { get; }
+            public readonly nint Userdata { get; }
 
-            public SDL_AudioSpec(int frequency, AudioFormat format, byte channels, byte silence, ushort samples, uint size, SDL_AudioCallback? callback, IntPtr userdata)
+            public SDL_AudioSpec(int frequency, AudioFormat format, byte channels, byte silence, ushort samples, uint size, SDL_AudioCallback? callback, nint userdata)
             {
                 Frequency = frequency;
                 Format = format;
@@ -198,17 +201,17 @@ namespace SdlSharp
 
             public readonly double LengthRatio { get; }
 
-            // Work around the fact that can't make buffers of IntPtr
-            private readonly IntPtr _filter0;
-            private readonly IntPtr _filter1;
-            private readonly IntPtr _filter2;
-            private readonly IntPtr _filter3;
-            private readonly IntPtr _filter4;
-            private readonly IntPtr _filter5;
-            private readonly IntPtr _filter6;
-            private readonly IntPtr _filter7;
-            private readonly IntPtr _filter8;
-            private readonly IntPtr _filter9;
+            // Work around the fact that can't make buffers of nint
+            private readonly nint _filter0;
+            private readonly nint _filter1;
+            private readonly nint _filter2;
+            private readonly nint _filter3;
+            private readonly nint _filter4;
+            private readonly nint _filter5;
+            private readonly nint _filter6;
+            private readonly nint _filter7;
+            private readonly nint _filter8;
+            private readonly nint _filter9;
             private readonly int _filterIndex;
         }
 
@@ -264,9 +267,9 @@ namespace SdlSharp
         public static extern void SDL_PauseAudioDevice(SDL_AudioDeviceID dev, bool pause_on);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr SDL_LoadWAV_RW(SDL_RWops* src, bool freesrc, out SDL_AudioSpec spec, out byte* audio_buf, out uint audio_len);
+        public static extern nint SDL_LoadWAV_RW(SDL_RWops* src, bool freesrc, out SDL_AudioSpec spec, out byte* audio_buf, out uint audio_len);
 
-        public static IntPtr SDL_LoadWAV(string file, out SDL_AudioSpec spec, out byte* audio_buf, out uint audio_len) =>
+        public static nint SDL_LoadWAV(string file, out SDL_AudioSpec spec, out byte* audio_buf, out uint audio_len) =>
                 SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"), true, out spec, out audio_buf, out audio_len);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -425,9 +428,9 @@ namespace SdlSharp
         public static extern int SDL_GetSystemRAM();
 
         // SIMD should be used through .NET support, no direct support otherwise
-        //public static extern UIntPtr SDL_SIMDGetAlignment();
-        //public static extern IntPtr SDL_SIMDAlloc(UIntPtr len);
-        //public static extern void SDL_SIMDFree(IntPtr ptr);
+        //public static extern nuint SDL_SIMDGetAlignment();
+        //public static extern nint SDL_SIMDAlloc(nuint len);
+        //public static extern void SDL_SIMDFree(nint ptr);
 
         #endregion
 
@@ -856,8 +859,8 @@ namespace SdlSharp
             public readonly uint Timestamp;
             public readonly uint WindowId;
             public readonly int Code;
-            public readonly IntPtr Data1;
-            public readonly IntPtr Data2;
+            public readonly nint Data1;
+            public readonly nint Data2;
         }
 
         public readonly struct SDL_SysWMEvent
@@ -993,22 +996,22 @@ namespace SdlSharp
         public static extern int SDL_PushEvent(ref SDL_Event e);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate bool SDL_EventFilter(IntPtr userdata, ref SDL_Event e);
+        public delegate bool SDL_EventFilter(nint userdata, ref SDL_Event e);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetEventFilter(SDL_EventFilter filter, IntPtr userdata);
+        public static extern void SDL_SetEventFilter(SDL_EventFilter filter, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_GetEventFilter(out SDL_EventFilter filter, out IntPtr userdata);
+        public static extern bool SDL_GetEventFilter(out SDL_EventFilter filter, out nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_AddEventWatch(SDL_EventFilter filter, IntPtr userdata);
+        public static extern void SDL_AddEventWatch(SDL_EventFilter filter, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_DelEventWatch(SDL_EventFilter filter, IntPtr userdata);
+        public static extern void SDL_DelEventWatch(SDL_EventFilter filter, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_FilterEvents(SDL_EventFilter filter, IntPtr userdata);
+        public static extern void SDL_FilterEvents(SDL_EventFilter filter, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern byte SDL_EventState(SDL_EventType type, State state);
@@ -1620,10 +1623,10 @@ namespace SdlSharp
         // SDL_HintCallback is covered by HintCallback.cs
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern void SDL_AddHintCallback(string name, HintCallback callback, IntPtr userdata);
+        public static extern void SDL_AddHintCallback(string name, HintCallback callback, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern void SDL_DelHintCallback(string name, HintCallback callback, IntPtr userdata);
+        public static extern void SDL_DelHintCallback(string name, HintCallback callback, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_ClearHints();
@@ -1893,10 +1896,10 @@ namespace SdlSharp
         // SDL_LogOutputFunction is covered by LogOutputFunction.cs
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_LogGetOutputFunction(out LogOutputFunction callback, out IntPtr userdata);
+        public static extern void SDL_LogGetOutputFunction(out LogOutputFunction callback, out nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_LogSetOutputFunction(LogOutputFunction callback, IntPtr userdata);
+        public static extern void SDL_LogSetOutputFunction(LogOutputFunction callback, nint userdata);
 
         #endregion
 
@@ -2483,10 +2486,10 @@ namespace SdlSharp
         public static extern int SDL_GL_UnbindTexture(SDL_Texture* texture);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr SDL_RenderGetMetalLayer(SDL_Renderer* renderer);
+        public static extern nint SDL_RenderGetMetalLayer(SDL_Renderer* renderer);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr SDL_RenderGetMetalCommandEncoder(SDL_Renderer* renderer);
+        public static extern nint SDL_RenderGetMetalCommandEncoder(SDL_Renderer* renderer);
 
         #endregion
 
@@ -2511,21 +2514,21 @@ namespace SdlSharp
         public delegate long SeekRWOps(SDL_RWops* context, long offset, SeekType whence);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate UIntPtr ReadRWOps(SDL_RWops* context, void* ptr, UIntPtr size, UIntPtr maxnum);
+        public delegate nuint ReadRWOps(SDL_RWops* context, void* ptr, nuint size, nuint maxnum);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate UIntPtr WriteRWOps(SDL_RWops* context, void* ptr, UIntPtr size, UIntPtr num);
+        public delegate nuint WriteRWOps(SDL_RWops* context, void* ptr, nuint size, nuint num);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int CloseRWOps(SDL_RWops* context);
 
         public struct SDL_RWops
         {
-            public IntPtr Size { get; set; }
-            public IntPtr Seek { get; set; }
-            public IntPtr Read { get; set; }
-            public IntPtr Write { get; set; }
-            public IntPtr Close { get; set; }
+            public nint Size { get; set; }
+            public nint Seek { get; set; }
+            public nint Read { get; set; }
+            public nint Write { get; set; }
+            public nint Close { get; set; }
 
             public SDL_RWOpsType Type { get; set; }
 
@@ -2540,10 +2543,10 @@ namespace SdlSharp
         public static extern long SDL_RWseek(SDL_RWops* context, long offset, SeekType whence);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UIntPtr SDL_RWread(SDL_RWops* context, void* ptr, UIntPtr size, UIntPtr maxnum);
+        public static extern nuint SDL_RWread(SDL_RWops* context, void* ptr, nuint size, nuint maxnum);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UIntPtr SDL_RWwrite(SDL_RWops* context, void* ptr, UIntPtr size, UIntPtr num);
+        public static extern nuint SDL_RWwrite(SDL_RWops* context, void* ptr, nuint size, nuint num);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RWclose(SDL_RWops* context);
@@ -2569,10 +2572,10 @@ namespace SdlSharp
         // Macros in RWOps structure
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void* SDL_LoadFile_RW(SDL_RWops* src, out UIntPtr datasize, bool freesrc);
+        public static extern void* SDL_LoadFile_RW(SDL_RWops* src, out nuint datasize, bool freesrc);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern void* SDL_LoadFile(string file, out UIntPtr datasize);
+        public static extern void* SDL_LoadFile(string file, out nuint datasize);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern byte SDL_ReadU8(SDL_RWops* src);
@@ -2596,25 +2599,25 @@ namespace SdlSharp
         public static extern ulong SDL_ReadBE64(SDL_RWops* src);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UIntPtr SDL_WriteU8(SDL_RWops* dst, byte value);
+        public static extern nuint SDL_WriteU8(SDL_RWops* dst, byte value);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UIntPtr SDL_WriteLE16(SDL_RWops* dst, ushort value);
+        public static extern nuint SDL_WriteLE16(SDL_RWops* dst, ushort value);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UIntPtr SDL_WriteBE16(SDL_RWops* dst, ushort value);
+        public static extern nuint SDL_WriteBE16(SDL_RWops* dst, ushort value);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UIntPtr SDL_WriteLE32(SDL_RWops* dst, uint value);
+        public static extern nuint SDL_WriteLE32(SDL_RWops* dst, uint value);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UIntPtr SDL_WriteBE32(SDL_RWops* dst, uint value);
+        public static extern nuint SDL_WriteBE32(SDL_RWops* dst, uint value);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UIntPtr SDL_WriteLE64(SDL_RWops* dst, ulong value);
+        public static extern nuint SDL_WriteLE64(SDL_RWops* dst, ulong value);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UIntPtr SDL_WriteBE64(SDL_RWops* dst, ulong value);
+        public static extern nuint SDL_WriteBE64(SDL_RWops* dst, ulong value);
 
         #endregion
 
@@ -2738,7 +2741,7 @@ namespace SdlSharp
         // These are needed for interop, though
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void* SDL_malloc(UIntPtr size);
+        public static extern void* SDL_malloc(nuint size);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_free(void* memblock);
@@ -2766,11 +2769,11 @@ namespace SdlSharp
             public readonly int Height { get; }
             public readonly int Pitch { get; }
             public readonly void* Pixels { get; }
-            private readonly IntPtr _userdata; // void*
+            private readonly nint _userdata; // void*
             private readonly int _locked;
-            private readonly IntPtr _lock_data; // void*
+            private readonly nint _lock_data; // void*
             private readonly Rectangle _clip_rect;
-            private readonly IntPtr _map; // SDL_BlitMap*
+            private readonly nint _map; // SDL_BlitMap*
             private readonly int _refcount;
 
             public bool MustLock => (_flags & SDL_SurfaceFlags.RleAccel) != 0;
@@ -2928,9 +2931,9 @@ namespace SdlSharp
 
         public struct SDL_SysWMinfo_Windows
         {
-            public readonly IntPtr Window;
-            public readonly IntPtr Hdc;
-            public readonly IntPtr Hinstance;
+            public readonly nint Window;
+            public readonly nint Hdc;
+            public readonly nint Hinstance;
         }
 
         [StructLayout(LayoutKind.Explicit)]
@@ -2985,7 +2988,7 @@ namespace SdlSharp
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_TimerID SDL_AddTimer(uint interval, TimerCallbackDelegate callback, IntPtr param);
+        public static extern SDL_TimerID SDL_AddTimer(uint interval, TimerCallbackDelegate callback, nint param);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_RemoveTimer(SDL_TimerID id);
@@ -3166,7 +3169,7 @@ namespace SdlSharp
         public static extern SDL_Window* SDL_CreateWindow(Utf8String title, int x, int y, int w, int h, WindowFlags flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Window* SDL_CreateWindowFrom(IntPtr data);
+        public static extern SDL_Window* SDL_CreateWindowFrom(nint data);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_GetWindowID(SDL_Window* window);
@@ -3187,10 +3190,10 @@ namespace SdlSharp
         public static extern void SDL_SetWindowIcon(SDL_Window* window, SDL_Surface* icon);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern IntPtr SDL_SetWindowData(SDL_Window* window, string name, IntPtr userdata);
+        public static extern nint SDL_SetWindowData(SDL_Window* window, string name, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern IntPtr SDL_GetWindowData(SDL_Window* window, string name);
+        public static extern nint SDL_GetWindowData(SDL_Window* window, string name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowPosition(SDL_Window* window, int x, int y);
@@ -3291,10 +3294,10 @@ namespace SdlSharp
         // SDL_HitTestResult is covered by HitTestResult.cs
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate HitTestResult HitTestDelegate(SDL_Window* win, ref Point area, IntPtr data);
+        public delegate HitTestResult HitTestDelegate(SDL_Window* win, ref Point area, nint data);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetWindowHitTest(SDL_Window* window, HitTestDelegate? callback, IntPtr callback_data);
+        public static extern int SDL_SetWindowHitTest(SDL_Window* window, HitTestDelegate? callback, nint callback_data);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_DestroyWindow(SDL_Window* window);
@@ -3317,7 +3320,7 @@ namespace SdlSharp
         //public extern static int SDL_GL_GetAttribute(SDL_GLattr attr, out int value);
         //public extern static SDL_GLContext SDL_GL_CreateContext(SDL_Window* window);
         //public extern static int SDL_GL_MakeCurrent(SDL_Window* window, SDL_GLContext context);
-        //public extern static IntPtr SDL_GL_GetCurrentWindow();
+        //public extern static nint SDL_GL_GetCurrentWindow();
         //public extern static SDL_GLContext SDL_GL_GetCurrentContext();
         //public extern static void SDL_GL_GetDrawableSize(SDL_Window* window, out int w, out int h);
         //public extern static int SDL_GL_SetSwapInterval(int interval);
@@ -3562,7 +3565,7 @@ namespace SdlSharp
         public static extern int TTF_SizeText(TTF_Font* font, string text, out int w, out int h);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int TTF_SizeUTF8(TTF_Font* font, IntPtr text, out int w, out int h);
+        public static extern int TTF_SizeUTF8(TTF_Font* font, nint text, out int w, out int h);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern int TTF_SizeUNICODE(TTF_Font* font, string text, out int w, out int h);
@@ -3571,7 +3574,7 @@ namespace SdlSharp
         public static extern SDL_Surface* TTF_RenderText_Solid(TTF_Font* font, string text, Color fg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* TTF_RenderUTF8_Solid(TTF_Font* font, IntPtr text, Color fg);
+        public static extern SDL_Surface* TTF_RenderUTF8_Solid(TTF_Font* font, nint text, Color fg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern SDL_Surface* TTF_RenderUNICODE_Solid(TTF_Font* font, string text, Color fg);
@@ -3583,7 +3586,7 @@ namespace SdlSharp
         public static extern SDL_Surface* TTF_RenderText_Shaded(TTF_Font* font, string text, Color fg, Color bg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* TTF_RenderUTF8_Shaded(TTF_Font* font, IntPtr text, Color fg, Color bg);
+        public static extern SDL_Surface* TTF_RenderUTF8_Shaded(TTF_Font* font, nint text, Color fg, Color bg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern SDL_Surface* TTF_RenderUNICODE_Shaded(TTF_Font* font, string text, Color fg, Color bg);
@@ -3595,7 +3598,7 @@ namespace SdlSharp
         public static extern SDL_Surface* TTF_RenderText_Blended(TTF_Font* font, string text, Color fg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* TTF_RenderUTF8_Blended(TTF_Font* font, IntPtr text, Color fg);
+        public static extern SDL_Surface* TTF_RenderUTF8_Blended(TTF_Font* font, nint text, Color fg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern SDL_Surface* TTF_RenderUNICODE_Blended(TTF_Font* font, string text, Color fg);
@@ -3604,7 +3607,7 @@ namespace SdlSharp
         public static extern SDL_Surface* TTF_RenderText_Blended_Wrapped(TTF_Font* font, string text, Color fg, uint wrapLength);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* TTF_RenderUTF8_Blended_Wrapped(TTF_Font* font, IntPtr text, Color fg, uint wrapLength);
+        public static extern SDL_Surface* TTF_RenderUTF8_Blended_Wrapped(TTF_Font* font, nint text, Color fg, uint wrapLength);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern SDL_Surface* TTF_RenderUNICODE_Blended_Wrapped(TTF_Font* font, string text, Color fg, uint wrapLength);
@@ -3646,7 +3649,7 @@ namespace SdlSharp
         public readonly struct Mix_Chunk
         {
             private readonly int _allocated;
-            private readonly IntPtr _abuf;
+            private readonly nint _abuf;
             private readonly uint _alen;
             private readonly byte _volume;
         }
@@ -3719,19 +3722,19 @@ namespace SdlSharp
         public static extern MusicType Mix_GetMusicType(Mix_Music* music);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MixFunctionDelegate(IntPtr udata, IntPtr stream, int len);
+        public delegate void MixFunctionDelegate(nint udata, nint stream, int len);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_SetPostMix(MixFunctionDelegate mix_func, IntPtr arg);
+        public static extern void Mix_SetPostMix(MixFunctionDelegate mix_func, nint arg);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_HookMusic(MixFunctionDelegate mix_func, IntPtr arg);
+        public static extern void Mix_HookMusic(MixFunctionDelegate mix_func, nint arg);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern void Mix_HookMusicFinished(MusicFinishedDelegate music_finished);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr Mix_GetMusicHookData();
+        public static extern nint Mix_GetMusicHookData();
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void MusicChannelFinishedDelegate(int channel);
@@ -3740,13 +3743,13 @@ namespace SdlSharp
         public static extern void Mix_ChannelFinished(MusicChannelFinishedDelegate channel_finished);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MixEffectDelegate(int channel, IntPtr stream, int length, IntPtr userData);
+        public delegate void MixEffectDelegate(int channel, nint stream, int length, nint userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MixEffectDoneDelegate(int channel, IntPtr userData);
+        public delegate void MixEffectDoneDelegate(int channel, nint userData);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Mix_RegisterEffect(int chan, MixEffectDelegate f, MixEffectDoneDelegate d, IntPtr arg);
+        public static extern int Mix_RegisterEffect(int chan, MixEffectDelegate f, MixEffectDoneDelegate d, nint arg);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_UnregisterEffect(int channel, MixEffectDelegate f);
@@ -3890,10 +3893,10 @@ namespace SdlSharp
         public static extern string Mix_GetSoundFonts();
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public delegate bool SoundFontFunction(string s, IntPtr data);
+        public delegate bool SoundFontFunction(string s, nint data);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern bool Mix_EachSoundFont(SoundFontFunction function, IntPtr data);
+        public static extern bool Mix_EachSoundFont(SoundFontFunction function, nint data);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern Mix_Chunk* Mix_GetChunk(int channel);

@@ -8,7 +8,7 @@
         /// <summary>
         /// The major version number.
         /// </summary>
-        public readonly byte Major { get; }
+        public byte Major { get; }
 
         /// <summary>
         /// The minor version number.

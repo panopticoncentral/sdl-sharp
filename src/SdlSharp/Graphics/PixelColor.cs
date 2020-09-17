@@ -20,7 +20,7 @@ namespace SdlSharp.Graphics
         public bool Equals(PixelColor other) => Value == other.Value;
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is PixelColor p && Equals(p);
+        public override bool Equals(object? obj) => obj is PixelColor p && Equals(p);
 
         /// <inheritdoc/>
         public override int GetHashCode()

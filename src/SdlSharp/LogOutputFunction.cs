@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace SdlSharp
 {
@@ -11,5 +10,5 @@ namespace SdlSharp
     /// <param name="priority">The priority.</param>
     /// <param name="message">The message.</param>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public delegate void LogOutputFunction(IntPtr userdata, LogCategory category, LogPriority priority, string message);
+    public delegate void LogOutputFunction(nint userdata, LogCategory category, LogPriority priority, string message);
 }

@@ -128,7 +128,7 @@ namespace SdlSharp
         public bool Equals(Point other) => other.X == X && other.Y == Y;
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) => obj is Point other && Equals(other);
+        public override bool Equals(object? obj) => obj is Point other && Equals(other);
 
         /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(X, Y);

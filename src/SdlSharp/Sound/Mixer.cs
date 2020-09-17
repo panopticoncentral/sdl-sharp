@@ -48,7 +48,7 @@ namespace SdlSharp.Sound
         /// <summary>
         /// The user data of the current music hook.
         /// </summary>
-        public static IntPtr PlayMusicHookData =>
+        public static nint PlayMusicHookData =>
             Native.Mix_GetMusicHookData();
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <param name="function">The function to call.</param>
         /// <param name="userData">User data.</param>
-        public static void SetPostMixHook(MixFunctionDelegate function, IntPtr userData)
+        public static void SetPostMixHook(MixFunctionDelegate function, nint userData)
         {
             s_postMixHook = new MixFunctionWrapper(function).MixFunction;
             Native.Mix_SetPostMix(s_postMixHook, userData);
@@ -230,7 +230,7 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <param name="function">The function to call.</param>
         /// <param name="userData">User data.</param>
-        public static void SetPlayMusicHook(MixFunctionDelegate function, IntPtr userData)
+        public static void SetPlayMusicHook(MixFunctionDelegate function, nint userData)
         {
             s_playMusicHook = new MixFunctionWrapper(function).MixFunction;
             Native.Mix_HookMusic(s_playMusicHook, userData);
@@ -316,7 +316,7 @@ namespace SdlSharp.Sound
         /// <param name="callback">The callback.</param>
         /// <param name="data">User data.</param>
         /// <returns>Whether all the callbacks succeeded.</returns>
-        public static bool EachSoundFont(Func<string, IntPtr, bool> callback, IntPtr data)
+        public static bool EachSoundFont(Func<string, nint, bool> callback, nint data)
         {
             var wrapper = new EachWrapper(callback);
             return Native.Mix_EachSoundFont(wrapper.Callback, data);
@@ -324,14 +324,14 @@ namespace SdlSharp.Sound
 
         private sealed class EachWrapper
         {
-            private readonly Func<string, IntPtr, bool> _callback;
+            private readonly Func<string, nint, bool> _callback;
 
-            public EachWrapper(Func<string, IntPtr, bool> callback)
+            public EachWrapper(Func<string, nint, bool> callback)
             {
                 _callback = callback;
             }
 
-            public bool Callback(string s, IntPtr data) =>
+            public bool Callback(string s, nint data) =>
                 _callback(s, data);
         }
 
@@ -351,7 +351,7 @@ namespace SdlSharp.Sound
         {
             private readonly MixFunctionDelegate _mixDelegate;
 
-            public void MixFunction(IntPtr udata, IntPtr stream, int len) => _mixDelegate(new Span<byte>((void*)stream, len), udata);
+            public void MixFunction(nint udata, nint stream, int len) => _mixDelegate(new Span<byte>((void*)stream, len), udata);
 
             public MixFunctionWrapper(MixFunctionDelegate mixDelegate)
             {

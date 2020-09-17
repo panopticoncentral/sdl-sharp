@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SdlSharp.Sound
 {
@@ -16,7 +15,7 @@ namespace SdlSharp.Sound
         /// <summary>
         /// User data for this effect.
         /// </summary>
-        protected virtual IntPtr UserData { get; }
+        protected virtual nint UserData { get; }
 
         /// <summary>
         /// Creates a new mix effect.
@@ -34,11 +33,11 @@ namespace SdlSharp.Sound
         /// <param name="stream">The stream.</param>
         /// <param name="length">The length of the stream.</param>
         /// <param name="userData">The effect's user data.</param>
-        protected virtual void Effect(int channel, IntPtr stream, int length, IntPtr userData)
+        protected virtual void Effect(int channel, nint stream, int length, nint userData)
         {
         }
 
-        private void DoneWrapper(int channel, IntPtr userData)
+        private void DoneWrapper(int channel, nint userData)
         {
             Done(channel, userData);
 
@@ -60,7 +59,7 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <param name="channel">The channel.</param>
         /// <param name="userData">The effect's user data.</param>
-        protected virtual void Done(int channel, IntPtr userData)
+        protected virtual void Done(int channel, nint userData)
         {
         }
 

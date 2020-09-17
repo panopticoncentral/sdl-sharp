@@ -12,7 +12,7 @@ namespace SdlSharp
         where TNative : unmanaged
         where TManaged : NativePointerBase<TNative, TManaged>, new()
     {
-        private static readonly Dictionary<IntPtr, WeakReference<TManaged>> s_instances = new Dictionary<IntPtr, WeakReference<TManaged>>();
+        private static readonly Dictionary<nint, WeakReference<TManaged>> s_instances = new Dictionary<nint, WeakReference<TManaged>>();
 
         /// <summary>
         /// The pointer.
@@ -22,7 +22,8 @@ namespace SdlSharp
         /// <inheritdoc/>
         public virtual void Dispose()
         {
-            _ = s_instances.Remove((IntPtr)Pointer);
+            GC.SuppressFinalize(this);
+            _ = s_instances.Remove((nint)Pointer);
             Pointer = null;
         }
 
@@ -38,7 +39,7 @@ namespace SdlSharp
                 return null;
             }
 
-            if (s_instances.TryGetValue((IntPtr)pointer, out var weakRef)
+            if (s_instances.TryGetValue((nint)pointer, out var weakRef)
                 && weakRef.TryGetTarget(out var value))
             {
                 return value;
@@ -48,7 +49,7 @@ namespace SdlSharp
             {
                 Pointer = Native.CheckPointer(pointer)
             };
-            s_instances[(IntPtr)pointer] = new WeakReference<TManaged>(value);
+            s_instances[(nint)pointer] = new WeakReference<TManaged>(value);
             return value;
         }
 

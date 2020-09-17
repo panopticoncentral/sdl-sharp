@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace SdlSharp
 {
@@ -6,7 +7,7 @@ namespace SdlSharp
     /// A point.
     /// </summary>
     [DebuggerDisplay("({X}, {Y})")]
-    public readonly struct PointF
+    public readonly struct PointF : IEquatable<PointF>
     {
         /// <summary>
         /// A point representing the origin (0, 0).
@@ -118,5 +119,34 @@ namespace SdlSharp
 
             return (PointF)(newX, newY);
         }
+
+        /// <summary>
+        /// Determines if two points are equal.
+        /// </summary>
+        /// <param name="other">The other point.</param>
+        /// <returns>Whether they are equal.</returns>
+        public bool Equals(PointF other) => other.X == X && other.Y == Y;
+
+        /// <inheritdoc/>
+        public override bool Equals(object? obj) => obj is PointF other && Equals(other);
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => HashCode.Combine(X, Y);
+
+        /// <summary>
+        /// Determines if two points are equal.
+        /// </summary>
+        /// <param name="left">One size.</param>
+        /// <param name="right">The other size.</param>
+        /// <returns>Whether they are equal.</returns>
+        public static bool operator ==(PointF left, PointF right) => left.Equals(right);
+
+        /// <summary>
+        /// Determines if two points are not equal.
+        /// </summary>
+        /// <param name="left">One size.</param>
+        /// <param name="right">The other size.</param>
+        /// <returns>Whether they are not equal.</returns>
+        public static bool operator !=(PointF left, PointF right) => !(left == right);
     }
 }

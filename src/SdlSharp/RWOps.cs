@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace SdlSharp
 {
@@ -51,7 +50,7 @@ namespace SdlSharp
             instance.Pointer->Size = Marshal.GetFunctionPointerForDelegate<Native.SizeRWOps>(wrapper.Size);
             instance.Pointer->Seek = Marshal.GetFunctionPointerForDelegate<Native.SeekRWOps>(wrapper.Seek);
             instance.Pointer->Read = Marshal.GetFunctionPointerForDelegate<Native.ReadRWOps>(wrapper.Read);
-            instance.Pointer->Write = Marshal.GetFunctionPointerForDelegate<Native.WriteRWOps>(wrapper.Write);
+            instance.Pointer->Write = Marshal.GetFunctionPointerForDelegate<Native.WriteRWOps>(ReadOnlyByteArrayWrapper.Write);
             instance.Pointer->Close = Marshal.GetFunctionPointerForDelegate<Native.CloseRWOps>(wrapper.Close);
             return instance;
         }
@@ -73,7 +72,7 @@ namespace SdlSharp
         public T? Read<T>() where T : unmanaged
         {
             T value = default;
-            return Native.SDL_RWread(Pointer, &value, new UIntPtr((uint)sizeof(T)), new UIntPtr(1)) == UIntPtr.Zero ? (T?)null : value;
+            return Native.SDL_RWread(Pointer, &value, (uint)sizeof(T), 1) == 0 ? (T?)null : value;
         }
 
         /// <summary>
@@ -82,7 +81,7 @@ namespace SdlSharp
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> if the value was written, <c>false</c> otherwise.</returns>
-        public bool Write<T>(T value) where T : unmanaged => Native.SDL_RWwrite(Pointer, &value, new UIntPtr((uint)sizeof(T)), new UIntPtr(1)) != UIntPtr.Zero;
+        public bool Write<T>(T value) where T : unmanaged => Native.SDL_RWwrite(Pointer, &value, (uint)sizeof(T), 1) != 0;
 
         /// <inheritdoc/>
         public override void Dispose()
@@ -226,7 +225,7 @@ namespace SdlSharp
                 return _index;
             }
 
-            internal UIntPtr Read(Native.SDL_RWops* _, void* ptr, UIntPtr size, UIntPtr maxnum)
+            internal nuint Read(Native.SDL_RWops* _, void* ptr, nuint size, nuint maxnum)
             {
                 uint numberRead = 0;
                 var sizeNumber = (uint)size;
@@ -238,7 +237,7 @@ namespace SdlSharp
 
                 if (_isClosed || !InBounds())
                 {
-                    return UIntPtr.Zero;
+                    return 0;
                 }
 
                 while (maxNumNumber > 0 && InBounds())
@@ -252,11 +251,11 @@ namespace SdlSharp
                     }
                 }
 
-                return (UIntPtr)numberRead;
+                return (nuint)numberRead;
             }
 
 #pragma warning disable IDE1006, RCS1163
-            internal UIntPtr Write(Native.SDL_RWops* _1, void* _2, UIntPtr _3, UIntPtr _4) => UIntPtr.Zero;
+            internal static nuint Write(Native.SDL_RWops* _1, void* _2, nuint _3, nuint _4) => 0;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace SdlSharp
     /// </summary>
     public sealed unsafe class Application : IDisposable
     {
-        private bool _quitReceived = false;
+        private bool _quitReceived;
 
         private readonly bool _initializedImage;
         private readonly bool _initializedMixer;
@@ -78,25 +78,25 @@ namespace SdlSharp
         /// <summary>
         /// Whether the font subsystem is initialized.
         /// </summary>
-        public bool FontIsInitialized =>
+        public static bool FontIsInitialized =>
             Native.TTF_WasInit();
 
         /// <summary>
         /// The platform the application is running on.
         /// </summary>
-        public string Platform =>
+        public static string Platform =>
             Native.SDL_GetPlatform();
 
         /// <summary>
         /// The base path of the application.
         /// </summary>
-        public string BasePath =>
+        public static string BasePath =>
             Native.CheckNotNull(Native.SDL_GetBasePath().ToString());
 
         /// <summary>
         /// Information about the power state of the computer.
         /// </summary>
-        public (PowerState State, int Seconds, int Percent) PowerInfo
+        public static (PowerState State, int Seconds, int Percent) PowerInfo
         {
             get
             {
@@ -231,7 +231,7 @@ namespace SdlSharp
         /// <param name="buttons">The buttons.</param>
         /// <param name="colorScheme">The color scheme.</param>
         /// <returns>The ID of the button that was selected.</returns>
-        public int ShowMessageBox(MessageBoxFlags flags, Window? window, string title, string message, MessageBoxButton[] buttons, MessageBoxColorScheme? colorScheme)
+        public static int ShowMessageBox(MessageBoxFlags flags, Window? window, string title, string message, MessageBoxButton[] buttons, MessageBoxColorScheme? colorScheme)
         {
             var nativeButtons = new Native.SDL_MessageBoxButtonData[buttons.Length];
 
@@ -268,7 +268,7 @@ namespace SdlSharp
         /// <param name="title">The title.</param>
         /// <param name="message">The message.</param>
         /// <param name="window">The parent window, if any.</param>
-        public void ShowMessageBox(MessageBoxFlags flags, string title, string message, Window? window)
+        public static void ShowMessageBox(MessageBoxFlags flags, string title, string message, Window? window)
         {
             using var utf8Title = Utf8String.ToUtf8String(title);
             using var utf8Message = Utf8String.ToUtf8String(message);
@@ -282,7 +282,7 @@ namespace SdlSharp
         /// <param name="organization">Organization name.</param>
         /// <param name="application">Application name.</param>
         /// <returns>The path to store preferences.</returns>
-        public string GetPreferencesPath(string organization, string application)
+        public static string GetPreferencesPath(string organization, string application)
         {
             using var organizationString = Utf8String.ToUtf8String(organization);
             using var applicationString = Utf8String.ToUtf8String(application);

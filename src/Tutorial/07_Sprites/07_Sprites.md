@@ -8,7 +8,7 @@ In previous tutorials, we loaded an image into a texture and then copied that im
 
 We can then copy portions of the sprite sheet to create an image faster than drawing each image using a set of drawing commands.
 
-(Note: All sample images in this tutorial come from the [DawnLike - 16x16 Universal Rogue-like tileset v1.81](https://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v181) license [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/), credit to DragonDePlatino and DawnBringer)
+(Note: All sample images in this tutorial come from the [DawnLike - 16x16 Universal Rogue-like tileset v1.81](https://opengameart.org/content/dawnlike-16x16-universal-rogue-like-tileset-v181) license [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/), credit to DragonDePlatino and DawnBringer.)
 
 ## Step #1: Load the sprites
 

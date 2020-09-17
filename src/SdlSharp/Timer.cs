@@ -1,6 +1,4 @@
-﻿using System;
-
-// There are going to be unused fields in some of the interop structures
+﻿// There are going to be unused fields in some of the interop structures
 #pragma warning disable CS0169, RCS1213, IDE0051, IDE0052
 
 namespace SdlSharp
@@ -47,7 +45,7 @@ namespace SdlSharp
         /// <param name="callback">The callback to call.</param>
         /// <param name="param">User data to pass the callback.</param>
         /// <returns>The timer.</returns>
-        public static Timer Add(uint interval, TimerCallbackDelegate callback, IntPtr param) => new Timer(Native.SDL_AddTimer(interval, callback, param).Id, callback);
+        public static Timer Add(uint interval, TimerCallbackDelegate callback, nint param) => new Timer(Native.SDL_AddTimer(interval, callback, param).Id, callback);
 
         /// <summary>
         /// Removes a timer.
