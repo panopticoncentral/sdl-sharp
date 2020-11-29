@@ -34,7 +34,7 @@ This line will load the image file into a `Surface` that's not tied to any parti
 
 ## Step #3: Allow stretching the image
 
-For the purposes of this tutorial, we're going to allow the user to view the image in one of two ways: they can either view it at its original size, or they can view it stretched to the entire window. So let's set up a way for the user to switch between these views. After the `LoadBmp` call add the following code:
+For the purposes of this tutorial, we're going to allow the user to view the image in one of two ways: they can either view it at its original size, or they can view it stretched to the entire window. So let's set up a way for the user to switch between these views. Replace the `Keyboard` and `Mouse` statements from the previous tutorial with the following code:
 
 ```csharp
 var stretch = false;

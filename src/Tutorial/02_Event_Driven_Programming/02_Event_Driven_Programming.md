@@ -4,7 +4,7 @@ Now that we've created a window and got it painting, let's talk briefly about ho
 
 ## Step 1: Respond to key presses
 
-Go back now to the program we created. First add the following line at the top of the file:
+Go back now to the program we created. First add the following line at the top of the file below the other `using` statements:
 
 ```csharp
 using SdlSharp.Input;
@@ -13,24 +13,14 @@ using SdlSharp.Input;
 This will enable us to use the classes that deal with input from the user without qualification. Then add these lines _before_ the `DispatchEvents` loop:
 
 ```csharp
-Keyboard.KeyDown += (s, e) =>
+Keyboard.KeyDown += (s, e) => Application.ShowMessageBox(MessageBoxFlags.Information, "Key Press", e.Keycode switch
 {
-    switch (e.Keycode)
-    {
-        case Keycode.Up:
-            app.ShowMessageBox(MessageBoxFlags.Information, "Key Press", "Up!", window);
-            break;
-        case Keycode.Down:
-            app.ShowMessageBox(MessageBoxFlags.Information, "Key Press", "Down!", window);
-            break;
-        case Keycode.Left:
-            app.ShowMessageBox(MessageBoxFlags.Information, "Key Press", "Left!", window);
-            break;
-        case Keycode.Right:
-            app.ShowMessageBox(MessageBoxFlags.Information, "Key Press", "Right!", window);
-            break;
-    }
-};
+    Keycode.Up => "Up!",
+    Keycode.Down => "Down!",
+    Keycode.Left => "Left!",
+    Keycode.Right => "Right!",
+    _ => "Other!"
+}, window);
 ```
 
 What this code does is hook up a handler for the `KeyDown` events that are fired when the user presses a key on the keyboard. The parameter `s` is the "sender" of the event, but in this case there is no "sender" so this value will always be `null`. The parameter `e` are the event arguments, which contain information about the event. In this case, the `KeyDown` event will provide a `KeyboardEventArgs` object that contains information about the key that was involved in the event.
@@ -42,8 +32,8 @@ So in this case, all we're doing is putting up a message box when the users pres
 In addition to keyboard input, you can also respond to mouse events as well. Add these lines below the ones you added in the previous step:
 
 ```csharp
-Mouse.ButtonDown += (s, e) => app.ShowMessageBox(MessageBoxFlags.Information, "Mouse Button", "Down!", window);
-Mouse.ButtonUp += (s, e) => app.ShowMessageBox(MessageBoxFlags.Information, "Mouse Button", "Up!", window);
+Mouse.ButtonDown += (s, e) => Application.ShowMessageBox(MessageBoxFlags.Information, "Mouse Button", "Down!", window);
+Mouse.ButtonUp += (s, e) => Application.ShowMessageBox(MessageBoxFlags.Information, "Mouse Button", "Up!", window);
 ```
 
 Now when you click on the mouse button when you're over the window, you should get a message box that says "Down!" and then one that says "Up!".

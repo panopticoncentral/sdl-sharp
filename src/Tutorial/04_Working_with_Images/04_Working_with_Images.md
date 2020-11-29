@@ -18,7 +18,7 @@ To use the additional image formats `sdl_image` supports, we have to specify tha
 using var app = new Application(Subsystems.Video, ImageFormats.Jpg);
 ```
 
-This specifies that we're going to working with Jpeg images. You can `||` in any other formats you want to use in your program as well.
+This specifies that we're going to working with Jpeg images. You can `|` in any other formats you want to use in your program as well.
 
 Now change the `Surface.LoadBmp` line to:
 

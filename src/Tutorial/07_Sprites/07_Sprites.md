@@ -28,7 +28,7 @@ Save the above sprite sheets into your project directory and call them `Floor.pn
   </ItemGroup>
 ```
 
-Now load the images right after `Renderer.Create`:
+Now remove the drawing code from the previous tutorial (leaving only the `DrawColor`, `Clear`, and `Present` statements), and load the images right after `Renderer.Create`:
 
 ```csharp
 using var floor = Image.Load("Floor.png", renderer);

@@ -41,59 +41,64 @@ A prompt will open in the lower right hand corner asking if you want to add asse
 
 ## Step #4: Update your project
 
-Now go back to Visual Studio Code and click on `01_Hello_World.csproj`. You should see:
+Now go back to Visual Studio Code and click on `Tutorial.csproj`. You should see:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Tutorial</RootNamespace>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
 </Project>
 ```
 
-You can learn more about `.csproj` files by reading about [MSBuild](https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild), but we really need to just make two changes here.
+You can learn more about `.csproj` files by reading about [MSBuild](https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild), but we need to make three changes here.
 
 First, the `OutputType` property needs to be changed from `Exe` to `WinExe`. An `Exe` project produces a console application that only runs within a command window (like we did in the previous step). Since a SDL project is going to create its own window, we need to change it to `WinExe`, which is a full Windows application that has its own window.
 
+Second, you need to add a `PlatformTarget` property that indicates whether we are building against the `x86` or `x64` versions of SDL2. Assuming you're on `x64`, you would add below `TargetFramework`:
+
+```xml
+<PlatformTarget>x64</PlatformTarget>
+```
+
 ## Step #5: Add your reference
 
-Now go back to the command-line and run the command `dotnet add package SdlSharp --version 0.6.3-alpha`. This will add a reference to the SDL# package so you can use it in your code.
+Finally, go back to the command-line and run the command `dotnet add package SdlSharp --version 0.9.3-alpha`. This will add a reference to the SDL# package so you can use it in your code.
 
 (**NOTE:** The `--version` argument will not be required once SDL# is more stable.)
 
 ## Step #6: Bring up a window
 
-Now go back to the `Program.cs` file in Visual Studio Code. Add the following lines right below `using System`:
+Now go back to the `Program.cs` file in Visual Studio Code. Delete everything in the file and add the following lines:
 
 ```csharp
 using SdlSharp;
 using SdlSharp.Graphics;
 ```
 
-This will allow us to refer to the SDL# types without having to qualify them with the SDL# namespaces. Now replace the `Console.WriteLine` call with the following lines:
+This will allow us to refer to the SDL# types without having to qualify them with the SDL# namespaces. Now add the following lines:
 
 ```csharp
 using var app = new Application(Subsystems.Video);
 ```
 
-This creates a new SDL# `Application` object which represents the whole application. As we'll see later, this object will be used to respond to system events and give the window a chance to paint itself. The `Subsystems.Video` indicates that we will be using the display subsystem of SDL. In later tutorials, we will use other subsystems of SDL but for now this is all we need.
+This creates a new SDL# `Application` object which represents the whole application. As we'll see later, this object will be used to respond to system events and give the window a chance to paint itself. The `Subsystems.Video` indicates that we will be using the display subsystem of SDL. In later tutorials, we will use other subsystems of SDL but for now this is all we need. Now add:
 
 ```csharp
 Size windowSize = (640, 480);
 Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
 ```
 
-This line defines the size of the window that we're going to create. A `Size` object holds a width/height pair, while a `Rectangle` holds both a location on the screen plus a size. `Window.UndefinedWindowLocation` is a location that means "I don't care where you put this on the screen."
+This line defines the size of the window that we're going to create. A `Size` object holds a width/height pair, while a `Rectangle` holds both a location on the screen plus a size. `Window.UndefinedWindowLocation` is a location that means "I don't care where you put this on the screen." Now add:
 
 ```csharp
 using var window = Window.Create("Hello, World!", windowRectangle, WindowFlags.Shown);
 ```
 
-This creates a SDL window at the location we defined above. We specify `WindowFlags.Shown` to indicate that we want the window to be visible right away (rather than creating it hidden and then showing it later).
+This creates a SDL window at the location we defined above. We specify `WindowFlags.Shown` to indicate that we want the window to be visible right away (rather than creating it hidden and then showing it later). Now add:
 
 ```csharp
 while (app.DispatchEvent())
