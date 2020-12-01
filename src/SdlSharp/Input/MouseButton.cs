@@ -22,12 +22,12 @@ namespace SdlSharp.Input
         /// Middle
         /// </summary>
         Middle = 0x2,
-        
+
         /// <summary>
         /// Right
         /// </summary>
         Right = 0x4,
-        
+
         /// <summary>
         /// X1
         /// </summary>

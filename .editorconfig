@@ -19,6 +19,12 @@ indent_size = 4
 insert_final_newline = true
 charset = utf-8-bom
 
+dotnet_analyzer_diagnostic.severity = warning
+
+# The missing case detection is a little aggressive
+dotnet_diagnostic.IDE0010.severity = silent
+dotnet_diagnostic.IDE0072.severity = silent
+
 dotnet_style_qualification_for_field = false:warning
 dotnet_style_qualification_for_property = false:warning
 dotnet_style_qualification_for_method = false:warning
@@ -43,15 +49,15 @@ dotnet_style_explicit_tuple_names = true:warning
 dotnet_style_prefer_inferred_tuple_names = true:warning
 dotnet_style_prefer_inferred_anonymous_type_member_names = true:warning
 dotnet_style_prefer_auto_properties = true:warning
-dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
 dotnet_style_prefer_conditional_expression_over_assignment = true:warning
 dotnet_style_prefer_conditional_expression_over_return = true:warning
 dotnet_style_prefer_compound_assignment = true:warning
+dotnet_style_prefer_simplified_interpolation = true:warning
+dotnet_style_prefer_simplified_boolean_expressions = true:warning
 
 dotnet_style_coalesce_expression = true:warning
 dotnet_style_null_propagation = true:warning
-
-dotnet_code_quality_unused_parameters = all:warning
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
 
 csharp_style_var_for_built_in_types = true:warning
 csharp_style_var_when_type_is_apparent = true:warning
@@ -68,28 +74,32 @@ csharp_style_expression_bodied_local_functions = when_on_single_line:warning
 
 csharp_style_pattern_matching_over_is_with_cast_check = true:warning
 csharp_style_pattern_matching_over_as_with_null_check = true:warning
+csharp_style_prefer_switch_expression = true:warning
+csharp_style_prefer_pattern_matching = true:warning
+csharp_style_prefer_not_pattern = true:warning
 
 csharp_style_inlined_variable_declaration = true:warning
-
 csharp_prefer_simple_default_expression = true:warning
+csharp_style_pattern_local_over_anonymous_function = true:warning
+csharp_style_deconstructed_variable_declaration = true:warning
+csharp_style_prefer_index_operator = true:warning
+csharp_style_prefer_range_operator = true:warning
+csharp_style_implicit_object_creation_when_type_is_apparent = true:warning
 
 csharp_style_throw_expression = true:warning
 csharp_style_conditional_delegate_call = true:warning
 
 csharp_prefer_braces = true:warning
+csharp_prefer_simple_using_statement = true:warning
+
+csharp_using_directive_placement = outside_namespace:warning
+
+csharp_prefer_static_local_function = true:warning
 
 csharp_style_unused_value_expression_statement_preference = discard_variable:warning
 csharp_style_unused_value_assignment_preference = discard_variable:warning
-
-csharp_style_prefer_index_operator = true:warning
-csharp_style_prefer_range_operator = true:warning
-
-csharp_style_deconstructed_variable_declaration = true:warning
-csharp_style_pattern_local_over_anonymous_function = true:warning
-csharp_using_directive_placement = outside_namespace:warning
-csharp_prefer_static_local_function = true:warning
-csharp_prefer_simple_using_statement = true:warning
-csharp_style_prefer_switch_expression = true:warning
+dotnet_code_quality_unused_parameters = all:warning
+dotnet_remove_unnecessary_suppression_exclusions = none:warning
 
 dotnet_sort_system_directives_first = true
 dotnet_separate_import_directive_groups = true

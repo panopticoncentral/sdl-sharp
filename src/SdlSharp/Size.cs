@@ -34,7 +34,7 @@ namespace SdlSharp
         /// Converts a tuple to a size.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        public static implicit operator Size((int Width, int Height) tuple) => new Size(tuple.Width, tuple.Height);
+        public static implicit operator Size((int Width, int Height) tuple) => new(tuple.Width, tuple.Height);
 
         /// <summary>
         /// Adds two sizes together.

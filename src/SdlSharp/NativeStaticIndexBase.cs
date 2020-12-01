@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// In this case, it's really the whole point, and this will not have a lot of instantiations
+#pragma warning disable CA1000 // Do not declare members on generic types
+
 namespace SdlSharp
 {
     /// <summary>
@@ -12,7 +15,7 @@ namespace SdlSharp
         where TIndex : struct
         where TManaged : NativeStaticIndexBase<TIndex, TManaged>, new()
     {
-        private static readonly Dictionary<TIndex, WeakReference<TManaged>> s_instances = new Dictionary<TIndex, WeakReference<TManaged>>();
+        private static readonly Dictionary<TIndex, WeakReference<TManaged>> s_instances = new();
 
         /// <summary>
         /// The index.

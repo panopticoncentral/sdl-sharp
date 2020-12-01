@@ -1,0 +1,7 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <SdlRedistVersion>0.10.3-alpha</SdlRedistVersion>
+  </PropertyGroup>
+</Project>

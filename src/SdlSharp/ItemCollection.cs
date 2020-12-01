@@ -19,7 +19,7 @@ namespace SdlSharp
             _counter = counter;
         }
 
-        private IEnumerable<T> Devices()
+        public IEnumerator<T> GetEnumerator()
         {
             var count = Count;
             for (var index = 0; index < count; index++)
@@ -27,8 +27,6 @@ namespace SdlSharp
                 yield return this[index];
             }
         }
-
-        public IEnumerator<T> GetEnumerator() => Devices().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

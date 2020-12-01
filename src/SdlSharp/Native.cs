@@ -1,18 +1,29 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
 using SdlSharp.Touch;
 
-// There are going to be unused fields in some of the interop structures
-#pragma warning disable CS0169, RCS1213, IDE0051, IDE0052
+// We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
+#pragma warning disable CA1401 // P/Invokes should not be visible
+
+// Some interop structures have public fields
+#pragma warning disable CA1051 // Do not declare visible instance fields
+
+// Underscores are part of the public P/Invoke surface
+#pragma warning disable CA1707 // Remove the underscores from member name ...
+
+// Some interop structures have unused fields
+#pragma warning disable CS0169 // The field ... is never used
 
 // For the time being, we're not going to document all of the native APIs, see http://wiki.libsdl.org
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-// We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
-#pragma warning disable CA1401
+// Interop structures have unused private members for padding
+#pragma warning disable IDE0051 // Private member ... is unused
+#pragma warning disable IDE0052 // Private member ... can be removed as the value assigned to it is never read
 
 namespace SdlSharp
 {
@@ -95,10 +106,10 @@ namespace SdlSharp
         {
             var bytesPerPixel = typeof(T) == typeof(byte)
                 ? 1
-                : typeof(T) == typeof(ushort) 
-                    ? 2 
-                    : typeof(T) == typeof(uint) 
-                        ? 4 
+                : typeof(T) == typeof(ushort)
+                    ? 2
+                    : typeof(T) == typeof(uint)
+                        ? 4
                         : throw new InvalidOperationException();
             return new Span<T>(pixels, pitch / bytesPerPixel * height);
         }
@@ -218,16 +229,16 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumAudioDrivers();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GetAudioDriver(int index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int SDL_AudioInit(string driver_name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_AudioQuit();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GetCurrentAudioDriver();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -281,9 +292,12 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_ConvertAudio(ref SDL_AudioCVT cvt);
 
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
+        // This is the native name.
         public readonly struct SDL_AudioStream
         {
         }
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_AudioStream* SDL_NewAudioStream(AudioFormat src_format, byte src_channels, int src_rate, AudioFormat dst_format, byte dst_channels, int dst_rate);
@@ -440,7 +454,7 @@ namespace SdlSharp
 
         #region SDL_error.h
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int SDL_SetError(string message /* ... */);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -699,7 +713,7 @@ namespace SdlSharp
             public readonly uint Timestamp { get; }
             public readonly SDL_JoystickID Which { get; }
             public readonly byte Hat { get; }
-            public readonly HatFlags Value { get; }
+            public readonly HatState Value { get; }
 
             private readonly byte _padding1;
             private readonly byte _padding2;
@@ -1079,7 +1093,7 @@ namespace SdlSharp
         public static int SDL_GameControllerAddMappingsFromFile(string file) =>
             SDL_GameControllerAddMappingsFromRW(SDL_RWFromFile(file, "rb"), true);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int SDL_GameControllerAddMapping(string mappingString);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1089,7 +1103,7 @@ namespace SdlSharp
         public static extern DisposableAnsiString SDL_GameControllerMappingForIndex(int mapping_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern DisposableAnsiString SDL_GameControllerMappingForGUID(Guid guid);
+        public static extern DisposableAnsiString SDL_GameControllerMappingForGUID(Guid id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern DisposableAnsiString SDL_GameControllerMapping(SDL_GameController* gamecontroller);
@@ -1097,13 +1111,13 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_IsGameController(int joystick_index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GameControllerNameForIndex(int joystick_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern GameControllerType SDL_GameControllerTypeForIndex(int joystick_index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern DisposableAnsiString SDL_GameControllerMappingForDeviceIndex(int joystick_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1115,10 +1129,10 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_GameController* SDL_GameControllerFromPlayerIndex(int player_index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string? SDL_GameControllerName(SDL_GameController* gamecontroller);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern GameControllerType SDL_GameControllerGetType(SDL_GameController* gamecontroller);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1150,10 +1164,10 @@ namespace SdlSharp
 
         // SDL_GameControllerAxis is covered by ControllerAxis.cs
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern GameControllerAxis SDL_GameControllerGetAxisFromString(string pchString);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GameControllerGetStringForAxis(GameControllerAxis axis);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1164,10 +1178,10 @@ namespace SdlSharp
 
         // SDL_GameControllerButton is covered by ControllerButton.cs
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern GameControllerButton SDL_GameControllerGetButtonFromString(string pchString);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GameControllerGetStringForButton(GameControllerButton button);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1213,7 +1227,7 @@ namespace SdlSharp
         }
 
         [Flags]
-        public enum SDL_HapticFlags : uint
+        public enum SDL_HapticType : uint
         {
             None = 0,
             Constant = 1u << 0,
@@ -1271,7 +1285,7 @@ namespace SdlSharp
 
         public readonly struct SDL_HapticConstant
         {
-            private readonly SDL_HapticFlags _type;
+            private readonly SDL_HapticType _type;
             private readonly SDL_HapticDirection _direction;
 
             private readonly uint _length;
@@ -1287,7 +1301,7 @@ namespace SdlSharp
             private readonly ushort _fadeLength;
             private readonly ushort _fadeLevel;
 
-            public SDL_HapticConstant(SDL_HapticFlags type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, short level, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
+            public SDL_HapticConstant(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, short level, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
             {
                 _type = type;
                 _direction = direction;
@@ -1305,7 +1319,7 @@ namespace SdlSharp
 
         public readonly struct SDL_HapticPeriodic
         {
-            private readonly SDL_HapticFlags _type;
+            private readonly SDL_HapticType _type;
             private readonly SDL_HapticDirection _direction;
 
             private readonly uint _length;
@@ -1324,7 +1338,7 @@ namespace SdlSharp
             private readonly ushort _fadeLength;
             private readonly ushort _fadeLevel;
 
-            public SDL_HapticPeriodic(SDL_HapticFlags type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, ushort period, short magnitude, short offset, ushort phase, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
+            public SDL_HapticPeriodic(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, ushort period, short magnitude, short offset, ushort phase, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
             {
                 _type = type;
                 _direction = direction;
@@ -1345,7 +1359,7 @@ namespace SdlSharp
 
         public struct SDL_HapticCondition
         {
-            private readonly SDL_HapticFlags _type;
+            private readonly SDL_HapticType _type;
             private readonly SDL_HapticDirection _direction;
 
             private readonly uint _length;
@@ -1361,7 +1375,7 @@ namespace SdlSharp
             private fixed ushort _deadband[3];
             private fixed short _center[3];
 
-            public SDL_HapticCondition(SDL_HapticFlags type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, (ushort XAxis, ushort YAxis, ushort ZAxis) rightSat, (ushort XAxis, ushort YAxis, ushort ZAxis) leftSat, (short XAxis, short YAxis, short ZAxis) rightCoeff, (short XAxis, short YAxis, short ZAxis) leftCoeff, (ushort XAxis, ushort YAxis, ushort ZAxis) deadband, (short XAxis, short YAxis, short ZAxis) center)
+            public SDL_HapticCondition(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, (ushort XAxis, ushort YAxis, ushort ZAxis) rightSat, (ushort XAxis, ushort YAxis, ushort ZAxis) leftSat, (short XAxis, short YAxis, short ZAxis) rightCoeff, (short XAxis, short YAxis, short ZAxis) leftCoeff, (ushort XAxis, ushort YAxis, ushort ZAxis) deadband, (short XAxis, short YAxis, short ZAxis) center)
             {
                 _type = type;
                 _direction = direction;
@@ -1392,7 +1406,7 @@ namespace SdlSharp
 
         public readonly struct SDL_HapticRamp
         {
-            private readonly SDL_HapticFlags _type;
+            private readonly SDL_HapticType _type;
             private readonly SDL_HapticDirection _direction;
 
             private readonly uint _length;
@@ -1409,7 +1423,7 @@ namespace SdlSharp
             private readonly ushort _fadeLength;
             private readonly ushort _fadeLevel;
 
-            public SDL_HapticRamp(SDL_HapticFlags type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, short start, short end, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
+            public SDL_HapticRamp(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, short start, short end, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
             {
                 _type = type;
                 _direction = direction;
@@ -1428,14 +1442,14 @@ namespace SdlSharp
 
         public readonly struct SDL_HapticLeftRight
         {
-            private readonly SDL_HapticFlags _type;
+            private readonly SDL_HapticType _type;
 
             private readonly uint _length;
 
             private readonly ushort _largeMagnitude;
             private readonly ushort _smallMagnitude;
 
-            public SDL_HapticLeftRight(SDL_HapticFlags type, uint length, ushort largeMagnitude, ushort smallMagnitude)
+            public SDL_HapticLeftRight(SDL_HapticType type, uint length, ushort largeMagnitude, ushort smallMagnitude)
             {
                 _type = type;
                 _length = length;
@@ -1446,7 +1460,7 @@ namespace SdlSharp
 
         public readonly struct SDL_HapticCustom
         {
-            private readonly SDL_HapticFlags _type;
+            private readonly SDL_HapticType _type;
             private readonly SDL_HapticDirection _direction;
 
             private readonly uint _length;
@@ -1467,7 +1481,7 @@ namespace SdlSharp
             private readonly ushort _fadeLength;
             private readonly ushort _fadeLevel;
 
-            public SDL_HapticCustom(SDL_HapticFlags type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, byte channels, ushort period, ushort samples, ushort[] data, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
+            public SDL_HapticCustom(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, byte channels, ushort period, ushort samples, ushort[] data, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
             {
                 _type = type;
                 _direction = direction;
@@ -1490,7 +1504,7 @@ namespace SdlSharp
         public struct SDL_HapticEffect
         {
             [FieldOffset(0)]
-            public SDL_HapticFlags _type;
+            public SDL_HapticType _type;
 
             [FieldOffset(0)]
             public SDL_HapticConstant _constant;
@@ -1514,7 +1528,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_NumHaptics();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_HapticName(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1548,7 +1562,7 @@ namespace SdlSharp
         public static extern int SDL_HapticNumEffectsPlaying(SDL_Haptic* haptic);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_HapticFlags SDL_HapticQuery(SDL_Haptic* haptic);
+        public static extern SDL_HapticType SDL_HapticQuery(SDL_Haptic* haptic);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_HapticNumAxes(SDL_Haptic* haptic);
@@ -1608,24 +1622,24 @@ namespace SdlSharp
         // SDL_HINT_* is covered by Hints.cs
         // SDL_HintPriority is covered by HintPriority.cs
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern bool SDL_SetHintWithPriority(string name, string value, HintPriority priority);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern bool SDL_SetHint(string name, string value);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GetHint(string name);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern bool SDL_GetHintBoolean(string name, bool default_value);
 
         // SDL_HintCallback is covered by HintCallback.cs
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_AddHintCallback(string name, HintCallback callback, nint userdata);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_DelHintCallback(string name, HintCallback callback, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1663,7 +1677,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_NumJoysticks();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string? SDL_JoystickNameForIndex(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1696,7 +1710,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Joystick* SDL_JoystickFromPlayerIndex(int player_index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string? SDL_JoystickName(SDL_Joystick* joystick);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1720,10 +1734,10 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern JoystickType SDL_JoystickGetType(SDL_Joystick* joystick);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern void SDL_JoystickGetGUIDString(Guid guid, string pszGUID, int cbGUID);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        public static extern void SDL_JoystickGetGUIDString(Guid id, string pszGUID, int cbGUID);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern Guid SDL_JoystickGetGUIDFromString(string pchGUID);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1759,7 +1773,7 @@ namespace SdlSharp
         // SDL_HAT_* is covered by HatFlags.cs
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern HatFlags SDL_JoystickGetHat(SDL_Joystick* joystick, int hat);
+        public static extern HatState SDL_JoystickGetHat(SDL_Joystick* joystick, int hat);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_JoystickGetBall(SDL_Joystick* joystick, int ball, out int dx, out int dy);
@@ -1807,16 +1821,16 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern Scancode SDL_GetScancodeFromKey(Keycode key);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GetScancodeName(Scancode scancode);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern Scancode SDL_GetScancodeFromName(string name);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GetKeyName(Keycode key);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern Keycode SDL_GetKeyFromName(string name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1867,28 +1881,28 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_LogResetPriorities();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_Log(string fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_LogVerbose(LogCategory category, string fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_LogDebug(LogCategory category, string fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_LogInfo(LogCategory category, string fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_LogWarn(LogCategory category, string fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_LogError(LogCategory category, string fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_LogCritical(LogCategory category, string fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void SDL_LogMessage(LogCategory category, LogPriority priority, string fmt /*, ...*/);
 
         // public static extern void SDL_LogMessageV(LogCategory category, LogPriority priority, string fmt, va_list ap);
@@ -1907,16 +1921,16 @@ namespace SdlSharp
 
         #region SDL_messagebox.h
 
-        // SDL_MessageBoxFlags is covered by MessageBoxFlags.cs
+        // SDL_MessageBoxFlags is covered by MessageBoxType.cs
         // SDL_MessageBoxButtonFlags is covered by MessageBoxButtonFlags.cs
 
         public readonly struct SDL_MessageBoxButtonData
         {
-            public MessageBoxButtonFlags Flags { get; }
+            public MessageBoxButtonOptions Flags { get; }
             public int ButtonId { get; }
             public Utf8String Text { get; }
 
-            public SDL_MessageBoxButtonData(MessageBoxButtonFlags flags, int buttonId, Utf8String text)
+            public SDL_MessageBoxButtonData(MessageBoxButtonOptions flags, int buttonId, Utf8String text)
             {
                 Flags = flags;
                 ButtonId = buttonId;
@@ -1930,7 +1944,7 @@ namespace SdlSharp
 
         public readonly struct SDL_MessageBoxData
         {
-            public readonly MessageBoxFlags Flags { get; }
+            public readonly MessageBoxType Flags { get; }
 
             public readonly SDL_Window* Window { get; }
 
@@ -1944,7 +1958,7 @@ namespace SdlSharp
 
             public readonly MessageBoxColorScheme* ColorScheme { get; }
 
-            public SDL_MessageBoxData(MessageBoxFlags flags, SDL_Window* window, Utf8String title, Utf8String message, int numbuttons, SDL_MessageBoxButtonData* buttons, MessageBoxColorScheme* colorScheme)
+            public SDL_MessageBoxData(MessageBoxType flags, SDL_Window* window, Utf8String title, Utf8String message, int numbuttons, SDL_MessageBoxButtonData* buttons, MessageBoxColorScheme* colorScheme)
             {
                 Flags = flags;
                 Window = window;
@@ -1960,7 +1974,7 @@ namespace SdlSharp
         public static extern int SDL_ShowMessageBox(in SDL_MessageBoxData messageboxdata, out int buttonid);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_ShowSimpleMessageBox(MessageBoxFlags flags, Utf8String title, Utf8String message, SDL_Window* window);
+        public static extern int SDL_ShowSimpleMessageBox(MessageBoxType flags, Utf8String title, Utf8String message, SDL_Window* window);
 
         #endregion
 
@@ -2149,13 +2163,14 @@ namespace SdlSharp
         {
         }
 
-        public struct SDL_PixelFormat
+        public readonly struct SDL_PixelFormat
         {
             public readonly uint Format;
             public readonly SDL_Palette* Palette;
             public readonly byte BitsPerPixel;
             public readonly byte BytesPerPixel;
-            private fixed byte _padding[2];
+            private readonly byte _padding1;
+            private readonly byte _padding2;
             public readonly uint Rmask;
             public readonly uint Gmask;
             public readonly uint Bmask;
@@ -2172,7 +2187,7 @@ namespace SdlSharp
             public readonly SDL_PixelFormat* Next;
         }
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string? SDL_GetPixelFormatName(uint format);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -2218,7 +2233,7 @@ namespace SdlSharp
 
         #region SDL_platform.h
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GetPlatform();
 
         #endregion
@@ -2260,7 +2275,7 @@ namespace SdlSharp
 
         #region SDL_render.h
 
-        // SDL_RendererFlags is covered by RendererFlags.cs
+        // SDL_RendererFlags is covered by RendererOptions.cs
         // SDL_RendererInfo is covered by RendererInfo.cs
         // SDL_ScaleMode is covered by ScaleMode.cs
         // SDL_TextureAccess is covered by TextureAccess.cs
@@ -2282,10 +2297,10 @@ namespace SdlSharp
         public static extern int SDL_GetRenderDriverInfo(int index, out RendererInfo info);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_CreateWindowAndRenderer(int width, int height, WindowFlags window_flags, out SDL_Window* window, out SDL_Renderer* renderer);
+        public static extern int SDL_CreateWindowAndRenderer(int width, int height, WindowOptions window_flags, out SDL_Window* window, out SDL_Renderer* renderer);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Renderer* SDL_CreateRenderer(SDL_Window* window, int index, RendererFlags flags);
+        public static extern SDL_Renderer* SDL_CreateRenderer(SDL_Window* window, int index, RendererOptions flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Renderer* SDL_CreateSoftwareRenderer(SDL_Surface* surface);
@@ -2342,7 +2357,7 @@ namespace SdlSharp
         public static extern int SDL_LockTexture(SDL_Texture* texture, Rectangle* rect, out byte* pixels, out int pitch);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_LockTextureToSurface(SDL_Texture* texture, Rectangle* rect, out SDL_Surface *surface);
+        public static extern int SDL_LockTextureToSurface(SDL_Texture* texture, Rectangle* rect, out SDL_Surface* surface);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_UnlockTexture(SDL_Texture* texture);
@@ -2431,8 +2446,8 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RenderCopy(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, Rectangle* dstrect);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderCopyEx(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, Rectangle* dstrect, double angle, Point* center, RendererFlip flip);
+        [DllImport(Sdl2, EntryPoint = "SDL_RenderCopyEx", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderCopy(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, Rectangle* dstrect, double angle, Point* center, RendererFlip flip);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RenderDrawPointF(SDL_Renderer* renderer, float x, float y);
@@ -2543,15 +2558,15 @@ namespace SdlSharp
         public static extern long SDL_RWseek(SDL_RWops* context, long offset, SeekType whence);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nuint SDL_RWread(SDL_RWops* context, void* ptr, nuint size, nuint maxnum);
+        public static extern nuint SDL_RWread(SDL_RWops* context, void* buffer, nuint size, nuint maxnum);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nuint SDL_RWwrite(SDL_RWops* context, void* ptr, nuint size, nuint num);
+        public static extern nuint SDL_RWwrite(SDL_RWops* context, void* buffer, nuint size, nuint num);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RWclose(SDL_RWops* context);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern SDL_RWops* SDL_RWFromFile(string file, string mode);
 
         // SDL_RWFromFP
@@ -2574,7 +2589,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void* SDL_LoadFile_RW(SDL_RWops* src, out nuint datasize, bool freesrc);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern void* SDL_LoadFile(string file, out nuint datasize);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -2643,7 +2658,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_NumSensors();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string? SDL_SensorGetDeviceName(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -2661,7 +2676,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Sensor* SDL_SensorFromInstanceID(SDL_SensorID instance_id);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_SensorGetName(SDL_Sensor* sensor);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -2691,7 +2706,7 @@ namespace SdlSharp
         public const int SDL_WindowLacksShape = -3;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Window* SDL_CreateShapedWindow(Utf8String title, uint x, uint y, uint w, uint h, WindowFlags flags);
+        public static extern SDL_Window* SDL_CreateShapedWindow(Utf8String title, uint x, uint y, uint w, uint h, WindowOptions flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_IsShapedWindow(SDL_Window* window);
@@ -2751,7 +2766,7 @@ namespace SdlSharp
         #region SDL_surface.h
 
         [Flags]
-        public enum SDL_SurfaceFlags
+        public enum SDL_SurfaceOptions
         {
             None = 0,
             Prealloc = 0x00000001,
@@ -2763,7 +2778,7 @@ namespace SdlSharp
         [StructLayout(LayoutKind.Sequential)]
         public readonly struct SDL_Surface
         {
-            private readonly SDL_SurfaceFlags _flags;
+            private readonly SDL_SurfaceOptions _flags;
             public readonly SDL_PixelFormat* Format { get; }
             public readonly int Width { get; }
             public readonly int Height { get; }
@@ -2776,7 +2791,7 @@ namespace SdlSharp
             private readonly nint _map; // SDL_BlitMap*
             private readonly int _refcount;
 
-            public bool MustLock => (_flags & SDL_SurfaceFlags.RleAccel) != 0;
+            public bool MustLock => (_flags & SDL_SurfaceOptions.RleAccel) != 0;
         }
 
         // SDL_YUV_CONVERSION_MODE is covered by YuvConversionMode.cs
@@ -2988,7 +3003,7 @@ namespace SdlSharp
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_TimerID SDL_AddTimer(uint interval, TimerCallbackDelegate callback, nint param);
+        public static extern SDL_TimerID SDL_AddTimer(uint interval, TimerCallback callback, nint param);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_RemoveTimer(SDL_TimerID id);
@@ -3043,7 +3058,7 @@ namespace SdlSharp
 
         #region SDL_version.h
 
-        public static Version IntegratedSdl2Version = new Version(2, 0, 12);
+        public static readonly Version IntegratedSdl2Version = new(2, 0, 12);
 
         public static int SDL_VersionNumber(Version version) =>
             (version.Major * 1000) + (version.Minor * 100) + version.Patch;
@@ -3051,7 +3066,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_GetVersion(out Version ver);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GetRevision();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -3067,7 +3082,7 @@ namespace SdlSharp
         {
         }
 
-        // SDL_WindowFlags is covered by WindowFlags.cs
+        // SDL_WindowFlags is covered by WindowOptions.cs
 
         public enum SDL_WindowEventID : byte
         {
@@ -3108,16 +3123,16 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumVideoDrivers();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GetVideoDriver(int index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int SDL_VideoInit(string driver_name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_VideoQuit();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string SDL_GetCurrentVideoDriver();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -3166,7 +3181,7 @@ namespace SdlSharp
         public static extern uint SDL_GetWindowPixelFormat(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Window* SDL_CreateWindow(Utf8String title, int x, int y, int w, int h, WindowFlags flags);
+        public static extern SDL_Window* SDL_CreateWindow(Utf8String title, int x, int y, int w, int h, WindowOptions flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Window* SDL_CreateWindowFrom(nint data);
@@ -3178,7 +3193,7 @@ namespace SdlSharp
         public static extern SDL_Window* SDL_GetWindowFromID(uint id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern WindowFlags SDL_GetWindowFlags(SDL_Window* window);
+        public static extern WindowOptions SDL_GetWindowFlags(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowTitle(SDL_Window* window, Utf8String title);
@@ -3189,10 +3204,10 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowIcon(SDL_Window* window, SDL_Surface* icon);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern nint SDL_SetWindowData(SDL_Window* window, string name, nint userdata);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern nint SDL_GetWindowData(SDL_Window* window, string name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -3247,7 +3262,7 @@ namespace SdlSharp
         public static extern void SDL_RestoreWindow(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetWindowFullscreen(SDL_Window* window, WindowFlags flags);
+        public static extern int SDL_SetWindowFullscreen(SDL_Window* window, WindowOptions flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* SDL_GetWindowSurface(SDL_Window* window);
@@ -3294,10 +3309,10 @@ namespace SdlSharp
         // SDL_HitTestResult is covered by HitTestResult.cs
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate HitTestResult HitTestDelegate(SDL_Window* win, ref Point area, nint data);
+        public delegate HitTestResult HitTestCallback(SDL_Window* win, ref Point area, nint data);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetWindowHitTest(SDL_Window* window, HitTestDelegate? callback, nint callback_data);
+        public static extern int SDL_SetWindowHitTest(SDL_Window* window, HitTestCallback? callback, nint callback_data);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_DestroyWindow(SDL_Window* window);
@@ -3334,7 +3349,7 @@ namespace SdlSharp
 
         #region SDL_image.h
 
-        public static Version IntegratedSdl2ImageVersion = new Version(2, 0, 5);
+        public static readonly Version IntegratedSdl2ImageVersion = new(2, 0, 5);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern Version* IMG_Linked_Version();
@@ -3347,22 +3362,22 @@ namespace SdlSharp
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern void IMG_Quit();
 
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern SDL_Surface* IMG_LoadTyped_RW(SDL_RWops* src, bool freesrc, string type);
 
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern SDL_Surface* IMG_Load(string file);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* IMG_Load_RW(SDL_RWops* src, bool freesrc);
 
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern SDL_Texture* IMG_LoadTexture(SDL_Renderer* renderer, string file);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Texture* IMG_LoadTexture_RW(SDL_Renderer* renderer, SDL_RWops* src, bool freesrc);
 
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern SDL_Texture* IMG_LoadTextureTyped_RW(SDL_Renderer* renderer, SDL_RWops* src, bool freesrc, string type);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
@@ -3460,13 +3475,13 @@ namespace SdlSharp
 
         // IMG_ReadXPMFromArray
 
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int IMG_SavePNG(SDL_Surface* surface, string file);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern int IMG_SavePNG_RW(SDL_Surface* surface, SDL_RWops* dst, bool freedst);
 
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int IMG_SaveJPG(SDL_Surface* surface, string file, int quality);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
@@ -3476,7 +3491,7 @@ namespace SdlSharp
 
         #region SDL_ttf.h
 
-        public static Version IntegratedSdl2TtfVersion = new Version(2, 0, 15);
+        public static readonly Version IntegratedSdl2TtfVersion = new(2, 0, 15);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern Version* TTF_Linked_Version();
@@ -3491,16 +3506,16 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern int TTF_Init();
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern TTF_Font* TTF_OpenFont(string file, int ptsize);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern TTF_Font* TTF_OpenFontIndex(string file, int ptsize, long index);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern TTF_Font* TTF_OpenFontRW(SDL_RWops* src, bool freesrc, int ptsize);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern TTF_Font* TTF_OpenFontIndexRW(SDL_RWops* src, bool freesrc, int ptsize, long index);
 
         // TTF_STYLE_* is covered by FontStyle.cs
@@ -3549,10 +3564,10 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool TTF_FontFaceIsFixedWidth(TTF_Font* font);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string TTF_FontFaceFamilyName(TTF_Font* font);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string TTF_FontFaceStyleName(TTF_Font* font);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
@@ -3561,7 +3576,7 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern int TTF_GlyphMetrics(TTF_Font* font, char ch, out int minx, out int maxx, out int miny, out int maxy, out int advance);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int TTF_SizeText(TTF_Font* font, string text, out int w, out int h);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
@@ -3570,7 +3585,7 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern int TTF_SizeUNICODE(TTF_Font* font, string text, out int w, out int h);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern SDL_Surface* TTF_RenderText_Solid(TTF_Font* font, string text, Color fg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
@@ -3582,7 +3597,7 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern SDL_Surface* TTF_RenderGlyph_Solid(TTF_Font* font, char ch, Color fg);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern SDL_Surface* TTF_RenderText_Shaded(TTF_Font* font, string text, Color fg, Color bg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
@@ -3594,7 +3609,7 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern SDL_Surface* TTF_RenderGlyph_Shaded(TTF_Font* font, char ch, Color fg, Color bg);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern SDL_Surface* TTF_RenderText_Blended(TTF_Font* font, string text, Color fg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
@@ -3603,7 +3618,7 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public static extern SDL_Surface* TTF_RenderUNICODE_Blended(TTF_Font* font, string text, Color fg);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern SDL_Surface* TTF_RenderText_Blended_Wrapped(TTF_Font* font, string text, Color fg, uint wrapLength);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
@@ -3631,7 +3646,7 @@ namespace SdlSharp
 
         #region SDL_mixer.h
 
-        public static Version IntegratedSdl2MixerVersion = new Version(2, 0, 4);
+        public static readonly Version IntegratedSdl2MixerVersion = new(2, 0, 4);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern Version* Mix_Linked_Version();
@@ -3679,7 +3694,7 @@ namespace SdlSharp
         public static Mix_Chunk* Mix_LoadWAV(string file) =>
             Mix_LoadWAV_RW(SDL_RWFromFile(file, "rb"), true);
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern Mix_Music* Mix_LoadMUS(string file);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
@@ -3703,56 +3718,56 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_GetNumChunkDecoders();
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string Mix_GetChunkDecoder(int index);
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern bool Mix_HasChunkDecoder(string name);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_GetNumMusicDecoders();
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string Mix_GetMusicDecoder(int index);
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern bool Mix_HasMusicDecoder(string name);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern MusicType Mix_GetMusicType(Mix_Music* music);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MixFunctionDelegate(nint udata, nint stream, int len);
+        public delegate void MixFunctionCallback(nint udata, nint stream, int len);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_SetPostMix(MixFunctionDelegate mix_func, nint arg);
+        public static extern void Mix_SetPostMix(MixFunctionCallback mix_func, nint arg);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_HookMusic(MixFunctionDelegate mix_func, nint arg);
+        public static extern void Mix_HookMusic(MixFunctionCallback mix_func, nint arg);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_HookMusicFinished(MusicFinishedDelegate music_finished);
+        public static extern void Mix_HookMusicFinished(MusicFinishedCallback music_finished);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern nint Mix_GetMusicHookData();
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MusicChannelFinishedDelegate(int channel);
+        public delegate void MusicChannelFinishedCallback(int channel);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_ChannelFinished(MusicChannelFinishedDelegate channel_finished);
+        public static extern void Mix_ChannelFinished(MusicChannelFinishedCallback channel_finished);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MixEffectDelegate(int channel, nint stream, int length, nint userData);
+        public delegate void MixEffectCallback(int channel, nint stream, int length, nint userData);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MixEffectDoneDelegate(int channel, nint userData);
+        public delegate void MixEffectDoneCallback(int channel, nint userData);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Mix_RegisterEffect(int chan, MixEffectDelegate f, MixEffectDoneDelegate d, nint arg);
+        public static extern int Mix_RegisterEffect(int chan, MixEffectCallback f, MixEffectDoneCallback d, nint arg);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Mix_UnregisterEffect(int channel, MixEffectDelegate f);
+        public static extern int Mix_UnregisterEffect(int channel, MixEffectCallback f);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_UnregisterAllEffects(int channel);
@@ -3877,7 +3892,7 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool Mix_PlayingMusic();
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int Mix_SetMusicCMD(string command);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
@@ -3886,16 +3901,16 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_GetSynchroValue();
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int Mix_SetSoundFonts(string paths);
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern string Mix_GetSoundFonts();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public delegate bool SoundFontFunction(string s, nint data);
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern bool Mix_EachSoundFont(SoundFontFunction function, nint data);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]

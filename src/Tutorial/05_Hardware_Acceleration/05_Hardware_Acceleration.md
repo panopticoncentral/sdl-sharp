@@ -13,10 +13,10 @@ So what we want to do is replace the use of SDL's _software renderer_ with a _ha
 Go back to the previous tutorial's code. After the call to `Window.Create`, add the following line:
 
 ```csharp
-using var renderer = Renderer.Create(window, -1, RendererFlags.Accelerated);
+using var renderer = Renderer.Create(window, -1, RendererOptions.Accelerated);
 ```
 
-This will create a renderer that is bound to the window and is hardware accelerated (that's what the `RendererFlags` is for). The `-1` parameter just means that we want the first renderer that is hardware accelerated - a machine may support multiple hardware renderers, depending on what graphics cards are installed, but we don't particularly care which one we get at this point.
+This will create a renderer that is bound to the window and is hardware accelerated (that's what the `RendererOptions` is for). The `-1` parameter just means that we want the first renderer that is hardware accelerated - a machine may support multiple hardware renderers, depending on what graphics cards are installed, but we don't particularly care which one we get at this point.
 
 Now change the next line of code to optimize the image load for the renderer instead of the window itself:
 

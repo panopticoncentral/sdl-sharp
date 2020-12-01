@@ -13,13 +13,13 @@ namespace SdlSharp.Sound
         /// The decoders for samples.
         /// </summary>
         public static IReadOnlyList<string> Decoders => s_decoders ??= new ItemCollection<string>(
-            index => Native.CheckNotNull(Native.Mix_GetChunkDecoder(index)),
-            Native.Mix_GetNumChunkDecoders);
+            index => SdlSharp.Native.CheckNotNull(SdlSharp.Native.Mix_GetChunkDecoder(index)),
+            SdlSharp.Native.Mix_GetNumChunkDecoders);
 
         /// <inheritdoc/>
         public override void Dispose()
         {
-            Native.Mix_FreeChunk(Pointer);
+            SdlSharp.Native.Mix_FreeChunk(Native);
             base.Dispose();
         }
 
@@ -29,7 +29,7 @@ namespace SdlSharp.Sound
         /// <param name="decoder">The decoder.</param>
         /// <returns><c>true</c> if it is, <c>false</c> otherwise.</returns>
         public static bool HasDecoder(string decoder) =>
-            Native.Mix_HasChunkDecoder(decoder);
+            SdlSharp.Native.Mix_HasChunkDecoder(decoder);
 
         /// <summary>
         /// Sets the volume of the sample.
@@ -37,6 +37,6 @@ namespace SdlSharp.Sound
         /// <param name="volume">The volume.</param>
         /// <returns>The old volume.</returns>
         public int Volume(int volume) =>
-            Native.Mix_VolumeChunk(Pointer, volume);
+            SdlSharp.Native.Mix_VolumeChunk(Native, volume);
     }
 }

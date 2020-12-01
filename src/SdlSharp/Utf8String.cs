@@ -4,19 +4,19 @@ using System.Text;
 namespace SdlSharp
 {
     /// <summary>
-    /// A UTF-8 string from native code.
+    /// A UTF-8 string from native string.
     /// </summary>
     public readonly unsafe struct Utf8String : IDisposable
     {
         private readonly byte* _pointer;
 
         /// <summary>
-        /// Constructs a UTF-8 string from a native pointer.
+        /// Constructs a UTF-8 string from a native string.
         /// </summary>
-        /// <param name="pointer"></param>
-        public Utf8String(byte* pointer)
+        /// <param name="s">The native string.</param>
+        public Utf8String(byte* s)
         {
-            _pointer = pointer;
+            _pointer = s;
         }
 
         /// <inheritdoc/>

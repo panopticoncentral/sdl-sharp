@@ -2,34 +2,21 @@
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 
-using Application app = new (Subsystems.Video, ImageFormats.Jpg, hints: new[] { (Hint.RenderScaleQuality, "1") });
+using Application app = new(Subsystems.Video, ImageFormats.Jpg, hints: new[] { (Hint.RenderScaleQuality, "1") });
 Size windowSize = (640, 480);
 Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
-using var window = Window.Create("Drawing", windowRectangle, WindowFlags.Shown);
-using var renderer = Renderer.Create(window, -1, RendererFlags.Accelerated);
+using var window = Window.Create("Drawing", windowRectangle, WindowOptions.Shown);
+using var renderer = Renderer.Create(window, -1, RendererOptions.Accelerated);
 
 Rectangle? viewport = null;
 
-Keyboard.KeyDown += (s, e) =>
+Keyboard.KeyDown += (s, e) => viewport = e.Keycode switch
 {
-    switch (e.Keycode)
-    {
-        case Keycode.Number0:
-            viewport = null;
-            break;
-
-        case Keycode.Number1:
-            viewport = (Point.Origin, (windowSize.Width / 2, windowSize.Height / 2));
-            break;
-
-        case Keycode.Number2:
-            viewport = ((windowSize.Width / 2, 0), (windowSize.Width / 2, windowSize.Height / 2));
-            break;
-
-        case Keycode.Number3:
-            viewport = ((0, windowSize.Height / 2), (windowSize.Width, windowSize.Height / 2));
-            break;
-    }
+    Keycode.Number0 => null,
+    Keycode.Number1 => (Point.Origin, (windowSize.Width / 2, windowSize.Height / 2)),
+    Keycode.Number2 => ((windowSize.Width / 2, 0), (windowSize.Width / 2, windowSize.Height / 2)),
+    Keycode.Number3 => ((0, windowSize.Height / 2), (windowSize.Width, windowSize.Height / 2)),
+    _ => viewport
 };
 
 while (app.DispatchEvent())

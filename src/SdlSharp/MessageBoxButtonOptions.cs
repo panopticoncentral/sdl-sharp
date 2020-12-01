@@ -3,7 +3,7 @@
     /// <summary>
     /// Flags for a message box button.
     /// </summary>
-    public enum MessageBoxButtonFlags : uint
+    public enum MessageBoxButtonOptions : uint
     {
         /// <summary>
         /// None.

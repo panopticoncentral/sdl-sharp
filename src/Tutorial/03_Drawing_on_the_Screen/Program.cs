@@ -2,10 +2,10 @@
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 
-using Application app = new (Subsystems.Video);
+using Application app = new(Subsystems.Video);
 Size windowSize = (640, 480);
 Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
-using var window = Window.Create("Drawing on the Screen", windowRectangle, WindowFlags.Shown);
+using var window = Window.Create("Drawing on the Screen", windowRectangle, WindowOptions.Shown);
 
 using var sunflowers = Surface.LoadBmp("Sunflowers.bmp");
 

@@ -11,19 +11,19 @@ namespace SdlSharp.Input
         /// The sensor's name.
         /// </summary>
         public string Name =>
-            Native.SDL_SensorGetName(Pointer);
+            SdlSharp.Native.SDL_SensorGetName(Native);
 
         /// <summary>
         /// The sensor type.
         /// </summary>
         public SensorType Type =>
-            Native.SDL_SensorGetType(Pointer);
+            SdlSharp.Native.SDL_SensorGetType(Native);
 
         /// <summary>
         /// A non-portable sensor type.
         /// </summary>
         public int NonPortableType =>
-            Native.SDL_SensorGetNonPortableType(Pointer);
+            SdlSharp.Native.SDL_SensorGetNonPortableType(Native);
 
         /// <summary>
         /// An event fired when a sensor is updated.
@@ -31,19 +31,19 @@ namespace SdlSharp.Input
         public event EventHandler<SensorUpdatedEventArgs>? Updated;
 
         internal static Sensor Get(Native.SDL_SensorID instanceId) =>
-            PointerToInstanceNotNull(Native.SDL_SensorFromInstanceID(instanceId));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_SensorFromInstanceID(instanceId));
 
         /// <summary>
         /// Gets the data from the sensor.
         /// </summary>
         /// <param name="data">Where to put the data.</param>
         public void GetData(float[] data) =>
-            Native.CheckError(Native.SDL_SensorGetData(Pointer, data, data.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SensorGetData(Native, data, data.Length));
 
         /// <inheritdoc/>
         public override void Dispose()
         {
-            Native.SDL_SensorClose(Pointer);
+            SdlSharp.Native.SDL_SensorClose(Native);
             base.Dispose();
         }
 
@@ -53,7 +53,7 @@ namespace SdlSharp.Input
 
             switch (e.Type)
             {
-                case Native.SDL_EventType.SensorUpdate:
+                case SdlSharp.Native.SDL_EventType.SensorUpdate:
                     sensor.Updated?.Invoke(sensor, new SensorUpdatedEventArgs(e.Sensor));
                     break;
 

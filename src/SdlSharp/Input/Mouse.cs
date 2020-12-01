@@ -1,4 +1,5 @@
 ﻿using System;
+
 using SdlSharp.Graphics;
 
 namespace SdlSharp.Input
@@ -76,14 +77,14 @@ namespace SdlSharp.Input
         /// <param name="window">The window to warp within.</param>
         /// <param name="position">The position to warp to.</param>
         public static void Warp(Window? window, Point position) =>
-            Native.SDL_WarpMouseInWindow(window == null ? null : window.Pointer, position.X, position.Y);
+            Native.SDL_WarpMouseInWindow(window == null ? null : window.Native, position.X, position.Y);
 
         /// <summary>
         /// Warps the mouse to a location on the screen.
         /// </summary>
         /// <param name="position">The position to warp to.</param>
         public static void Warp(Point position) =>
-            Native.SDL_WarpMouseGlobal(position.X, position.Y);
+            Native.CheckError(Native.SDL_WarpMouseGlobal(position.X, position.Y));
 
         /// <summary>
         /// Captures or un-captures the mouse.

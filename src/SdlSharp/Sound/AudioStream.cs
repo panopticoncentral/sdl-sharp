@@ -5,13 +5,15 @@ namespace SdlSharp.Sound
     /// <summary>
     /// An audio stream that converts audio from one format to another.
     /// </summary>
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
     public sealed unsafe class AudioStream : NativePointerBase<Native.SDL_AudioStream, AudioStream>
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix
     {
         /// <summary>
         /// The number of bytes available in the stream.
         /// </summary>
         public int Available =>
-            Native.SDL_AudioStreamAvailable(Pointer);
+            SdlSharp.Native.SDL_AudioStreamAvailable(Native);
 
         /// <summary>
         /// Creates a new audio stream.
@@ -24,7 +26,7 @@ namespace SdlSharp.Sound
         /// <param name="destinationRate">The destination audio bitrate.</param>
         /// <returns>The new audio stream.</returns>
         public static AudioStream Create(AudioFormat sourceFormat, byte sourceChannels, int sourceRate, AudioFormat destinationFormat, byte destinationChannels, int destinationRate) =>
-            PointerToInstanceNotNull(Native.SDL_NewAudioStream(sourceFormat, sourceChannels, sourceRate, destinationFormat, destinationChannels, destinationRate));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_NewAudioStream(sourceFormat, sourceChannels, sourceRate, destinationFormat, destinationChannels, destinationRate));
 
         /// <summary>
         /// Puts data into the stream.
@@ -34,7 +36,7 @@ namespace SdlSharp.Sound
         {
             fixed (byte* dataPointer = data)
             {
-                _ = Native.CheckError(Native.SDL_AudioStreamPut(Pointer, dataPointer, data.Length));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_AudioStreamPut(Native, dataPointer, data.Length));
             }
         }
 
@@ -47,7 +49,7 @@ namespace SdlSharp.Sound
         {
             fixed (byte* dataPointer = data)
             {
-                return Native.CheckError(Native.SDL_AudioStreamGet(Pointer, dataPointer, data.Length));
+                return SdlSharp.Native.CheckError(SdlSharp.Native.SDL_AudioStreamGet(Native, dataPointer, data.Length));
             }
         }
 
@@ -55,20 +57,20 @@ namespace SdlSharp.Sound
         /// Flushes the audio stream.
         /// </summary>
         public void Flush() =>
-            Native.CheckError(Native.SDL_AudioStreamFlush(Pointer));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_AudioStreamFlush(Native));
 
         /// <summary>
         /// Clears any pending data in the audio stream.
         /// </summary>
         public void Clear() =>
-            Native.SDL_AudioStreamClear(Pointer);
+            SdlSharp.Native.SDL_AudioStreamClear(Native);
 
         /// <summary>
         /// Closes an audio stream.
         /// </summary>
         public override void Dispose()
         {
-            Native.SDL_FreeAudioStream(Pointer);
+            SdlSharp.Native.SDL_FreeAudioStream(Native);
             base.Dispose();
         }
     }

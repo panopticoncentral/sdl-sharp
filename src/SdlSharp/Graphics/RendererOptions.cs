@@ -6,7 +6,7 @@ namespace SdlSharp.Graphics
     /// Flags for a renderer.
     /// </summary>
     [Flags]
-    public enum RendererFlags
+    public enum RendererOptions
     {
         /// <summary>
         /// None.

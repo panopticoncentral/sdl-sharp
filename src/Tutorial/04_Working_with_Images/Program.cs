@@ -2,10 +2,10 @@
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 
-using Application app = new (Subsystems.Video, ImageFormats.Jpg);
+using Application app = new(Subsystems.Video, ImageFormats.Jpg);
 Size windowSize = (640, 480);
 Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
-using var window = Window.Create("Working with Images", windowRectangle, WindowFlags.Shown);
+using var window = Window.Create("Working with Images", windowRectangle, WindowOptions.Shown);
 
 using var sunflowers = Image.Load("Sunflowers.jpg", window.Surface);
 

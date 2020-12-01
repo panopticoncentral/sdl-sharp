@@ -83,9 +83,9 @@
         }
 
         internal override Native.SDL_HapticEffect ToNative() =>
-            new Native.SDL_HapticEffect
+            new()
             {
-                _constant = new Native.SDL_HapticConstant(Native.SDL_HapticFlags.Constant, Direction.ToNative(), Length, Delay, Button, Interval, Level, AttackLength, AttackLevel, FadeLength, FadeLevel)
+                _constant = new Native.SDL_HapticConstant(Native.SDL_HapticType.Constant, Direction.ToNative(), Length, Delay, Button, Interval, Level, AttackLength, AttackLevel, FadeLength, FadeLevel)
             };
     }
 }

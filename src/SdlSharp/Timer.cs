@@ -9,7 +9,7 @@ namespace SdlSharp
     public readonly struct Timer
     {
         private readonly int _id;
-        private readonly TimerCallbackDelegate _callback;
+        private readonly TimerCallback _callback;
 
         /// <summary>
         /// The number of milliseconds since the SDL library initialization.
@@ -26,7 +26,7 @@ namespace SdlSharp
         /// </summary>
         public static ulong PerformanceFrequency => Native.SDL_GetPerformanceFrequency();
 
-        private Timer(int id, TimerCallbackDelegate callback)
+        private Timer(int id, TimerCallback callback)
         {
             _callback = callback;
             _id = id;
@@ -45,7 +45,7 @@ namespace SdlSharp
         /// <param name="callback">The callback to call.</param>
         /// <param name="param">User data to pass the callback.</param>
         /// <returns>The timer.</returns>
-        public static Timer Add(uint interval, TimerCallbackDelegate callback, nint param) => new Timer(Native.SDL_AddTimer(interval, callback, param).Id, callback);
+        public static Timer Add(uint interval, TimerCallback callback, nint param) => new(Native.SDL_AddTimer(interval, callback, param).Id, callback);
 
         /// <summary>
         /// Removes a timer.

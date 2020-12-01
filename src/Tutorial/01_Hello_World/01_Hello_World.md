@@ -95,10 +95,10 @@ Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
 This line defines the size of the window that we're going to create. A `Size` object holds a width/height pair, while a `Rectangle` holds both a location on the screen plus a size. `Window.UndefinedWindowLocation` is a location that means "I don't care where you put this on the screen." Now add:
 
 ```csharp
-using var window = Window.Create("Hello, World!", windowRectangle, WindowFlags.Shown);
+using var window = Window.Create("Hello, World!", windowRectangle, WindowOptions.Shown);
 ```
 
-This creates a SDL window at the location we defined above. We specify `WindowFlags.Shown` to indicate that we want the window to be visible right away (rather than creating it hidden and then showing it later). Now add:
+This creates a SDL window at the location we defined above. We specify `WindowOptions.Shown` to indicate that we want the window to be visible right away (rather than creating it hidden and then showing it later). Now add:
 
 ```csharp
 while (app.DispatchEvent())

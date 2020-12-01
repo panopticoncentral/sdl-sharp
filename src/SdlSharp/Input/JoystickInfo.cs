@@ -20,7 +20,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// The GUID of the joystick.
         /// </summary>
-        public Guid Guid => Native.SDL_JoystickGetDeviceGUID(Index);
+        public Guid Id => Native.SDL_JoystickGetDeviceGUID(Index);
 
         /// <summary>
         /// The vendor ID of the joystick.

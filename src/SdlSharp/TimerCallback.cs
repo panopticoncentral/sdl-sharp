@@ -9,5 +9,5 @@ namespace SdlSharp
     /// <param name="param">The user data.</param>
     /// <returns>The next timer interval (or <c>0</c> to cancel the timer).</returns>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate uint TimerCallbackDelegate(uint interval, nint param);
+    public delegate uint TimerCallback(uint interval, nint param);
 }

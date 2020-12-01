@@ -16,7 +16,7 @@
         /// <summary>
         /// The size of the display.
         /// </summary>
-        public readonly Size Size => new Size(_width, _height);
+        public readonly Size Size => new(_width, _height);
 
         /// <summary>
         /// The refresh rate.

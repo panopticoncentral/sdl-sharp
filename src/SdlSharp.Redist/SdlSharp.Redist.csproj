@@ -1,0 +1,364 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Paul Vick</Authors>
+    <Company>Paul Vick</Company>
+    <Description>A redist for the Simple DirectMedia Layer library (http://www.libsdl.org).</Description>
+    <Copyright>Copyright 2019</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/panopticoncentral/sdk-sharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SDL2Version>2.0.12</SDL2Version>
+    <SDL2ImageVersion>2.0.5</SDL2ImageVersion>
+    <SDL2MixerVersion>2.0.4</SDL2MixerVersion>
+    <SDL2TtfVersion>2.0.15</SDL2TtfVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SdlSdk Include="https://www.libsdl.org/release/SDL2-devel-$(SDL2Version)-VC.zip" Name="SDL2" />
+    <SdlSdk Include="https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-$(SDL2ImageVersion)-VC.zip" Name="SDL2_image" />
+    <SdlSdk Include="https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-devel-$(SDL2MixerVersion)-VC.zip" Name="SDL2_mixer" />
+    <SdlSdk Include="https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-$(SDL2TtfVersion)-VC.zip" Name="SDL2_ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Targets -->
+    <Content Include="SdlSharp.Redist.targets">
+      <Pack>true</Pack>
+      <PackagePath>\build</PackagePath>
+    </Content>
+    <!-- SDL2 x86 -->
+    <Content Include="$(IntermediateOutputPath)SDL2-$(SDL2Version)\README-SDL.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2-$(SDL2Version)\lib\x86\SDL2.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <!-- SDL2 x64 -->
+    <Content Include="$(IntermediateOutputPath)SDL2-$(SDL2Version)\README-SDL.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2-$(SDL2Version)\lib\x64\SDL2.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <!-- SDL2_image x86 -->
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\LICENSE.jpeg.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\LICENSE.png.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\LICENSE.tiff.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\LICENSE.webp.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\LICENSE.zlib.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\SDL2_image.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\libjpeg-9.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\libpng16-16.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\libtiff-5.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\libwebp-7.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x86\zlib1.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <!-- SDL2_image x64 -->
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\LICENSE.jpeg.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\LICENSE.png.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\LICENSE.tiff.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\LICENSE.webp.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\LICENSE.zlib.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\SDL2_image.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\libjpeg-9.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\libpng16-16.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\libtiff-5.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\libwebp-7.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_image-$(SDL2ImageVersion)\lib\x64\zlib1.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <!-- SDL2_mixer x86 -->
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\LICENSE.FLAC.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\LICENSE.modplug.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\LICENSE.mpg123.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\LICENSE.ogg-vorbis.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\LICENSE.opus.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\LICENSE.opusfile.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\SDL2_mixer.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\libFLAC-8.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\libmodplug-1.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\libmpg123-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\libogg-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\libopus-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\libopusfile-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\libvorbis-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x86\libvorbisfile-3.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <!-- SDL2_mixer x64 -->
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\LICENSE.FLAC.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\LICENSE.modplug.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\LICENSE.mpg123.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\LICENSE.ogg-vorbis.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\LICENSE.opus.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\LICENSE.opusfile.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\SDL2_mixer.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\libFLAC-8.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\libmodplug-1.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\libmpg123-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\libogg-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\libopus-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\libopusfile-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\libvorbis-0.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_mixer-$(SDL2MixerVersion)\lib\x64\libvorbisfile-3.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <!-- SDL2_ttf x86 -->
+    <Content Include="$(IntermediateOutputPath)SDL2_ttf-$(SDL2TtfVersion)\lib\x86\LICENSE.freetype.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_ttf-$(SDL2TtfVersion)\lib\x86\SDL2_ttf.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_ttf-$(SDL2TtfVersion)\lib\x86\libfreetype-6.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x86</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <!-- SDL2_ttf x64 -->
+    <Content Include="$(IntermediateOutputPath)SDL2_ttf-$(SDL2TtfVersion)\lib\x64\LICENSE.freetype.txt">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_ttf-$(SDL2TtfVersion)\lib\x64\SDL2_ttf.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(IntermediateOutputPath)SDL2_ttf-$(SDL2TtfVersion)\lib\x64\libfreetype-6.dll">
+      <Pack>true</Pack>
+      <PackagePath>\build\x64</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="DownloadSdlSdks" BeforeTargets="CoreCompile">
+    <DownloadFile SourceUrl="%(SdlSdk.Identity)" DestinationFolder="$(IntermediateOutputPath)" SkipUnchangedFiles="true">
+      <Output TaskParameter="DownloadedFile" ItemName="DownloadedSdlSdk" />
+    </DownloadFile>
+    <Unzip SourceFiles="%(DownloadedSdlSdk.Identity)" DestinationFolder="$(IntermediateOutputPath)" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

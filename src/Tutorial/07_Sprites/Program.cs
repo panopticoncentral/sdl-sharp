@@ -4,8 +4,8 @@ using SdlSharp.Graphics;
 using Application app = new(Subsystems.Video, ImageFormats.Png);
 Size windowSize = (640, 480);
 Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
-using var window = Window.Create("Sprites", windowRectangle, WindowFlags.Shown);
-using var renderer = Renderer.Create(window, -1, RendererFlags.Accelerated | RendererFlags.PresentVSync);
+using var window = Window.Create("Sprites", windowRectangle, WindowOptions.Shown);
+using var renderer = Renderer.Create(window, -1, RendererOptions.Accelerated | RendererOptions.PresentVSync);
 
 using var floor = Image.Load("Floor.png", renderer);
 using var player0 = Image.Load("Player0.png", renderer);

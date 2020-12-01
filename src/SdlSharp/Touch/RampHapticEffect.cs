@@ -90,9 +90,9 @@
         }
 
         internal override Native.SDL_HapticEffect ToNative() =>
-            new Native.SDL_HapticEffect
+            new()
             {
-                _ramp = new Native.SDL_HapticRamp(Native.SDL_HapticFlags.Ramp, Direction.ToNative(), Length, Delay, Button, Interval, Start, End, AttackLength, AttackLevel, FadeLength, FadeLevel)
+                _ramp = new Native.SDL_HapticRamp(Native.SDL_HapticType.Ramp, Direction.ToNative(), Length, Delay, Button, Interval, Start, End, AttackLength, AttackLevel, FadeLength, FadeLevel)
             };
     }
 }

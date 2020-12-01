@@ -8,7 +8,7 @@
         /// <inheritdoc/>
         public override void Dispose()
         {
-            Native.SDL_FreeFormat(Pointer);
+            SdlSharp.Native.SDL_FreeFormat(Native);
             base.Dispose();
         }
 
@@ -17,7 +17,7 @@
         /// </summary>
         /// <param name="palette">The palette.</param>
         public void SetPalette(Palette palette) =>
-            Native.CheckError(Native.SDL_SetPixelFormatPalette(Pointer, palette.Pointer));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetPixelFormatPalette(Native, palette.Native));
 
         /// <summary>
         /// Maps an RGB value to a pixel color in this format.
@@ -27,7 +27,7 @@
         /// <param name="blue">The blue value.</param>
         /// <returns>The pixel color.</returns>
         public PixelColor Map(byte red, byte green, byte blue) =>
-            Native.SDL_MapRGB(Pointer, red, green, blue);
+            SdlSharp.Native.SDL_MapRGB(Native, red, green, blue);
 
         /// <summary>
         /// Maps an RGBA value to a pixel color in this format.
@@ -38,7 +38,7 @@
         /// <param name="alpha">The alpha value.</param>
         /// <returns>The pixel color.</returns>
         public PixelColor Map(byte red, byte green, byte blue, byte alpha) =>
-            Native.SDL_MapRGBA(Pointer, red, green, blue, alpha);
+            SdlSharp.Native.SDL_MapRGBA(Native, red, green, blue, alpha);
 
         /// <summary>
         /// Maps a color to a pixel color in this format.
@@ -46,7 +46,7 @@
         /// <param name="color">The color.</param>
         /// <returns>The pixel color.</returns>
         public PixelColor Map(Color color) =>
-            Native.SDL_MapRGBA(Pointer, color.Red, color.Green, color.Blue, color.Alpha);
+            SdlSharp.Native.SDL_MapRGBA(Native, color.Red, color.Green, color.Blue, color.Alpha);
 
         /// <summary>
         /// Converts a pixel color to red, green, and blue values.
@@ -55,7 +55,7 @@
         /// <returns>The values.</returns>
         public (byte Red, byte Green, byte Blue) GetRgb(PixelColor pixel)
         {
-            Native.SDL_GetRGB(pixel, Pointer, out var red, out var green, out var blue);
+            SdlSharp.Native.SDL_GetRGB(pixel, Native, out var red, out var green, out var blue);
             return (red, green, blue);
         }
 
@@ -66,7 +66,7 @@
         /// <returns>The values.</returns>
         public (byte Red, byte Green, byte Blue, byte Alpha) GetRgba(PixelColor pixel)
         {
-            Native.SDL_GetRGBA(pixel, Pointer, out var red, out var green, out var blue, out var alpha);
+            SdlSharp.Native.SDL_GetRGBA(pixel, Native, out var red, out var green, out var blue, out var alpha);
             return (red, green, blue, alpha);
         }
     }

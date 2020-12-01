@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
@@ -231,7 +232,7 @@ namespace SdlSharp
         /// <param name="buttons">The buttons.</param>
         /// <param name="colorScheme">The color scheme.</param>
         /// <returns>The ID of the button that was selected.</returns>
-        public static int ShowMessageBox(MessageBoxFlags flags, Window? window, string title, string message, MessageBoxButton[] buttons, MessageBoxColorScheme? colorScheme)
+        public static int ShowMessageBox(MessageBoxType flags, Window? window, string title, string message, MessageBoxButton[] buttons, MessageBoxColorScheme? colorScheme)
         {
             var nativeButtons = new Native.SDL_MessageBoxButtonData[buttons.Length];
 
@@ -249,7 +250,7 @@ namespace SdlSharp
             fixed (Native.SDL_MessageBoxButtonData* buttonBuffer = nativeButtons)
             {
                 _ = Native.CheckError(Native.SDL_ShowMessageBox(
-                    new Native.SDL_MessageBoxData(flags, window == null ? null : window.Pointer, utf8Title, utf8Message, buttons.Length, buttonBuffer, colorScheme == null ? null : &colorSchemeValue),
+                    new Native.SDL_MessageBoxData(flags, window == null ? null : window.Native, utf8Title, utf8Message, buttons.Length, buttonBuffer, colorScheme == null ? null : &colorSchemeValue),
                     out buttonId));
             }
 
@@ -268,12 +269,12 @@ namespace SdlSharp
         /// <param name="title">The title.</param>
         /// <param name="message">The message.</param>
         /// <param name="window">The parent window, if any.</param>
-        public static void ShowMessageBox(MessageBoxFlags flags, string title, string message, Window? window)
+        public static void ShowMessageBox(MessageBoxType flags, string title, string message, Window? window)
         {
             using var utf8Title = Utf8String.ToUtf8String(title);
             using var utf8Message = Utf8String.ToUtf8String(message);
 
-            _ = Native.CheckError(Native.SDL_ShowSimpleMessageBox(flags, utf8Title, utf8Message, window == null ? null : window.Pointer));
+            _ = Native.CheckError(Native.SDL_ShowSimpleMessageBox(flags, utf8Title, utf8Message, window == null ? null : window.Native));
         }
 
         /// <summary>

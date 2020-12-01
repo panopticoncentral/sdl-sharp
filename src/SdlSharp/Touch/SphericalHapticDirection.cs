@@ -27,6 +27,6 @@
         }
 
         internal override Native.SDL_HapticDirection ToNative() =>
-            new Native.SDL_HapticDirection(Native.SDL_HapticDirectionType.Spherical, XYDegrees, ZDegrees);
+            new(Native.SDL_HapticDirectionType.Spherical, XYDegrees, ZDegrees);
     }
 }

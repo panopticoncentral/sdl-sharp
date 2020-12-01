@@ -12,17 +12,17 @@ namespace SdlSharp.Touch
         /// </summary>
         public HapticEffectType Type { get; }
 
-        private Native.SDL_HapticFlags NativeFlags => Type switch
+        private Native.SDL_HapticType NativeFlags => Type switch
         {
-            HapticEffectType.Sine => Native.SDL_HapticFlags.Sine,
+            HapticEffectType.Sine => Native.SDL_HapticType.Sine,
 
-            HapticEffectType.Triangle => Native.SDL_HapticFlags.Triangle,
+            HapticEffectType.Triangle => Native.SDL_HapticType.Triangle,
 
-            HapticEffectType.SawToothUp => Native.SDL_HapticFlags.SawToothUp,
+            HapticEffectType.SawToothUp => Native.SDL_HapticType.SawToothUp,
 
-            HapticEffectType.SawToothDown => Native.SDL_HapticFlags.SawToothDown,
+            HapticEffectType.SawToothDown => Native.SDL_HapticType.SawToothDown,
 
-            _ => Native.SDL_HapticFlags.None,
+            _ => Native.SDL_HapticType.None,
         };
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace SdlSharp.Touch
         }
 
         internal override Native.SDL_HapticEffect ToNative() =>
-            new Native.SDL_HapticEffect
+            new()
             {
                 _periodic = new Native.SDL_HapticPeriodic(NativeFlags, Direction.ToNative(), Length, Delay, Button, Interval, Period, Magnitude, Offset, Phase, AttackLength, AttackLevel, FadeLength, FadeLevel)
             };

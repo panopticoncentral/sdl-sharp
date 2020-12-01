@@ -50,7 +50,7 @@
         /// Halts the group.
         /// </summary>
         public void Halt() =>
-            Native.Mix_HaltGroup(Index);
+            Native.CheckError(Native.Mix_HaltGroup(Index));
 
         /// <summary>
         /// Fades the group out.

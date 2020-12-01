@@ -20,6 +20,6 @@
         }
 
         internal override Native.SDL_HapticDirection ToNative() =>
-            new Native.SDL_HapticDirection(Native.SDL_HapticDirectionType.Polar, Degree);
+            new(Native.SDL_HapticDirectionType.Polar, Degree);
     }
 }

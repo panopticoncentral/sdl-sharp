@@ -82,7 +82,7 @@ namespace SdlSharp.Sound
             Silence = spec.Silence;
             Samples = spec.Samples;
             Size = spec.Size;
-            Callback = spec.Callback == null ? (AudioCallback?)null : new ReverseCallbackWrapper(spec.Callback).Callback;
+            Callback = spec.Callback == null ? null : new ReverseCallbackWrapper(spec.Callback).Callback;
             Userdata = spec.Userdata;
         }
 
@@ -91,14 +91,14 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <returns>The native audio specification.</returns>
         public unsafe Native.SDL_AudioSpec ToNative() =>
-            new Native.SDL_AudioSpec(
+            new(
                 Frequency,
                 Format,
                 Channels,
                 Silence,
                 Samples,
                 Size,
-                Callback == null ? (Native.SDL_AudioCallback?)null : new CallbackWrapper(Callback).Callback,
+                Callback == null ? null : new CallbackWrapper(Callback).Callback,
                 Userdata);
 
         private sealed unsafe class CallbackWrapper

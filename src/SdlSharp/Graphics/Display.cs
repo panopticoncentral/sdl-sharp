@@ -121,7 +121,7 @@ namespace SdlSharp.Graphics
         public DisplayMode? GetClosestMode(DisplayMode mode)
         {
             var ret = Native.SDL_GetClosestDisplayMode(Index, ref mode, out var closest);
-            return ret == null ? (DisplayMode?)null : closest;
+            return ret == null ? null : closest;
         }
 
         internal static void DispatchEvent(Native.SDL_Event e)

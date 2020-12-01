@@ -35,7 +35,7 @@ namespace SdlSharp
         /// </summary>
         /// <param name="scale">The scaling factor.</param>
         /// <returns>The scaled size.</returns>
-        public SizeF Scale(float scale) => new SizeF(Width * scale, Height * scale);
+        public SizeF Scale(float scale) => new(Width * scale, Height * scale);
 
         /// <inheritdoc/>
         public override int GetHashCode() => HashCode.Combine(Width, Height);
@@ -54,7 +54,7 @@ namespace SdlSharp
         /// Converts a tuple to a size.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        public static implicit operator SizeF((float Width, float Height) tuple) => new SizeF(tuple.Width, tuple.Height);
+        public static implicit operator SizeF((float Width, float Height) tuple) => new(tuple.Width, tuple.Height);
 
         /// <summary>
         /// Adds two sizes together.

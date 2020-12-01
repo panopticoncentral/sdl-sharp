@@ -2,15 +2,15 @@
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 
-using Application app = new (Subsystems.Video, fontSupport: true);
+using Application app = new(Subsystems.Video, fontSupport: true);
 Size windowSize = (640, 480);
 Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
-using var window = Window.Create("Text", windowRectangle, WindowFlags.Shown);
-using var renderer = Renderer.Create(window, -1, RendererFlags.Accelerated | RendererFlags.PresentVSync);
+using var window = Window.Create("Text", windowRectangle, WindowOptions.Shown);
+using var renderer = Renderer.Create(window, -1, RendererOptions.Accelerated | RendererOptions.PresentVSync);
 using var font = Font.Create("SDS_8x8.ttf", 12);
 using var textTexture = font.RenderSolid("The quick brown fox jumped over the lazy dog", Colors.Black, renderer);
 
-Color textColor = new (0, 0, 0, 0xFF);
+Color textColor = new(0, 0, 0, 0xFF);
 var inputText = "Some editable text";
 var inputTextTexture = font.RenderSolid(inputText, textColor, renderer);
 var renderText = false;
@@ -46,7 +46,7 @@ Keyboard.KeyDown += (s, e) =>
 
 Keyboard.TextInput += (s, e) =>
 {
-    if (!((e.Text[0] == 'c' || e.Text[0] == 'C') && (e.Text[0] == 'v' || e.Text[0] == 'V') && ((Keyboard.KeyModifierState & KeyModifier.Ctrl) != 0)))
+    if ((e.Text[0] is not ('c' or 'C' or 'v' or 'V')) || ((Keyboard.KeyModifierState & KeyModifier.Ctrl) is 0))
     {
         inputText += e.Text;
         renderText = true;
@@ -70,3 +70,5 @@ while (app.DispatchEvent())
 
     renderer.Present();
 }
+
+inputTextTexture.Dispose();

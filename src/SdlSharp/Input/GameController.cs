@@ -11,7 +11,7 @@ namespace SdlSharp.Input
         /// The number of mappings for game controllers.
         /// </summary>
         public static int MappingsCount =>
-            Native.SDL_GameControllerNumMappings();
+            SdlSharp.Native.SDL_GameControllerNumMappings();
 
         /// <summary>
         /// The mapping for this game controller.
@@ -20,7 +20,7 @@ namespace SdlSharp.Input
         {
             get
             {
-                using var mapping = Native.SDL_GameControllerMapping(Pointer);
+                using var mapping = SdlSharp.Native.SDL_GameControllerMapping(Native);
                 return mapping.ToString();
             }
         }
@@ -29,52 +29,52 @@ namespace SdlSharp.Input
         /// The name of the game controller, if any.
         /// </summary>
         public string? Name =>
-            Native.SDL_GameControllerName(Pointer);
+            SdlSharp.Native.SDL_GameControllerName(Native);
 
         /// <summary>
         /// The player index assigned to the controller.
         /// </summary>
         public int PlayerIndex
         {
-            get => Native.SDL_GameControllerGetPlayerIndex(Pointer);
-            set => Native.SDL_GameControllerSetPlayerIndex(Pointer, value);
+            get => SdlSharp.Native.SDL_GameControllerGetPlayerIndex(Native);
+            set => SdlSharp.Native.SDL_GameControllerSetPlayerIndex(Native, value);
         }
 
         /// <summary>
         /// The vendor code of the game controller
         /// </summary>
         public ushort Vendor =>
-            Native.SDL_GameControllerGetVendor(Pointer);
+            SdlSharp.Native.SDL_GameControllerGetVendor(Native);
 
         /// <summary>
         /// The product code of the game controller.
         /// </summary>
         public ushort Product =>
-            Native.SDL_GameControllerGetProduct(Pointer);
+            SdlSharp.Native.SDL_GameControllerGetProduct(Native);
 
         /// <summary>
         /// The product version of the game controller.
         /// </summary>
         public ushort ProductVersion =>
-            Native.SDL_GameControllerGetProductVersion(Pointer);
+            SdlSharp.Native.SDL_GameControllerGetProductVersion(Native);
 
         /// <summary>
         /// Whether the game controller is attached.
         /// </summary>
         public bool Attached =>
-            Native.SDL_GameControllerGetAttached(Pointer);
+            SdlSharp.Native.SDL_GameControllerGetAttached(Native);
 
         /// <summary>
         /// Gets the underlying joystick.
         /// </summary>
         public Joystick Joystick =>
-            Joystick.PointerToInstanceNotNull(Native.SDL_GameControllerGetJoystick(Pointer));
+            Joystick.PointerToInstanceNotNull(SdlSharp.Native.SDL_GameControllerGetJoystick(Native));
 
         /// <summary>
         /// Gets the type of the game controller.
         /// </summary>
         public GameControllerType Type =>
-            Native.SDL_GameControllerGetType(Pointer);
+            SdlSharp.Native.SDL_GameControllerGetType(Native);
 
         /// <summary>
         /// An event fired when a game controller is added to the system.
@@ -107,7 +107,7 @@ namespace SdlSharp.Input
         public event EventHandler<SdlEventArgs>? Remapped;
 
         internal static GameController? Get(Native.SDL_JoystickID joystickId) =>
-            PointerToInstance(Native.SDL_GameControllerFromInstanceID(joystickId));
+            PointerToInstance(SdlSharp.Native.SDL_GameControllerFromInstanceID(joystickId));
 
         /// <summary>
         /// Gets the game controller corresponding to the player index.
@@ -115,12 +115,12 @@ namespace SdlSharp.Input
         /// <param name="playerIndex">The index of the player.</param>
         /// <returns>The game controller corresponding to the player.</returns>
         public static GameController? Get(int playerIndex) =>
-            PointerToInstance(Native.SDL_GameControllerFromPlayerIndex(playerIndex));
+            PointerToInstance(SdlSharp.Native.SDL_GameControllerFromPlayerIndex(playerIndex));
 
         /// <inheritdoc/>
         public override void Dispose()
         {
-            Native.SDL_GameControllerClose(Pointer);
+            SdlSharp.Native.SDL_GameControllerClose(Native);
             base.Dispose();
         }
 
@@ -131,7 +131,7 @@ namespace SdlSharp.Input
         /// <param name="shouldDispose">Whether the data source should be disposed after use.</param>
         /// <returns>The number of mappings added.</returns>
         public static int AddMappings(RWOps rwops, bool shouldDispose) =>
-            Native.CheckError(Native.SDL_GameControllerAddMappingsFromRW(rwops.Pointer, shouldDispose));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GameControllerAddMappingsFromRW(rwops.Native, shouldDispose));
 
         /// <summary>
         /// Adds game controller mappings from a file.
@@ -139,7 +139,7 @@ namespace SdlSharp.Input
         /// <param name="filename">The filename that holds the mappings.</param>
         /// <returns>The number of mappings added.</returns>
         public static int AddMappings(string filename) =>
-            Native.CheckError(Native.SDL_GameControllerAddMappingsFromFile(filename));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GameControllerAddMappingsFromFile(filename));
 
         /// <summary>
         /// Adds a game controller mapping.
@@ -147,7 +147,7 @@ namespace SdlSharp.Input
         /// <param name="mapping">The mapping.</param>
         /// <returns><c>true</c> if the mapping was added, <c>false</c> if it updated an existing mapping.</returns>
         public static bool AddMapping(string mapping) =>
-            Native.CheckError(Native.SDL_GameControllerAddMapping(mapping)) == 1;
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GameControllerAddMapping(mapping)) == 1;
 
         /// <summary>
         /// Gets a controller mapping.
@@ -156,18 +156,18 @@ namespace SdlSharp.Input
         /// <returns>The mapping, if it exists.</returns>
         public static string? GetMapping(int index)
         {
-            using var mapping = Native.SDL_GameControllerMappingForIndex(index);
+            using var mapping = SdlSharp.Native.SDL_GameControllerMappingForIndex(index);
             return mapping.ToString();
         }
 
         /// <summary>
         /// Gets a controller mapping.
         /// </summary>
-        /// <param name="guid">The GUID of the mapping.</param>
+        /// <param name="id">The GUID of the mapping.</param>
         /// <returns>The mapping, if it exists.</returns>
-        public static string? GetMapping(Guid guid)
+        public static string? GetMapping(Guid id)
         {
-            using var mapping = Native.SDL_GameControllerMappingForGUID(guid);
+            using var mapping = SdlSharp.Native.SDL_GameControllerMappingForGUID(id);
             return mapping.ToString();
         }
 
@@ -177,13 +177,13 @@ namespace SdlSharp.Input
         /// <param name="state">The state.</param>
         /// <returns>The previous state.</returns>
         public static State SetEventState(State state) =>
-            (State)Native.SDL_GameControllerEventState(state);
+            (State)SdlSharp.Native.SDL_GameControllerEventState(state);
 
         /// <summary>
         /// Polls game controllers for events.
         /// </summary>
         public static void Update() =>
-            Native.SDL_GameControllerUpdate();
+            SdlSharp.Native.SDL_GameControllerUpdate();
 
         /// <summary>
         /// Maps a name to an axis.
@@ -191,7 +191,7 @@ namespace SdlSharp.Input
         /// <param name="name">The name.</param>
         /// <returns>The axis.</returns>
         public static GameControllerAxis GetAxisFromString(string name) =>
-            Native.SDL_GameControllerGetAxisFromString(name);
+            SdlSharp.Native.SDL_GameControllerGetAxisFromString(name);
 
         /// <summary>
         /// Maps an axis to a name.
@@ -199,7 +199,7 @@ namespace SdlSharp.Input
         /// <param name="axis">The axis.</param>
         /// <returns>The name.</returns>
         public static string GetStringForAxis(GameControllerAxis axis) =>
-            Native.SDL_GameControllerGetStringForAxis(axis);
+            SdlSharp.Native.SDL_GameControllerGetStringForAxis(axis);
 
         /// <summary>
         /// Gets the binding for the axis.
@@ -207,7 +207,7 @@ namespace SdlSharp.Input
         /// <param name="axis">The axis.</param>
         /// <returns>The binding.</returns>
         public GameControllerBinding? GetAxisBinding(GameControllerAxis axis) =>
-            GameControllerBinding.FromNative(Native.SDL_GameControllerGetBindForAxis(Pointer, axis));
+            GameControllerBinding.FromNative(SdlSharp.Native.SDL_GameControllerGetBindForAxis(Native, axis));
 
         /// <summary>
         /// The axis value.
@@ -215,7 +215,7 @@ namespace SdlSharp.Input
         /// <param name="axis">The axis.</param>
         /// <returns>The value.</returns>
         public short GetAxis(GameControllerAxis axis) =>
-            Native.SDL_GameControllerGetAxis(Pointer, axis);
+            SdlSharp.Native.SDL_GameControllerGetAxis(Native, axis);
 
         /// <summary>
         /// Maps a name to an button.
@@ -223,7 +223,7 @@ namespace SdlSharp.Input
         /// <param name="name">The name.</param>
         /// <returns>The button.</returns>
         public static GameControllerButton GetButtonFromString(string name) =>
-            Native.SDL_GameControllerGetButtonFromString(name);
+            SdlSharp.Native.SDL_GameControllerGetButtonFromString(name);
 
         /// <summary>
         /// Maps an button to a name.
@@ -231,7 +231,7 @@ namespace SdlSharp.Input
         /// <param name="button">The button.</param>
         /// <returns>The name.</returns>
         public static string GetStringForButton(GameControllerButton button) =>
-            Native.SDL_GameControllerGetStringForButton(button);
+            SdlSharp.Native.SDL_GameControllerGetStringForButton(button);
 
         /// <summary>
         /// Gets the binding for the button.
@@ -239,7 +239,7 @@ namespace SdlSharp.Input
         /// <param name="button">The button.</param>
         /// <returns>The binding.</returns>
         public GameControllerBinding? GetButtonBinding(GameControllerButton button) =>
-            GameControllerBinding.FromNative(Native.SDL_GameControllerGetBindForButton(Pointer, button));
+            GameControllerBinding.FromNative(SdlSharp.Native.SDL_GameControllerGetBindForButton(Native, button));
 
         /// <summary>
         /// The button value.
@@ -247,7 +247,7 @@ namespace SdlSharp.Input
         /// <param name="button">The button.</param>
         /// <returns>Whether the button is pressed.</returns>
         public bool GetButton(GameControllerButton button) =>
-            Native.SDL_GameControllerGetButton(Pointer, button);
+            SdlSharp.Native.SDL_GameControllerGetButton(Native, button);
 
         /// <summary>
         /// Rumbles the game controller.
@@ -256,47 +256,47 @@ namespace SdlSharp.Input
         /// <param name="highFrequency">The high frequency.</param>
         /// <param name="duration">The duration.</param>
         public void Rumble(ushort lowFrequency, ushort highFrequency, uint duration) =>
-            Native.CheckError(Native.SDL_GameControllerRumble(Pointer, lowFrequency, highFrequency, duration));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GameControllerRumble(Native, lowFrequency, highFrequency, duration));
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
             switch (e.Type)
             {
-                case Native.SDL_EventType.ControllerAxisMotion:
+                case SdlSharp.Native.SDL_EventType.ControllerAxisMotion:
                     {
                         var controller = Get(e.Caxis.Which);
                         controller?.AxisMotion?.Invoke(controller, new GameControllerAxisMotionEventArgs(e.Caxis));
                         break;
                     }
 
-                case Native.SDL_EventType.ControllerButtonDown:
+                case SdlSharp.Native.SDL_EventType.ControllerButtonDown:
                     {
                         var controller = Get(e.Cbutton.Which);
                         controller?.ButtonDown?.Invoke(controller, new GameControllerButtonEventArgs(e.Cbutton));
                         break;
                     }
 
-                case Native.SDL_EventType.ControllerButtonUp:
+                case SdlSharp.Native.SDL_EventType.ControllerButtonUp:
                     {
                         var controller = Get(e.Cbutton.Which);
                         controller?.ButtonUp?.Invoke(controller, new GameControllerButtonEventArgs(e.Cbutton));
                         break;
                     }
 
-                case Native.SDL_EventType.ControllerDeviceAdded:
+                case SdlSharp.Native.SDL_EventType.ControllerDeviceAdded:
                     {
                         Added?.Invoke(null, new GameControllerAddedEventArgs(e.Cdevice));
                         break;
                     }
 
-                case Native.SDL_EventType.ControllerDeviceRemoved:
+                case SdlSharp.Native.SDL_EventType.ControllerDeviceRemoved:
                     {
                         var controller = Get(new Native.SDL_JoystickID(e.Cdevice.Which));
                         controller?.Removed?.Invoke(controller, new SdlEventArgs(e.Common));
                         break;
                     }
 
-                case Native.SDL_EventType.ControllerDeviceRemapped:
+                case SdlSharp.Native.SDL_EventType.ControllerDeviceRemapped:
                     {
                         var controller = Get(new Native.SDL_JoystickID(e.Cdevice.Which));
                         controller?.Remapped?.Invoke(controller, new SdlEventArgs(e.Common));

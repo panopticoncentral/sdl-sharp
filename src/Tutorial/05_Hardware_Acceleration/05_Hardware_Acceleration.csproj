@@ -5,6 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Tutorial</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>05HardwareAcceleration</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SdlSharp" Version="$(SdlTutorialVersion)" />
+    <PackageReference Include="SdlSharp.Redist" Version="$(SdlRedistVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SdlSharp\SdlSharp.csproj" />
   </ItemGroup>
 
 </Project>

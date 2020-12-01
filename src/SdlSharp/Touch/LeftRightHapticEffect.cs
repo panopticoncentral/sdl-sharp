@@ -34,9 +34,9 @@
         }
 
         internal override Native.SDL_HapticEffect ToNative() =>
-            new Native.SDL_HapticEffect
+            new()
             {
-                _leftright = new Native.SDL_HapticLeftRight(Native.SDL_HapticFlags.LeftRight, Length, LargeMagnitude, SmallMagnitude)
+                _leftright = new Native.SDL_HapticLeftRight(Native.SDL_HapticType.LeftRight, Length, LargeMagnitude, SmallMagnitude)
             };
     }
 }

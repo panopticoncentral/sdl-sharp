@@ -8,7 +8,7 @@
         /// <summary>
         /// The flags.
         /// </summary>
-        public MessageBoxButtonFlags Flags { get; }
+        public MessageBoxButtonOptions Flags { get; }
 
         /// <summary>
         /// The ID of the button.
@@ -26,7 +26,7 @@
         /// <param name="flags">The flags.</param>
         /// <param name="buttonId">The ID of the button.</param>
         /// <param name="text">The text of the button.</param>
-        public MessageBoxButton(MessageBoxButtonFlags flags, int buttonId, string text)
+        public MessageBoxButton(MessageBoxButtonOptions flags, int buttonId, string text)
         {
             Flags = flags;
             ButtonId = buttonId;

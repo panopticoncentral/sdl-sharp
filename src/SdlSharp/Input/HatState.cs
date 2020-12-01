@@ -6,7 +6,7 @@ namespace SdlSharp.Input
     /// Flags describing a hat's state.
     /// </summary>
     [Flags]
-    public enum HatFlags : byte
+    public enum HatState : byte
     {
         /// <summary>
         /// Centered.

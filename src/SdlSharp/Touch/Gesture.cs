@@ -36,21 +36,21 @@ namespace SdlSharp.Touch
         /// <param name="device">The touch device.</param>
         /// <param name="rwops">The storage.</param>
         public static void LoadDollarTemplates(TouchDevice device, RWOps rwops) =>
-            Native.CheckError(Native.SDL_LoadDollarTemplates(device.Index, rwops.Pointer));
+            Native.CheckError(Native.SDL_LoadDollarTemplates(device.Index, rwops.Native));
 
         /// <summary>
         /// Save all the dollar templates.
         /// </summary>
         /// <param name="rwops">The storage.</param>
         public static void SaveAllDollarTemplates(RWOps rwops) =>
-            Native.CheckError(Native.SDL_SaveAllDollarTemplates(rwops.Pointer));
+            Native.CheckError(Native.SDL_SaveAllDollarTemplates(rwops.Native));
 
         /// <summary>
         /// Save a dollar template.
         /// </summary>
         /// <param name="rwops">The storage.</param>
         public void SaveDollarTemplate(RWOps rwops) =>
-            Native.CheckError(Native.SDL_SaveDollarTemplate(Index, rwops.Pointer));
+            Native.CheckError(Native.SDL_SaveDollarTemplate(Index, rwops.Native));
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {

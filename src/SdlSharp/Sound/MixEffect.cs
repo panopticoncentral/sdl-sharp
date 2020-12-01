@@ -7,10 +7,10 @@ namespace SdlSharp.Sound
     /// </summary>
     public abstract class MixEffect
     {
-        private static readonly Dictionary<MixEffect, int> s_instances = new Dictionary<MixEffect, int>();
+        private static readonly Dictionary<MixEffect, int> s_instances = new();
 
-        private readonly Native.MixEffectDelegate _effect;
-        private readonly Native.MixEffectDoneDelegate _done;
+        private readonly Native.MixEffectCallback _effect;
+        private readonly Native.MixEffectDoneCallback _done;
 
         /// <summary>
         /// User data for this effect.
@@ -22,8 +22,8 @@ namespace SdlSharp.Sound
         /// </summary>
         protected MixEffect()
         {
-            _effect = new Native.MixEffectDelegate(Effect);
-            _done = new Native.MixEffectDoneDelegate(DoneWrapper);
+            _effect = new Native.MixEffectCallback(Effect);
+            _done = new Native.MixEffectDoneCallback(DoneWrapper);
         }
 
         /// <summary>

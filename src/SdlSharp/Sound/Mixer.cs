@@ -1,8 +1,5 @@
 ﻿using System;
 
-// There are going to be unused fields in some of the interop structures
-#pragma warning disable CS0169, RCS1213, IDE0051, IDE0052
-
 namespace SdlSharp.Sound
 {
     /// <summary>
@@ -40,10 +37,10 @@ namespace SdlSharp.Sound
         /// </summary>
         public const string EffectsMaxSpeedEnvironmentVariable = "MIX_EFFECTSMAXSPEED";
 
-        private static Native.MixFunctionDelegate? s_postMixHook;
-        private static Native.MixFunctionDelegate? s_playMusicHook;
-        private static MusicFinishedDelegate? s_musicFinishedHook;
-        private static Native.MusicChannelFinishedDelegate? s_channelFinishedHook;
+        private static Native.MixFunctionCallback? s_postMixHook;
+        private static Native.MixFunctionCallback? s_playMusicHook;
+        private static MusicFinishedCallback? s_musicFinishedHook;
+        private static Native.MusicChannelFinishedCallback? s_channelFinishedHook;
 
         /// <summary>
         /// The user data of the current music hook.
@@ -151,7 +148,7 @@ namespace SdlSharp.Sound
         /// <param name="shouldDispose">Whether the storage should be disposed when done.</param>
         /// <returns>The sample.</returns>
         public static MixChunk LoadWav(RWOps rwops, bool shouldDispose) =>
-            MixChunk.PointerToInstanceNotNull(Native.Mix_LoadWAV_RW(rwops.Pointer, shouldDispose));
+            MixChunk.PointerToInstanceNotNull(Native.Mix_LoadWAV_RW(rwops.Native, shouldDispose));
 
         /// <summary>
         /// Loads a music sample from a file.
@@ -189,7 +186,7 @@ namespace SdlSharp.Sound
         /// <param name="shouldDispose">Whether the storage should be disposed after loading.</param>
         /// <returns>The music.</returns>
         public static MixMusic LoadMusic(RWOps rwops, bool shouldDispose) =>
-            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUS_RW(rwops.Pointer, shouldDispose));
+            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUS_RW(rwops.Native, shouldDispose));
 
         /// <summary>
         /// Loads a music file from storage.
@@ -199,7 +196,7 @@ namespace SdlSharp.Sound
         /// <param name="shouldDispose">Whether the storage should be disposed after loading.</param>
         /// <returns>The music.</returns>
         public static MixMusic LoadMusic(RWOps rwops, MusicType type, bool shouldDispose) =>
-            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUSType_RW(rwops.Pointer, type, shouldDispose));
+            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUSType_RW(rwops.Native, type, shouldDispose));
 
         /// <summary>
         /// Quickly loads a raw sample, must be in correct format.
@@ -219,7 +216,7 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <param name="function">The function to call.</param>
         /// <param name="userData">User data.</param>
-        public static void SetPostMixHook(MixFunctionDelegate function, nint userData)
+        public static void SetPostMixHook(MixFunctionCallback function, nint userData)
         {
             s_postMixHook = new MixFunctionWrapper(function).MixFunction;
             Native.Mix_SetPostMix(s_postMixHook, userData);
@@ -230,7 +227,7 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <param name="function">The function to call.</param>
         /// <param name="userData">User data.</param>
-        public static void SetPlayMusicHook(MixFunctionDelegate function, nint userData)
+        public static void SetPlayMusicHook(MixFunctionCallback function, nint userData)
         {
             s_playMusicHook = new MixFunctionWrapper(function).MixFunction;
             Native.Mix_HookMusic(s_playMusicHook, userData);
@@ -240,7 +237,7 @@ namespace SdlSharp.Sound
         /// Sets a function to be called when the music is finished.
         /// </summary>
         /// <param name="function">The function to call.</param>
-        public static void SetMusicFinishedHook(MusicFinishedDelegate function)
+        public static void SetMusicFinishedHook(MusicFinishedCallback function)
         {
             s_musicFinishedHook = function;
             Native.Mix_HookMusicFinished(function);
@@ -250,7 +247,7 @@ namespace SdlSharp.Sound
         /// Sets a function to be called when a channel finishes.
         /// </summary>
         /// <param name="function">The function to call.</param>
-        public static void SetChannelFinishedHook(MusicChannelFinishedDelegate function)
+        public static void SetChannelFinishedHook(MusicChannelFinishedCallback function)
         {
             s_channelFinishedHook = new MusicChannelFinishedWrapper(function).MusicChannelFinished;
             Native.Mix_ChannelFinished(s_channelFinishedHook);
@@ -268,7 +265,7 @@ namespace SdlSharp.Sound
         /// Halts music.
         /// </summary>
         public static void Halt() =>
-            Native.Mix_HaltMusic();
+            Native.CheckError(Native.Mix_HaltMusic());
 
         /// <summary>
         /// Fades out music.
@@ -337,11 +334,11 @@ namespace SdlSharp.Sound
 
         private sealed class MusicChannelFinishedWrapper
         {
-            private readonly MusicChannelFinishedDelegate _finishedDelegate;
+            private readonly MusicChannelFinishedCallback _finishedDelegate;
 
             public void MusicChannelFinished(int channel) => _finishedDelegate(MixChannel.Get(channel));
 
-            public MusicChannelFinishedWrapper(MusicChannelFinishedDelegate finishedDelegate)
+            public MusicChannelFinishedWrapper(MusicChannelFinishedCallback finishedDelegate)
             {
                 _finishedDelegate = finishedDelegate;
             }
@@ -349,11 +346,11 @@ namespace SdlSharp.Sound
 
         private sealed class MixFunctionWrapper
         {
-            private readonly MixFunctionDelegate _mixDelegate;
+            private readonly MixFunctionCallback _mixDelegate;
 
             public void MixFunction(nint udata, nint stream, int len) => _mixDelegate(new Span<byte>((void*)stream, len), udata);
 
-            public MixFunctionWrapper(MixFunctionDelegate mixDelegate)
+            public MixFunctionWrapper(MixFunctionCallback mixDelegate)
             {
                 _mixDelegate = mixDelegate;
             }

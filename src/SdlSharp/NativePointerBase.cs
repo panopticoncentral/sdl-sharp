@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// In this case, it's really the whole point, and this will not have a lot of instantiations
+#pragma warning disable CA1000 // Do not declare members on generic types
+
 namespace SdlSharp
 {
     /// <summary>
@@ -12,34 +15,34 @@ namespace SdlSharp
         where TNative : unmanaged
         where TManaged : NativePointerBase<TNative, TManaged>, new()
     {
-        private static readonly Dictionary<nint, WeakReference<TManaged>> s_instances = new Dictionary<nint, WeakReference<TManaged>>();
+        private static readonly Dictionary<nint, WeakReference<TManaged>> s_instances = new();
 
         /// <summary>
         /// The pointer.
         /// </summary>
-        public TNative* Pointer { get; private set; }
+        public TNative* Native { get; private set; }
 
         /// <inheritdoc/>
         public virtual void Dispose()
         {
             GC.SuppressFinalize(this);
-            _ = s_instances.Remove((nint)Pointer);
-            Pointer = null;
+            _ = s_instances.Remove((nint)Native);
+            Native = null;
         }
 
         /// <summary>
         /// Converts a native object to a managed object.
         /// </summary>
-        /// <param name="pointer">The pointer.</param>
+        /// <param name="native">The pointer.</param>
         /// <returns>A managed object.</returns>
-        public static TManaged? PointerToInstance(TNative* pointer)
+        public static TManaged? PointerToInstance(TNative* native)
         {
-            if (pointer == null)
+            if (native == null)
             {
                 return null;
             }
 
-            if (s_instances.TryGetValue((nint)pointer, out var weakRef)
+            if (s_instances.TryGetValue((nint)native, out var weakRef)
                 && weakRef.TryGetTarget(out var value))
             {
                 return value;
@@ -47,18 +50,18 @@ namespace SdlSharp
 
             value = new TManaged
             {
-                Pointer = Native.CheckPointer(pointer)
+                Native = SdlSharp.Native.CheckPointer(native)
             };
-            s_instances[(nint)pointer] = new WeakReference<TManaged>(value);
+            s_instances[(nint)native] = new WeakReference<TManaged>(value);
             return value;
         }
 
         /// <summary>
         /// Converts a native object to a managed object.
         /// </summary>
-        /// <param name="pointer">The pointer.</param>
+        /// <param name="native">The pointer.</param>
         /// <returns>A managed object.</returns>
-        public static TManaged PointerToInstanceNotNull(TNative* pointer) =>
-            PointerToInstance(pointer) ?? throw new SdlException();
+        public static TManaged PointerToInstanceNotNull(TNative* native) =>
+            PointerToInstance(native) ?? throw new SdlException();
     }
 }

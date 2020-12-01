@@ -4,5 +4,5 @@
     /// A delegate that is called when a channel finishes.
     /// </summary>
     /// <param name="channel">The channel.</param>
-    public delegate void MusicChannelFinishedDelegate(MixChannel channel);
+    public delegate void MusicChannelFinishedCallback(MixChannel channel);
 }

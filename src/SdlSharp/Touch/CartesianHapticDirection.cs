@@ -34,6 +34,6 @@
         }
 
         internal override Native.SDL_HapticDirection ToNative() =>
-            new Native.SDL_HapticDirection(Native.SDL_HapticDirectionType.Cartesian, XAxis, YAxis, ZAxis);
+            new(Native.SDL_HapticDirectionType.Cartesian, XAxis, YAxis, ZAxis);
     }
 }

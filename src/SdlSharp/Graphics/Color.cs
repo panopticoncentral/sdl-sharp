@@ -58,13 +58,13 @@ namespace SdlSharp.Graphics
         /// Converts an RGB tuple to a color.
         /// </summary>
         /// <param name="tuple">The RGB value.</param>
-        public static implicit operator Color((byte Red, byte Green, byte Blue) tuple) => new Color(tuple.Red, tuple.Green, tuple.Blue);
+        public static implicit operator Color((byte Red, byte Green, byte Blue) tuple) => new(tuple.Red, tuple.Green, tuple.Blue);
 
         /// <summary>
         /// Converts an RGBA tuple to a color.
         /// </summary>
         /// <param name="tuple">The RGBA value.</param>
-        public static implicit operator Color((byte Red, byte Green, byte Blue, byte Alpha) tuple) => new Color(tuple.Red, tuple.Green, tuple.Blue, tuple.Alpha);
+        public static implicit operator Color((byte Red, byte Green, byte Blue, byte Alpha) tuple) => new(tuple.Red, tuple.Green, tuple.Blue, tuple.Alpha);
 
         /// <summary>
         /// Compares two colors.

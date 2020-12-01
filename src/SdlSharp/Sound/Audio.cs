@@ -103,7 +103,7 @@ namespace SdlSharp.Sound
         /// <returns>The loaded audio data.</returns>
         public static WavData LoadWav(RWOps rwops, bool shouldFree, out AudioSpec spec)
         {
-            _ = Native.CheckPointer(Native.SDL_LoadWAV_RW(rwops.Pointer, shouldFree, out var specNative, out var buffer, out var bufferSize));
+            _ = Native.CheckPointer(Native.SDL_LoadWAV_RW(rwops.Native, shouldFree, out var specNative, out var buffer, out var bufferSize));
             spec = new AudioSpec(specNative);
             return new WavData(buffer, bufferSize);
         }
@@ -162,7 +162,7 @@ namespace SdlSharp.Sound
         {
             if (destination.Length < source.Length)
             {
-                throw new ArgumentException(nameof(destination));
+                throw new ArgumentException("Destination is too short.", nameof(destination));
             }
 
             fixed (byte* sourcePointer = source)
@@ -185,7 +185,7 @@ namespace SdlSharp.Sound
         {
             if (destination.Length < source.Length)
             {
-                throw new ArgumentException(nameof(destination));
+                throw new ArgumentException("Destination is too short.", nameof(destination));
             }
 
             fixed (byte* sourcePointer = source)

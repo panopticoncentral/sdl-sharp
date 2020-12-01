@@ -17,7 +17,7 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The flags of the renderer.
         /// </summary>
-        public RendererFlags Flags { get; }
+        public RendererOptions Flags { get; }
 
         private readonly uint _textureFormatCount;
         private fixed uint _formats[16];

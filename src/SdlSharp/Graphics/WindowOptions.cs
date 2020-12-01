@@ -6,7 +6,7 @@ namespace SdlSharp.Graphics
     /// Flags for windows.
     /// </summary>
     [Flags]
-    public enum WindowFlags
+    public enum WindowOptions
     {
         /// <summary>
         /// None.

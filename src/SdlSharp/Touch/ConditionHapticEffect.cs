@@ -12,17 +12,17 @@ namespace SdlSharp.Touch
         /// </summary>
         public HapticEffectType Type { get; }
 
-        private Native.SDL_HapticFlags NativeFlags => Type switch
+        private Native.SDL_HapticType NativeFlags => Type switch
         {
-            HapticEffectType.Spring => Native.SDL_HapticFlags.Spring,
+            HapticEffectType.Spring => Native.SDL_HapticType.Spring,
 
-            HapticEffectType.Damper => Native.SDL_HapticFlags.Damper,
+            HapticEffectType.Damper => Native.SDL_HapticType.Damper,
 
-            HapticEffectType.Inertia => Native.SDL_HapticFlags.Inertia,
+            HapticEffectType.Inertia => Native.SDL_HapticType.Inertia,
 
-            HapticEffectType.Friction => Native.SDL_HapticFlags.Friction,
+            HapticEffectType.Friction => Native.SDL_HapticType.Friction,
 
-            _ => Native.SDL_HapticFlags.None,
+            _ => Native.SDL_HapticType.None,
         };
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace SdlSharp.Touch
         }
 
         internal override Native.SDL_HapticEffect ToNative() =>
-            new Native.SDL_HapticEffect
+            new()
             {
                 _condition = new Native.SDL_HapticCondition(NativeFlags, Direction.ToNative(), Length, Delay, Button, Interval, RightSat, LeftSat, RightCoefficient, LeftCoefficient, Deadband, Center)
             };

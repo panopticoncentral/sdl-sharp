@@ -104,9 +104,9 @@
         }
 
         internal override Native.SDL_HapticEffect ToNative() =>
-            new Native.SDL_HapticEffect
+            new()
             {
-                _custom = new Native.SDL_HapticCustom(Native.SDL_HapticFlags.Custom, Direction.ToNative(), Length, Delay, Button, Interval, Channels, Period, Samples, Data, AttackLength, AttackLevel, FadeLength, FadeLevel)
+                _custom = new Native.SDL_HapticCustom(Native.SDL_HapticType.Custom, Direction.ToNative(), Length, Delay, Button, Interval, Channels, Period, Samples, Data, AttackLength, AttackLevel, FadeLength, FadeLevel)
             };
     }
 }

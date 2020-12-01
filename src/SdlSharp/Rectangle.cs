@@ -44,7 +44,7 @@ namespace SdlSharp
         /// Converts a tuple to a recangle.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        public static implicit operator Rectangle((Point location, Size size) tuple) => new Rectangle(tuple.location, tuple.size);
+        public static implicit operator Rectangle((Point location, Size size) tuple) => new(tuple.location, tuple.size);
 
         /// <summary>
         /// Whether the rectangle is empty.
@@ -140,5 +140,21 @@ namespace SdlSharp
             var y2 = end.Y;
             return Native.SDL_IntersectRectAndLine(in this, in x1, in y1, in x2, in y2);
         }
+
+        /// <summary>
+        /// Compares two rectangles for equality.
+        /// </summary>
+        /// <param name="left">The left rectangle.</param>
+        /// <param name="right">The right rectangle.</param>
+        /// <returns>Whether they are equal.</returns>
+        public static bool operator ==(Rectangle left, Rectangle right) => left.Equals(right);
+
+        /// <summary>
+        /// Compares two rectangles for inequality.
+        /// </summary>
+        /// <param name="left">The left rectangle.</param>
+        /// <param name="right">The right rectangle.</param>
+        /// <returns>Whether they are not equal.</returns>
+        public static bool operator !=(Rectangle left, Rectangle right) => !(left == right);
     }
 }

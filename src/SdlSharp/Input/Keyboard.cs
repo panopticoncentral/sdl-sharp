@@ -1,4 +1,5 @@
 ﻿using System;
+
 using SdlSharp.Graphics;
 
 namespace SdlSharp.Input

@@ -3,7 +3,7 @@
     /// <summary>
     /// Flags for a message box.
     /// </summary>
-    public enum MessageBoxFlags
+    public enum MessageBoxType
     {
         /// <summary>
         /// Error message box.

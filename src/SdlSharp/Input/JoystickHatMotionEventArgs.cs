@@ -13,7 +13,7 @@
         /// <summary>
         /// The state of the hat.
         /// </summary>
-        public HatFlags Value { get; }
+        public HatState Value { get; }
 
         internal JoystickHatMotionEventArgs(Native.SDL_JoyHatEvent hat) : base(hat.Timestamp)
         {

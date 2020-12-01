@@ -8,22 +8,22 @@
         /// <summary>
         /// The HWND.
         /// </summary>
-        public readonly nint Hwnd;
+        public nint Hwnd { get; }
 
         /// <summary>
         /// The message.
         /// </summary>
-        public readonly uint Msg;
+        public uint Msg { get; }
 
         /// <summary>
         /// The WParam parameter.
         /// </summary>
-        public readonly nuint WParam;
+        public nuint WParam { get; }
 
         /// <summary>
         /// The LParam parameter.
         /// </summary>
-        public readonly nint LParam;
+        public nint LParam { get; }
 
         internal SystemWindowMessage(nint hwnd, uint msg, nuint wParam, nint lParam)
         {

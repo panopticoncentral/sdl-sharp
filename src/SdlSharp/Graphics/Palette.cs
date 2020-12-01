@@ -11,12 +11,12 @@
         /// <param name="colorCount">The number of colors in the palette.</param>
         /// <returns>The palette.</returns>
         public static Palette Create(int colorCount) =>
-            PointerToInstanceNotNull(Native.SDL_AllocPalette(colorCount));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_AllocPalette(colorCount));
 
         /// <inheritdoc/>
         public override void Dispose()
         {
-            Native.SDL_FreePalette(Pointer);
+            SdlSharp.Native.SDL_FreePalette(Native);
             base.Dispose();
         }
 
@@ -26,7 +26,7 @@
         /// <param name="colors">The colors.</param>
         /// <param name="firstColor">The first color to set in the palette.</param>
         public void SetColors(Color[] colors, int firstColor) =>
-            Native.CheckError(Native.SDL_SetPaletteColors(Pointer, colors, firstColor, colors.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetPaletteColors(Native, colors, firstColor, colors.Length));
 
         /// <summary>
         /// Calculates a gamma ramp.
@@ -35,7 +35,7 @@
         /// <returns>The gamma ramp.</returns>
         public static ushort[] CalculateGammaRamp(float gamma)
         {
-            Native.SDL_CalculateGammaRamp(gamma, out var ramp);
+            SdlSharp.Native.SDL_CalculateGammaRamp(gamma, out var ramp);
             return ramp;
         }
     }

@@ -10,7 +10,7 @@ namespace SdlSharp
         /// <summary>
         /// Returns the size of the storage.
         /// </summary>
-        public long Size => Native.SDL_RWsize(Pointer);
+        public long Size => SdlSharp.Native.SDL_RWsize(Native);
 
         /// <summary>
         /// Creates a storage from a filename.
@@ -19,7 +19,7 @@ namespace SdlSharp
         /// <param name="mode">The file mode.</param>
         /// <returns>The storage.</returns>
         public static RWOps Create(string filename, string mode) =>
-            PointerToInstanceNotNull(Native.SDL_RWFromFile(filename, mode));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_RWFromFile(filename, mode));
 
         /// <summary>
         /// Creates a storage over a block of memory.
@@ -27,7 +27,7 @@ namespace SdlSharp
         /// <param name="memory">The memory.</param>
         /// <returns>The storage.</returns>
         public static RWOps Create(NativeMemoryBlock memory) =>
-            PointerToInstanceNotNull(Native.SDL_RWFromMem(memory.Pointer, (int)memory.Size));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_RWFromMem(memory.Block, (int)memory.Size));
 
         /// <summary>
         /// Creates a storage over a read-only block of memory.
@@ -35,7 +35,7 @@ namespace SdlSharp
         /// <param name="memory">The memory.</param>
         /// <returns>The storage.</returns>
         public static RWOps CreateReadOnly(NativeMemoryBlock memory) =>
-            PointerToInstanceNotNull(Native.SDL_RWFromConstMem(memory.Pointer, (int)memory.Size));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_RWFromConstMem(memory.Block, (int)memory.Size));
 
         /// <summary>
         /// Creates a storage over a read-only byte array.
@@ -44,14 +44,14 @@ namespace SdlSharp
         /// <returns>The storage.</returns>
         public static RWOps CreateReadOnly(byte[] array)
         {
-            var instance = PointerToInstanceNotNull(Native.SDL_AllocRW());
+            var instance = PointerToInstanceNotNull(SdlSharp.Native.SDL_AllocRW());
             var wrapper = new ReadOnlyByteArrayWrapper(array);
-            instance.Pointer->Type = Native.SDL_RWOpsType.Unknown;
-            instance.Pointer->Size = Marshal.GetFunctionPointerForDelegate<Native.SizeRWOps>(wrapper.Size);
-            instance.Pointer->Seek = Marshal.GetFunctionPointerForDelegate<Native.SeekRWOps>(wrapper.Seek);
-            instance.Pointer->Read = Marshal.GetFunctionPointerForDelegate<Native.ReadRWOps>(wrapper.Read);
-            instance.Pointer->Write = Marshal.GetFunctionPointerForDelegate<Native.WriteRWOps>(ReadOnlyByteArrayWrapper.Write);
-            instance.Pointer->Close = Marshal.GetFunctionPointerForDelegate<Native.CloseRWOps>(wrapper.Close);
+            instance.Native->Type = SdlSharp.Native.SDL_RWOpsType.Unknown;
+            instance.Native->Size = Marshal.GetFunctionPointerForDelegate<Native.SizeRWOps>(wrapper.Size);
+            instance.Native->Seek = Marshal.GetFunctionPointerForDelegate<Native.SeekRWOps>(wrapper.Seek);
+            instance.Native->Read = Marshal.GetFunctionPointerForDelegate<Native.ReadRWOps>(wrapper.Read);
+            instance.Native->Write = Marshal.GetFunctionPointerForDelegate<Native.WriteRWOps>(ReadOnlyByteArrayWrapper.Write);
+            instance.Native->Close = Marshal.GetFunctionPointerForDelegate<Native.CloseRWOps>(wrapper.Close);
             return instance;
         }
 
@@ -62,7 +62,7 @@ namespace SdlSharp
         /// <param name="type">The type of seek to perform.</param>
         /// <returns>The new location.</returns>
         public long Seek(long offset, SeekType type) =>
-            Native.SDL_RWseek(Pointer, offset, type);
+            SdlSharp.Native.SDL_RWseek(Native, offset, type);
 
         /// <summary>
         /// Reads a value from the storage.
@@ -72,7 +72,7 @@ namespace SdlSharp
         public T? Read<T>() where T : unmanaged
         {
             T value = default;
-            return Native.SDL_RWread(Pointer, &value, (uint)sizeof(T), 1) == 0 ? (T?)null : value;
+            return SdlSharp.Native.SDL_RWread(Native, &value, (uint)sizeof(T), 1) == 0 ? null : value;
         }
 
         /// <summary>
@@ -81,12 +81,12 @@ namespace SdlSharp
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> if the value was written, <c>false</c> otherwise.</returns>
-        public bool Write<T>(T value) where T : unmanaged => Native.SDL_RWwrite(Pointer, &value, (uint)sizeof(T), 1) != 0;
+        public bool Write<T>(T value) where T : unmanaged => SdlSharp.Native.SDL_RWwrite(Native, &value, (uint)sizeof(T), 1) != 0;
 
         /// <inheritdoc/>
         public override void Dispose()
         {
-            _ = Native.CheckError(Native.SDL_RWclose(Pointer));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RWclose(Native));
             base.Dispose();
         }
 
@@ -94,85 +94,85 @@ namespace SdlSharp
         /// Reads an unsigned byte.
         /// </summary>
         /// <returns>The value.</returns>
-        public byte ReadU8() => Native.SDL_ReadU8(Pointer);
+        public byte ReadU8() => SdlSharp.Native.SDL_ReadU8(Native);
 
         /// <summary>
         /// Reads a little-endian unsigned short.
         /// </summary>
         /// <returns>The value.</returns>
-        public ushort ReadLE16() => Native.SDL_ReadLE16(Pointer);
+        public ushort ReadLE16() => SdlSharp.Native.SDL_ReadLE16(Native);
 
         /// <summary>
         /// Reads a big-endian unsigned short.
         /// </summary>
         /// <returns>The value.</returns>
-        public ushort ReadBE16() => Native.SDL_ReadBE16(Pointer);
+        public ushort ReadBE16() => SdlSharp.Native.SDL_ReadBE16(Native);
 
         /// <summary>
         /// Reads a little-endian unsigned int.
         /// </summary>
         /// <returns>The value.</returns>
-        public uint ReadLE32() => Native.SDL_ReadLE32(Pointer);
+        public uint ReadLE32() => SdlSharp.Native.SDL_ReadLE32(Native);
 
         /// <summary>
         /// Reads a big-endian unsigned int.
         /// </summary>
         /// <returns>The value.</returns>
-        public uint ReadBE32() => Native.SDL_ReadBE32(Pointer);
+        public uint ReadBE32() => SdlSharp.Native.SDL_ReadBE32(Native);
 
         /// <summary>
         /// Reads a little-endian unsigned long.
         /// </summary>
         /// <returns>The value.</returns>
-        public ulong ReadLE64() => Native.SDL_ReadLE64(Pointer);
+        public ulong ReadLE64() => SdlSharp.Native.SDL_ReadLE64(Native);
 
         /// <summary>
         /// Reads a big-endian unsigned long.
         /// </summary>
         /// <returns>The value.</returns>
-        public ulong ReadBE64() => Native.SDL_ReadBE64(Pointer);
+        public ulong ReadBE64() => SdlSharp.Native.SDL_ReadBE64(Native);
 
         /// <summary>
         /// Writes an unsigned byte.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteU8(byte value) => Native.CheckErrorZero(Native.SDL_WriteU8(Pointer, value));
+        public void WriteU8(byte value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteU8(Native, value));
 
         /// <summary>
         /// Writes a little-endian unsigned short.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteLE16(ushort value) => Native.CheckErrorZero(Native.SDL_WriteLE16(Pointer, value));
+        public void WriteLE16(ushort value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteLE16(Native, value));
 
         /// <summary>
         /// Writes a big-endian unsigned short.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteBE16(ushort value) => Native.CheckErrorZero(Native.SDL_WriteBE16(Pointer, value));
+        public void WriteBE16(ushort value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteBE16(Native, value));
 
         /// <summary>
         /// Writes a little-endian unsigned int.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteLE32(uint value) => Native.CheckErrorZero(Native.SDL_WriteLE32(Pointer, value));
+        public void WriteLE32(uint value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteLE32(Native, value));
 
         /// <summary>
         /// Writes a big-endian unsigned int.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteBE32(uint value) => Native.CheckErrorZero(Native.SDL_WriteBE32(Pointer, value));
+        public void WriteBE32(uint value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteBE32(Native, value));
 
         /// <summary>
         /// Writes a little-endian unsigned long.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteLE64(ulong value) => Native.CheckErrorZero(Native.SDL_WriteLE64(Pointer, value));
+        public void WriteLE64(ulong value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteLE64(Native, value));
 
         /// <summary>
         /// Writes a big-endian unsigned long.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteBE64(ulong value) => Native.CheckErrorZero(Native.SDL_WriteBE64(Pointer, value));
+        public void WriteBE64(ulong value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteBE64(Native, value));
 
         private sealed class ReadOnlyByteArrayWrapper
         {
@@ -251,10 +251,9 @@ namespace SdlSharp
                     }
                 }
 
-                return (nuint)numberRead;
+                return numberRead;
             }
 
-#pragma warning disable IDE1006, RCS1163
             internal static nuint Write(Native.SDL_RWops* _1, void* _2, nuint _3, nuint _4) => 0;
         }
     }

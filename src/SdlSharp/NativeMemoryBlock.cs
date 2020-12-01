@@ -10,7 +10,7 @@ namespace SdlSharp
         /// <summary>
         /// The block pointer.
         /// </summary>
-        public void* Pointer { get; private set; }
+        public void* Block { get; private set; }
 
         /// <summary>
         /// The size of the block of memory.
@@ -23,12 +23,12 @@ namespace SdlSharp
         /// <param name="size">The size of the block of memory to allocate.</param>
         public NativeMemoryBlock(uint size)
         {
-            Pointer = Native.SDL_malloc((nuint)size);
+            Block = Native.SDL_malloc(size);
             Size = size;
 
-            if (Pointer == null)
+            if (Block == null)
             {
-                throw new OutOfMemoryException();
+                throw new SdlException();
             }
         }
 
@@ -38,7 +38,7 @@ namespace SdlSharp
         /// <param name="filename">The file name.</param>
         public NativeMemoryBlock(string filename)
         {
-            Pointer = Native.SDL_LoadFile(filename, out var size);
+            Block = Native.SDL_LoadFile(filename, out var size);
             Size = (uint)size;
         }
 
@@ -49,24 +49,24 @@ namespace SdlSharp
         /// <param name="shouldDispose">Whether the storage should be disposed when finished with.</param>
         public NativeMemoryBlock(RWOps rwops, bool shouldDispose)
         {
-            Pointer = Native.SDL_LoadFile_RW(rwops.Pointer, out var size, shouldDispose);
+            Block = Native.SDL_LoadFile_RW(rwops.Native, out var size, shouldDispose);
             Size = (uint)size;
         }
 
         /// <summary>
         /// The block of memory as a span.
         /// </summary>
-        public Span<byte> AsSpan() => new Span<byte>(Pointer, (int)Size);
+        public Span<byte> AsSpan() => new(Block, (int)Size);
 
         /// <summary>
         /// Frees the block of memory.
         /// </summary>
         public void Dispose()
         {
-            if (Pointer != null)
+            if (Block != null)
             {
-                Native.SDL_free(Pointer);
-                Pointer = null;
+                Native.SDL_free(Block);
+                Block = null;
                 Size = 0;
             }
         }

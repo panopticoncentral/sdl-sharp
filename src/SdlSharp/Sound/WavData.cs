@@ -13,7 +13,7 @@ namespace SdlSharp.Sound
         /// <summary>
         /// The audio data.
         /// </summary>
-        public Span<byte> Data => new Span<byte>(_data, (int)_length);
+        public Span<byte> Data => new(_data, (int)_length);
 
         internal WavData(byte* data, uint length)
         {

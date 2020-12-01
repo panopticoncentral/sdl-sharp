@@ -85,7 +85,7 @@
         /// Halts the channel.
         /// </summary>
         public void Halt() =>
-            Native.Mix_HaltChannel(Index);
+            Native.CheckError(Native.Mix_HaltChannel(Index));
 
         /// <summary>
         /// Expires the channel after an interval.
@@ -122,7 +122,7 @@
         /// <param name="loops">The number of times to play the sample.</param>
         /// <returns>The channel the sample is playing on.</returns>
         public MixChannel Play(MixChunk chunk, int loops) =>
-            Get(Native.CheckError(Native.Mix_PlayChannel(Index, chunk.Pointer, loops)));
+            Get(Native.CheckError(Native.Mix_PlayChannel(Index, chunk.Native, loops)));
 
         /// <summary>
         /// Plays a sample on the channel.
@@ -132,7 +132,7 @@
         /// <param name="ticks">The limit of time to play the sample.</param>
         /// <returns>The channel the sample is playing on.</returns>
         public MixChannel Play(MixChunk chunk, int loops, int ticks) =>
-            Get(Native.CheckError(Native.Mix_PlayChannelTimed(Index, chunk.Pointer, loops, ticks)));
+            Get(Native.CheckError(Native.Mix_PlayChannelTimed(Index, chunk.Native, loops, ticks)));
 
         /// <summary>
         /// Fades a sample into a channel.
@@ -142,7 +142,7 @@
         /// <param name="ms">The length of the fade in.</param>
         /// <returns>The channel the sample is playing on.</returns>
         public MixChannel FadeIn(MixChunk chunk, int loops, int ms) =>
-            Get(Native.CheckError(Native.Mix_FadeInChannel(Index, chunk.Pointer, loops, ms)));
+            Get(Native.CheckError(Native.Mix_FadeInChannel(Index, chunk.Native, loops, ms)));
 
         /// <summary>
         /// Fades a sample into a channel.
@@ -153,6 +153,6 @@
         /// <param name="ticks">The limit of time to play the sample.</param>
         /// <returns>The channel the sample is playing on.</returns>
         public MixChannel FadeIn(MixChunk chunk, int loops, int ms, int ticks) =>
-            Get(Native.CheckError(Native.Mix_FadeInChannelTimed(Index, chunk.Pointer, loops, ms, ticks)));
+            Get(Native.CheckError(Native.Mix_FadeInChannelTimed(Index, chunk.Native, loops, ms, ticks)));
     }
 }

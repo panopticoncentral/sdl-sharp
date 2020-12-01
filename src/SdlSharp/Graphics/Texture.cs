@@ -14,7 +14,7 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_QueryTexture(Pointer, out var format, out _, out _, out _));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_QueryTexture(Native, out var format, out _, out _, out _));
                 return format;
             }
         }
@@ -26,7 +26,7 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_QueryTexture(Pointer, out _, out var access, out _, out _));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_QueryTexture(Native, out _, out var access, out _, out _));
                 return access;
             }
         }
@@ -38,7 +38,7 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_QueryTexture(Pointer, out _, out _, out var width, out var height));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_QueryTexture(Native, out _, out _, out var width, out var height));
                 return (width, height);
             }
         }
@@ -50,10 +50,10 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetTextureColorMod(Pointer, out var red, out var green, out var blue));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetTextureColorMod(Native, out var red, out var green, out var blue));
                 return (red, green, blue);
             }
-            set => _ = Native.CheckError(Native.SDL_SetTextureColorMod(Pointer, value.Red, value.Green, value.Blue));
+            set => _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetTextureColorMod(Native, value.Red, value.Green, value.Blue));
         }
 
         /// <summary>
@@ -63,10 +63,10 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetTextureAlphaMod(Pointer, out var alpha));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetTextureAlphaMod(Native, out var alpha));
                 return alpha;
             }
-            set => _ = Native.CheckError(Native.SDL_SetTextureAlphaMod(Pointer, value));
+            set => _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetTextureAlphaMod(Native, value));
         }
 
         /// <summary>
@@ -76,11 +76,11 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetTextureBlendMode(Pointer, out var mode));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetTextureBlendMode(Native, out var mode));
                 return mode;
             }
 
-            set => Native.CheckError(Native.SDL_SetTextureBlendMode(Pointer, value));
+            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetTextureBlendMode(Native, value));
         }
 
         /// <summary>
@@ -90,17 +90,17 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetTextureScaleMode(Pointer, out var mode));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetTextureScaleMode(Native, out var mode));
                 return mode;
             }
 
-            set => Native.CheckError(Native.SDL_SetTextureScaleMode(Pointer, value));
+            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetTextureScaleMode(Native, value));
         }
 
         /// <inheritdoc/>
         public override void Dispose()
         {
-            Native.SDL_DestroyTexture(Pointer);
+            SdlSharp.Native.SDL_DestroyTexture(Native);
             base.Dispose();
         }
 
@@ -123,7 +123,7 @@ namespace SdlSharp.Graphics
 
             fixed (byte* pixelsPointer = pixels)
             {
-                _ = Native.CheckError(Native.SDL_UpdateTexture(Pointer, rectPointer, pixelsPointer, pitch));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_UpdateTexture(Native, rectPointer, pixelsPointer, pitch));
             }
         }
 
@@ -154,7 +154,7 @@ namespace SdlSharp.Graphics
                 {
                     fixed (byte* vPixelsPointer = vPixels)
                     {
-                        _ = Native.CheckError(Native.SDL_UpdateYUVTexture(Pointer, rectPointer, yPixelsPointer, yPitch, uPixelsPointer, uPitch, vPixelsPointer, vPitch));
+                        _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_UpdateYUVTexture(Native, rectPointer, yPixelsPointer, yPitch, uPixelsPointer, uPitch, vPixelsPointer, vPitch));
                     }
                 }
             }
@@ -183,8 +183,8 @@ namespace SdlSharp.Graphics
                 height = Size.Height;
             }
 
-            _ = Native.CheckError(Native.SDL_LockTexture(Pointer, rectPointer, out var pixelsPointer, out var pitch));
-            return Native.PixelsToSpan<T>(pixelsPointer, pitch, height);
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_LockTexture(Native, rectPointer, out var pixelsPointer, out var pitch));
+            return SdlSharp.Native.PixelsToSpan<T>(pixelsPointer, pitch, height);
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace SdlSharp.Graphics
                 rectPointer = &rect;
             }
 
-            _ = Native.CheckError(Native.SDL_LockTextureToSurface(Pointer, rectPointer, out var surfacePointer));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_LockTextureToSurface(Native, rectPointer, out var surfacePointer));
             return Surface.PointerToInstanceNotNull(surfacePointer);
         }
 
@@ -211,6 +211,6 @@ namespace SdlSharp.Graphics
         /// Unlocks the texture.
         /// </summary>
         public void Unlock() =>
-            Native.SDL_UnlockTexture(Pointer);
+            SdlSharp.Native.SDL_UnlockTexture(Native);
     }
 }

@@ -13,7 +13,7 @@ using SdlSharp.Input;
 This will enable us to use the classes that deal with input from the user without qualification. Then add these lines _before_ the `DispatchEvents` loop:
 
 ```csharp
-Keyboard.KeyDown += (s, e) => Application.ShowMessageBox(MessageBoxFlags.Information, "Key Press", e.Keycode switch
+Keyboard.KeyDown += (s, e) => Application.ShowMessageBox(MessageBoxType.Information, "Key Press", e.Keycode switch
 {
     Keycode.Up => "Up!",
     Keycode.Down => "Down!",
@@ -32,8 +32,8 @@ So in this case, all we're doing is putting up a message box when the users pres
 In addition to keyboard input, you can also respond to mouse events as well. Add these lines below the ones you added in the previous step:
 
 ```csharp
-Mouse.ButtonDown += (s, e) => Application.ShowMessageBox(MessageBoxFlags.Information, "Mouse Button", "Down!", window);
-Mouse.ButtonUp += (s, e) => Application.ShowMessageBox(MessageBoxFlags.Information, "Mouse Button", "Up!", window);
+Mouse.ButtonDown += (s, e) => Application.ShowMessageBox(MessageBoxType.Information, "Mouse Button", "Down!", window);
+Mouse.ButtonUp += (s, e) => Application.ShowMessageBox(MessageBoxType.Information, "Mouse Button", "Up!", window);
 ```
 
 Now when you click on the mouse button when you're over the window, you should get a message box that says "Down!" and then one that says "Up!".

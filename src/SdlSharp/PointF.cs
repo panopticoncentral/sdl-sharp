@@ -39,7 +39,7 @@ namespace SdlSharp
         /// Converts a tuple to a point.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        public static explicit operator PointF((float X, float Y) tuple) => new PointF(tuple.X, tuple.Y);
+        public static explicit operator PointF((float X, float Y) tuple) => new(tuple.X, tuple.Y);
 
         /// <summary>
         /// Adds two points together.

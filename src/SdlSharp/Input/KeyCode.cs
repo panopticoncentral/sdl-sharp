@@ -1,7 +1,4 @@
-﻿// Bitwise operations on scancode even though it's not a flag enum.
-#pragma warning disable RCS1130
-
-namespace SdlSharp.Input
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// Key codes.

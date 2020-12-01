@@ -13,13 +13,13 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// The renderer drivers available.
         /// </summary>
-        public static IReadOnlyList<RendererInfo> RenderDrivers = s_renderDrivers ??= new ItemCollection<RendererInfo>(
+        public static IReadOnlyList<RendererInfo> RenderDrivers => s_renderDrivers ??= new ItemCollection<RendererInfo>(
             index =>
             {
-                _ = Native.CheckError(Native.SDL_GetRenderDriverInfo(index, out var info));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetRenderDriverInfo(index, out var info));
                 return info;
             },
-            Native.SDL_GetNumRenderDrivers);
+            SdlSharp.Native.SDL_GetNumRenderDrivers);
 
         /// <summary>
         /// Information about this renderer.
@@ -28,7 +28,7 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetRendererInfo(Pointer, out var info));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetRendererInfo(Native, out var info));
                 return info;
             }
         }
@@ -40,7 +40,7 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetRendererOutputSize(Pointer, out var w, out var h));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetRendererOutputSize(Native, out var w, out var h));
                 return (w, h);
             }
         }
@@ -49,15 +49,15 @@ namespace SdlSharp.Graphics
         /// Whether the renderer supports a target.
         /// </summary>
         public bool TargetSupported =>
-            Native.SDL_RenderTargetSupported(Pointer);
+            SdlSharp.Native.SDL_RenderTargetSupported(Native);
 
         /// <summary>
         /// The target of the renderer.
         /// </summary>
         public Texture? Target
         {
-            get => Texture.PointerToInstance(Native.SDL_GetRenderTarget(Pointer));
-            set => Native.CheckError(Native.SDL_SetRenderTarget(Pointer, value == null ? null : value.Pointer));
+            get => Texture.PointerToInstance(SdlSharp.Native.SDL_GetRenderTarget(Native));
+            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetRenderTarget(Native, value == null ? null : value.Native));
         }
 
         /// <summary>
@@ -67,11 +67,11 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                Native.SDL_RenderGetLogicalSize(Pointer, out var w, out var h);
+                SdlSharp.Native.SDL_RenderGetLogicalSize(Native, out var w, out var h);
                 return (w, h);
             }
 
-            set => Native.CheckError(Native.SDL_RenderSetLogicalSize(Pointer, value.Width, value.Height));
+            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderSetLogicalSize(Native, value.Width, value.Height));
         }
 
         /// <summary>
@@ -79,8 +79,8 @@ namespace SdlSharp.Graphics
         /// </summary>
         public bool IntegerScale
         {
-            get => Native.SDL_RenderGetIntegerScale(Pointer);
-            set => Native.CheckError(Native.SDL_RenderSetIntegerScale(Pointer, value));
+            get => SdlSharp.Native.SDL_RenderGetIntegerScale(Native);
+            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderSetIntegerScale(Native, value));
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                Native.SDL_RenderGetViewport(Pointer, out var rect);
-                return rect.IsEmpty ? null : (Rectangle?)rect;
+                SdlSharp.Native.SDL_RenderGetViewport(Native, out var rect);
+                return rect.IsEmpty ? null : rect;
             }
 
             set
@@ -105,7 +105,7 @@ namespace SdlSharp.Graphics
                     rectPointer = &rect;
                 }
 
-                _ = Native.CheckError(Native.SDL_RenderSetViewport(Pointer, rectPointer));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderSetViewport(Native, rectPointer));
             }
         }
 
@@ -113,7 +113,7 @@ namespace SdlSharp.Graphics
         /// Whether clipping is enabled for the renderer.
         /// </summary>
         public bool ClippingEnabled =>
-            Native.SDL_RenderIsClipEnabled(Pointer);
+            SdlSharp.Native.SDL_RenderIsClipEnabled(Native);
 
         /// <summary>
         /// The clipping rectangle of the renderer.
@@ -122,8 +122,8 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                Native.SDL_RenderGetClipRect(Pointer, out var rect);
-                return rect.IsEmpty ? null : (Rectangle?)rect;
+                SdlSharp.Native.SDL_RenderGetClipRect(Native, out var rect);
+                return rect.IsEmpty ? null : rect;
             }
 
             set
@@ -137,7 +137,7 @@ namespace SdlSharp.Graphics
                     rectPointer = &rect;
                 }
 
-                _ = Native.CheckError(Native.SDL_RenderSetClipRect(Pointer, rectPointer));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderSetClipRect(Native, rectPointer));
             }
         }
 
@@ -148,11 +148,11 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                Native.SDL_RenderGetScale(Pointer, out var x, out var y);
+                SdlSharp.Native.SDL_RenderGetScale(Native, out var x, out var y);
                 return (x, y);
             }
 
-            set => Native.CheckError(Native.SDL_RenderSetScale(Pointer, value.X, value.Y));
+            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderSetScale(Native, value.X, value.Y));
         }
 
         /// <summary>
@@ -162,11 +162,11 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetRenderDrawColor(Pointer, out var r, out var g, out var b, out var a));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetRenderDrawColor(Native, out var r, out var g, out var b, out var a));
                 return new Color(r, g, b, a);
             }
 
-            set => Native.CheckError(Native.SDL_SetRenderDrawColor(Pointer, value.Red, value.Green, value.Blue, value.Alpha));
+            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetRenderDrawColor(Native, value.Red, value.Green, value.Blue, value.Alpha));
         }
 
         /// <summary>
@@ -176,16 +176,16 @@ namespace SdlSharp.Graphics
         {
             get
             {
-                _ = Native.CheckError(Native.SDL_GetRenderDrawBlendMode(Pointer, out var mode));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetRenderDrawBlendMode(Native, out var mode));
                 return mode;
             }
-            set => Native.CheckError(Native.SDL_SetRenderDrawBlendMode(Pointer, value));
+            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetRenderDrawBlendMode(Native, value));
         }
 
         /// <inheritdoc/>
         public override void Dispose()
         {
-            Native.SDL_DestroyRenderer(Pointer);
+            SdlSharp.Native.SDL_DestroyRenderer(Native);
             base.Dispose();
         }
 
@@ -196,8 +196,8 @@ namespace SdlSharp.Graphics
         /// <param name="index">The index of the renderer driver to use or -1 to pick the first one.</param>
         /// <param name="flags">Flags for the renderer.</param>
         /// <returns>The renderer.</returns>
-        public static Renderer Create(Window window, int index, RendererFlags flags) =>
-            PointerToInstanceNotNull(Native.SDL_CreateRenderer(window.Pointer, index, flags));
+        public static Renderer Create(Window window, int index, RendererOptions flags) =>
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateRenderer(window.Native, index, flags));
 
         /// <summary>
         /// Creates a software renderer for the surface.
@@ -205,41 +205,41 @@ namespace SdlSharp.Graphics
         /// <param name="surface">The surface.</param>
         /// <returns>The renderer.</returns>
         public static Renderer Create(Surface surface) =>
-            PointerToInstanceNotNull(Native.SDL_CreateSoftwareRenderer(surface.Pointer));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateSoftwareRenderer(surface.Native));
 
         /// <summary>
         /// Clears the renderer.
         /// </summary>
         public void Clear() =>
-            Native.CheckError(Native.SDL_RenderClear(Pointer));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderClear(Native));
 
         /// <summary>
         /// Draws a point on the renderer.
         /// </summary>
         /// <param name="p">The point.</param>
         public void DrawPoint(Point p) =>
-            Native.CheckError(Native.SDL_RenderDrawPoint(Pointer, p.X, p.Y));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawPoint(Native, p.X, p.Y));
 
         /// <summary>
         /// Draws a point on the renderer.
         /// </summary>
         /// <param name="p">The point.</param>
         public void DrawPoint(PointF p) =>
-            Native.CheckError(Native.SDL_RenderDrawPointF(Pointer, p.X, p.Y));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawPointF(Native, p.X, p.Y));
 
         /// <summary>
         /// Draws points on a renderer.
         /// </summary>
         /// <param name="points">The points.</param>
         public void DrawPoints(Point[] points) =>
-            Native.CheckError(Native.SDL_RenderDrawPoints(Pointer, points, points.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawPoints(Native, points, points.Length));
 
         /// <summary>
         /// Draws points on a renderer.
         /// </summary>
         /// <param name="points">The points.</param>
         public void DrawPoints(PointF[] points) =>
-            Native.CheckError(Native.SDL_RenderDrawPointsF(Pointer, points, points.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawPointsF(Native, points, points.Length));
 
         /// <summary>
         /// Draws a line on a renderer.
@@ -247,7 +247,7 @@ namespace SdlSharp.Graphics
         /// <param name="p1">The beginning of the line.</param>
         /// <param name="p2">The end of the line.</param>
         public void DrawLine(Point p1, Point p2) =>
-            Native.CheckError(Native.SDL_RenderDrawLine(Pointer, p1.X, p1.Y, p2.X, p2.Y));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawLine(Native, p1.X, p1.Y, p2.X, p2.Y));
 
         /// <summary>
         /// Draws a line on a renderer.
@@ -255,21 +255,21 @@ namespace SdlSharp.Graphics
         /// <param name="p1">The beginning of the line.</param>
         /// <param name="p2">The end of the line.</param>
         public void DrawLine(PointF p1, PointF p2) =>
-            Native.CheckError(Native.SDL_RenderDrawLineF(Pointer, p1.X, p1.Y, p2.X, p2.Y));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawLineF(Native, p1.X, p1.Y, p2.X, p2.Y));
 
         /// <summary>
         /// Draws multiple lines on a renderer.
         /// </summary>
         /// <param name="points">The beginning/end points of the lines.</param>
         public void DrawLines(Point[] points) =>
-            Native.CheckError(Native.SDL_RenderDrawLines(Pointer, points, points.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawLines(Native, points, points.Length));
 
         /// <summary>
         /// Draws multiple lines on a renderer.
         /// </summary>
         /// <param name="points">The beginning/end points of the lines.</param>
         public void DrawLines(PointF[] points) =>
-            Native.CheckError(Native.SDL_RenderDrawLinesF(Pointer, points, points.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawLinesF(Native, points, points.Length));
 
         /// <summary>
         /// Draws a rectangle on a renderer.
@@ -285,7 +285,7 @@ namespace SdlSharp.Graphics
                 rectPointer = &rect;
             }
 
-            _ = Native.CheckError(Native.SDL_RenderDrawRect(Pointer, rectPointer));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawRect(Native, rectPointer));
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace SdlSharp.Graphics
                 rectPointer = &rect;
             }
 
-            _ = Native.CheckError(Native.SDL_RenderDrawRectF(Pointer, rectPointer));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawRectF(Native, rectPointer));
         }
 
         /// <summary>
@@ -310,14 +310,14 @@ namespace SdlSharp.Graphics
         /// </summary>
         /// <param name="rectangles">The rectangles.</param>
         public void DrawRectangles(Rectangle[] rectangles) =>
-            Native.CheckError(Native.SDL_RenderDrawRects(Pointer, rectangles, rectangles.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawRects(Native, rectangles, rectangles.Length));
 
         /// <summary>
         /// Draws rectangles on a renderer.
         /// </summary>
         /// <param name="rectangles">The rectangles.</param>
         public void DrawRectangles(RectangleF[] rectangles) =>
-            Native.CheckError(Native.SDL_RenderDrawRectsF(Pointer, rectangles, rectangles.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderDrawRectsF(Native, rectangles, rectangles.Length));
 
         /// <summary>
         /// Fills a rectangle on a renderer.
@@ -333,7 +333,7 @@ namespace SdlSharp.Graphics
                 rectPointer = &rect;
             }
 
-            _ = Native.CheckError(Native.SDL_RenderFillRect(Pointer, rectPointer));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderFillRect(Native, rectPointer));
         }
 
         /// <summary>
@@ -350,7 +350,7 @@ namespace SdlSharp.Graphics
                 rectPointer = &rect;
             }
 
-            _ = Native.CheckError(Native.SDL_RenderFillRectF(Pointer, rectPointer));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderFillRectF(Native, rectPointer));
         }
 
         /// <summary>
@@ -358,14 +358,14 @@ namespace SdlSharp.Graphics
         /// </summary>
         /// <param name="rectangles">The rectangles.</param>
         public void FillRectangles(Rectangle[] rectangles) =>
-            Native.CheckError(Native.SDL_RenderFillRects(Pointer, rectangles, rectangles.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderFillRects(Native, rectangles, rectangles.Length));
 
         /// <summary>
         /// Fills rectangles on the renderer.
         /// </summary>
         /// <param name="rectangles">The rectangles.</param>
         public void FillRectangles(RectangleF[] rectangles) =>
-            Native.CheckError(Native.SDL_RenderFillRectsF(Pointer, rectangles, rectangles.Length));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderFillRectsF(Native, rectangles, rectangles.Length));
 
         /// <summary>
         /// Copies a texture onto a renderer.
@@ -390,7 +390,7 @@ namespace SdlSharp.Graphics
                 destPointer = &destRect;
             }
 
-            _ = Native.CheckError(Native.SDL_RenderCopy(Pointer, texture.Pointer, sourcePointer, destPointer));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderCopy(Native, texture.Native, sourcePointer, destPointer));
         }
 
         /// <summary>
@@ -416,7 +416,7 @@ namespace SdlSharp.Graphics
                 destPointer = &destRect;
             }
 
-            _ = Native.CheckError(Native.SDL_RenderCopyF(Pointer, texture.Pointer, sourcePointer, destPointer));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderCopyF(Native, texture.Native, sourcePointer, destPointer));
         }
 
         /// <summary>
@@ -452,7 +452,7 @@ namespace SdlSharp.Graphics
                 centerPointer = &centerRect;
             }
 
-            _ = Native.CheckError(Native.SDL_RenderCopyEx(Pointer, texture.Pointer, sourcePointer, destPointer, angle, centerPointer, flip));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderCopy(Native, texture.Native, sourcePointer, destPointer, angle, centerPointer, flip));
         }
 
         /// <summary>
@@ -488,7 +488,7 @@ namespace SdlSharp.Graphics
                 centerPointer = &centerRect;
             }
 
-            _ = Native.CheckError(Native.SDL_RenderCopyExF(Pointer, texture.Pointer, sourcePointer, destPointer, angle, centerPointer, flip));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderCopyExF(Native, texture.Native, sourcePointer, destPointer, angle, centerPointer, flip));
         }
 
         /// <summary>
@@ -510,7 +510,7 @@ namespace SdlSharp.Graphics
 
             fixed (byte* pixelsPointer = pixels)
             {
-                _ = Native.CheckError(Native.SDL_RenderReadPixels(Pointer, rectPointer, format, pixelsPointer, pitch));
+                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderReadPixels(Native, rectPointer, format, pixelsPointer, pitch));
             }
         }
 
@@ -518,7 +518,7 @@ namespace SdlSharp.Graphics
         /// Present the renderer on the window.
         /// </summary>
         public void Present() =>
-            Native.SDL_RenderPresent(Pointer);
+            SdlSharp.Native.SDL_RenderPresent(Native);
 
         /// <summary>
         /// Creates a texture.
@@ -528,7 +528,7 @@ namespace SdlSharp.Graphics
         /// <param name="size">The size.</param>
         /// <returns>The texture.</returns>
         public Texture CreateTexture(EnumeratedPixelFormat format, TextureAccess access, Size size) =>
-            Texture.PointerToInstanceNotNull(Native.SDL_CreateTexture(Pointer, format, access, size.Width, size.Height));
+            Texture.PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateTexture(Native, format, access, size.Width, size.Height));
 
         /// <summary>
         /// Creates a texture.
@@ -536,11 +536,11 @@ namespace SdlSharp.Graphics
         /// <param name="surface">The surface.</param>
         /// <returns>The texture.</returns>
         public Texture CreateTexture(Surface surface) =>
-            Texture.PointerToInstanceNotNull(Native.SDL_CreateTextureFromSurface(Pointer, surface.Pointer));
+            Texture.PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateTextureFromSurface(Native, surface.Native));
 
         /// <summary>
         /// Flushes all pending draws in the renderer.
         /// </summary>
-        public void Flush() => Native.CheckError(Native.SDL_RenderFlush(Pointer));
+        public void Flush() => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RenderFlush(Native));
     }
 }

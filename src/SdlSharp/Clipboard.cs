@@ -28,7 +28,7 @@ namespace SdlSharp
         /// <summary>
         /// An event that is raised when the clipboard has been updated.
         /// </summary>
-        public static EventHandler<SdlEventArgs>? Updated;
+        public static event EventHandler<SdlEventArgs>? Updated;
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {

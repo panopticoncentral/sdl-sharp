@@ -6,5 +6,5 @@ namespace SdlSharp.Sound
     /// A callback when music is finished playing.
     /// </summary>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void MusicFinishedDelegate();
+    public delegate void MusicFinishedCallback();
 }
