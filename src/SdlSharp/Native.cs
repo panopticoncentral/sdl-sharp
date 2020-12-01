@@ -2976,39 +2976,7 @@ namespace SdlSharp
 
         // SDL_thread.h -- Should use Framework threading primitives
 
-        #region SDL_timer.h
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint SDL_GetTicks();
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern ulong SDL_GetPerformanceCounter();
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern ulong SDL_GetPerformanceFrequency();
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_Delay(uint ms);
-
-        // SDL_TimerCallback is covered by TimerCallbackDelegate.cs
-
-        public struct SDL_TimerID
-        {
-            public int Id { get; }
-
-            public SDL_TimerID(int id)
-            {
-                Id = id;
-            }
-        }
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_TimerID SDL_AddTimer(uint interval, TimerCallback callback, nint param);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_RemoveTimer(SDL_TimerID id);
-
-        #endregion
+        // SDL_timer.h -- Should use Framework timing primitives
 
         #region SDL_touch.h
 

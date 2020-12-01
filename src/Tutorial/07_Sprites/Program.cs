@@ -1,4 +1,6 @@
-﻿using SdlSharp;
+﻿using System;
+
+using SdlSharp;
 using SdlSharp.Graphics;
 
 using Application app = new(Subsystems.Video, ImageFormats.Png);
@@ -17,15 +19,15 @@ Point upperRightFloor = (9, 15);
 Point lowerLeftFloor = (7, 17);
 Point lowerRightFloor = (9, 17);
 
-var last = Timer.Ticks;
+var next = DateTime.Now.AddMilliseconds(500);
 var current = 0;
 var rotation = 0;
 
 while (app.DispatchEvent())
 {
-    if (Timer.Ticks - last > 500)
+    if (DateTime.Now > next)
     {
-        last = Timer.Ticks;
+        next = DateTime.Now.AddMilliseconds(500);
         current = (current + 1) % 2;
         rotation = (rotation + 90) % 360;
     }

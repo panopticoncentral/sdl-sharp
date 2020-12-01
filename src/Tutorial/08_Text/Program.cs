@@ -6,7 +6,7 @@ using Application app = new(Subsystems.Video, fontSupport: true);
 Size windowSize = (640, 480);
 Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
 using var window = Window.Create("Text", windowRectangle, WindowOptions.Shown);
-using var renderer = Renderer.Create(window, -1, RendererOptions.Accelerated | RendererOptions.PresentVSync);
+using var renderer = Renderer.Create(window, -1, RendererOptions.Accelerated);
 using var font = Font.Create("SDS_8x8.ttf", 12);
 using var textTexture = font.RenderSolid("The quick brown fox jumped over the lazy dog", Colors.Black, renderer);
 

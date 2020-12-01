@@ -84,6 +84,8 @@ Because the PNG image format supports image _transparency_, drawing the player o
 
 ## Step #4: Sprite animation
 
+TODO: VSync
+
 You'll notice that there are two player sprite sheets. Both sheets contain the same character in each position in the sheet, but moved slightly between the two of them. If we draw the sprite from one sheet and then the other, then the character image will appear to bob up and down. To do this, we change the character drawing code to pick one sheet and then the other.
 
 We can't just flip from one image to the other on each iteration of the loop, as the loop will likely be running so fast that the character will bob too fast. So we'll use the system timer to change the animation frame every half second. So, first, we add before the main loop variables to help track what frame we're on and the last time we flipped frames:
