@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.Build.NoTargets/3.0.4">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -16,10 +16,20 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <SDL2Version>2.0.12</SDL2Version>
+    <SDL2Version>2.0.14</SDL2Version>
     <SDL2ImageVersion>2.0.5</SDL2ImageVersion>
     <SDL2MixerVersion>2.0.4</SDL2MixerVersion>
     <SDL2TtfVersion>2.0.15</SDL2TtfVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningsAsErrors>;NU1605</WarningsAsErrors>
+    <NoWarn>1701;1702;NU5128</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningsAsErrors>;NU1605</WarningsAsErrors>
+    <NoWarn>1701;1702;NU5128</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
