@@ -48,7 +48,7 @@ Now go back to Visual Studio Code and click on `Tutorial.csproj`. You should see
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
 </Project>
