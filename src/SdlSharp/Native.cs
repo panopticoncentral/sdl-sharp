@@ -127,19 +127,34 @@ namespace SdlSharp
 
         #region SDL.h
 
-        // SDL_INIT_* flags are in Subsystems.cs
+        public const uint SDL_INIT_TIMER = 0x00000001u;
+        public const uint SDL_INIT_AUDIO = 0x00000010u;
+        public const uint SDL_INIT_VIDEO = 0x00000020u;
+        public const uint SDL_INIT_JOYSTICK = 0x00000200u;
+        public const uint SDL_INIT_HAPTIC = 0x00001000u;
+        public const uint SDL_INIT_GAMECONTROLLER = 0x00002000u;
+        public const uint SDL_INIT_EVENTS = 0x00004000u;
+        public const uint SDL_INIT_SENSOR = 0x00008000u;
+        public const uint SDL_INIT_EVERYTHING = SDL_INIT_TIMER
+            | SDL_INIT_AUDIO
+            | SDL_INIT_VIDEO
+            | SDL_INIT_EVENTS
+            | SDL_INIT_JOYSTICK
+            | SDL_INIT_HAPTIC
+            | SDL_INIT_GAMECONTROLLER
+            | SDL_INIT_SENSOR;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_Init(Subsystems flags);
+        public static extern int SDL_Init(uint flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_InitSubSystem(Subsystems flags);
+        public static extern int SDL_InitSubSystem(uint flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_QuitSubSystem(Subsystems flags);
+        public static extern void SDL_QuitSubSystem(uint flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Subsystems SDL_WasInit(Subsystems flags);
+        public static extern uint SDL_WasInit(Subsystems flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_Quit();

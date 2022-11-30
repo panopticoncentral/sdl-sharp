@@ -6,7 +6,7 @@ namespace SdlSharp
     /// The SDL subsystems that can be initialized.
     /// </summary>
     [Flags]
-    public enum Subsystems
+    public enum Subsystems : uint
     {
         /// <summary>
         /// No subsystems.
@@ -16,46 +16,46 @@ namespace SdlSharp
         /// <summary>
         /// The timer subsystem.
         /// </summary>
-        Timer = 0x00000001,
+        Timer = Native.SDL_INIT_TIMER,
 
         /// <summary>
         /// The audio subsystem.
         /// </summary>
-        Audio = 0x00000010,
+        Audio = Native.SDL_INIT_AUDIO,
 
         /// <summary>
         /// The video subsystem.
         /// </summary>
-        Video = 0x00000020,
+        Video = Native.SDL_INIT_VIDEO,
 
         /// <summary>
         /// The joystick subsystem.
         /// </summary>
-        Joystick = 0x00000200,
+        Joystick = Native.SDL_INIT_JOYSTICK,
 
         /// <summary>
         /// The haptic subsystem.
         /// </summary>
-        Haptic = 0x00001000,
+        Haptic = Native.SDL_INIT_HAPTIC,
 
         /// <summary>
         /// The game controller subsystem.
         /// </summary>
-        GameController = 0x00002000,
+        GameController = Native.SDL_INIT_GAMECONTROLLER,
 
         /// <summary>
         /// The events subsystem.
         /// </summary>
-        Events = 0x00004000,
+        Events = Native.SDL_INIT_EVENTS,
 
         /// <summary>
         /// The sensor subsystem.
         /// </summary>
-        Sensor = 0x00008000,
+        Sensor = Native.SDL_INIT_SENSOR,
 
         /// <summary>
         /// All of the subsystems.
         /// </summary>
-        Everything = Timer | Audio | Video | Joystick | Haptic | GameController | Events | Sensor
+        Everything = Native.SDL_INIT_EVERYTHING
     }
 }

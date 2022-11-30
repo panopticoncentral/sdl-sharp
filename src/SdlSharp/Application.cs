@@ -48,13 +48,13 @@ namespace SdlSharp
         /// </summary>
         public Subsystems InitializedSubystems
         {
-            get => Native.SDL_WasInit(Subsystems.None);
+            get => (Subsystems)Native.SDL_WasInit((uint)Subsystems.None);
             set
             {
                 var current = InitializedSubystems;
 
-                Native.SDL_QuitSubSystem(current & ~value);
-                _ = Native.CheckError(Native.SDL_InitSubSystem(value & ~current));
+                Native.SDL_QuitSubSystem((uint)(current & ~value));
+                _ = Native.CheckError(Native.SDL_InitSubSystem((uint)(value & ~current)));
             }
         }
 
@@ -116,7 +116,7 @@ namespace SdlSharp
         /// <param name="hints">Hints.</param>
         public Application(Subsystems subsystems, ImageFormats imageFormats = ImageFormats.None, MixerFormats mixerFormats = MixerFormats.None, bool fontSupport = false, params (Hint Hint, string Value)[] hints)
         {
-            _ = Native.CheckError(Native.SDL_Init(subsystems));
+            _ = Native.CheckError(Native.SDL_Init((uint)subsystems));
 
             if (hints != null)
             {
