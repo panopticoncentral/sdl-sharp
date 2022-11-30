@@ -22,16 +22,6 @@
     <SDL2TtfVersion>2.20.1</SDL2TtfVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningsAsErrors>;NU1605</WarningsAsErrors>
-    <NoWarn>1701;1702;NU5128</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <WarningsAsErrors>;NU1605</WarningsAsErrors>
-    <NoWarn>1701;1702;NU5128</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
     <SdlSdk Include="https://github.com/libsdl-org/SDL/releases/download/release-$(SDL2Version)/SDL2-devel-$(SDL2Version)-VC.zip" Name="SDL2" />
     <SdlSdk Include="https://github.com/libsdl-org/SDL_image/releases/download/release-$(SDL2ImageVersion)/SDL2_image-devel-$(SDL2ImageVersion)-VC.zip" Name="SDL2_image" />

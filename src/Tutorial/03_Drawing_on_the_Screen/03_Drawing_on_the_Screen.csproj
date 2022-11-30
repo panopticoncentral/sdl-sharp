@@ -6,6 +6,8 @@
     <RootNamespace>Tutorial</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
     <AssemblyName>03DrawingOnTheScreen</AssemblyName>
+    <!-- TODO: Remove when error is fixed. -->
+    <NoWarn>CA1852</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

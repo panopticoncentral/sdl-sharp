@@ -7,7 +7,7 @@ namespace SdlSharp
     /// A rectangle.
     /// </summary>
     [DebuggerDisplay("({Location.X}, {Location.Y}, {Size.Width}, {Size.Height})")]
-    public struct RectangleF : IEquatable<RectangleF>
+    public readonly struct RectangleF : IEquatable<RectangleF>
     {
         /// <summary>
         /// The location of the upper-left corner of the rectangle.

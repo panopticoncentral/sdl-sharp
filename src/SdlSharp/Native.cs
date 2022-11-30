@@ -25,6 +25,9 @@ using SdlSharp.Touch;
 #pragma warning disable IDE0051 // Private member ... is unused
 #pragma warning disable IDE0052 // Private member ... can be removed as the value assigned to it is never read
 
+// Don't want to use LibraryImportAttribute since we don't need pruning at the moment
+#pragma warning disable SYSLIB1054
+
 namespace SdlSharp
 {
     /// <summary>
@@ -738,7 +741,7 @@ namespace SdlSharp
             public readonly int Which { get; }
         }
 
-        public struct SDL_ControllerAxisEvent
+        public readonly struct SDL_ControllerAxisEvent
         {
             public readonly SDL_EventType Type { get; }
             public readonly uint Timestamp { get; }
@@ -754,7 +757,7 @@ namespace SdlSharp
             private readonly ushort _padding4;
         }
 
-        public struct SDL_ControllerButtonEvent
+        public readonly struct SDL_ControllerButtonEvent
         {
             public readonly SDL_EventType Type { get; }
             public readonly uint Timestamp { get; }
@@ -766,7 +769,7 @@ namespace SdlSharp
             private readonly byte _padding2;
         }
 
-        public struct SDL_ControllerDeviceEvent
+        public readonly struct SDL_ControllerDeviceEvent
         {
             public readonly SDL_EventType Type { get; }
             public readonly uint Timestamp { get; }
@@ -787,7 +790,7 @@ namespace SdlSharp
             private readonly byte _padding3;
         }
 
-        public struct SDL_TouchFingerEvent
+        public readonly struct SDL_TouchFingerEvent
         {
             public readonly SDL_EventType Type { get; }
             public readonly uint Timestamp { get; }
@@ -801,7 +804,7 @@ namespace SdlSharp
             public readonly uint WindowId { get; }
         }
 
-        public struct SDL_MultiGestureEvent
+        public readonly struct SDL_MultiGestureEvent
         {
             public readonly SDL_EventType Type { get; }
             public readonly uint Timestamp { get; }
@@ -815,7 +818,7 @@ namespace SdlSharp
             private readonly ushort _padding;
         }
 
-        public struct SDL_DollarGestureEvent
+        public readonly struct SDL_DollarGestureEvent
         {
             public readonly SDL_EventType Type { get; }
             public readonly uint Timestamp { get; }
@@ -1201,7 +1204,7 @@ namespace SdlSharp
 
         #region SDL_gesture.h
 
-        public struct SDL_GestureID
+        public readonly struct SDL_GestureID
         {
             public long Id { get; }
         }
@@ -2729,7 +2732,7 @@ namespace SdlSharp
             public Color _colorKey;
         }
 
-        public struct SDL_WindowShapeMode
+        public readonly struct SDL_WindowShapeMode
         {
             public WindowShapeMode Mode { get; }
             public SDL_WindowShapeParams Parameters { get; }
@@ -2937,14 +2940,14 @@ namespace SdlSharp
 
         // SDL_SysWMmsg for Windows is covered by SystemWindowMessage.cs
 
-        public struct SDL_SysWMmsg
+        public readonly struct SDL_SysWMmsg
         {
             public readonly Version Version;
             public readonly SDL_SysWmType Subsystem;
             public readonly SystemWindowMessage Win;
         }
 
-        public struct SDL_SysWMinfo_Windows
+        public readonly struct SDL_SysWMinfo_Windows
         {
             public readonly nint Window;
             public readonly nint Hdc;
@@ -2952,7 +2955,7 @@ namespace SdlSharp
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        public struct SDL_SysWMinfo_Union
+        public readonly struct SDL_SysWMinfo_Union
         {
             [FieldOffset(0)]
             public readonly SDL_SysWMinfo_Windows Win;
@@ -2962,7 +2965,7 @@ namespace SdlSharp
             public readonly byte[] Buffer;
         }
 
-        public struct SDL_SysWMinfo
+        public readonly struct SDL_SysWMinfo
         {
             public readonly Version Version;
             public readonly SDL_SysWmType Subsystem;
@@ -2990,14 +2993,14 @@ namespace SdlSharp
             }
         }
 
-        public struct SDL_FingerID
+        public readonly struct SDL_FingerID
         {
             public long Id { get; }
         }
 
         // SDL_TouchDeviceType is covered by TouchDeviceType.cs
 
-        public struct SDL_Finger
+        public readonly struct SDL_Finger
         {
             public readonly SDL_FingerID Id;
             public readonly float X;
