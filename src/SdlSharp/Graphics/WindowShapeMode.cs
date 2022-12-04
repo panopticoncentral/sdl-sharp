@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Graphics
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A shaping for a window.

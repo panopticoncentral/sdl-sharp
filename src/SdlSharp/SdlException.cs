@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp
+﻿namespace SdlSharp
 {
     /// <summary>
     ///  An SDL exception.

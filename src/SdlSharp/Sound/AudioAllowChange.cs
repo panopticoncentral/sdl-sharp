@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Sound
+﻿namespace SdlSharp.Sound
 {
     /// <summary>
     /// Indicates what aspects of an audio format can be changed when opening an audio device.

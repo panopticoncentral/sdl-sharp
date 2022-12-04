@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-using SdlSharp.Graphics;
+﻿using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
 using SdlSharp.Touch;
@@ -366,7 +363,7 @@ namespace SdlSharp
 
                 case Native.SDL_EventType.AudioDeviceAdded:
                 case Native.SDL_EventType.AudioDeviceRemoved:
-                    AudioDevice.DispatchEvent(e);
+                    Audio.DispatchEvent(e);
                     break;
 
                 case Native.SDL_EventType.FingerDown:

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Graphics
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// Image formats

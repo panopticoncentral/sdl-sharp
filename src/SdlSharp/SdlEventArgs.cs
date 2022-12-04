@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp
+﻿namespace SdlSharp
 {
     /// <summary>
     /// Common event arguments for SDL events

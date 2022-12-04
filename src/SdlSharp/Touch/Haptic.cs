@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using SdlSharp.Touch;
+﻿using SdlSharp.Touch;
 
 namespace SdlSharp
 {

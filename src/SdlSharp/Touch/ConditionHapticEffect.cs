@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Touch
+﻿namespace SdlSharp.Touch
 {
     /// <summary>
     /// A condition haptic effect.

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp
+﻿namespace SdlSharp
 {
     /// <summary>
     /// The system clipboard.

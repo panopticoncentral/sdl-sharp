@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SdlSharp.Sound
+﻿namespace SdlSharp.Sound
 {
     /// <summary>
     /// Music that can be played through the mixer.

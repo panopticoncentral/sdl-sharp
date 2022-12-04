@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SdlSharp.Touch
+﻿namespace SdlSharp.Touch
 {
     /// <summary>
     /// A device that supports touch input.

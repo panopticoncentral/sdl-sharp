@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Input
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// Flags describing a hat's state.

@@ -1,58 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace SdlSharp.Sound
 {
     /// <summary>
     /// An audio device.
     /// </summary>
-    public sealed unsafe class AudioDevice : NativeStaticIndexBase<Native.SDL_AudioDeviceID, AudioDevice>, IDisposable
+    public unsafe struct AudioDevice : IDisposable
     {
-        private List<Native.SDL_AudioCallback>? _callbacks;
+        private static Dictionary<nint, AudioCallback>? s_audioCallbacks;
 
-        private List<Native.SDL_AudioCallback> Callbacks => _callbacks ??= new List<Native.SDL_AudioCallback>();
+        private readonly Native.SDL_AudioDeviceID _deviceId;
+        private readonly AudioCallback? _callback;
 
-        internal void AddAudioCallback(Native.SDL_AudioCallback? callback)
-        {
-            if (callback != null)
-            {
-                Callbacks.Add(callback);
-            }
-        }
+        private static Dictionary<nint, AudioCallback> AudioCallbacks => s_audioCallbacks ??= new();
 
         /// <summary>
         /// The status of the audio device.
         /// </summary>
         public AudioStatus Status =>
-            Native.SDL_GetAudioDeviceStatus(Index);
+            Native.SDL_GetAudioDeviceStatus(_deviceId);
 
         /// <summary>
         /// The size of the queued audio.
         /// </summary>
         public uint QueuedAudioSize =>
-            Native.SDL_GetQueuedAudioSize(Index);
+            Native.SDL_GetQueuedAudioSize(_deviceId);
 
-        /// <summary>
-        /// Event fired when an audio device is added to the system.
-        /// </summary>
-        public static event EventHandler<AudioDeviceAddedEventArgs>? Added;
+        internal AudioDevice(Native.SDL_AudioDeviceID deviceId, AudioCallback? callback)
+        {
+            _deviceId = deviceId;
+            _callback = callback;
 
-        /// <summary>
-        /// Event fired when an audio device is removed from the system.
-        /// </summary>
-        public event EventHandler<SdlEventArgs>? Removed;
+            if (callback != null)
+            {
+                AudioCallbacks[callback.GetHashCode()] = callback;
+            }
+        }
 
         /// <summary>
         ///  Pauses the audio device.
         /// </summary>
         public void Pause() =>
-            Native.SDL_PauseAudioDevice(Index, true);
+            Native.SDL_PauseAudioDevice(_deviceId, true);
 
         /// <summary>
         /// Unpauses the audio device.
         /// </summary>
         public void Unpause() =>
-            Native.SDL_PauseAudioDevice(Index, false);
+            Native.SDL_PauseAudioDevice(_deviceId, false);
 
         /// <summary>
         /// Queues audio for playback.
@@ -62,7 +58,7 @@ namespace SdlSharp.Sound
         {
             fixed (byte* audioPointer = audio)
             {
-                _ = Native.CheckError(Native.SDL_QueueAudio(Index, audioPointer, (uint)audio.Length));
+                _ = Native.CheckError(Native.SDL_QueueAudio(_deviceId, audioPointer, (uint)audio.Length));
             }
         }
 
@@ -75,7 +71,7 @@ namespace SdlSharp.Sound
         {
             fixed (byte* audioPointer = audio)
             {
-                return Native.SDL_DequeueAudio(Index, audioPointer, (uint)audio.Length);
+                return Native.SDL_DequeueAudio(_deviceId, audioPointer, (uint)audio.Length);
             }
         }
 
@@ -83,48 +79,38 @@ namespace SdlSharp.Sound
         /// Clears all queued audio from the device.
         /// </summary>
         public void ClearQueuedAudio() =>
-            Native.SDL_ClearQueuedAudio(Index);
+            Native.SDL_ClearQueuedAudio(_deviceId);
 
         /// <summary>
         /// Locks the device for multi-threaded access.
         /// </summary>
         public void Lock() =>
-            Native.SDL_LockAudioDevice(Index);
+            Native.SDL_LockAudioDevice(_deviceId);
 
         /// <summary>
         /// Unlocks the device.
         /// </summary>
         public void Unlock() =>
-            Native.SDL_UnlockAudioDevice(Index);
+            Native.SDL_UnlockAudioDevice(_deviceId);
 
         /// <summary>
         /// Closes the audio device.
         /// </summary>
         public void Dispose()
         {
-            _callbacks = null;
-            Native.SDL_CloseAudioDevice(Index);
+            Native.SDL_CloseAudioDevice(_deviceId);
+
+            if (_callback != null)
+            {
+                _ = AudioCallbacks.Remove(_callback.GetHashCode());
+            }
         }
 
-        internal static void DispatchEvent(Native.SDL_Event e)
+        internal static void AudioCallback(nint userData, byte* stream, int len)
         {
-            switch (e.Type)
+            if (AudioCallbacks.TryGetValue(userData, out var callback))
             {
-                case Native.SDL_EventType.AudioDeviceAdded:
-                    {
-                        Added?.Invoke(null, new AudioDeviceAddedEventArgs(e.Adevice));
-                        break;
-                    }
-
-                case Native.SDL_EventType.JoystickDeviceRemoved:
-                    {
-                        var device = IndexToInstance(new Native.SDL_AudioDeviceID(e.Adevice.Which));
-                        device.Removed?.Invoke(device, new SdlEventArgs(e.Common));
-                        break;
-                    }
-
-                default:
-                    throw new InvalidOperationException();
+                callback(new Span<byte>(stream, len));
             }
         }
     }

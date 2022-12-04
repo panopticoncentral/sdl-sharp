@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Sound
+﻿namespace SdlSharp.Sound
 {
     /// <summary>
     /// An audio mixer.

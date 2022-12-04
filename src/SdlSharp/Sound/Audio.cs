@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SdlSharp.Sound
+﻿namespace SdlSharp.Sound
 {
     /// <summary>
     /// Audio processing routines.
@@ -43,26 +40,42 @@ namespace SdlSharp.Sound
             Native.SDL_GetCurrentAudioDriver();
 
         /// <summary>
+        /// Event fired when an audio device is added to the system.
+        /// </summary>
+        public static event EventHandler<AudioDeviceAddedEventArgs>? Added;
+
+        /// <summary>
+        /// Event fired when an audio device is removed from the system.
+        /// </summary>
+        public static event EventHandler<AudioDeviceRemovedEventArgs>? Removed;
+
+
+        /// <summary>
         /// Opens an audio device.
         /// </summary>
-        /// <param name="desired">The desired specifications for the device.</param>
+        /// <param name="frequency">The desired frequency.</param>
+        /// <param name="format">The desired format.</param>
+        /// <param name="channels">The desired number of channels.</param>
+        /// <param name="samples">The desired number of samples.</param>
+        /// <param name="callback">A data callback.</param>
         /// <param name="obtained">The actual specifications for the device.</param>
         /// <returns>The audio device that was opened.</returns>
-        public static AudioDevice Open(in AudioSpec desired, out AudioSpec obtained)
+        public static AudioDevice Open(int frequency, AudioFormat format, byte channels, ushort samples, AudioCallback? callback, out AudioSpecification obtained)
         {
-            var desiredNativeSpec = desired.ToNative();
-            var audioDeviceId = Native.SDL_OpenAudio(in desiredNativeSpec, out var obtainedNativeSpec);
+            var desiredNativeSpec = new Native.SDL_AudioSpec(
+                frequency,
+                format.Format,
+                channels,
+                samples,
+                callback != null ? new Native.SDL_AudioCallback(AudioDevice.AudioCallback) : null,
+                callback != null ? callback.GetHashCode() : 0);
 
-            if (audioDeviceId.Id == 0)
-            {
-                throw new SdlException();
-            }
+            _ = Native.CheckError(Native.SDL_OpenAudio(in desiredNativeSpec, out var obtainedNativeSpec));
 
-            var audioDevice = AudioDevice.IndexToInstance(audioDeviceId);
-            obtained = new AudioSpec(obtainedNativeSpec);
+            var audioDevice = new AudioDevice(new(1), callback);
 
-            // We have to save the callback to prevent collection
-            audioDevice.AddAudioCallback(desiredNativeSpec.Callback);
+            obtained = new AudioSpecification(obtainedNativeSpec);
+
             return audioDevice;
         }
 
@@ -71,26 +84,37 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="isCapture">Whether the device is a capture device.</param>
-        /// <param name="desired">The desired specifications for the device.</param>
+        /// <param name="frequency">The desired frequency.</param>
+        /// <param name="format">The desired format.</param>
+        /// <param name="channels">The desired number of channels.</param>
+        /// <param name="samples">The desired number of samples.</param>
+        /// <param name="callback">A data callback.</param>
         /// <param name="obtained">The actual specifications for the device.</param>
         /// <param name="allowedChanges">What changes can be made between the desired and actual specifications.</param>
         /// <returns>The audio device that was opened.</returns>
-        public static AudioDevice Open(string? device, bool isCapture, in AudioSpec desired, out AudioSpec obtained, AudioAllowChange allowedChanges)
+        public static AudioDevice Open(string? device, bool isCapture, int frequency, AudioFormat format, byte channels, ushort samples, AudioCallback? callback, out AudioSpecification obtained, AudioAllowChange allowedChanges)
         {
             using var utf8Device = Utf8String.ToUtf8String(device);
-            var desiredNativeSpec = desired.ToNative();
-            var audioDeviceId = Native.SDL_OpenAudioDevice(utf8Device, isCapture, in desiredNativeSpec, out var obtainedNativeSpec, allowedChanges);
 
-            if (audioDeviceId.Id == 0)
-            {
-                throw new SdlException();
-            }
+            var desiredNativeSpec = new Native.SDL_AudioSpec(
+                frequency,
+                format.Format,
+                channels,
+                samples,
+                callback != null ? new Native.SDL_AudioCallback(AudioDevice.AudioCallback) : null,
+                callback != null ? callback.GetHashCode() : 0);
 
-            var audioDevice = AudioDevice.IndexToInstance(audioDeviceId);
-            obtained = new AudioSpec(obtainedNativeSpec);
+            var audioDeviceId = Native.CheckErrorZero(Native.SDL_OpenAudioDevice(
+                utf8Device,
+                isCapture,
+                in desiredNativeSpec,
+                out var obtainedNativeSpec,
+                allowedChanges));
 
-            // We have to save the callback to prevent collection
-            audioDevice.AddAudioCallback(desiredNativeSpec.Callback);
+            var audioDevice = new AudioDevice(new(audioDeviceId), callback);
+
+            obtained = new AudioSpecification(obtainedNativeSpec);
+
             return audioDevice;
         }
 
@@ -101,10 +125,10 @@ namespace SdlSharp.Sound
         /// <param name="shouldFree">Whether the source should be freed when the audio is loaded.</param>
         /// <param name="spec">The audio specification of the loaded audio.</param>
         /// <returns>The loaded audio data.</returns>
-        public static WavData LoadWav(RWOps rwops, bool shouldFree, out AudioSpec spec)
+        public static WavData LoadWav(RWOps rwops, bool shouldFree, out AudioSpecification spec)
         {
             _ = Native.CheckPointer(Native.SDL_LoadWAV_RW(rwops.Native, shouldFree, out var specNative, out var buffer, out var bufferSize));
-            spec = new AudioSpec(specNative);
+            spec = new AudioSpecification(specNative);
             return new WavData(buffer, bufferSize);
         }
 
@@ -114,10 +138,10 @@ namespace SdlSharp.Sound
         /// <param name="filename">The filename to load.</param>
         /// <param name="spec">The audio specification of the loaded audio.</param>
         /// <returns>The loaded audio data.</returns>
-        public static WavData LoadWav(string filename, out AudioSpec spec)
+        public static WavData LoadWav(string filename, out AudioSpecification spec)
         {
             _ = Native.CheckPointer(Native.SDL_LoadWAV(filename, out var specNative, out var buffer, out var bufferSize));
-            spec = new AudioSpec(specNative);
+            spec = new AudioSpecification(specNative);
             return new WavData(buffer, bufferSize);
         }
 
@@ -139,17 +163,17 @@ namespace SdlSharp.Sound
                 return source;
             }
 
-            var buffer = new byte[source.Length * audioConvert.LengthMultiplier];
+            var buffer = new byte[source.Length * audioConvert.len_mult];
             source.CopyTo(buffer);
 
             fixed (byte* bufferPointer = buffer)
             {
-                audioConvert.Buffer = bufferPointer;
-                audioConvert.Length = source.Length;
+                audioConvert.buf = bufferPointer;
+                audioConvert.len = source.Length;
                 _ = Native.CheckError(Native.SDL_ConvertAudio(ref audioConvert));
             }
 
-            return new Span<byte>(buffer, 0, audioConvert.ConvertedLength);
+            return new Span<byte>(buffer, 0, audioConvert.len_cvt);
         }
 
         /// <summary>
@@ -194,6 +218,27 @@ namespace SdlSharp.Sound
                 {
                     Native.SDL_MixAudioFormat(destinationPointer, sourcePointer, format, (uint)source.Length, volume);
                 }
+            }
+        }
+
+        internal static void DispatchEvent(Native.SDL_Event e)
+        {
+            switch (e.Type)
+            {
+                case Native.SDL_EventType.AudioDeviceAdded:
+                    {
+                        Added?.Invoke(null, new AudioDeviceAddedEventArgs(e.Adevice));
+                        break;
+                    }
+
+                case Native.SDL_EventType.AudioDeviceRemoved:
+                    {
+                        Removed?.Invoke(null, new AudioDeviceRemovedEventArgs(e.Adevice));
+                        break;
+                    }
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
     }

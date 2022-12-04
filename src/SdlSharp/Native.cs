@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 using SdlSharp.Graphics;
 using SdlSharp.Input;
@@ -27,6 +26,9 @@ using SdlSharp.Touch;
 
 // Don't want to use LibraryImportAttribute since we don't need pruning at the moment
 #pragma warning disable SYSLIB1054
+
+// Naming doesn't follow general rules
+#pragma warning disable IDE1006
 
 namespace SdlSharp
 {
@@ -64,6 +66,14 @@ namespace SdlSharp
         /// <returns>The return value.</returns>
         /// <exception cref="SdlException">Thrown if method returned an error.</exception>
         public static int CheckErrorZero(int returnValue) => (returnValue == 0) ? throw new SdlException() : returnValue;
+
+        /// <summary>
+        /// Check that the return of a method is not an error (i.e. zero).
+        /// </summary>
+        /// <param name="returnValue">The return value of the API.</param>
+        /// <returns>The return value.</returns>
+        /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+        public static uint CheckErrorZero(uint returnValue) => (returnValue == 0) ? throw new SdlException() : returnValue;
 
         /// <summary>
         /// Check that the return of a method is not an error (i.e. zero).
@@ -161,50 +171,91 @@ namespace SdlSharp
 
         #endregion
 
-        // SDL_assert.h - Relies heavily on C/C++ macros to work, plus
-        //   there is already a .NET assert facility.
+        // SDL_assert.h - Should use the platform facilities.
 
         // SDL_atomic.h - Should use the platform facilities.
 
         #region SDL_audio.h
 
-        // SDL_AudioFormat and SDL_AUDIO_* covered by AudioFormat.cs
-        // SDL_AUDIO_ALLOW_* is covered by AudioAllowChange.cs
+        public readonly record struct SDL_AudioFormat(ushort Value);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void SDL_AudioCallback(nint userdata, byte* stream, int length);
+        public const ushort SDL_AUDIO_MASK_BITSIZE = 0xFF;
+        public const ushort SDL_AUDIO_MASK_DATATYPE = 1 << 8;
+        public const ushort SDL_AUDIO_MASK_ENDIAN = 1 << 12;
+        public const ushort SDL_AUDIO_MASK_SIGNED = 1 << 15;
+
+        public static byte SDL_AUDIO_BITSIZE(SDL_AudioFormat x) => (byte)(x.Value & SDL_AUDIO_MASK_BITSIZE);
+        public static bool SDL_AUDIO_ISFLOAT(SDL_AudioFormat x) => (x.Value & SDL_AUDIO_MASK_DATATYPE) != 0;
+        public static bool SDL_AUDIO_ISBIGENDIAN(SDL_AudioFormat x) => (x.Value & SDL_AUDIO_MASK_ENDIAN) != 0;
+        public static bool SDL_AUDIO_ISSIGNED(SDL_AudioFormat x) => (x.Value & SDL_AUDIO_MASK_SIGNED) != 0;
+        public static bool SDL_AUDIO_ISINT(SDL_AudioFormat x) => !SDL_AUDIO_ISFLOAT(x);
+        public static bool SDL_AUDIO_ISLITTLEENDIAN(SDL_AudioFormat x) => !SDL_AUDIO_ISBIGENDIAN(x);
+        public static bool SDL_AUDIO_ISUNSIGNED(SDL_AudioFormat x) => !SDL_AUDIO_ISSIGNED(x);
+
+        public static readonly SDL_AudioFormat AUDIO_U8 = new(0x0008);
+        public static readonly SDL_AudioFormat AUDIO_S8 = new(0x8008);
+        public static readonly SDL_AudioFormat AUDIO_U16LSB = new(0x0010);
+        public static readonly SDL_AudioFormat AUDIO_S16LSB = new(0x8010);
+        public static readonly SDL_AudioFormat AUDIO_U16MSB = new(0x1010);
+        public static readonly SDL_AudioFormat AUDIO_S16MSB = new(0x9010);
+        public static readonly SDL_AudioFormat AUDIO_U16 = AUDIO_U16LSB;
+        public static readonly SDL_AudioFormat AUDIO_S16 = AUDIO_S16LSB;
+
+        public static readonly SDL_AudioFormat AUDIO_S32LSB = new(0x8020);
+        public static readonly SDL_AudioFormat AUDIO_S32MSB = new(0x9020);
+        public static readonly SDL_AudioFormat AUDIO_S32 = AUDIO_S32LSB;
+
+        public static readonly SDL_AudioFormat AUDIO_F32LSB = new(0x8120);
+        public static readonly SDL_AudioFormat AUDIO_F32MSB = new(0x9120);
+        public static readonly SDL_AudioFormat AUDIO_F32 = AUDIO_F32LSB;
+
+        public static readonly SDL_AudioFormat AUDIO_U16SYS = BitConverter.IsLittleEndian ? AUDIO_U16LSB : AUDIO_U16MSB;
+        public static readonly SDL_AudioFormat AUDIO_S16SYS = BitConverter.IsLittleEndian ? AUDIO_S16LSB : AUDIO_S16MSB;
+        public static readonly SDL_AudioFormat AUDIO_S32SYS = BitConverter.IsLittleEndian ? AUDIO_S32LSB : AUDIO_S32MSB;
+        public static readonly SDL_AudioFormat AUDIO_F32SYS = BitConverter.IsLittleEndian ? AUDIO_F32LSB : AUDIO_F32MSB;
+
+        public const uint SDL_AUDIO_ALLOW_FREQUENCY_CHANGE = 0x00000001;
+        public const uint SDL_AUDIO_ALLOW_FORMAT_CHANGE = 0x00000002;
+        public const uint SDL_AUDIO_ALLOW_CHANNELS_CHANGE = 0x00000004;
+        public const uint SDL_AUDIO_ALLOW_SAMPLES_CHANGE = 0x00000008;
+        public const uint SDL_AUDIO_ALLOW_ANY_CHANGE = SDL_AUDIO_ALLOW_FREQUENCY_CHANGE
+            | SDL_AUDIO_ALLOW_FORMAT_CHANGE
+            | SDL_AUDIO_ALLOW_CHANNELS_CHANGE
+            | SDL_AUDIO_ALLOW_SAMPLES_CHANGE;
+
+        public delegate void SDL_AudioCallback(nint userdata, byte* stream, int len);
 
         public readonly struct SDL_AudioSpec
         {
-            public readonly int Frequency { get; }
+            public readonly int freq { get; }
 
-            public readonly AudioFormat Format { get; }
+            public readonly SDL_AudioFormat format { get; }
 
-            public readonly byte Channels { get; }
+            public readonly byte channels { get; }
 
-            public readonly byte Silence { get; }
+            public readonly byte silence { get; }
 
-            public readonly ushort Samples { get; }
+            public readonly ushort samples { get; }
 
             private readonly ushort _padding;
 
-            public readonly uint Size { get; }
+            public readonly uint size { get; }
 
-            public readonly SDL_AudioCallback? Callback { get; }
+            public readonly SDL_AudioCallback? callback { get; }
 
-            public readonly nint Userdata { get; }
+            public readonly nint userdata { get; }
 
-            public SDL_AudioSpec(int frequency, AudioFormat format, byte channels, byte silence, ushort samples, uint size, SDL_AudioCallback? callback, nint userdata)
+            public SDL_AudioSpec(int freq, SDL_AudioFormat format, byte channels, ushort samples, SDL_AudioCallback? callback = default, nint userdata = default)
             {
-                Frequency = frequency;
-                Format = format;
-                Channels = channels;
-                Silence = silence;
-                Samples = samples;
+                this.freq = freq;
+                this.format = format;
+                this.channels = channels;
+                silence = 0; // Always calculated
+                this.samples = samples;
                 _padding = 0;
-                Size = size;
-                Callback = callback;
-                Userdata = userdata;
+                size = 0;  // Always calculated
+                this.callback = callback;
+                this.userdata = userdata;
             }
         }
 
@@ -212,23 +263,23 @@ namespace SdlSharp
 
         public struct SDL_AudioCVT
         {
-            public readonly bool ConversionNeeded { get; }
+            public readonly int needed { get; }
 
-            public readonly AudioFormat SourceFormat { get; }
+            public readonly SDL_AudioFormat src_format { get; }
 
-            public readonly AudioFormat DestinationFormat { get; }
+            public readonly SDL_AudioFormat dst_format { get; }
 
-            public readonly double RateIncrement { get; }
+            public readonly double rate_incr { get; }
 
-            public byte* Buffer { get; set; }
+            public byte* buf { get; set; }
 
-            public int Length { get; set; }
+            public int len { get; set; }
 
-            public readonly int ConvertedLength { get; }
+            public readonly int len_cvt { get; }
 
-            public readonly int LengthMultiplier { get; }
+            public readonly int len_mult { get; }
 
-            public readonly double LengthRatio { get; }
+            public readonly double len_ratio { get; }
 
             // Work around the fact that can't make buffers of nint
             private readonly nint _filter0;
@@ -260,17 +311,9 @@ namespace SdlSharp
         public static extern string SDL_GetCurrentAudioDriver();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_AudioDeviceID SDL_OpenAudio(in SDL_AudioSpec desired, out SDL_AudioSpec obtained);
+        public static extern int SDL_OpenAudio(in SDL_AudioSpec desired, out SDL_AudioSpec obtained);
 
-        public readonly struct SDL_AudioDeviceID
-        {
-            public readonly uint Id { get; }
-
-            public SDL_AudioDeviceID(uint id)
-            {
-                Id = id;
-            }
-        }
+        public readonly record struct SDL_AudioDeviceID(uint Id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumAudioDevices(bool iscapture);
@@ -279,7 +322,7 @@ namespace SdlSharp
         public static extern Utf8String SDL_GetAudioDeviceName(int index, bool iscapture);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_AudioDeviceID SDL_OpenAudioDevice(Utf8String device, bool iscapture, in SDL_AudioSpec desired, out SDL_AudioSpec obtained, AudioAllowChange allowed_changes);
+        public static extern uint SDL_OpenAudioDevice(Utf8String device, bool iscapture, in SDL_AudioSpec desired, out SDL_AudioSpec obtained, AudioAllowChange allowed_changes);
 
         // SDL_AudioStatus is covered by AudioStatus.cs
 

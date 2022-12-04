@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SdlSharp.Sound
+﻿namespace SdlSharp.Sound
 {
     /// <summary>
     /// The base class of a mixer effect.

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Input
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A mouse button.

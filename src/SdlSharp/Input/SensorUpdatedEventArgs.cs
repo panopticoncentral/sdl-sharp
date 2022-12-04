@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SdlSharp.Input
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// Event arguments for a sensor update event.

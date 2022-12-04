@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Touch
+﻿namespace SdlSharp.Touch
 {
     /// <summary>
     /// Capabilities that a haptic device can support.

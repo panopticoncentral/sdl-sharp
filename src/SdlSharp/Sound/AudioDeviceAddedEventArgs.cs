@@ -5,12 +5,10 @@
     /// </summary>
     public sealed class AudioDeviceAddedEventArgs : SdlEventArgs
     {
-        private readonly int _index;
-
         /// <summary>
         /// The device added.
         /// </summary>
-        public string Device => Native.SDL_GetAudioDeviceName(_index, IsCapture).ToString()!;
+        public string DeviceName { get; }
 
         /// <summary>
         /// Whether the device is a capture device.
@@ -19,7 +17,7 @@
 
         internal AudioDeviceAddedEventArgs(Native.SDL_AudioDeviceEvent device) : base(device.Timestamp)
         {
-            _index = (int)device.Which;
+            DeviceName = Native.SDL_GetAudioDeviceName((int)device.Which, IsCapture).ToString()!;
             IsCapture = device.IsCapture;
         }
     }

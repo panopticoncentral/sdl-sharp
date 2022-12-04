@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SdlSharp.Graphics
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A graphics renderer.

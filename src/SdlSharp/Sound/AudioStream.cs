@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SdlSharp.Sound
+﻿namespace SdlSharp.Sound
 {
     /// <summary>
     /// An audio stream that converts audio from one format to another.

@@ -1,6 +1,4 @@
-﻿using System;
-
-using SdlSharp;
+﻿using SdlSharp;
 using SdlSharp.Graphics;
 
 using Application app = new(Subsystems.Video, ImageFormats.Png);
