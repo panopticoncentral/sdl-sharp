@@ -5,7 +5,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Samples</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyName>NativeInit</AssemblyName>
+    <AssemblyName>ManagedInit</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <!-- TODO: Remove when error is fixed. -->

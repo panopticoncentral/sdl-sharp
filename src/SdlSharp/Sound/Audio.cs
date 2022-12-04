@@ -17,7 +17,7 @@
         /// <summary>
         /// The audio drivers on the system.
         /// </summary>
-        public static IReadOnlyList<string> Drivers => s_drivers ??= new ItemCollection<string>(Native.SDL_GetAudioDriver, Native.SDL_GetNumAudioDrivers);
+        public static IReadOnlyList<string> Drivers => s_drivers ??= new ItemCollection<string>(i => new StaticUtf8String(Native.SDL_GetAudioDriver(i)).ToString()!, Native.SDL_GetNumAudioDrivers);
 
         /// <summary>
         /// The capture devices supported by the current driver.
