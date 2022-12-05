@@ -106,6 +106,7 @@ namespace SdlSharp.Sound
             }
         }
 
+        [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
         internal static void AudioCallback(nint userData, byte* stream, int len)
         {
             if (AudioCallbacks.TryGetValue(userData, out var callback))

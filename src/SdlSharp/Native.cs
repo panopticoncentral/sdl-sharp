@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 
 using SdlSharp.Graphics;
 using SdlSharp.Input;
@@ -127,6 +129,33 @@ namespace SdlSharp
             return new Span<T>(pixels, pitch / bytesPerPixel * height);
         }
 
+        /// <summary>
+        /// Converts a UTF8 string to a string.
+        /// </summary>
+        /// <param name="utf8">Pointer to the UTF8 string storage.</param>
+        /// <returns>The string.</returns>
+        public static string? Utf8ToString(byte* utf8)
+        {
+            static int StringLength(byte* v)
+            {
+                var current = v;
+                while (*current != 0)
+                {
+                    current++;
+                }
+                return (int)(current - v);
+            }
+
+            return utf8 == null ? null : Encoding.UTF8.GetString(utf8, StringLength(utf8));
+        }
+
+        /// <summary>
+        /// Converts a bool to a native int value.
+        /// </summary>
+        /// <param name="value">The bool value.</param>
+        /// <returns>The int value.</returns>
+        public static int BoolToInt(bool value) => value ? 1 : 0;
+
         //
         // SDL2
         //
@@ -241,11 +270,11 @@ namespace SdlSharp
 
             public readonly uint size { get; }
 
-            public readonly SDL_AudioCallback? callback { get; }
+            public readonly delegate* unmanaged[Cdecl]<nint, byte*, int, void> callback { get; }
 
             public readonly nint userdata { get; }
 
-            public SDL_AudioSpec(int freq, SDL_AudioFormat format, byte channels, ushort samples, SDL_AudioCallback? callback = default, nint userdata = default)
+            public SDL_AudioSpec(int freq, SDL_AudioFormat format, byte channels, ushort samples, delegate* unmanaged[Cdecl]<nint, byte*, int, void> callback = default, nint userdata = default)
             {
                 this.freq = freq;
                 this.format = format;
@@ -299,27 +328,33 @@ namespace SdlSharp
         public static extern int SDL_GetNumAudioDrivers();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte *SDL_GetAudioDriver(int index);
+        public static extern byte* SDL_GetAudioDriver(int index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int SDL_AudioInit(string driver_name);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_AudioInit(byte* driver_name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_AudioQuit();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GetCurrentAudioDriver();
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetCurrentAudioDriver();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_OpenAudio(in SDL_AudioSpec desired, out SDL_AudioSpec obtained);
+        public static extern int SDL_OpenAudio(SDL_AudioSpec* desired, SDL_AudioSpec* obtained);
 
         public readonly record struct SDL_AudioDeviceID(uint Id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetNumAudioDevices(bool iscapture);
+        public static extern int SDL_GetNumAudioDevices(int iscapture);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Utf8String SDL_GetAudioDeviceName(int index, bool iscapture);
+        public static extern byte* SDL_GetAudioDeviceName(int index, int iscapture);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GetAudioDeviceSpec(int index, int iscapture, SDL_AudioSpec* spec);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GetDefaultAudioInfo(char** name, SDL_AudioSpec* spec, int iscapture);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_OpenAudioDevice(Utf8String device, bool iscapture, in SDL_AudioSpec desired, out SDL_AudioSpec obtained, AudioAllowChange allowed_changes);

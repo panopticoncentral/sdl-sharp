@@ -19,21 +19,7 @@ namespace SdlSharp
         }
 
         /// <inheritdoc/>
-        public override string? ToString()
-        {
-            static int StringLength(byte* v)
-            {
-                var current = v;
-                while (*current != 0)
-                {
-                    current++;
-                }
-
-                return (int)(current - v);
-            }
-
-            return _pointer == null ? null : Encoding.UTF8.GetString(_pointer, StringLength(_pointer));
-        }
+        public override string? ToString() => Native.Utf8ToString(_pointer);
 
         /// <summary>
         /// Frees the string's storage.

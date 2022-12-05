@@ -6,8 +6,8 @@
     public static unsafe class Audio
     {
         private static ItemCollection<string>? s_drivers;
-        private static ItemCollection<string>? s_captureDevices;
-        private static ItemCollection<string>? s_nonCaptureDevices;
+        //private static ItemCollection<string>? s_captureDevices;
+        //private static ItemCollection<string>? s_nonCaptureDevices;
 
         /// <summary>
         /// The maximum volume that can be used when mixing audio.
@@ -17,27 +17,26 @@
         /// <summary>
         /// The audio drivers on the system.
         /// </summary>
-        public static IReadOnlyList<string> Drivers => s_drivers ??= new ItemCollection<string>(i => new StaticUtf8String(Native.SDL_GetAudioDriver(i)).ToString()!, Native.SDL_GetNumAudioDrivers);
+        public static IReadOnlyList<string> Drivers => s_drivers ??= new ItemCollection<string>(i => Native.Utf8ToString(Native.SDL_GetAudioDriver(i))!, Native.SDL_GetNumAudioDrivers);
 
         /// <summary>
         /// The capture devices supported by the current driver.
         /// </summary>
-        public static IReadOnlyList<string> CaptureDevices => s_captureDevices ??= new ItemCollection<string>(
-            index => Native.CheckNotNull(Native.SDL_GetAudioDeviceName(index, true).ToString()),
-            () => Native.SDL_GetNumAudioDevices(true));
+        //public static IReadOnlyList<string> CaptureDevices => s_captureDevices ??= new ItemCollection<string>(
+        //    index => Native.CheckNotNull(Native.SDL_GetAudioDeviceName(index, true).ToString()),
+        //    () => Native.SDL_GetNumAudioDevices(true));
 
         /// <summary>
         /// The non-capture devices supported by the current drive.
         /// </summary>
-        public static IReadOnlyList<string> NonCaptureDevices => s_nonCaptureDevices ??= new ItemCollection<string>(
-            index => Native.CheckNotNull(Native.SDL_GetAudioDeviceName(index, false).ToString()),
-            () => Native.SDL_GetNumAudioDevices(false));
+        //public static IReadOnlyList<string> NonCaptureDevices => s_nonCaptureDevices ??= new ItemCollection<string>(
+        //    index => Native.CheckNotNull(Native.SDL_GetAudioDeviceName(index, false).ToString()),
+        //    () => Native.SDL_GetNumAudioDevices(false));
 
         /// <summary>
         /// The current audio driver in use.
         /// </summary>
-        public static string CurrentDriver =>
-            Native.SDL_GetCurrentAudioDriver();
+        public static string CurrentDriver => Native.Utf8ToString(Native.SDL_GetCurrentAudioDriver())!;
 
         /// <summary>
         /// Event fired when an audio device is added to the system.
@@ -67,10 +66,11 @@
                 format.Format,
                 channels,
                 samples,
-                callback != null ? new Native.SDL_AudioCallback(AudioDevice.AudioCallback) : null,
+                callback != null ? (delegate* unmanaged[Cdecl]<nint, byte*, int, void>)&AudioDevice.AudioCallback : null,
                 callback != null ? callback.GetHashCode() : 0);
 
-            _ = Native.CheckError(Native.SDL_OpenAudio(in desiredNativeSpec, out var obtainedNativeSpec));
+            Native.SDL_AudioSpec obtainedNativeSpec;
+            _ = Native.CheckError(Native.SDL_OpenAudio(&desiredNativeSpec, &obtainedNativeSpec));
 
             var audioDevice = new AudioDevice(new(1), callback);
 
@@ -101,7 +101,7 @@
                 format.Format,
                 channels,
                 samples,
-                callback != null ? new Native.SDL_AudioCallback(AudioDevice.AudioCallback) : null,
+                callback != null ? (delegate* unmanaged[Cdecl]<nint, byte*, int, void>)&AudioDevice.AudioCallback : null,
                 callback != null ? callback.GetHashCode() : 0);
 
             var audioDeviceId = Native.CheckErrorZero(Native.SDL_OpenAudioDevice(

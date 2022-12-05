@@ -42,19 +42,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Init", "src\Samples\Native\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDL_audio", "SDL_audio", "{7B5E753D-AAB9-4B9A-A0A0-36F8539019BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListAudioDrivers", "src\Samples\Native\SDL_audio\ListAudioDrivers\ListAudioDrivers.csproj", "{888A48E0-85C5-4B5D-9663-DF478349DC0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListAudioDrivers", "src\Samples\Native\SDL_audio\ListAudioDrivers\ListAudioDrivers.csproj", "{888A48E0-85C5-4B5D-9663-DF478349DC0A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Managed", "Managed", "{C0508086-085E-4AD8-9462-80B8EB585CDE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDL", "SDL", "{2C861754-2506-4EF2-8B05-E46ED582E80A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleInit", "src\Samples\Managed\SDL\SimpleInit\SimpleInit.csproj", "{61065541-E9AB-4492-9E3F-FD6948E1AD7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleInit", "src\Samples\Managed\SDL\SimpleInit\SimpleInit.csproj", "{61065541-E9AB-4492-9E3F-FD6948E1AD7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Init", "src\Samples\Managed\SDL\Init\Init.csproj", "{3AA09E5F-C5CA-448F-B547-83D2C630A327}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Init", "src\Samples\Managed\SDL\Init\Init.csproj", "{3AA09E5F-C5CA-448F-B547-83D2C630A327}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDL_audio", "SDL_audio", "{877B95CA-42A2-4396-9A54-606A2B0F459D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListAudioDrivers", "src\Samples\Managed\SDL_audio\ListAudioDrivers\ListAudioDrivers.csproj", "{38415A54-2C23-4675-93AE-823511B214A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListAudioDrivers", "src\Samples\Managed\SDL_audio\ListAudioDrivers\ListAudioDrivers.csproj", "{38415A54-2C23-4675-93AE-823511B214A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListAudioDevices", "src\Samples\Native\SDL_audio\ListAudioDevices\ListAudioDevices.csproj", "{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,6 +128,10 @@ Global
 		{38415A54-2C23-4675-93AE-823511B214A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38415A54-2C23-4675-93AE-823511B214A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38415A54-2C23-4675-93AE-823511B214A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,6 +157,7 @@ Global
 		{3AA09E5F-C5CA-448F-B547-83D2C630A327} = {2C861754-2506-4EF2-8B05-E46ED582E80A}
 		{877B95CA-42A2-4396-9A54-606A2B0F459D} = {C0508086-085E-4AD8-9462-80B8EB585CDE}
 		{38415A54-2C23-4675-93AE-823511B214A9} = {877B95CA-42A2-4396-9A54-606A2B0F459D}
+		{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C} = {7B5E753D-AAB9-4B9A-A0A0-36F8539019BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD118769-C6C1-4143-8572-DBB43A8E9A83}

@@ -3,7 +3,7 @@
     /// <summary>
     /// Event args for the audio device added event
     /// </summary>
-    public sealed class AudioDeviceAddedEventArgs : SdlEventArgs
+    public sealed unsafe class AudioDeviceAddedEventArgs : SdlEventArgs
     {
         /// <summary>
         /// The device added.
@@ -17,7 +17,7 @@
 
         internal AudioDeviceAddedEventArgs(Native.SDL_AudioDeviceEvent device) : base(device.Timestamp)
         {
-            DeviceName = Native.SDL_GetAudioDeviceName((int)device.Which, IsCapture).ToString()!;
+            DeviceName = Native.Utf8ToString(Native.SDL_GetAudioDeviceName((int)device.Which, Native.BoolToInt(IsCapture)))!;
             IsCapture = device.IsCapture;
         }
     }
