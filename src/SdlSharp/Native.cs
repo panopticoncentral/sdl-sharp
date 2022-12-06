@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.Metrics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -155,6 +156,25 @@ namespace SdlSharp
         /// <param name="value">The bool value.</param>
         /// <returns>The int value.</returns>
         public static int BoolToInt(bool value) => value ? 1 : 0;
+
+        /// <summary>
+        /// Converts a getter/counter pair into a read-only collection.
+        /// </summary>
+        /// <typeparam name="T">The return type of the collection.</typeparam>
+        /// <param name="getter">The function that gets an element.</param>
+        /// <param name="counter">The function that returns the count of the element.</param>
+        /// <returns>A read-only collection.</returns>
+        public static IReadOnlyList<T> GetIndexedCollection<T>(Func<int, T> getter, Func<int> counter)
+        {
+            var count = counter();
+            var array = new T[count];
+            for (var index = 0; index < count; index++)
+            {
+                array[index] = getter(index);
+            }
+            return array;
+        }
+
 
         //
         // SDL2
@@ -354,7 +374,7 @@ namespace SdlSharp
         public static extern int SDL_GetAudioDeviceSpec(int index, int iscapture, SDL_AudioSpec* spec);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetDefaultAudioInfo(char** name, SDL_AudioSpec* spec, int iscapture);
+        public static extern int SDL_GetDefaultAudioInfo(byte** name, SDL_AudioSpec* spec, int iscapture);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_OpenAudioDevice(Utf8String device, bool iscapture, in SDL_AudioSpec desired, out SDL_AudioSpec obtained, AudioAllowChange allowed_changes);

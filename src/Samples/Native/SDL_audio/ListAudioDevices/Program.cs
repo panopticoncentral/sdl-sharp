@@ -15,20 +15,40 @@ unsafe
             Console.WriteLine($"{name}:");
             Console.WriteLine($"\tFrequency: {spec.freq}");
             Console.WriteLine($"\tChannels: {spec.channels}");
-            Console.WriteLine($"\tSilence: {spec.silence}");
-            Console.WriteLine($"\tSamples: {spec.samples}");
-            Console.WriteLine($"\tSize: {spec.size}");
         }
+    }
+
+    static void PrintDefaultAudioDevice(bool isCapture)
+    {
+        byte* nameBuffer = null;
+        Native.SDL_AudioSpec spec;
+
+        _ = Native.CheckError(Native.SDL_GetDefaultAudioInfo(&nameBuffer, &spec, Native.BoolToInt(isCapture)));
+        var name = new Utf8String(nameBuffer);
+
+        Console.WriteLine($"{name}:");
+        Console.WriteLine($"\tFrequency: {spec.freq}");
+        Console.WriteLine($"\tChannels: {spec.channels}");
+
+        name.Dispose();
     }
 
     _ = Native.CheckError(Native.SDL_Init(Native.SDL_INIT_AUDIO));
 
     Console.WriteLine("Non-capture devices:");
     PrintAudioDevices(false);
-
     Console.WriteLine();
+
+    Console.WriteLine("Default non-capture device:");
+    PrintDefaultAudioDevice(false);
+    Console.WriteLine();
+
     Console.WriteLine("Capture devices:");
     PrintAudioDevices(true);
+    Console.WriteLine();
+
+    Console.WriteLine("Default capture device:");
+    PrintDefaultAudioDevice(true);
 
     Native.SDL_Quit();
 

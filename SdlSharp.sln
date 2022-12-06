@@ -56,7 +56,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDL_audio", "SDL_audio", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListAudioDrivers", "src\Samples\Managed\SDL_audio\ListAudioDrivers\ListAudioDrivers.csproj", "{38415A54-2C23-4675-93AE-823511B214A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListAudioDevices", "src\Samples\Native\SDL_audio\ListAudioDevices\ListAudioDevices.csproj", "{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListAudioDevices", "src\Samples\Native\SDL_audio\ListAudioDevices\ListAudioDevices.csproj", "{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListAudioDevices", "src\Samples\Managed\SDL_audio\ListAudioDevices\ListAudioDevices.csproj", "{ADC07942-FD50-4BEE-B2FB-7E6452010E69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,6 +134,10 @@ Global
 		{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADC07942-FD50-4BEE-B2FB-7E6452010E69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADC07942-FD50-4BEE-B2FB-7E6452010E69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADC07942-FD50-4BEE-B2FB-7E6452010E69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADC07942-FD50-4BEE-B2FB-7E6452010E69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +164,7 @@ Global
 		{877B95CA-42A2-4396-9A54-606A2B0F459D} = {C0508086-085E-4AD8-9462-80B8EB585CDE}
 		{38415A54-2C23-4675-93AE-823511B214A9} = {877B95CA-42A2-4396-9A54-606A2B0F459D}
 		{47F4E273-3E81-4BB4-9D9F-9E44D34AE34C} = {7B5E753D-AAB9-4B9A-A0A0-36F8539019BF}
+		{ADC07942-FD50-4BEE-B2FB-7E6452010E69} = {877B95CA-42A2-4396-9A54-606A2B0F459D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD118769-C6C1-4143-8572-DBB43A8E9A83}

@@ -5,7 +5,6 @@
     /// </summary>
     public static unsafe class Audio
     {
-        private static ItemCollection<string>? s_drivers;
         //private static ItemCollection<string>? s_captureDevices;
         //private static ItemCollection<string>? s_nonCaptureDevices;
 
@@ -17,21 +16,27 @@
         /// <summary>
         /// The audio drivers on the system.
         /// </summary>
-        public static IReadOnlyList<string> Drivers => s_drivers ??= new ItemCollection<string>(i => Native.Utf8ToString(Native.SDL_GetAudioDriver(i))!, Native.SDL_GetNumAudioDrivers);
+        public static IReadOnlyList<string> Drivers => Native.GetIndexedCollection(i => Native.Utf8ToString(Native.SDL_GetAudioDriver(i))!, Native.SDL_GetNumAudioDrivers);
 
         /// <summary>
         /// The capture devices supported by the current driver.
         /// </summary>
-        //public static IReadOnlyList<string> CaptureDevices => s_captureDevices ??= new ItemCollection<string>(
-        //    index => Native.CheckNotNull(Native.SDL_GetAudioDeviceName(index, true).ToString()),
-        //    () => Native.SDL_GetNumAudioDevices(true));
+        public static IReadOnlyList<(string name, AudioSpecification spec)> CaptureDevices => GetDevices(true);
+
+        /// <summary>
+        /// The default capture device for the current driver.
+        /// </summary>
+        public static (string name, AudioSpecification spec) DefaultCaptureDevice => GetDefaultDevice(true);
 
         /// <summary>
         /// The non-capture devices supported by the current drive.
         /// </summary>
-        //public static IReadOnlyList<string> NonCaptureDevices => s_nonCaptureDevices ??= new ItemCollection<string>(
-        //    index => Native.CheckNotNull(Native.SDL_GetAudioDeviceName(index, false).ToString()),
-        //    () => Native.SDL_GetNumAudioDevices(false));
+        public static IReadOnlyList<(string name, AudioSpecification spec)> NonCaptureDevices => GetDevices(false);
+
+        /// <summary>
+        /// The default non-capture device for the current driver.
+        /// </summary>
+        public static (string name, AudioSpecification spec) DefaultNonCaptureDevice => GetDefaultDevice(false);
 
         /// <summary>
         /// The current audio driver in use.
@@ -219,6 +224,24 @@
                     Native.SDL_MixAudioFormat(destinationPointer, sourcePointer, format, (uint)source.Length, volume);
                 }
             }
+        }
+
+        private static IReadOnlyList<(string name, AudioSpecification spec)> GetDevices(bool isCapture) => Native.GetIndexedCollection(i =>
+        {
+            var name = Native.Utf8ToString(Native.SDL_GetAudioDeviceName(i, Native.BoolToInt(isCapture)))!;
+            Native.SDL_AudioSpec spec;
+            _ = Native.CheckError(Native.SDL_GetAudioDeviceSpec(i, Native.BoolToInt(isCapture), &spec));
+            return (name, new AudioSpecification(spec));
+        }, () => Native.SDL_GetNumAudioDevices(Native.BoolToInt(isCapture)));
+
+        private static (string name, AudioSpecification spec) GetDefaultDevice(bool isCapture)
+        {
+            byte* nameBuffer = null;
+            Native.SDL_AudioSpec spec;
+
+            _ = Native.CheckError(Native.SDL_GetDefaultAudioInfo(&nameBuffer, &spec, Native.BoolToInt(isCapture)));
+            using var utf8Name = new Utf8String(nameBuffer);
+            return (utf8Name.ToString()!, new AudioSpecification(spec));
         }
 
         internal static void DispatchEvent(Native.SDL_Event e)
