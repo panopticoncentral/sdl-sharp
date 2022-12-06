@@ -8,16 +8,16 @@
         /// <summary>
         /// The audio device is stopped.
         /// </summary>
-        Stopped,
+        Stopped = Native.SDL_AudioStatus.SDL_AUDIO_STOPPED,
 
         /// <summary>
         /// The audio device is playing.
         /// </summary>
-        Playing,
+        Playing = Native.SDL_AudioStatus.SDL_AUDIO_PLAYING,
 
         /// <summary>
         /// The audio device is paused;
         /// </summary>
-        Paused
+        Paused = Native.SDL_AudioStatus.SDL_AUDIO_PAUSED
     }
 }

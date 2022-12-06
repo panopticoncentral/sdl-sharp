@@ -377,27 +377,32 @@ namespace SdlSharp
         public static extern int SDL_GetDefaultAudioInfo(byte** name, SDL_AudioSpec* spec, int iscapture);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint SDL_OpenAudioDevice(Utf8String device, bool iscapture, in SDL_AudioSpec desired, out SDL_AudioSpec obtained, AudioAllowChange allowed_changes);
+        public static extern SDL_AudioDeviceID SDL_OpenAudioDevice(byte* device, bool iscapture, SDL_AudioSpec* desired, SDL_AudioSpec* obtained, int allowed_changes);
 
-        // SDL_AudioStatus is covered by AudioStatus.cs
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern AudioStatus SDL_GetAudioStatus();
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern AudioStatus SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_PauseAudio(bool pause_on);
+        public enum SDL_AudioStatus
+        {
+            SDL_AUDIO_STOPPED = 0,
+            SDL_AUDIO_PLAYING,
+            SDL_AUDIO_PAUSED
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_PauseAudioDevice(SDL_AudioDeviceID dev, bool pause_on);
+        public static extern SDL_AudioStatus SDL_GetAudioStatus();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nint SDL_LoadWAV_RW(SDL_RWops* src, bool freesrc, out SDL_AudioSpec spec, out byte* audio_buf, out uint audio_len);
+        public static extern SDL_AudioStatus SDL_GetAudioDeviceStatus(SDL_AudioDeviceID dev);
 
-        public static nint SDL_LoadWAV(string file, out SDL_AudioSpec spec, out byte* audio_buf, out uint audio_len) =>
-                SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"), true, out spec, out audio_buf, out audio_len);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_PauseAudio(int pause_on);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_PauseAudioDevice(SDL_AudioDeviceID dev, int pause_on);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_AudioSpec* SDL_LoadWAV_RW(SDL_RWops* src, int freesrc, SDL_AudioSpec* spec, byte** audio_buf, uint* audio_len);
+
+        public static SDL_AudioSpec* SDL_LoadWAV(string file, SDL_AudioSpec* spec, byte** audio_buf, uint* audio_len) =>
+                SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"), BoolToInt(true), spec, audio_buf, audio_len);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_FreeWAV(byte* audio_buf);
