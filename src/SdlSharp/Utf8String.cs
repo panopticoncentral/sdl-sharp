@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace SdlSharp
+﻿namespace SdlSharp
 {
     /// <summary>
     /// A UTF-8 string from native string.
@@ -31,24 +29,6 @@ namespace SdlSharp
         /// </summary>
         /// <param name="s">The regular string.</param>
         /// <returns>The new UTF-8 string.</returns>
-        public static Utf8String ToUtf8String(string? s)
-        {
-            byte* pointer = null;
-
-            if (s != null)
-            {
-                var terminatedString = s + '\0';
-                var byteCount = Encoding.UTF8.GetByteCount(terminatedString);
-
-                pointer = (byte*)Native.SDL_malloc((nuint)byteCount);
-
-                fixed (char* terminatedStringBuffer = terminatedString)
-                {
-                    _ = Encoding.UTF8.GetBytes(terminatedStringBuffer, terminatedString.Length, pointer, byteCount);
-                }
-            }
-
-            return new Utf8String(pointer);
-        }
+        public static Utf8String ToUtf8String(string? s) => new(Native.StringToUtf8(s));
     }
 }

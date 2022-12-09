@@ -19,7 +19,7 @@ namespace SdlSharp.Sound
         /// The status of the audio device.
         /// </summary>
         public AudioStatus Status =>
-            Native.SDL_GetAudioDeviceStatus(_deviceId);
+            (AudioStatus)Native.SDL_GetAudioDeviceStatus(_deviceId);
 
         /// <summary>
         /// The size of the queued audio.
@@ -42,13 +42,13 @@ namespace SdlSharp.Sound
         ///  Pauses the audio device.
         /// </summary>
         public void Pause() =>
-            Native.SDL_PauseAudioDevice(_deviceId, true);
+            Native.SDL_PauseAudioDevice(_deviceId, Native.BoolToInt(true));
 
         /// <summary>
         /// Unpauses the audio device.
         /// </summary>
         public void Unpause() =>
-            Native.SDL_PauseAudioDevice(_deviceId, false);
+            Native.SDL_PauseAudioDevice(_deviceId, Native.BoolToInt(false));
 
         /// <summary>
         /// Queues audio for playback.

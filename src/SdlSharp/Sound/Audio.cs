@@ -64,25 +64,8 @@
         /// <param name="callback">A data callback.</param>
         /// <param name="obtained">The actual specifications for the device.</param>
         /// <returns>The audio device that was opened.</returns>
-        public static AudioDevice Open(int frequency, AudioFormat format, byte channels, ushort samples, AudioCallback? callback, out AudioSpecification obtained)
-        {
-            var desiredNativeSpec = new Native.SDL_AudioSpec(
-                frequency,
-                format.Format,
-                channels,
-                samples,
-                callback != null ? (delegate* unmanaged[Cdecl]<nint, byte*, int, void>)&AudioDevice.AudioCallback : null,
-                callback != null ? callback.GetHashCode() : 0);
-
-            Native.SDL_AudioSpec obtainedNativeSpec;
-            _ = Native.CheckError(Native.SDL_OpenAudio(&desiredNativeSpec, &obtainedNativeSpec));
-
-            var audioDevice = new AudioDevice(new(1), callback);
-
-            obtained = new AudioSpecification(obtainedNativeSpec);
-
-            return audioDevice;
-        }
+        public static AudioDevice Open(int frequency, AudioFormat format, byte channels, ushort samples, AudioCallback? callback, out AudioSpecification obtained) =>
+            Open(null, false, frequency, format, channels, samples, callback, out obtained, AudioAllowChange.Any);
 
         /// <summary>
         /// Opens an audio device.
@@ -99,7 +82,7 @@
         /// <returns>The audio device that was opened.</returns>
         public static AudioDevice Open(string? device, bool isCapture, int frequency, AudioFormat format, byte channels, ushort samples, AudioCallback? callback, out AudioSpecification obtained, AudioAllowChange allowedChanges)
         {
-            using var utf8Device = Utf8String.ToUtf8String(device);
+            var utf8Device = Native.StringToUtf8(device);
 
             var desiredNativeSpec = new Native.SDL_AudioSpec(
                 frequency,
@@ -109,15 +92,18 @@
                 callback != null ? (delegate* unmanaged[Cdecl]<nint, byte*, int, void>)&AudioDevice.AudioCallback : null,
                 callback != null ? callback.GetHashCode() : 0);
 
-            var audioDeviceId = Native.CheckErrorZero(Native.SDL_OpenAudioDevice(
+            Native.SDL_AudioSpec obtainedNativeSpec;
+
+            var audioDeviceId = Native.CheckValid(Native.SDL_OpenAudioDevice(
                 utf8Device,
-                isCapture,
-                in desiredNativeSpec,
-                out var obtainedNativeSpec,
-                allowedChanges));
+                Native.BoolToInt(isCapture),
+                &desiredNativeSpec,
+                &obtainedNativeSpec,
+                (int)allowedChanges));
 
-            var audioDevice = new AudioDevice(new(audioDeviceId), callback);
+            Native.SDL_free(utf8Device);
 
+            var audioDevice = new AudioDevice(audioDeviceId, callback);
             obtained = new AudioSpecification(obtainedNativeSpec);
 
             return audioDevice;
@@ -132,7 +118,11 @@
         /// <returns>The loaded audio data.</returns>
         public static WavData LoadWav(RWOps rwops, bool shouldFree, out AudioSpecification spec)
         {
-            _ = Native.CheckPointer(Native.SDL_LoadWAV_RW(rwops.Native, shouldFree, out var specNative, out var buffer, out var bufferSize));
+            Native.SDL_AudioSpec specNative;
+            byte* buffer;
+            uint bufferSize;
+
+            _ = Native.CheckPointer(Native.SDL_LoadWAV_RW(rwops.Native, Native.BoolToInt(shouldFree), &specNative, &buffer, &bufferSize));
             spec = new AudioSpecification(specNative);
             return new WavData(buffer, bufferSize);
         }
@@ -145,7 +135,11 @@
         /// <returns>The loaded audio data.</returns>
         public static WavData LoadWav(string filename, out AudioSpecification spec)
         {
-            _ = Native.CheckPointer(Native.SDL_LoadWAV(filename, out var specNative, out var buffer, out var bufferSize));
+            Native.SDL_AudioSpec specNative;
+            byte* buffer;
+            uint bufferSize;
+
+            _ = Native.CheckPointer(Native.SDL_LoadWAV(filename, &specNative, &buffer, &bufferSize));
             spec = new AudioSpecification(specNative);
             return new WavData(buffer, bufferSize);
         }
@@ -163,7 +157,8 @@
         /// <returns>The converted audio.</returns>
         public static Span<byte> Convert(Span<byte> source, AudioFormat sourceFormat, byte sourceChannels, int sourceRate, AudioFormat destinationFormat, byte destinationChannels, int destinationRate)
         {
-            if (!Native.CheckErrorBool(Native.SDL_BuildAudioCVT(out var audioConvert, sourceFormat, sourceChannels, sourceRate, destinationFormat, destinationChannels, destinationRate)))
+            Native.SDL_AudioCVT audioConvert;
+            if (!Native.CheckErrorBool(Native.SDL_BuildAudioCVT(&audioConvert, sourceFormat.Format, sourceChannels, sourceRate, destinationFormat.Format, destinationChannels, destinationRate)))
             {
                 return source;
             }
@@ -175,7 +170,7 @@
             {
                 audioConvert.buf = bufferPointer;
                 audioConvert.len = source.Length;
-                _ = Native.CheckError(Native.SDL_ConvertAudio(ref audioConvert));
+                _ = Native.CheckError(Native.SDL_ConvertAudio(&audioConvert));
             }
 
             return new Span<byte>(buffer, 0, audioConvert.len_cvt);
@@ -221,7 +216,7 @@
             {
                 fixed (byte* destinationPointer = destination)
                 {
-                    Native.SDL_MixAudioFormat(destinationPointer, sourcePointer, format, (uint)source.Length, volume);
+                    Native.SDL_MixAudioFormat(destinationPointer, sourcePointer, format.Format, (uint)source.Length, volume);
                 }
             }
         }

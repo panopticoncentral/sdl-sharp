@@ -24,7 +24,7 @@
         /// <param name="destinationRate">The destination audio bitrate.</param>
         /// <returns>The new audio stream.</returns>
         public static AudioStream Create(AudioFormat sourceFormat, byte sourceChannels, int sourceRate, AudioFormat destinationFormat, byte destinationChannels, int destinationRate) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_NewAudioStream(sourceFormat, sourceChannels, sourceRate, destinationFormat, destinationChannels, destinationRate));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_NewAudioStream(sourceFormat.Format, sourceChannels, sourceRate, destinationFormat.Format, destinationChannels, destinationRate));
 
         /// <summary>
         /// Puts data into the stream.

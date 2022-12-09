@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using System.Reflection;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
 using SdlSharp.Graphics;
@@ -111,6 +109,22 @@ namespace SdlSharp
         public static T CheckNotNull<T>(T? value) where T : class => value ?? throw new SdlException();
 
         /// <summary>
+        /// A validatable native value.
+        /// </summary>
+        public interface INativeValidatable
+        {
+            bool IsValid();
+        }
+
+        /// <summary>
+        /// Checks that a validatable value is valid.
+        /// </summary>
+        /// <typeparam name="T">The type to validate.</typeparam>
+        /// <param name="value">The value to validate.</param>
+        /// <returns>The value if valid.</returns>
+        public static T CheckValid<T>(T value) where T : struct, INativeValidatable => value.IsValid() ? value : throw new SdlException();
+
+        /// <summary>
         /// Converts a pixel pointer to a span.
         /// </summary>
         /// <typeparam name="T">The type of the pixel.</typeparam>
@@ -148,6 +162,31 @@ namespace SdlSharp
             }
 
             return utf8 == null ? null : Encoding.UTF8.GetString(utf8, StringLength(utf8));
+        }
+
+        /// <summary>
+        /// Convert a regular string to a UTF-8 string.
+        /// </summary>
+        /// <param name="s">The regular string.</param>
+        /// <returns>The new UTF-8 string.</returns>
+        public static byte* StringToUtf8(string? s)
+        {
+            byte* pointer = null;
+
+            if (s != null)
+            {
+                var terminatedString = s + '\0';
+                var byteCount = Encoding.UTF8.GetByteCount(terminatedString);
+
+                pointer = (byte*)SDL_malloc((nuint)byteCount);
+
+                fixed (char* terminatedStringBuffer = terminatedString)
+                {
+                    _ = Encoding.UTF8.GetBytes(terminatedStringBuffer, terminatedString.Length, pointer, byteCount);
+                }
+            }
+
+            return pointer;
         }
 
         /// <summary>
@@ -362,7 +401,10 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_OpenAudio(SDL_AudioSpec* desired, SDL_AudioSpec* obtained);
 
-        public readonly record struct SDL_AudioDeviceID(uint Id);
+        public readonly record struct SDL_AudioDeviceID(uint Id) : INativeValidatable
+        {
+            public bool IsValid() => Id > 0;
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumAudioDevices(int iscapture);
@@ -377,7 +419,7 @@ namespace SdlSharp
         public static extern int SDL_GetDefaultAudioInfo(byte** name, SDL_AudioSpec* spec, int iscapture);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_AudioDeviceID SDL_OpenAudioDevice(byte* device, bool iscapture, SDL_AudioSpec* desired, SDL_AudioSpec* obtained, int allowed_changes);
+        public static extern SDL_AudioDeviceID SDL_OpenAudioDevice(byte* device, int iscapture, SDL_AudioSpec* desired, SDL_AudioSpec* obtained, int allowed_changes);
 
         public enum SDL_AudioStatus
         {
@@ -408,10 +450,10 @@ namespace SdlSharp
         public static extern void SDL_FreeWAV(byte* audio_buf);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_BuildAudioCVT(out SDL_AudioCVT cvt, AudioFormat src_format, byte src_channels, int src_rate, AudioFormat dst_format, byte dst_channels, int dst_rate);
+        public static extern int SDL_BuildAudioCVT(SDL_AudioCVT* cvt, SDL_AudioFormat src_format, byte src_channels, int src_rate, SDL_AudioFormat dst_format, byte dst_channels, int dst_rate);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_ConvertAudio(ref SDL_AudioCVT cvt);
+        public static extern int SDL_ConvertAudio(SDL_AudioCVT* cvt);
 
 #pragma warning disable CA1711 // Identifiers should not have incorrect suffix
         // This is the native name.
@@ -421,13 +463,13 @@ namespace SdlSharp
 #pragma warning restore CA1711 // Identifiers should not have incorrect suffix
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_AudioStream* SDL_NewAudioStream(AudioFormat src_format, byte src_channels, int src_rate, AudioFormat dst_format, byte dst_channels, int dst_rate);
+        public static extern SDL_AudioStream* SDL_NewAudioStream(SDL_AudioFormat src_format, byte src_channels, int src_rate, SDL_AudioFormat dst_format, byte dst_channels, int dst_rate);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_AudioStreamPut(SDL_AudioStream* stream, byte* buf, int len);
+        public static extern int SDL_AudioStreamPut(SDL_AudioStream* stream, void* buf, int len);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_AudioStreamGet(SDL_AudioStream* stream, byte* buf, int len);
+        public static extern int SDL_AudioStreamGet(SDL_AudioStream* stream, void* buf, int len);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_AudioStreamAvailable(SDL_AudioStream* stream);
@@ -445,13 +487,13 @@ namespace SdlSharp
         public static extern void SDL_MixAudio(byte* dst, byte* src, uint len, int volume);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_MixAudioFormat(byte* dst, byte* src, AudioFormat format, uint len, int volume);
+        public static extern void SDL_MixAudioFormat(byte* dst, byte* src, SDL_AudioFormat format, uint len, int volume);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_QueueAudio(SDL_AudioDeviceID dev, byte* data, uint len);
+        public static extern int SDL_QueueAudio(SDL_AudioDeviceID dev, void* data, uint len);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint SDL_DequeueAudio(SDL_AudioDeviceID dev, byte* data, uint len);
+        public static extern uint SDL_DequeueAudio(SDL_AudioDeviceID dev, void* data, uint len);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_GetQueuedAudioSize(SDL_AudioDeviceID dev);
