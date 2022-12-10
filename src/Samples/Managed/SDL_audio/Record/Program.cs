@@ -1,95 +1,70 @@
 ﻿using SdlSharp;
+using SdlSharp.Sound;
 
-_ = Native.CheckError(Native.SDL_Init(Native.SDL_INIT_AUDIO));
+using var application = new Application(Subsystems.Audio);
 
-unsafe
+byte[]? recordingBuffer = null;
+var currentOffset = 0;
+
+var quit = false;
+while (!quit)
 {
-    byte[]? recordingBuffer = null;
-    var currentOffset = 0;
+    var command = Console.ReadLine()?.Trim();
 
-    var quit = false;
-    while (!quit)
+    switch (command)
     {
-        var command = Console.ReadLine()?.Trim();
+        case "g":
+            {
+                var (_, requestedSpec) = Audio.DefaultCaptureDevice;
 
-        switch (command)
-        {
-            case "g":
+                using var device = Audio.Open(null, true, requestedSpec, out var actualSpec, AudioAllowChange.Any);
+
+                const int RecordingSeconds = 5;
+                var bytesPerSecond = actualSpec.Frequency * actualSpec.Channels * (actualSpec.Format.Bitsize / 8);
+                recordingBuffer = new byte[RecordingSeconds * bytesPerSecond];
+                currentOffset = 0;
+
+                void Dequeue()
                 {
-                    byte* name;
-                    Native.SDL_AudioSpec requestedSpec;
-                    Native.SDL_AudioSpec actualSpec;
+                    var bytesDequeued = device.DequeueAudio(new Span<byte>(recordingBuffer, currentOffset, recordingBuffer.Length - currentOffset));
+                    currentOffset += (int)bytesDequeued;
+                }
 
-                    _ = Native.CheckError(Native.SDL_GetDefaultAudioInfo(&name, &requestedSpec, Native.BoolToInt(true)));
-                    Native.SDL_free(name);
-
-                    var deviceId = Native.CheckValid(Native.SDL_OpenAudioDevice(null, Native.BoolToInt(true), &requestedSpec, &actualSpec, (int)Native.SDL_AUDIO_ALLOW_ANY_CHANGE));
-
-                    const int RecordingSeconds = 5;
-                    var bytesPerSecond = actualSpec.freq * actualSpec.channels * (Native.SDL_AUDIO_BITSIZE(actualSpec.format) / 8);
-                    recordingBuffer = new byte[RecordingSeconds * bytesPerSecond];
-                    currentOffset = 0;
-
-                    void Dequeue()
-                    {
-                        fixed (byte* ptr = recordingBuffer)
-                        {
-                            var bytesDequeued = Native.SDL_DequeueAudio(deviceId, ptr + currentOffset, (uint)(recordingBuffer.Length - currentOffset));
-                            currentOffset += (int)bytesDequeued;
-                        }
-                    }
-
-                    Console.WriteLine("Recording...");
-                    Native.SDL_PauseAudioDevice(deviceId, Native.BoolToInt(false));
-                    for (var i = 0; i < RecordingSeconds * 2; i++)
-                    {
-                        Thread.Sleep(TimeSpan.FromSeconds(0.5));
-                        Dequeue();
-                    }
-                    Native.SDL_PauseAudioDevice(deviceId, Native.BoolToInt(true));
+                Console.WriteLine("Recording...");
+                device.Unpause();
+                for (var i = 0; i < RecordingSeconds * 2; i++)
+                {
                     Thread.Sleep(TimeSpan.FromSeconds(0.5));
                     Dequeue();
-                    Console.WriteLine("Stopped recording...");
-
-                    Native.SDL_CloseAudioDevice(deviceId);
                 }
-                break;
+                device.Pause();
+                Thread.Sleep(TimeSpan.FromSeconds(0.5));
+                Dequeue();
+                Console.WriteLine("Stopped recording...");
+            }
+            break;
 
-            case "p":
+        case "p":
+            {
+                var (_, requestedSpec) = Audio.DefaultNonCaptureDevice;
+
+                using var device = Audio.Open(null, false, requestedSpec, out var actualSpec, AudioAllowChange.Any);
+                device.QueueAudio(new Span<byte>(recordingBuffer, 0, currentOffset));
+
+                Console.WriteLine("Playing...");
+                device.Unpause();
+
+                while (device.QueuedAudioSize > 0)
                 {
-                    byte* name;
-                    Native.SDL_AudioSpec requestedSpec;
-                    Native.SDL_AudioSpec actualSpec;
-
-                    _ = Native.CheckError(Native.SDL_GetDefaultAudioInfo(&name, &requestedSpec, Native.BoolToInt(false)));
-                    Native.SDL_free(name);
-
-                    var deviceId = Native.CheckValid(Native.SDL_OpenAudioDevice(null, Native.BoolToInt(false), &requestedSpec, &actualSpec, (int)Native.SDL_AUDIO_ALLOW_ANY_CHANGE));
-
-                    fixed (byte* ptr = recordingBuffer)
-                    {
-                        _ = Native.CheckError(Native.SDL_QueueAudio(deviceId, ptr, (uint)currentOffset));
-                    }
-
-                    Console.WriteLine("Playing...");
-                    Native.SDL_PauseAudioDevice(deviceId, Native.BoolToInt(false));
-
-                    while (Native.SDL_GetQueuedAudioSize(deviceId) > 0)
-                    {
-                        Thread.Sleep(TimeSpan.FromSeconds(0.5));
-                    }
-
-                    Console.WriteLine("Stopped playing...");
-
-                    Native.SDL_CloseAudioDevice(deviceId);
+                    Thread.Sleep(TimeSpan.FromSeconds(0.5));
                 }
-                break;
 
-            case "q":
-                quit = true;
-                break;
-        }
+                Console.WriteLine("Stopped playing...");
+            }
+            break;
+
+        case "q":
+            quit = true;
+            break;
     }
 }
-
-Native.SDL_Quit();

@@ -1,43 +1,30 @@
 ﻿using SdlSharp;
+using SdlSharp.Sound;
 
-_ = Native.CheckError(Native.SDL_Init(Native.SDL_INIT_AUDIO));
+using var application = new Application(Subsystems.Audio);
 
-unsafe
+var buffer = Audio.LoadWav("Fanfare60.wav", out var wavSpec);
+
+using var device = Audio.Open(null, false, wavSpec, out var deviceSpec, AudioAllowChange.None);
+device.QueueAudio(buffer);
+
+var quit = false;
+while (!quit)
 {
-    Native.SDL_AudioSpec wavSpec;
-    byte* buffer;
-    uint length;
-    _ = Native.CheckPointer(Native.SDL_LoadWAV("Fanfare60.wav", &wavSpec, &buffer, &length));
+    var command = Console.ReadLine()?.Trim();
 
-    Native.SDL_AudioSpec deviceSpec;
-    var deviceId = Native.CheckValid(Native.SDL_OpenAudioDevice(null, Native.BoolToInt(false), &wavSpec, &deviceSpec, 0));
-
-    _ = Native.CheckError(Native.SDL_QueueAudio(deviceId, buffer, length));
-
-    var quit = false;
-    while (!quit)
+    switch (command)
     {
-        var command = Console.ReadLine()?.Trim();
+        case "g":
+            device.Unpause();
+            break;
 
-        switch (command)
-        {
-            case "g":
-                Native.SDL_PauseAudioDevice(deviceId, Native.BoolToInt(false));
-                break;
+        case "p":
+            device.Pause();
+            break;
 
-            case "p":
-                Native.SDL_PauseAudioDevice(deviceId, Native.BoolToInt(true));
-                break;
-
-            case "q":
-                quit = true;
-                break;
-        }
+        case "q":
+            quit = true;
+            break;
     }
-
-    Native.SDL_CloseAudioDevice(deviceId);
-
-    Native.SDL_FreeWAV(buffer);
 }
-
-Native.SDL_Quit();

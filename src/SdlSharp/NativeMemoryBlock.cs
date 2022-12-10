@@ -68,5 +68,11 @@
                 Size = 0;
             }
         }
+
+        /// <summary>
+        /// Converts a native memory block to a byte span.
+        /// </summary>
+        /// <param name="block">The memory block.</param>
+        public static implicit operator Span<byte>(NativeMemoryBlock block) => block.AsSpan();
     }
 }

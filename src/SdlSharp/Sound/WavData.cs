@@ -3,7 +3,7 @@
     /// <summary>
     /// A WAV audio file.
     /// </summary>
-    public sealed unsafe class WavData : IDisposable
+    public unsafe struct WavData : IDisposable
     {
         private byte* _data;
         private uint _length;
@@ -31,5 +31,11 @@
                 _length = 0;
             }
         }
+
+        /// <summary>
+        /// Converts a WavData to a span of bytes.
+        /// </summary>
+        /// <param name="wavData">The wav file data.</param>
+        public static implicit operator Span<byte>(WavData wavData) => wavData.Data;
     }
 }

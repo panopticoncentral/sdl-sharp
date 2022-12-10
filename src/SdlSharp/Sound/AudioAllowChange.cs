@@ -4,36 +4,36 @@
     /// Indicates what aspects of an audio format can be changed when opening an audio device.
     /// </summary>
     [Flags]
-    public enum AudioAllowChange
+    public enum AudioAllowChange : uint
     {
         /// <summary>
         /// No changes allowed.
         /// </summary>
-        None = 0x0,
+        None = 0,
 
         /// <summary>
         /// The frequency can be changed.
         /// </summary>
-        Frequency = 0x1,
+        Frequency = Native.SDL_AUDIO_ALLOW_FREQUENCY_CHANGE,
 
         /// <summary>
         /// The format can be changed.
         /// </summary>
-        Format = 0x2,
+        Format = Native.SDL_AUDIO_ALLOW_FORMAT_CHANGE,
 
         /// <summary>
         /// The number of channels can be changed.
         /// </summary>
-        Channels = 0x4,
+        Channels = Native.SDL_AUDIO_ALLOW_CHANNELS_CHANGE,
 
         /// <summary>
         /// The samples can be changed.
         /// </summary>
-        Samples = 0x8,
+        Samples = Native.SDL_AUDIO_ALLOW_SAMPLES_CHANGE,
 
         /// <summary>
         /// Any aspect can be changed.
         /// </summary>
-        Any = Frequency | Format | Channels | Samples
+        Any = Native.SDL_AUDIO_ALLOW_ANY_CHANGE
     }
 }

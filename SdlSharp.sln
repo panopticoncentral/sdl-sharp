@@ -72,6 +72,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playback", "src\Samples\Man
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Record", "src\Samples\Managed\SDL_audio\Record\Record.csproj", "{1FF98EF5-4E3A-4534-BC1C-0A81515AEC20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecordCallback", "src\Samples\Native\SDL_audio\RecordCallback\RecordCallback.csproj", "{6B6BCD75-B65B-496C-B088-0AE3C3256B7C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -174,6 +176,10 @@ Global
 		{1FF98EF5-4E3A-4534-BC1C-0A81515AEC20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FF98EF5-4E3A-4534-BC1C-0A81515AEC20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FF98EF5-4E3A-4534-BC1C-0A81515AEC20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B6BCD75-B65B-496C-B088-0AE3C3256B7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B6BCD75-B65B-496C-B088-0AE3C3256B7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B6BCD75-B65B-496C-B088-0AE3C3256B7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B6BCD75-B65B-496C-B088-0AE3C3256B7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -207,6 +213,7 @@ Global
 		{12A87A1E-D3C6-40EA-8287-9A6EBAD7B5A8} = {877B95CA-42A2-4396-9A54-606A2B0F459D}
 		{725DF23C-48FF-44B3-B2C8-2C50CB8F68B4} = {877B95CA-42A2-4396-9A54-606A2B0F459D}
 		{1FF98EF5-4E3A-4534-BC1C-0A81515AEC20} = {877B95CA-42A2-4396-9A54-606A2B0F459D}
+		{6B6BCD75-B65B-496C-B088-0AE3C3256B7C} = {7B5E753D-AAB9-4B9A-A0A0-36F8539019BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD118769-C6C1-4143-8572-DBB43A8E9A83}

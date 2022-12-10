@@ -5,9 +5,6 @@
     /// </summary>
     public static unsafe class Audio
     {
-        //private static ItemCollection<string>? s_captureDevices;
-        //private static ItemCollection<string>? s_nonCaptureDevices;
-
         /// <summary>
         /// The maximum volume that can be used when mixing audio.
         /// </summary>
@@ -53,42 +50,56 @@
         /// </summary>
         public static event EventHandler<AudioDeviceRemovedEventArgs>? Removed;
 
+        /// <summary>
+        /// Opens an audio device.
+        /// </summary>
+        /// <param name="desired">The desired audio specification.</param>
+        /// <param name="callback">A data callback.</param>
+        /// <param name="obtained">The actual specifications for the device.</param>
+        /// <returns>The audio device that was opened.</returns>
+        public static AudioDevice Open(AudioSpecification desired, AudioCallback? callback, out AudioSpecification obtained) =>
+            Open(null, false, desired, callback, out obtained, AudioAllowChange.Any);
 
         /// <summary>
         /// Opens an audio device.
         /// </summary>
-        /// <param name="frequency">The desired frequency.</param>
-        /// <param name="format">The desired format.</param>
-        /// <param name="channels">The desired number of channels.</param>
-        /// <param name="samples">The desired number of samples.</param>
-        /// <param name="callback">A data callback.</param>
+        /// <param name="desired">The desired audio specification.</param>
         /// <param name="obtained">The actual specifications for the device.</param>
         /// <returns>The audio device that was opened.</returns>
-        public static AudioDevice Open(int frequency, AudioFormat format, byte channels, ushort samples, AudioCallback? callback, out AudioSpecification obtained) =>
-            Open(null, false, frequency, format, channels, samples, callback, out obtained, AudioAllowChange.Any);
+        public static AudioDevice Open(AudioSpecification desired, out AudioSpecification obtained) =>
+            Open(null, false, desired, null, out obtained, AudioAllowChange.Any);
 
         /// <summary>
         /// Opens an audio device.
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="isCapture">Whether the device is a capture device.</param>
-        /// <param name="frequency">The desired frequency.</param>
-        /// <param name="format">The desired format.</param>
-        /// <param name="channels">The desired number of channels.</param>
-        /// <param name="samples">The desired number of samples.</param>
+        /// <param name="desired">The desired audio specification.</param>
+        /// <param name="obtained">The actual specifications for the device.</param>
+        /// <param name="allowedChanges">What changes can be made between the desired and actual specifications.</param>
+        /// <returns>The audio device that was opened.</returns>
+        public static AudioDevice Open(string? device, bool isCapture, AudioSpecification desired, out AudioSpecification obtained, AudioAllowChange allowedChanges) =>
+            Open(device, isCapture, desired, null, out obtained, allowedChanges);
+
+        /// <summary>
+        /// Opens an audio device.
+        /// </summary>
+        /// <param name="device">The device.</param>
+        /// <param name="isCapture">Whether the device is a capture device.</param>
+        /// <param name="desired">The desired audio specification.</param>
         /// <param name="callback">A data callback.</param>
         /// <param name="obtained">The actual specifications for the device.</param>
         /// <param name="allowedChanges">What changes can be made between the desired and actual specifications.</param>
         /// <returns>The audio device that was opened.</returns>
-        public static AudioDevice Open(string? device, bool isCapture, int frequency, AudioFormat format, byte channels, ushort samples, AudioCallback? callback, out AudioSpecification obtained, AudioAllowChange allowedChanges)
+        public static AudioDevice Open(string? device, bool isCapture, AudioSpecification desired, AudioCallback? callback, out AudioSpecification obtained, AudioAllowChange allowedChanges)
         {
             var utf8Device = Native.StringToUtf8(device);
 
             var desiredNativeSpec = new Native.SDL_AudioSpec(
-                frequency,
-                format.Format,
-                channels,
-                samples,
+                desired.Frequency,
+                desired.Format.Format,
+                desired.Channels,
+                desired.Samples,
                 callback != null ? (delegate* unmanaged[Cdecl]<nint, byte*, int, void>)&AudioDevice.AudioCallback : null,
                 callback != null ? callback.GetHashCode() : 0);
 
