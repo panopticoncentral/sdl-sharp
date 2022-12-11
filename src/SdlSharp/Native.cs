@@ -311,8 +311,6 @@ namespace SdlSharp
             | SDL_AUDIO_ALLOW_CHANNELS_CHANGE
             | SDL_AUDIO_ALLOW_SAMPLES_CHANGE;
 
-        public delegate void SDL_AudioCallback(nint userdata, byte* stream, int len);
-
         public readonly struct SDL_AudioSpec
         {
             public readonly int freq { get; }
