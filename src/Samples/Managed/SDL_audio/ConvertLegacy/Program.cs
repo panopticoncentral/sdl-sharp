@@ -9,10 +9,15 @@ namespace Samples
         {
             using var application = new Application(Subsystems.Audio);
 
-            var buffer = Audio.LoadWav("Fanfare60.wav", out var wavSpec);
+            var wavBuffer = Audio.LoadWav("Fanfare60.wav", out var wavSpec);
 
-            using var device = Audio.Open(null, false, wavSpec, out var deviceSpec, AudioAllowChange.None);
-            device.QueueAudio(buffer);
+            using var device = Audio.Open(null, false, wavSpec, out var deviceSpec, AudioAllowChange.Any);
+
+            var resultBuffer = Audio.Convert(wavBuffer, wavSpec.Format, wavSpec.Channels, wavSpec.Frequency, deviceSpec.Format, deviceSpec.Channels, deviceSpec.Frequency);
+
+            wavBuffer.Dispose();
+
+            device.QueueAudio(resultBuffer);
 
             var quit = false;
             while (!quit)

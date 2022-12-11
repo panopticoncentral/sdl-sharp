@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
-using SdlSharp;
+﻿using SdlSharp;
 using SdlSharp.Sound;
 
 namespace Samples
@@ -24,7 +21,7 @@ namespace Samples
             s_currentOffset += Math.Min(buffer.Length, s_currentLength - s_currentOffset);
         }
 
-        public static unsafe void Main()
+        public static void Main()
         {
             using var application = new Application(Subsystems.Audio);
 

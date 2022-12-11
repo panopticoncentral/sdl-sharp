@@ -5,11 +5,12 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Samples</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyName>ManagedListAudioDrivers</AssemblyName>
+    <AssemblyName>NativeConvertLegacy</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <!-- TODO: Remove when error is fixed. -->
     <NoWarn>CA1852</NoWarn>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +19,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\SdlSharp\SdlSharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Fanfare60.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

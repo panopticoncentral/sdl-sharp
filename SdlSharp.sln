@@ -76,6 +76,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecordCallback", "src\Sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecordCallback", "src\Samples\Managed\SDL_audio\RecordCallback\RecordCallback.csproj", "{78CC2656-7C91-4F99-951A-0212B89986D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertLegacy", "src\Samples\Native\SDL_audio\ConvertLegacy\ConvertLegacy.csproj", "{3FEC1047-29EE-4E03-934F-BB5EB48F3578}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertLegacy", "src\Samples\Managed\SDL_audio\ConvertLegacy\ConvertLegacy.csproj", "{58F28E29-CDD3-4513-9BC4-9222185461B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -186,6 +190,14 @@ Global
 		{78CC2656-7C91-4F99-951A-0212B89986D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78CC2656-7C91-4F99-951A-0212B89986D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78CC2656-7C91-4F99-951A-0212B89986D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FEC1047-29EE-4E03-934F-BB5EB48F3578}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FEC1047-29EE-4E03-934F-BB5EB48F3578}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FEC1047-29EE-4E03-934F-BB5EB48F3578}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FEC1047-29EE-4E03-934F-BB5EB48F3578}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58F28E29-CDD3-4513-9BC4-9222185461B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58F28E29-CDD3-4513-9BC4-9222185461B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58F28E29-CDD3-4513-9BC4-9222185461B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58F28E29-CDD3-4513-9BC4-9222185461B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -221,6 +233,8 @@ Global
 		{1FF98EF5-4E3A-4534-BC1C-0A81515AEC20} = {877B95CA-42A2-4396-9A54-606A2B0F459D}
 		{6B6BCD75-B65B-496C-B088-0AE3C3256B7C} = {7B5E753D-AAB9-4B9A-A0A0-36F8539019BF}
 		{78CC2656-7C91-4F99-951A-0212B89986D4} = {877B95CA-42A2-4396-9A54-606A2B0F459D}
+		{3FEC1047-29EE-4E03-934F-BB5EB48F3578} = {7B5E753D-AAB9-4B9A-A0A0-36F8539019BF}
+		{58F28E29-CDD3-4513-9BC4-9222185461B8} = {877B95CA-42A2-4396-9A54-606A2B0F459D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AD118769-C6C1-4143-8572-DBB43A8E9A83}

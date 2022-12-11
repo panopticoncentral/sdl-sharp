@@ -10,7 +10,6 @@
     <Nullable>enable</Nullable>
     <!-- TODO: Remove when error is fixed. -->
     <NoWarn>CA1852</NoWarn>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

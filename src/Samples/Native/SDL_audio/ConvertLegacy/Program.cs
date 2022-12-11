@@ -14,9 +14,30 @@ namespace Samples
             _ = Native.CheckPointer(Native.SDL_LoadWAV("Fanfare60.wav", &wavSpec, &buffer, &length));
 
             Native.SDL_AudioSpec deviceSpec;
-            var deviceId = Native.CheckValid(Native.SDL_OpenAudioDevice(null, Native.BoolToInt(false), &wavSpec, &deviceSpec, 0));
+            var deviceId = Native.CheckValid(Native.SDL_OpenAudioDevice(null, Native.BoolToInt(false), &wavSpec, &deviceSpec, (int)Native.SDL_AUDIO_ALLOW_ANY_CHANGE));
 
-            _ = Native.CheckError(Native.SDL_QueueAudio(deviceId, buffer, length));
+            Native.SDL_AudioCVT audioConvert;
+            if (!Native.CheckErrorBool(Native.SDL_BuildAudioCVT(&audioConvert, wavSpec.format, wavSpec.channels, wavSpec.freq, deviceSpec.format, deviceSpec.channels, deviceSpec.freq)))
+            {
+                Console.WriteLine("Failed to convert!");
+                return;
+            }
+
+            var resultBuffer = new byte[length * audioConvert.len_mult];
+            new Span<byte>(buffer, (int)length).CopyTo(resultBuffer);
+
+            fixed (byte* resultBufferPointer = resultBuffer)
+            {
+                audioConvert.buf = resultBufferPointer;
+                audioConvert.len = (int)length;
+                _ = Native.CheckError(Native.SDL_ConvertAudio(&audioConvert));
+
+                var resultLength = audioConvert.len_cvt;
+
+                Native.SDL_FreeWAV(buffer);
+
+                _ = Native.CheckError(Native.SDL_QueueAudio(deviceId, resultBufferPointer, (uint)resultLength));
+            }
 
             var quit = false;
             while (!quit)
@@ -40,8 +61,6 @@ namespace Samples
             }
 
             Native.SDL_CloseAudioDevice(deviceId);
-
-            Native.SDL_FreeWAV(buffer);
 
             Native.SDL_Quit();
         }
