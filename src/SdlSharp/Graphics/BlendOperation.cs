@@ -8,26 +8,26 @@
         /// <summary>
         /// Add.
         /// </summary>
-        Add = 0x1,
+        Add = Native.SDL_BlendOperation.SDL_BLENDOPERATION_ADD,
 
         /// <summary>
         /// Subtract.
         /// </summary>
-        Subtract = 0x2,
+        Subtract = Native.SDL_BlendOperation.SDL_BLENDOPERATION_SUBTRACT,
 
         /// <summary>
         /// Reverse subtract.
         /// </summary>
-        RevSubtract = 0x3,
+        RevSubtract = Native.SDL_BlendOperation.SDL_BLENDOPERATION_REV_SUBTRACT,
 
         /// <summary>
         /// Minimum.
         /// </summary>
-        Minimum = 0x4,
+        Minimum = Native.SDL_BlendOperation.SDL_BLENDOPERATION_MINIMUM,
 
         /// <summary>
         /// Maximum
         /// </summary>
-        Maximum = 0x5
+        Maximum = Native.SDL_BlendOperation.SDL_BLENDOPERATION_MAXIMUM
     }
 }

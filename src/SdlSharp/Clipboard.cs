@@ -15,11 +15,18 @@
         /// </summary>
         public static unsafe string? Text
         {
-            get => Native.SDL_GetClipboardText().ToString();
+            get
+            {
+                var text = Native.SDL_GetClipboardText();
+                var result = Native.Utf8ToString(text);
+                Native.SDL_free(text);
+                return result;
+            }
             set
             {
-                using var utf8Value = Utf8String.ToUtf8String(value);
-                _ = Native.CheckError(Native.SDL_SetClipboardText(utf8Value));
+                var text = Native.StringToUtf8(value);
+                _ = Native.CheckError(Native.SDL_SetClipboardText(text));
+                Native.SDL_free(text);
             }
         }
 

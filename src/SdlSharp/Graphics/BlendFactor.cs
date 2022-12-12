@@ -8,51 +8,51 @@
         /// <summary>
         /// Zero.
         /// </summary>
-        Zero = 0x1,
+        Zero = Native.SDL_BlendFactor.SDL_BLENDFACTOR_ZERO,
 
         /// <summary>
         /// One.
         /// </summary>
-        One = 0x2,
+        One = Native.SDL_BlendFactor.SDL_BLENDFACTOR_ONE,
 
         /// <summary>
         /// Source color.
         /// </summary>
-        SourceColor = 0x3,
+        SourceColor = Native.SDL_BlendFactor.SDL_BLENDFACTOR_SRC_COLOR,
 
         /// <summary>
         /// One minus source color.
         /// </summary>
-        OneMinusSourceColor = 0x4,
+        OneMinusSourceColor = Native.SDL_BlendFactor.SDL_BLENDFACTOR_ONE_MINUS_SRC_COLOR,
 
         /// <summary>
         /// Source alpha.
         /// </summary>
-        SourceAlpha = 0x5,
+        SourceAlpha = Native.SDL_BlendFactor.SDL_BLENDFACTOR_SRC_ALPHA,
 
         /// <summary>
         /// One minus source alpha.
         /// </summary>
-        OneMinusSourceAlpha = 0x6,
+        OneMinusSourceAlpha = Native.SDL_BlendFactor.SDL_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
 
         /// <summary>
         /// Destination color.
         /// </summary>
-        DestinationColor = 0x7,
+        DestinationColor = Native.SDL_BlendFactor.SDL_BLENDFACTOR_DST_COLOR,
 
         /// <summary>
         /// One minus destination color.
         /// </summary>
-        OneMinusDestinationColor = 0x8,
+        OneMinusDestinationColor = Native.SDL_BlendFactor.SDL_BLENDFACTOR_ONE_MINUS_DST_COLOR,
 
         /// <summary>
         /// Destination alpha.
         /// </summary>
-        DestinationAlpha = 0x9,
+        DestinationAlpha = Native.SDL_BlendFactor.SDL_BLENDFACTOR_DST_ALPHA,
 
         /// <summary>
         /// One minus destination alpha.
         /// </summary>
-        OneMinusDestinationAlpha = 0xA
+        OneMinusDestinationAlpha = Native.SDL_BlendFactor.SDL_BLENDFACTOR_ONE_MINUS_DST_ALPHA
     }
 }

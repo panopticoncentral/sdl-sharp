@@ -11,36 +11,36 @@ namespace SdlSharp.Graphics
         /// <summary>
         /// No blending.
         /// </summary>
-        public static readonly BlendMode None = new(0x00000000);
+        public static readonly BlendMode None = new(Native.SDL_BlendMode.SDL_BLENDMODE_NONE);
 
         /// <summary>
         /// Alpha blending.
         /// </summary>
-        public static readonly BlendMode Blend = new(0x00000001);
+        public static readonly BlendMode Blend = new(Native.SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
         /// <summary>
         /// Additive blending.
         /// </summary>
-        public static readonly BlendMode Add = new(0x00000002);
+        public static readonly BlendMode Add = new(Native.SDL_BlendMode.SDL_BLENDMODE_ADD);
 
         /// <summary>
         /// Color modulate blending.
         /// </summary>
-        public static readonly BlendMode Mod = new(0x00000004);
+        public static readonly BlendMode Mod = new(Native.SDL_BlendMode.SDL_BLENDMODE_MOD);
 
         /// <summary>
         /// Color multiple blending.
         /// </summary>
-        public static readonly BlendMode Mul = new(0x00000008);
+        public static readonly BlendMode Mul = new(Native.SDL_BlendMode.SDL_BLENDMODE_MUL);
 
         /// <summary>
         /// Invalid blend mode.
         /// </summary>
-        public static readonly BlendMode Invalid = new(0x7FFFFFFF);
+        public static readonly BlendMode Invalid = new(Native.SDL_BlendMode.SDL_BLENDMODE_INVALID);
 
-        private readonly uint _mode;
+        private readonly Native.SDL_BlendMode _mode;
 
-        private BlendMode(uint mode)
+        private BlendMode(Native.SDL_BlendMode mode)
         {
             _mode = mode;
         }
@@ -56,6 +56,6 @@ namespace SdlSharp.Graphics
         /// <param name="alphaOperation">The alpha operation.</param>
         /// <returns>The custom blend mode.</returns>
         public static BlendMode Custom(BlendFactor sourceColorFactor, BlendFactor destinationColorFactor, BlendOperation colorOperation, BlendFactor sourceAlphaFactor, BlendFactor destinationAlphaFactor, BlendOperation alphaOperation) =>
-            Native.SDL_ComposeCustomBlendMode(sourceColorFactor, destinationColorFactor, colorOperation, sourceAlphaFactor, destinationAlphaFactor, alphaOperation);
+            new(Native.SDL_ComposeCustomBlendMode((Native.SDL_BlendFactor)sourceColorFactor, (Native.SDL_BlendFactor)destinationColorFactor, (Native.SDL_BlendOperation)colorOperation, (Native.SDL_BlendFactor)sourceAlphaFactor, (Native.SDL_BlendFactor)destinationAlphaFactor, (Native.SDL_BlendOperation)alphaOperation));
     }
 }
