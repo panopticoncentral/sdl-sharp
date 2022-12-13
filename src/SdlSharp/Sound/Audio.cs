@@ -105,12 +105,13 @@
 
             Native.SDL_AudioSpec obtainedNativeSpec;
 
-            var audioDeviceId = Native.CheckValid(Native.SDL_OpenAudioDevice(
+            var audioDeviceId = Native.CheckError(Native.SDL_OpenAudioDevice(
                 utf8Device,
                 Native.BoolToInt(isCapture),
                 &desiredNativeSpec,
                 &obtainedNativeSpec,
-                (int)allowedChanges));
+                (int)allowedChanges),
+                d => d.Id != 0);
 
             Native.SDL_free(utf8Device);
 
@@ -252,17 +253,17 @@
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case Native.SDL_EventType.AudioDeviceAdded:
+                case Native.SDL_EventType.SDL_AUDIODEVICEADDED:
                     {
-                        Added?.Invoke(null, new AudioDeviceAddedEventArgs(e.Adevice));
+                        Added?.Invoke(null, new AudioDeviceAddedEventArgs(e.adevice));
                         break;
                     }
 
-                case Native.SDL_EventType.AudioDeviceRemoved:
+                case Native.SDL_EventType.SDL_AUDIODEVICEREMOVED:
                     {
-                        Removed?.Invoke(null, new AudioDeviceRemovedEventArgs(e.Adevice));
+                        Removed?.Invoke(null, new AudioDeviceRemovedEventArgs(e.adevice));
                         break;
                     }
 

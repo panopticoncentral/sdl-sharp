@@ -29,12 +29,12 @@ namespace SdlSharp.Input
         /// </summary>
         public int Length { get; }
 
-        internal unsafe TextEditedEventArgs(Native.SDL_TextEditingEvent textEdit) : base(textEdit.Timestamp)
+        internal unsafe TextEditedEventArgs(Native.SDL_TextEditingEvent textEdit) : base(textEdit.timestamp)
         {
-            _windowId = textEdit.WindowId;
-            Text = textEdit.Text;
-            Start = textEdit.Start;
-            Length = textEdit.Length;
+            _windowId = textEdit.windowID;
+            Text = Native.Utf8ToString(textEdit.text)!;
+            Start = textEdit.start;
+            Length = textEdit.length;
         }
     }
 }

@@ -31,6 +31,9 @@ using SdlSharp.Touch;
 // Naming doesn't follow general rules
 #pragma warning disable IDE1006
 
+// Identifiers should not have incorrect suffix
+#pragma warning disable CA1711 
+
 // Do not prefix enum values with type name
 #pragma warning disable CA1712
 
@@ -53,6 +56,15 @@ namespace SdlSharp
         /// <returns>The return value.</returns>
         /// <exception cref="SdlException">Thrown if method returned an error.</exception>
         public static int CheckError(int returnValue) => (returnValue < 0) ? throw new SdlException() : returnValue;
+
+        /// <summary>
+        /// Check that the return of a method is not an error given a validation function.
+        /// </summary>
+        /// <param name="returnValue">The return value of the API.</param>
+        /// <param name="validator">The validator.</param>
+        /// <returns>The return value.</returns>
+        /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+        public static T CheckError<T>(T returnValue, Func<T, bool> validator) => !validator(returnValue) ? throw new SdlException() : returnValue;
 
         /// <summary>
         /// Check that the return of a method is not an error (i.e. less than zero) and converts
@@ -110,22 +122,6 @@ namespace SdlSharp
         /// <param name="value">The instance.</param>
         /// <returns>The instance if not <c>null</c>, throws an exception otherwise.</returns>
         public static T CheckNotNull<T>(T? value) where T : class => value ?? throw new SdlException();
-
-        /// <summary>
-        /// A validatable native value.
-        /// </summary>
-        public interface INativeValidatable
-        {
-            bool IsValid();
-        }
-
-        /// <summary>
-        /// Checks that a validatable value is valid.
-        /// </summary>
-        /// <typeparam name="T">The type to validate.</typeparam>
-        /// <param name="value">The value to validate.</param>
-        /// <returns>The value if valid.</returns>
-        public static T CheckValid<T>(T value) where T : struct, INativeValidatable => value.IsValid() ? value : throw new SdlException();
 
         /// <summary>
         /// Converts a pixel pointer to a span.
@@ -316,23 +312,15 @@ namespace SdlSharp
 
         public readonly struct SDL_AudioSpec
         {
-            public readonly int freq { get; }
-
-            public readonly SDL_AudioFormat format { get; }
-
-            public readonly byte channels { get; }
-
-            public readonly byte silence { get; }
-
-            public readonly ushort samples { get; }
-
+            public readonly int freq;
+            public readonly SDL_AudioFormat format;
+            public readonly byte channels;
+            public readonly byte silence;
+            public readonly ushort samples;
             private readonly ushort _padding;
-
-            public readonly uint size { get; }
-
-            public readonly delegate* unmanaged[Cdecl]<nint, byte*, int, void> callback { get; }
-
-            public readonly nint userdata { get; }
+            public readonly uint size;
+            public readonly delegate* unmanaged[Cdecl]<nint, byte*, int, void> callback;
+            public readonly nint userdata;
 
             public SDL_AudioSpec(int freq, SDL_AudioFormat format, byte channels, ushort samples, delegate* unmanaged[Cdecl]<nint, byte*, int, void> callback = default, nint userdata = default)
             {
@@ -352,24 +340,15 @@ namespace SdlSharp
 
         public struct SDL_AudioCVT
         {
-            public readonly int needed { get; }
-
-            public readonly SDL_AudioFormat src_format { get; }
-
-            public readonly SDL_AudioFormat dst_format { get; }
-
-            public readonly double rate_incr { get; }
-
-            public byte* buf { get; set; }
-
-            public int len { get; set; }
-
-            public readonly int len_cvt { get; }
-
-            public readonly int len_mult { get; }
-
-            public readonly double len_ratio { get; }
-
+            public readonly int needed;
+            public readonly SDL_AudioFormat src_format;
+            public readonly SDL_AudioFormat dst_format;
+            public readonly double rate_incr;
+            public byte* buf;
+            public int len;
+            public readonly int len_cvt;
+            public readonly int len_mult;
+            public readonly double len_ratio;
             // Work around the fact that can't make buffers of nint
             private readonly nint _filter0;
             private readonly nint _filter1;
@@ -402,10 +381,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_OpenAudio(SDL_AudioSpec* desired, SDL_AudioSpec* obtained);
 
-        public readonly record struct SDL_AudioDeviceID(uint Id) : INativeValidatable
-        {
-            public bool IsValid() => Id > 0;
-        }
+        public readonly record struct SDL_AudioDeviceID(uint Id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumAudioDevices(int iscapture);
@@ -456,12 +432,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_ConvertAudio(SDL_AudioCVT* cvt);
 
-#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
-        // This is the native name.
-        public readonly struct SDL_AudioStream
-        {
-        }
-#pragma warning restore CA1711 // Identifiers should not have incorrect suffix
+        public readonly struct SDL_AudioStream { }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_AudioStream* SDL_NewAudioStream(SDL_AudioFormat src_format, byte src_channels, int src_rate, SDL_AudioFormat dst_format, byte dst_channels, int dst_rate);
@@ -641,12 +612,19 @@ namespace SdlSharp
         public static extern bool SDL_HasNEON();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_HasLSX();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_HasLASX();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetSystemRAM();
 
         // SIMD should be used through .NET support, no direct support otherwise
-        //public static extern nuint SDL_SIMDGetAlignment();
-        //public static extern nint SDL_SIMDAlloc(nuint len);
-        //public static extern void SDL_SIMDFree(nint ptr);
+        // SDL_SIMDGetAlignment
+        // SDL_SIMDAlloc
+        // SDL_SIMDRealloc
+        // SDL_SIMDFree
 
         #endregion
 
@@ -660,7 +638,10 @@ namespace SdlSharp
         public static extern int SDL_SetError(string message /* ... */);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Utf8String SDL_GetError();
+        public static extern byte* SDL_GetError();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetErrorMsg(byte* errstr, int maxlen);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_ClearError();
@@ -671,504 +652,510 @@ namespace SdlSharp
 
         public enum SDL_EventType
         {
-            FirstEvent = 0,
+            SDL_FIRSTEVENT = 0,
 
-            Quit = 0x100,
+            SDL_QUIT = 0x100,
 
-            ApplicationTerminating,
-            ApplicationLowMemory,
-            ApplicationWillEnterBackground,
-            ApplicationDidEnterBackground,
-            ApplicationWillEnterForeground,
-            ApplicationDidEnterForeground,
+            SDL_APP_TERMINATING,
+            SDL_APP_LOWMEMORY,
+            SDL_APP_WILLENTERBACKGROUND,
+            SDL_APP_DIDENTERBACKGROUND,
+            SDL_APP_WILLENTERFOREGROUND,
+            SDL_APP_DIDENTERFOREGROUND,
 
-            Display = 0x150,
+            SDL_LOCALECHANGED,
 
-            Window = 0x200,
-            SystemWindowMessageEvent,
+            SDL_DISPLAYEVENT = 0x150,
 
-            KeyDown = 0x300,
-            KeyUp,
-            TextEditing,
-            TextInput,
-            KeymapChanged,
+            SDL_WINDOWEVENT = 0x200,
+            SDL_SYSWMEVENT,
 
-            MouseMotion = 0x400,
-            MouseButtonDown,
-            MouseButtonUp,
-            MouseWheel,
+            SDL_KEYDOWN = 0x300,
+            SDL_KEYUP,
+            SDL_TEXTEDITING,
+            SDL_TEXTINPUT,
+            SDL_KEYMAPCHANGED,
 
-            JoystickAxisMotion = 0x600,
-            JoystickBallMotion,
-            JoystickHatMotion,
-            JoystickButtonDown,
-            JoystickButtonUp,
-            JoystickDeviceAdded,
-            JoystickDeviceRemoved,
+            SDL_TEXTEDITING_EXT,
 
-            ControllerAxisMotion = 0x650,
-            ControllerButtonDown,
-            ControllerButtonUp,
-            ControllerDeviceAdded,
-            ControllerDeviceRemoved,
-            ControllerDeviceRemapped,
+            SDL_MOUSEMOTION = 0x400,
+            SDL_MOUSEBUTTONDOWN,
+            SDL_MOUSEBUTTONUP,
+            SDL_MOUSEWHEEL,
 
-            FingerDown = 0x700,
-            FingerUp,
-            FingerMotion,
+            SDL_JOYAXISMOTION = 0x600,
+            SDL_JOYBALLMOTION,
+            SDL_JOYHATMOTION,
+            SDL_JOYBUTTONDOWN,
+            SDL_JOYBUTTONUP,
+            SDL_JOYDEVICEADDED,
+            SDL_JOYDEVICEREMOVED,
+            SDL_JOYBATTERYUPDATED,
 
-            DollarGesture = 0x800,
-            DollarRecord,
-            MultiGesture,
+            SDL_CONTROLLERAXISMOTION = 0x650,
+            SDL_CONTROLLERBUTTONDOWN,
+            SDL_CONTROLLERBUTTONUP,
+            SDL_CONTROLLERDEVICEADDED,
+            SDL_CONTROLLERDEVICEREMOVED,
+            SDL_CONTROLLERDEVICEREMAPPED,
+            SDL_CONTROLLERTOUCHPADDOWN,
+            SDL_CONTROLLERTOUCHPADMOTION,
+            SDL_CONTROLLERTOUCHPADUP,
+            SDL_CONTROLLERSENSORUPDATE,
 
-            ClipboardUpdate = 0x900,
+            SDL_FINGERDOWN = 0x700,
+            SDL_FINGERUP,
+            SDL_FINGERMOTION,
 
-            DropFile = 0x1000,
-            DropText,
-            DropBegin,
-            DropComplete,
+            SDL_DOLLARGESTURE = 0x800,
+            SDL_DOLLARRECORD,
+            SDL_MULTIGESTURE,
 
-            AudioDeviceAdded = 0x1100,
-            AudioDeviceRemoved,
+            SDL_CLIPBOARDUPDATE = 0x900,
 
-            SensorUpdate = 0x1200,
+            SDL_DROPFILE = 0x1000,
+            SDL_DROPTEXT,
+            SDL_DROPBEGIN,
+            SDL_DROPCOMPLETE,
 
-            RenderTargetsReset = 0x2000,
-            RenderDeviceReset,
+            SDL_AUDIODEVICEADDED = 0x1100,
+            SDL_AUDIODEVICEREMOVED,
 
-            UserEvent = 0x8000,
+            SDL_SENSORUPDATE = 0x1200,
 
-            LastEvent = 0xFFFF
+            SDL_RENDER_TARGETS_RESET = 0x2000,
+            SDL_RENDER_DEVICE_RESET,
+
+            SDL_USEREVENT = 0x8000,
+
+            SDL_LASTEVENT = 0xFFFF
         }
 
         public readonly struct SDL_CommonEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
         }
 
         public readonly struct SDL_DisplayEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly uint DisplayIndex { get; }
-            public readonly SDL_DisplayEventID DisplayEventId { get; }
-
-            private readonly byte _padding1;
-            private readonly byte _padding2;
-            private readonly byte _padding3;
-
-            public readonly int Data { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint display;
+            public readonly byte @event;
+            public readonly byte _padding1;
+            public readonly byte _padding2;
+            public readonly byte _padding3;
+            public readonly int data1;
         }
 
         public readonly struct SDL_WindowEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly uint WindowId { get; }
-            public readonly SDL_WindowEventID WindowEventId { get; }
-
-            private readonly byte _padding1;
-            private readonly byte _padding2;
-            private readonly byte _padding3;
-
-            public readonly int Data1 { get; }
-            public readonly int Data2 { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint windowID;
+            public readonly byte @event;
+            public readonly byte _padding1;
+            public readonly byte _padding2;
+            public readonly byte _padding3;
+            public readonly int data1;
+            public readonly int data2;
         }
 
         public readonly struct SDL_KeyboardEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-
-            public readonly uint WindowId { get; }
-            public readonly bool State { get; }
-            public readonly byte Repeat { get; }
-
-            private readonly byte _padding2;
-            private readonly byte _padding3;
-
-            public readonly SDL_Keysym Keysym { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint windowID;
+            public readonly byte state;
+            public readonly byte repeat;
+            public readonly byte _padding2;
+            public readonly byte _padding3;
+            public readonly SDL_Keysym keysym;
         }
 
         public struct SDL_TextEditingEvent
         {
             public const int TextEditingEventTextSize = 32;
 
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly uint WindowId { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint windowID;
+            public fixed byte text[TextEditingEventTextSize];
+            public readonly int start;
+            public readonly int length;
+        }
 
-            private fixed byte _text[TextEditingEventTextSize];
-
-            public readonly string Text
-            {
-                get
-                {
-                    fixed (byte* textBuffer = _text)
-                    {
-                        return new Utf8String(textBuffer).ToString()!;
-                    }
-                }
-            }
-
-            public readonly int Start { get; }
-            public readonly int Length { get; }
+        public readonly struct SDL_TextEditingExtEvent
+        {
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint windowID;
+            public readonly byte* test;
+            public readonly int start;
+            public readonly int length;
         }
 
         public struct SDL_TextInputEvent
         {
             public const int TextInputEventTextSize = 32;
 
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly uint WindowId { get; }
-
-            private fixed byte _text[TextInputEventTextSize];
-
-            public readonly string Text
-            {
-                get
-                {
-                    fixed (byte* textBuffer = _text)
-                    {
-                        return new Utf8String(textBuffer).ToString()!;
-                    }
-                }
-            }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint windowID;
+            public fixed byte text[TextInputEventTextSize];
         }
 
-        public readonly struct SDL_MouseMotionEvent
+        public readonly record struct SDL_MouseMotionEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly uint WindowId { get; }
-            public readonly uint Which { get; }
-            public readonly uint State { get; }
-            public readonly int X { get; }
-            public readonly int Y { get; }
-            public readonly int XRel { get; }
-            public readonly int YRel { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint windowID;
+            public readonly uint which;
+            public readonly uint state;
+            public readonly int x;
+            public readonly int y;
+            public readonly int xrel;
+            public readonly int yrel;
         }
 
         public readonly struct SDL_MouseButtonEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly uint WindowId { get; }
-            public readonly uint Which { get; }
-            public readonly byte Button { get; }
-            public readonly bool State { get; }
-            public readonly byte Clicks { get; }
-
-            private readonly byte _padding1;
-
-            public readonly int X { get; }
-            public readonly int Y { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint windowID;
+            public readonly uint which;
+            public readonly byte button;
+            public readonly byte state;
+            public readonly byte clicks;
+            public readonly byte _padding1;
+            public readonly int x;
+            public readonly int y;
         }
 
         public readonly struct SDL_MouseWheelEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly uint WindowId { get; }
-            public readonly uint Which { get; }
-            public readonly int X { get; }
-            public readonly int Y { get; }
-            public readonly MouseWheelDirection Direction { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint windowID;
+            public readonly uint which;
+            public readonly int x;
+            public readonly int y;
+            public readonly uint direction;
+            public readonly float preciseX;
+            public readonly float preciseY;
+            public readonly int mouseX;
+            public readonly int mouseY;
         }
 
         public readonly struct SDL_JoyAxisEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly SDL_JoystickID Which { get; }
-            public readonly byte Axis { get; }
-
-            private readonly byte _padding1;
-            private readonly byte _padding2;
-            private readonly byte _padding3;
-
-            public readonly short Value { get; }
-
-            private readonly ushort _padding4;
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_JoystickID which;
+            public readonly byte axis;
+            public readonly byte _padding1;
+            public readonly byte _padding2;
+            public readonly byte _padding3;
+            public readonly short value;
+            public readonly ushort _padding4;
         }
 
         public readonly struct SDL_JoyBallEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly SDL_JoystickID Which { get; }
-            public readonly byte Ball { get; }
-
-            private readonly byte _padding1;
-            private readonly byte _padding2;
-            private readonly byte _padding3;
-
-            public readonly short Xrel { get; }
-            public readonly short Yrel { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_JoystickID which;
+            public readonly byte ball;
+            public readonly byte _padding1;
+            public readonly byte _padding2;
+            public readonly byte _padding3;
+            public readonly short xrel;
+            public readonly short yrel;
         }
 
         public readonly struct SDL_JoyHatEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly SDL_JoystickID Which { get; }
-            public readonly byte Hat { get; }
-            public readonly HatState Value { get; }
-
-            private readonly byte _padding1;
-            private readonly byte _padding2;
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_JoystickID which;
+            public readonly byte hat;
+            public readonly byte value;
+            public readonly byte _padding1;
+            public readonly byte _padding2;
         }
 
         public readonly struct SDL_JoyButtonEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly SDL_JoystickID Which { get; }
-            public readonly byte Button { get; }
-            public readonly bool State { get; }
-
-            private readonly byte _padding1;
-            private readonly byte _padding2;
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_JoystickID which;
+            public readonly byte button;
+            public readonly byte state;
+            public readonly byte _padding1;
+            public readonly byte _padding2;
         }
 
         public readonly struct SDL_JoyDeviceEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly int Which { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly int which;
+        }
+
+        public readonly struct SDL_JoyBatteryEvent
+        {
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_JoystickID which;
+            public readonly JoystickPowerLevel level;
         }
 
         public readonly struct SDL_ControllerAxisEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly SDL_JoystickID Which { get; }
-            public readonly byte Axis { get; }
-
-            private readonly byte _padding1;
-            private readonly byte _padding2;
-            private readonly byte _padding3;
-
-            public readonly short Value { get; }
-
-            private readonly ushort _padding4;
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_JoystickID which;
+            public readonly byte axis;
+            public readonly byte _padding1;
+            public readonly byte _padding2;
+            public readonly byte _padding3;
+            public readonly short value;
+            public readonly ushort _padding4;
         }
 
         public readonly struct SDL_ControllerButtonEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly SDL_JoystickID Which { get; }
-            public readonly byte Button { get; }
-            public readonly bool State { get; }
-
-            private readonly byte _padding1;
-            private readonly byte _padding2;
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_JoystickID which;
+            public readonly byte button;
+            public readonly byte state;
+            public readonly byte _padding1;
+            public readonly byte _padding2;
         }
 
         public readonly struct SDL_ControllerDeviceEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly int Which { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly int which;
+        }
+
+        public readonly struct SDL_ControllerTouchpadEvent
+        {
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_JoystickID which;
+            public readonly int touchpad;
+            public readonly int finger;
+            public readonly float x;
+            public readonly float y;
+            public readonly float pressure;
+        }
+
+        public readonly struct SDL_ControllerSensorEvent
+        {
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_JoystickID which;
+            public readonly int sensor;
+            public readonly float data1;
+            public readonly float data2;
+            public readonly float data3;
+            public readonly ulong timestamp_us;
         }
 
         public readonly struct SDL_AudioDeviceEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly uint Which { get; }
-
-            [field: MarshalAs(UnmanagedType.I1)]
-            public readonly bool IsCapture { get; }
-
-            private readonly byte _padding1;
-            private readonly byte _padding2;
-            private readonly byte _padding3;
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint which;
+            public readonly byte iscapture;
+            public readonly byte _padding1;
+            public readonly byte _padding2;
+            public readonly byte _padding3;
         }
 
         public readonly struct SDL_TouchFingerEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly SDL_TouchID TouchId { get; }
-            public readonly SDL_FingerID FingerId { get; }
-            public readonly float X { get; }
-            public readonly float Y { get; }
-            public readonly float Dx { get; }
-            public readonly float Dy { get; }
-            public readonly float Pressure { get; }
-            public readonly uint WindowId { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_TouchID touchId;
+            public readonly SDL_FingerID fingerId;
+            public readonly float x;
+            public readonly float y;
+            public readonly float dx;
+            public readonly float dy;
+            public readonly float pressure;
+            public readonly uint windowID;
         }
 
         public readonly struct SDL_MultiGestureEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly SDL_TouchID TouchId { get; }
-            public readonly float DTheta { get; }
-            public readonly float DDist { get; }
-            public readonly float X { get; }
-            public readonly float Y { get; }
-            public readonly ushort NumFingers { get; }
-
-            private readonly ushort _padding;
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_TouchID touchId;
+            public readonly float dTheta;
+            public readonly float dDist;
+            public readonly float x;
+            public readonly float y;
+            public readonly ushort numFingers;
+            public readonly ushort _padding;
         }
 
         public readonly struct SDL_DollarGestureEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly SDL_TouchID TouchId { get; }
-            public readonly SDL_GestureID GestureId { get; }
-            public readonly uint NumFingers { get; }
-            public readonly float Error { get; }
-            public readonly float X { get; }
-            public readonly float Y { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_TouchID touchId;
+            public readonly SDL_GestureID gestureId;
+            public readonly uint numFingers;
+            public readonly float error;
+            public readonly float x;
+            public readonly float y;
         }
 
         public readonly struct SDL_DropEvent
         {
-            public readonly SDL_EventType Type { get; }
-            public readonly uint Timestamp { get; }
-            public readonly DisposableAnsiString File { get; }
-            public readonly uint WindowId { get; }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly byte* file;
+            public readonly uint windowID;
         }
 
         public struct SDL_SensorEvent
         {
-            public readonly SDL_EventType Type;
-            public readonly uint Timestamp;
-            public readonly SDL_SensorID Which;
-
-            private fixed float _data[6];
-
-            public readonly float[] Data
-            {
-                get
-                {
-                    var data = new float[6];
-
-                    for (var i = 0; i < 6; i++)
-                    {
-                        data[i] = _data[i];
-                    }
-
-                    return data;
-                }
-            }
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly int which;
+            public fixed float data[6];
         }
 
         public readonly struct SDL_QuitEvent
         {
-            public readonly SDL_EventType Type;
-            public readonly uint Timestamp;
+            public readonly uint type;
+            public readonly uint timestamp;
         }
 
-        // SDL_OSEvent isn't used
+        public readonly struct SDL_OSEvent
+        {
+            public readonly uint type;
+            public readonly uint timestamp;
+        }
 
         public readonly struct SDL_UserEvent
         {
-            public readonly SDL_EventType Type;
-            public readonly uint Timestamp;
-            public readonly uint WindowId;
-            public readonly int Code;
-            public readonly nint Data1;
-            public readonly nint Data2;
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly uint windowID;
+            public readonly int code;
+            public readonly void* data1;
+            public readonly void* data2;
         }
 
         public readonly struct SDL_SysWMEvent
         {
-            public readonly SDL_EventType Type;
-            public readonly uint Timestamp;
-            public readonly SDL_SysWMmsg* Msg;
+            public readonly uint type;
+            public readonly uint timestamp;
+            public readonly SDL_SysWMmsg* msg;
         }
 
         [StructLayout(LayoutKind.Explicit)]
         public struct SDL_Event
         {
             [field: FieldOffset(0)]
-            public readonly SDL_EventType Type { get; }
+            public readonly uint type { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_CommonEvent Common { get; }
+            public readonly SDL_CommonEvent common { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_DisplayEvent Display { get; }
+            public readonly SDL_DisplayEvent display { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_WindowEvent Window { get; }
+            public readonly SDL_WindowEvent window { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_KeyboardEvent Key { get; }
+            public readonly SDL_KeyboardEvent key { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_TextEditingEvent Edit { get; }
+            public readonly SDL_TextEditingEvent edit { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_TextInputEvent Text { get; }
+            public readonly SDL_TextEditingExtEvent editExt { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_MouseMotionEvent Motion { get; }
+            public readonly SDL_TextInputEvent text { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_MouseButtonEvent Button { get; }
+            public readonly SDL_MouseMotionEvent motion { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_MouseWheelEvent Wheel { get; }
+            public readonly SDL_MouseButtonEvent button { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_JoyAxisEvent Jaxis { get; }
+            public readonly SDL_MouseWheelEvent wheel { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_JoyBallEvent Jball { get; }
+            public readonly SDL_JoyAxisEvent jaxis { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_JoyHatEvent Jhat { get; }
+            public readonly SDL_JoyBallEvent jball { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_JoyButtonEvent Jbutton { get; }
+            public readonly SDL_JoyHatEvent jhat { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_JoyDeviceEvent Jdevice { get; }
+            public readonly SDL_JoyButtonEvent jbutton { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_ControllerAxisEvent Caxis { get; }
+            public readonly SDL_JoyDeviceEvent jdevice { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_ControllerButtonEvent Cbutton { get; }
+            public readonly SDL_JoyBatteryEvent jbattery { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_ControllerDeviceEvent Cdevice { get; }
+            public readonly SDL_ControllerAxisEvent caxis { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_AudioDeviceEvent Adevice { get; }
+            public readonly SDL_ControllerButtonEvent cbutton { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_SensorEvent Sensor { get; }
+            public readonly SDL_ControllerDeviceEvent cdevice { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_QuitEvent Quit { get; }
+            public readonly SDL_ControllerTouchpadEvent ctouchpad { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_UserEvent User { get; }
+            public readonly SDL_ControllerSensorEvent csensor { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_SysWMEvent Syswm { get; }
+            public readonly SDL_AudioDeviceEvent adevice { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_TouchFingerEvent Tfinger { get; }
+            public readonly SDL_SensorEvent sensor { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_MultiGestureEvent Mgesture { get; }
+            public readonly SDL_QuitEvent quit { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_DollarGestureEvent Dgesture { get; }
+            public readonly SDL_UserEvent user { get; }
 
             [field: FieldOffset(0)]
-            public readonly SDL_DropEvent Drop { get; }
+            public readonly SDL_SysWMEvent syswm { get; }
+
+            [field: FieldOffset(0)]
+            public readonly SDL_TouchFingerEvent tfinger { get; }
+
+            [field: FieldOffset(0)]
+            public readonly SDL_MultiGestureEvent mgesture { get; }
+
+            [field: FieldOffset(0)]
+            public readonly SDL_DollarGestureEvent dgesture { get; }
+
+            [field: FieldOffset(0)]
+            public readonly SDL_DropEvent drop { get; }
 
             [FieldOffset(0)]
             private fixed byte _padding[56];
@@ -1177,63 +1164,65 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_PumpEvents();
 
-        public enum SDL_EventAction
+        public enum SDL_eventaction
         {
-            Add,
-            Peek,
-            Get
+            SDL_ADDEVENT,
+            SDL_PEEKEVENT,
+            SDL_GETEVENT
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_PeepEvents([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] SDL_Event[] events, int numevents, SDL_EventAction action, SDL_EventType minType = SDL_EventType.FirstEvent, SDL_EventType maxType = SDL_EventType.LastEvent);
+        public static extern int SDL_PeepEvents(SDL_Event* events, int numevents, SDL_eventaction action, uint minType, uint maxType);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_HasEvent(SDL_EventType type);
+        public static extern bool SDL_HasEvent(uint type);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_HasEvents(SDL_EventType minType, SDL_EventType maxType);
+        public static extern bool SDL_HasEvents(uint minType, uint maxType);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_FlushEvent(SDL_EventType type);
+        public static extern void SDL_FlushEvent(uint type);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_FlushEvents(SDL_EventType minType, SDL_EventType maxType);
+        public static extern void SDL_FlushEvents(uint minType, uint maxType);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_PollEvent(out SDL_Event e);
+        public static extern bool SDL_PollEvent(SDL_Event* e);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_WaitEvent(out SDL_Event e);
+        public static extern int SDL_WaitEvent(SDL_Event* e);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_WaitEventTimeout(out SDL_Event e, int timeout);
+        public static extern int SDL_WaitEventTimeout(SDL_Event* e, int timeout);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_PushEvent(ref SDL_Event e);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate bool SDL_EventFilter(nint userdata, ref SDL_Event e);
+        public static extern int SDL_PushEvent(SDL_Event* e);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetEventFilter(SDL_EventFilter filter, nint userdata);
+        public static extern void SDL_SetEventFilter(delegate* unmanaged[Cdecl]<nint, SDL_Event*, bool> filter, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_GetEventFilter(out SDL_EventFilter filter, out nint userdata);
+        public static extern bool SDL_GetEventFilter(delegate* unmanaged[Cdecl]<nint, SDL_Event*, bool>* filter, nint* userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_AddEventWatch(SDL_EventFilter filter, nint userdata);
+        public static extern void SDL_AddEventWatch(delegate* unmanaged[Cdecl]<nint, SDL_Event*, bool> filter, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_DelEventWatch(SDL_EventFilter filter, nint userdata);
+        public static extern void SDL_DelEventWatch(delegate* unmanaged[Cdecl]<nint, SDL_Event*, bool> filter, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_FilterEvents(SDL_EventFilter filter, nint userdata);
+        public static extern void SDL_FilterEvents(delegate* unmanaged[Cdecl]<nint, SDL_Event*, bool> filter, nint userdata);
+
+        public const int SDL_QUERY = -1;
+        public const int SDL_IGNORE = 0;
+        public const int SDL_DISABLE = 0;
+        public const int SDL_ENABLE = 1;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte SDL_EventState(SDL_EventType type, State state);
+        public static extern byte SDL_EventState(uint type, int state);
 
-        public static State SDL_GetEventState(SDL_EventType type) =>
-            (State)SDL_EventState(type, State.Query);
+        public static State SDL_GetEventState(uint type) =>
+            (State)SDL_EventState(type, SDL_QUERY);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_RegisterEvents(int numevents);
@@ -2852,10 +2841,7 @@ namespace SdlSharp
 
         // SDL_SensorType is covered by SensorType.cs
 
-        public readonly struct SDL_SensorID
-        {
-            public int Id { get; }
-        }
+        public readonly record struct SDL_SensorID(int Id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_NumSensors();

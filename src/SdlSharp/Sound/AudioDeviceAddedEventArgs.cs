@@ -15,10 +15,10 @@
         /// </summary>
         public bool IsCapture { get; }
 
-        internal AudioDeviceAddedEventArgs(Native.SDL_AudioDeviceEvent device) : base(device.Timestamp)
+        internal AudioDeviceAddedEventArgs(Native.SDL_AudioDeviceEvent device) : base(device.timestamp)
         {
-            DeviceName = Native.Utf8ToString(Native.SDL_GetAudioDeviceName((int)device.Which, Native.BoolToInt(IsCapture)))!;
-            IsCapture = device.IsCapture;
+            DeviceName = Native.Utf8ToString(Native.SDL_GetAudioDeviceName((int)device.which, Native.BoolToInt(IsCapture)))!;
+            IsCapture = device.iscapture != 0;
         }
     }
 }

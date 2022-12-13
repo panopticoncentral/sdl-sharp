@@ -526,78 +526,78 @@
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            if (e.Type == SdlSharp.Native.SDL_EventType.SystemWindowMessageEvent)
+            if ((Native.SDL_EventType)e.type == SdlSharp.Native.SDL_EventType.SDL_SYSWMEVENT)
             {
-                SystemWindowMessage?.Invoke(null, new SystemWindowMessageEventArgs(e.Syswm));
+                SystemWindowMessage?.Invoke(null, new SystemWindowMessageEventArgs(e.syswm));
                 return;
             }
 
-            var window = Get(e.Window.WindowId);
+            var window = Get(e.window.windowID);
 
-            switch (e.Window.WindowEventId)
+            switch ((Native.SDL_WindowEventID)e.window.@event)
             {
                 case SdlSharp.Native.SDL_WindowEventID.Shown:
-                    window.Shown?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.Shown?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Hidden:
-                    window.Hidden?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.Hidden?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Exposed:
-                    window.Exposed?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.Exposed?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Minimized:
-                    window.Minimized?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.Minimized?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Maximized:
-                    window.Maximized?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.Maximized?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Restored:
-                    window.Restored?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.Restored?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Enter:
-                    window.Entered?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.Entered?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Leave:
-                    window.Left?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.Left?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.FocusGained:
-                    window.FocusGained?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.FocusGained?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.FocusLost:
-                    window.FocusLost?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.FocusLost?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Close:
-                    window.Closed?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.Closed?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.TakeFocus:
-                    window.TookFocus?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.TookFocus?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.HitTest:
-                    window.HitTest?.Invoke(window, new SdlEventArgs(e.Common));
+                    window.HitTest?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Moved:
-                    window.Moved?.Invoke(window, new LocationEventArgs(e.Window));
+                    window.Moved?.Invoke(window, new LocationEventArgs(e.window));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.Resized:
-                    window.Resized?.Invoke(window, new SizeEventArgs(e.Window));
+                    window.Resized?.Invoke(window, new SizeEventArgs(e.window));
                     break;
 
                 case SdlSharp.Native.SDL_WindowEventID.SizeChanged:
-                    window.SizeChanged?.Invoke(window, new SizeEventArgs(e.Window));
+                    window.SizeChanged?.Invoke(window, new SizeEventArgs(e.window));
                     break;
 
                 default:

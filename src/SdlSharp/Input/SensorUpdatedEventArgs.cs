@@ -10,9 +10,9 @@
         /// </summary>
         public IReadOnlyList<float> Data { get; }
 
-        internal SensorUpdatedEventArgs(Native.SDL_SensorEvent sensor) : base(sensor.Timestamp)
+        internal unsafe SensorUpdatedEventArgs(Native.SDL_SensorEvent sensor) : base(sensor.timestamp)
         {
-            Data = sensor.Data;
+            Data = new Span<float>(sensor.data, 6).ToArray();
         }
     }
 }

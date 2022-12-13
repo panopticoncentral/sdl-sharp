@@ -15,10 +15,10 @@
         /// </summary>
         public HatState Value { get; }
 
-        internal JoystickHatMotionEventArgs(Native.SDL_JoyHatEvent hat) : base(hat.Timestamp)
+        internal JoystickHatMotionEventArgs(Native.SDL_JoyHatEvent hat) : base(hat.timestamp)
         {
-            Hat = hat.Hat;
-            Value = hat.Value;
+            Hat = hat.hat;
+            Value = (HatState)hat.value;
         }
     }
 }

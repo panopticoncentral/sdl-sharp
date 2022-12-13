@@ -38,14 +38,14 @@
         /// </summary>
         public float Y { get; }
 
-        internal DollarGestureEventArgs(Native.SDL_DollarGestureEvent dollarGesture) : base(dollarGesture.Timestamp)
+        internal DollarGestureEventArgs(Native.SDL_DollarGestureEvent dollarGesture) : base(dollarGesture.timestamp)
         {
-            _deviceIndex = dollarGesture.TouchId;
-            _gestureId = dollarGesture.GestureId;
-            FingerCount = dollarGesture.NumFingers;
-            Error = dollarGesture.Error;
-            X = dollarGesture.X;
-            Y = dollarGesture.Y;
+            _deviceIndex = dollarGesture.touchId;
+            _gestureId = dollarGesture.gestureId;
+            FingerCount = dollarGesture.numFingers;
+            Error = dollarGesture.error;
+            X = dollarGesture.x;
+            Y = dollarGesture.y;
         }
     }
 }

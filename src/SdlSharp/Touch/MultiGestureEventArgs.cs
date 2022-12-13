@@ -37,14 +37,14 @@
         /// </summary>
         public ushort FingerCount { get; }
 
-        internal MultiGestureEventArgs(Native.SDL_MultiGestureEvent multiGesture) : base(multiGesture.Timestamp)
+        internal MultiGestureEventArgs(Native.SDL_MultiGestureEvent multiGesture) : base(multiGesture.timestamp)
         {
-            _deviceIndex = multiGesture.TouchId;
-            DTheta = multiGesture.DTheta;
-            DDist = multiGesture.DDist;
-            X = multiGesture.X;
-            Y = multiGesture.Y;
-            FingerCount = multiGesture.NumFingers;
+            _deviceIndex = multiGesture.touchId;
+            DTheta = multiGesture.dTheta;
+            DDist = multiGesture.dDist;
+            X = multiGesture.x;
+            Y = multiGesture.y;
+            FingerCount = multiGesture.numFingers;
         }
     }
 }

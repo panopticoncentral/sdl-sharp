@@ -19,10 +19,10 @@ namespace SdlSharp.Input
         /// </summary>
         public string Text { get; }
 
-        internal unsafe TextInputEventArgs(Native.SDL_TextInputEvent textEdit) : base(textEdit.Timestamp)
+        internal unsafe TextInputEventArgs(Native.SDL_TextInputEvent textEdit) : base(textEdit.timestamp)
         {
-            _windowId = textEdit.WindowId;
-            Text = textEdit.Text;
+            _windowId = textEdit.windowID;
+            Text = Native.Utf8ToString(textEdit.text)!;
         }
     }
 }

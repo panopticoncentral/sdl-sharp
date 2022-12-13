@@ -52,23 +52,23 @@
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case Native.SDL_EventType.MultiGesture:
+                case Native.SDL_EventType.SDL_MULTIGESTURE:
                     {
-                        MultiGesture?.Invoke(null, new MultiGestureEventArgs(e.Mgesture));
+                        MultiGesture?.Invoke(null, new MultiGestureEventArgs(e.mgesture));
                         break;
                     }
 
-                case Native.SDL_EventType.DollarGesture:
+                case Native.SDL_EventType.SDL_DOLLARGESTURE:
                     {
-                        DollarGesture?.Invoke(null, new DollarGestureEventArgs(e.Dgesture));
+                        DollarGesture?.Invoke(null, new DollarGestureEventArgs(e.dgesture));
                         break;
                     }
 
-                case Native.SDL_EventType.DollarRecord:
+                case Native.SDL_EventType.SDL_DOLLARRECORD:
                     {
-                        DollarRecord?.Invoke(null, new DollarGestureEventArgs(e.Dgesture));
+                        DollarRecord?.Invoke(null, new DollarGestureEventArgs(e.dgesture));
                         break;
                     }
 

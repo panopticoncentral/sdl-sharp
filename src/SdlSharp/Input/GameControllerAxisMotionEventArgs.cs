@@ -15,10 +15,10 @@
         /// </summary>
         public short Value { get; }
 
-        internal GameControllerAxisMotionEventArgs(Native.SDL_ControllerAxisEvent axis) : base(axis.Timestamp)
+        internal GameControllerAxisMotionEventArgs(Native.SDL_ControllerAxisEvent axis) : base(axis.timestamp)
         {
-            Axis = (GameControllerAxis)axis.Axis;
-            Value = axis.Value;
+            Axis = (GameControllerAxis)axis.axis;
+            Value = axis.value;
         }
     }
 }

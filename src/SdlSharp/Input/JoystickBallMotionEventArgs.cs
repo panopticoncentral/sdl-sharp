@@ -15,10 +15,10 @@
         /// </summary>
         public Point RelativeLocation { get; }
 
-        internal JoystickBallMotionEventArgs(Native.SDL_JoyBallEvent ball) : base(ball.Timestamp)
+        internal JoystickBallMotionEventArgs(Native.SDL_JoyBallEvent ball) : base(ball.timestamp)
         {
-            Ball = ball.Ball;
-            RelativeLocation = (ball.Xrel, ball.Yrel);
+            Ball = ball.ball;
+            RelativeLocation = (ball.xrel, ball.yrel);
         }
     }
 }

@@ -15,10 +15,10 @@
         /// </summary>
         public bool IsCapture { get; }
 
-        internal AudioDeviceRemovedEventArgs(Native.SDL_AudioDeviceEvent device) : base(device.Timestamp)
+        internal AudioDeviceRemovedEventArgs(Native.SDL_AudioDeviceEvent device) : base(device.timestamp)
         {
-            Device = device.Which == 0 ? null : new AudioDevice(new(device.Which), null);
-            IsCapture = device.IsCapture;
+            Device = device.which == 0 ? null : new AudioDevice(new(device.which), null);
+            IsCapture = device.iscapture != 0;
         }
     }
 }

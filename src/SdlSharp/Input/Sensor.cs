@@ -47,12 +47,12 @@
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            var sensor = Get(e.Sensor.Which);
+            var sensor = Get(new(e.sensor.which));
 
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case SdlSharp.Native.SDL_EventType.SensorUpdate:
-                    sensor.Updated?.Invoke(sensor, new SensorUpdatedEventArgs(e.Sensor));
+                case SdlSharp.Native.SDL_EventType.SDL_SENSORUPDATE:
+                    sensor.Updated?.Invoke(sensor, new SensorUpdatedEventArgs(e.sensor));
                     break;
 
                 default:

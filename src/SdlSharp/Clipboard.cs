@@ -37,10 +37,10 @@
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case Native.SDL_EventType.ClipboardUpdate:
-                    Updated?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_CLIPBOARDUPDATE:
+                    Updated?.Invoke(null, new SdlEventArgs(e.common));
                     break;
 
                 default:

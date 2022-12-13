@@ -86,6 +86,16 @@
         public static bool HasNeon => Native.SDL_HasNEON();
 
         /// <summary>
+        /// Whether the CPU supports LSX.
+        /// </summary>
+        public static bool HasLsx => Native.SDL_HasLSX();
+
+        /// <summary>
+        /// Whether the CPU supports LASX.
+        /// </summary>
+        public static bool HasLasx => Native.SDL_HasLASX();
+
+        /// <summary>
         /// The amount of system RAM.
         /// </summary>
         public static int SystemRam => Native.SDL_GetSystemRAM();

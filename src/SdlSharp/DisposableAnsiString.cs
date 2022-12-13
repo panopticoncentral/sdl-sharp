@@ -10,6 +10,15 @@ namespace SdlSharp
         private readonly void* _string;
 
         /// <summary>
+        /// Constructs a new disposable ANSI string.
+        /// </summary>
+        /// <param name="s">The string.</param>
+        public DisposableAnsiString(void* s)
+        {
+            _string = s;
+        }
+
+        /// <summary>
         /// Frees the string.
         /// </summary>
         public void Dispose()

@@ -10,9 +10,9 @@
         /// </summary>
         public Point Location { get; }
 
-        internal LocationEventArgs(Native.SDL_WindowEvent e) : base(e.Timestamp)
+        internal LocationEventArgs(Native.SDL_WindowEvent e) : base(e.timestamp)
         {
-            Location = new Point(e.Data1, e.Data2);
+            Location = new Point(e.data1, e.data2);
         }
     }
 }

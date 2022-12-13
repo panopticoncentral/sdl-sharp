@@ -39,14 +39,14 @@ namespace SdlSharp.Input
         /// </summary>
         public KeyModifier Modifiers { get; }
 
-        internal KeyboardEventArgs(Native.SDL_KeyboardEvent keyboard) : base(keyboard.Timestamp)
+        internal KeyboardEventArgs(Native.SDL_KeyboardEvent keyboard) : base(keyboard.timestamp)
         {
-            _windowId = keyboard.WindowId;
-            IsPressed = keyboard.State;
-            Repeat = keyboard.Repeat;
-            Scancode = keyboard.Keysym.Scancode;
-            Keycode = keyboard.Keysym.Sym;
-            Modifiers = keyboard.Keysym.Mod;
+            _windowId = keyboard.windowID;
+            IsPressed = keyboard.state != 0;
+            Repeat = keyboard.repeat;
+            Scancode = keyboard.keysym.Scancode;
+            Keycode = keyboard.keysym.Sym;
+            Modifiers = keyboard.keysym.Mod;
         }
     }
 }

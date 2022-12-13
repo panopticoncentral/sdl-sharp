@@ -15,10 +15,10 @@
         /// </summary>
         public bool IsPressed { get; }
 
-        internal JoystickButtonEventArgs(Native.SDL_JoyButtonEvent button) : base(button.Timestamp)
+        internal JoystickButtonEventArgs(Native.SDL_JoyButtonEvent button) : base(button.timestamp)
         {
-            Button = button.Button;
-            IsPressed = button.State;
+            Button = button.button;
+            IsPressed = button.state != 0;
         }
     }
 }

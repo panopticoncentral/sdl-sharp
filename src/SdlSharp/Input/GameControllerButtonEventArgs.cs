@@ -15,10 +15,10 @@
         /// </summary>
         public bool IsPressed { get; }
 
-        internal GameControllerButtonEventArgs(Native.SDL_ControllerButtonEvent button) : base(button.Timestamp)
+        internal GameControllerButtonEventArgs(Native.SDL_ControllerButtonEvent button) : base(button.timestamp)
         {
-            Button = (GameControllerButton)button.Button;
-            IsPressed = button.State;
+            Button = (GameControllerButton)button.button;
+            IsPressed = button.state != 0;
         }
     }
 }

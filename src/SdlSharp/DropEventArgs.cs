@@ -14,9 +14,9 @@ namespace SdlSharp
         /// </summary>
         public Window? Window => _windowId == 0 ? null : Window.Get(_windowId);
 
-        internal DropEventArgs(Native.SDL_DropEvent drop) : base(drop.Timestamp)
+        internal DropEventArgs(Native.SDL_DropEvent drop) : base(drop.timestamp)
         {
-            _windowId = drop.WindowId;
+            _windowId = drop.windowID;
         }
     }
 }

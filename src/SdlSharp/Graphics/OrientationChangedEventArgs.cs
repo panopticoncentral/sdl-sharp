@@ -10,9 +10,9 @@
         /// </summary>
         public DisplayOrientation Orientation { get; }
 
-        internal OrientationChangedEventArgs(Native.SDL_DisplayEvent display) : base(display.Timestamp)
+        internal OrientationChangedEventArgs(Native.SDL_DisplayEvent display) : base(display.timestamp)
         {
-            Orientation = (DisplayOrientation)display.Data;
+            Orientation = (DisplayOrientation)display.data1;
         }
     }
 }

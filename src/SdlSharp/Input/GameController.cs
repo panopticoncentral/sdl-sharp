@@ -258,48 +258,55 @@
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case SdlSharp.Native.SDL_EventType.ControllerAxisMotion:
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERAXISMOTION:
                     {
-                        var controller = Get(e.Caxis.Which);
-                        controller?.AxisMotion?.Invoke(controller, new GameControllerAxisMotionEventArgs(e.Caxis));
+                        var controller = Get(e.caxis.which);
+                        controller?.AxisMotion?.Invoke(controller, new GameControllerAxisMotionEventArgs(e.caxis));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.ControllerButtonDown:
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERBUTTONDOWN:
                     {
-                        var controller = Get(e.Cbutton.Which);
-                        controller?.ButtonDown?.Invoke(controller, new GameControllerButtonEventArgs(e.Cbutton));
+                        var controller = Get(e.cbutton.which);
+                        controller?.ButtonDown?.Invoke(controller, new GameControllerButtonEventArgs(e.cbutton));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.ControllerButtonUp:
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERBUTTONUP:
                     {
-                        var controller = Get(e.Cbutton.Which);
-                        controller?.ButtonUp?.Invoke(controller, new GameControllerButtonEventArgs(e.Cbutton));
+                        var controller = Get(e.caxis.which);
+                        controller?.ButtonUp?.Invoke(controller, new GameControllerButtonEventArgs(e.cbutton));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.ControllerDeviceAdded:
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERDEVICEADDED:
                     {
-                        Added?.Invoke(null, new GameControllerAddedEventArgs(e.Cdevice));
+                        Added?.Invoke(null, new GameControllerAddedEventArgs(e.cdevice));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.ControllerDeviceRemoved:
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED:
                     {
-                        var controller = Get(new Native.SDL_JoystickID(e.Cdevice.Which));
-                        controller?.Removed?.Invoke(controller, new SdlEventArgs(e.Common));
+                        var controller = Get(new Native.SDL_JoystickID(e.cdevice.which));
+                        controller?.Removed?.Invoke(controller, new SdlEventArgs(e.common));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.ControllerDeviceRemapped:
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERDEVICEREMAPPED:
                     {
-                        var controller = Get(new Native.SDL_JoystickID(e.Cdevice.Which));
-                        controller?.Remapped?.Invoke(controller, new SdlEventArgs(e.Common));
+                        var controller = Get(new Native.SDL_JoystickID(e.cdevice.which));
+                        controller?.Remapped?.Invoke(controller, new SdlEventArgs(e.common));
                         break;
                     }
+
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERTOUCHPADDOWN:
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERTOUCHPADMOTION:
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERTOUCHPADUP:
+                case SdlSharp.Native.SDL_EventType.SDL_CONTROLLERSENSORUPDATE:
+                    // TODO
+                    break;
 
                 default:
                     throw new InvalidOperationException();

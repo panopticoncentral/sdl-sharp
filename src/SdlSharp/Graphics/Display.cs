@@ -123,16 +123,16 @@
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case Native.SDL_EventType.Display:
+                case Native.SDL_EventType.SDL_DISPLAYEVENT:
                     {
-                        var display = IndexToInstance((int)e.Display.DisplayIndex);
+                        var display = IndexToInstance((int)e.display.display);
 
-                        switch (e.Display.DisplayEventId)
+                        switch ((Native.SDL_DisplayEventID)e.display.@event)
                         {
                             case Native.SDL_DisplayEventID.Orientation:
-                                display.OrientationChanged?.Invoke(display, new OrientationChangedEventArgs(e.Display));
+                                display.OrientationChanged?.Invoke(display, new OrientationChangedEventArgs(e.display));
                                 break;
 
                             default:
@@ -142,12 +142,12 @@
                         break;
                     }
 
-                case Native.SDL_EventType.RenderDeviceReset:
-                    RenderDeviceReset?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_RENDER_DEVICE_RESET:
+                    RenderDeviceReset?.Invoke(null, new SdlEventArgs(e.common));
                     break;
 
-                case Native.SDL_EventType.RenderTargetsReset:
-                    RenderTargetsReset?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_RENDER_TARGETS_RESET:
+                    RenderTargetsReset?.Invoke(null, new SdlEventArgs(e.common));
                     break;
 
                 default:

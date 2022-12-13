@@ -8,7 +8,7 @@
         /// <summary>
         /// Constructs an SDL exception for the last error.
         /// </summary>
-        public SdlException() : base(Native.SDL_GetError().ToString())
+        public unsafe SdlException() : base(Native.Utf8ToString(Native.SDL_GetError()))
         {
             Native.SDL_ClearError();
         }

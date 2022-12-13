@@ -44,15 +44,15 @@ namespace SdlSharp.Touch
         /// </summary>
         public Window Window => Window.Get(_windowId);
 
-        internal TouchFingerEventArgs(Native.SDL_TouchFingerEvent touchFinger, Finger finger) : base(touchFinger.Timestamp)
+        internal TouchFingerEventArgs(Native.SDL_TouchFingerEvent touchFinger, Finger finger) : base(touchFinger.timestamp)
         {
             Finger = finger;
-            X = touchFinger.X;
-            Y = touchFinger.Y;
-            Dx = touchFinger.Dx;
-            Dy = touchFinger.Dy;
-            Pressure = touchFinger.Pressure;
-            _windowId = touchFinger.WindowId;
+            X = touchFinger.x;
+            Y = touchFinger.y;
+            Dx = touchFinger.dx;
+            Dy = touchFinger.dy;
+            Pressure = touchFinger.pressure;
+            _windowId = touchFinger.windowID;
         }
     }
 }

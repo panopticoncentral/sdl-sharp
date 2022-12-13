@@ -143,6 +143,11 @@ namespace SdlSharp
         }
 
         /// <summary>
+        /// An event that fires when the locale changed.
+        /// </summary>
+        public event EventHandler<SdlEventArgs>? LocaleChanged;
+
+        /// <summary>
         /// An event that fires when a drop begins.
         /// </summary>
         public event EventHandler<DropEventArgs>? DropBegin;
@@ -299,143 +304,156 @@ namespace SdlSharp
             switch (timeout)
             {
                 case 0:
-                    if (!Native.SDL_PollEvent(out e))
+                    if (!Native.SDL_PollEvent(&e))
                     {
                         return !_quitReceived;
                     }
                     break;
 
                 case Timeout.Infinite:
-                    _ = Native.CheckErrorZero(Native.SDL_WaitEvent(out e));
+                    _ = Native.CheckErrorZero(Native.SDL_WaitEvent(&e));
                     break;
 
                 default:
-                    _ = Native.CheckErrorZero(Native.SDL_WaitEventTimeout(out e, timeout));
+                    _ = Native.CheckErrorZero(Native.SDL_WaitEventTimeout(&e, timeout));
                     break;
             }
 
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case Native.SDL_EventType.Display:
-                case Native.SDL_EventType.RenderDeviceReset:
-                case Native.SDL_EventType.RenderTargetsReset:
-                    Display.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.Window:
-                case Native.SDL_EventType.SystemWindowMessageEvent:
-                    Window.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.KeyUp:
-                case Native.SDL_EventType.KeyDown:
-                case Native.SDL_EventType.TextEditing:
-                case Native.SDL_EventType.TextInput:
-                case Native.SDL_EventType.KeymapChanged:
-                    Keyboard.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.MouseButtonDown:
-                case Native.SDL_EventType.MouseButtonUp:
-                case Native.SDL_EventType.MouseMotion:
-                case Native.SDL_EventType.MouseWheel:
-                    Mouse.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.JoystickDeviceAdded:
-                case Native.SDL_EventType.JoystickAxisMotion:
-                case Native.SDL_EventType.JoystickBallMotion:
-                case Native.SDL_EventType.JoystickButtonDown:
-                case Native.SDL_EventType.JoystickButtonUp:
-                case Native.SDL_EventType.JoystickDeviceRemoved:
-                case Native.SDL_EventType.JoystickHatMotion:
-                    Joystick.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.ControllerAxisMotion:
-                case Native.SDL_EventType.ControllerButtonDown:
-                case Native.SDL_EventType.ControllerButtonUp:
-                case Native.SDL_EventType.ControllerDeviceAdded:
-                case Native.SDL_EventType.ControllerDeviceRemapped:
-                case Native.SDL_EventType.ControllerDeviceRemoved:
-                    GameController.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.AudioDeviceAdded:
-                case Native.SDL_EventType.AudioDeviceRemoved:
-                    Audio.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.FingerDown:
-                case Native.SDL_EventType.FingerUp:
-                case Native.SDL_EventType.FingerMotion:
-                    TouchDevice.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.MultiGesture:
-                case Native.SDL_EventType.DollarGesture:
-                case Native.SDL_EventType.DollarRecord:
-                    Gesture.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.DropBegin:
-                    DropBegin?.Invoke(null, new DropEventArgs(e.Drop));
-                    break;
-
-                case Native.SDL_EventType.DropComplete:
-                    DropComplete?.Invoke(null, new DropEventArgs(e.Drop));
-                    break;
-
-                case Native.SDL_EventType.DropFile:
-                    FileDropped?.Invoke(null, new DroppedEventArgs(e.Drop));
-                    e.Drop.File.Dispose();
-                    break;
-
-                case Native.SDL_EventType.DropText:
-                    TextDropped?.Invoke(null, new DroppedEventArgs(e.Drop));
-                    e.Drop.File.Dispose();
-                    break;
-
-                case Native.SDL_EventType.SensorUpdate:
-                    Sensor.DispatchEvent(e);
-                    break;
-
-                case Native.SDL_EventType.Quit:
-                    Quitting?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_QUIT:
+                    Quitting?.Invoke(null, new SdlEventArgs(e.common));
                     _quitReceived = true;
                     break;
 
-                case Native.SDL_EventType.UserEvent:
-                    // We don't expect to see this
-                    throw new InvalidOperationException();
-
-                case Native.SDL_EventType.ApplicationTerminating:
-                    Terminating?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_APP_TERMINATING:
+                    Terminating?.Invoke(null, new SdlEventArgs(e.common));
                     break;
 
-                case Native.SDL_EventType.ApplicationLowMemory:
-                    LowMemory?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_APP_LOWMEMORY:
+                    LowMemory?.Invoke(null, new SdlEventArgs(e.common));
                     break;
 
-                case Native.SDL_EventType.ApplicationWillEnterBackground:
-                    WillEnterBackground?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_APP_WILLENTERBACKGROUND:
+                    WillEnterBackground?.Invoke(null, new SdlEventArgs(e.common));
                     break;
 
-                case Native.SDL_EventType.ApplicationDidEnterBackground:
-                    DidEnterBackground?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_APP_DIDENTERBACKGROUND:
+                    DidEnterBackground?.Invoke(null, new SdlEventArgs(e.common));
                     break;
 
-                case Native.SDL_EventType.ApplicationWillEnterForeground:
-                    WillEnterForeground?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_APP_WILLENTERFOREGROUND:
+                    WillEnterForeground?.Invoke(null, new SdlEventArgs(e.common));
                     break;
 
-                case Native.SDL_EventType.ApplicationDidEnterForeground:
-                    DidEnterForeground?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_APP_DIDENTERFOREGROUND:
+                    DidEnterForeground?.Invoke(null, new SdlEventArgs(e.common));
                     break;
 
-                case Native.SDL_EventType.ClipboardUpdate:
+                case Native.SDL_EventType.SDL_LOCALECHANGED:
+                    LocaleChanged?.Invoke(null, new SdlEventArgs(e.common));
+                    break;
+
+                case Native.SDL_EventType.SDL_DISPLAYEVENT:
+                    Display.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_WINDOWEVENT:
+                case Native.SDL_EventType.SDL_SYSWMEVENT:
+                    Window.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_KEYUP:
+                case Native.SDL_EventType.SDL_KEYDOWN:
+                case Native.SDL_EventType.SDL_TEXTEDITING:
+                case Native.SDL_EventType.SDL_TEXTINPUT:
+                case Native.SDL_EventType.SDL_KEYMAPCHANGED:
+                case Native.SDL_EventType.SDL_TEXTEDITING_EXT:
+                    Keyboard.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_MOUSEBUTTONDOWN:
+                case Native.SDL_EventType.SDL_MOUSEBUTTONUP:
+                case Native.SDL_EventType.SDL_MOUSEMOTION:
+                case Native.SDL_EventType.SDL_MOUSEWHEEL:
+                    Mouse.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_JOYAXISMOTION:
+                case Native.SDL_EventType.SDL_JOYBALLMOTION:
+                case Native.SDL_EventType.SDL_JOYHATMOTION:
+                case Native.SDL_EventType.SDL_JOYBUTTONDOWN:
+                case Native.SDL_EventType.SDL_JOYBUTTONUP:
+                case Native.SDL_EventType.SDL_JOYDEVICEADDED:
+                case Native.SDL_EventType.SDL_JOYDEVICEREMOVED:
+                case Native.SDL_EventType.SDL_JOYBATTERYUPDATED:
+                    Joystick.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_CONTROLLERAXISMOTION:
+                case Native.SDL_EventType.SDL_CONTROLLERBUTTONDOWN:
+                case Native.SDL_EventType.SDL_CONTROLLERBUTTONUP:
+                case Native.SDL_EventType.SDL_CONTROLLERDEVICEADDED:
+                case Native.SDL_EventType.SDL_CONTROLLERDEVICEREMAPPED:
+                case Native.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED:
+                case Native.SDL_EventType.SDL_CONTROLLERTOUCHPADDOWN:
+                case Native.SDL_EventType.SDL_CONTROLLERTOUCHPADMOTION:
+                case Native.SDL_EventType.SDL_CONTROLLERTOUCHPADUP:
+                case Native.SDL_EventType.SDL_CONTROLLERSENSORUPDATE:
+                    GameController.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_FINGERDOWN:
+                case Native.SDL_EventType.SDL_FINGERUP:
+                case Native.SDL_EventType.SDL_FINGERMOTION:
+                    TouchDevice.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_DOLLARGESTURE:
+                case Native.SDL_EventType.SDL_DOLLARRECORD:
+                case Native.SDL_EventType.SDL_MULTIGESTURE:
+                    Gesture.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_CLIPBOARDUPDATE:
                     Clipboard.DispatchEvent(e);
                     break;
+
+                case Native.SDL_EventType.SDL_DROPFILE:
+                    FileDropped?.Invoke(null, new DroppedEventArgs(e.drop));
+                    Native.SDL_free(e.drop.file);
+                    break;
+
+                case Native.SDL_EventType.SDL_DROPTEXT:
+                    TextDropped?.Invoke(null, new DroppedEventArgs(e.drop));
+                    Native.SDL_free(e.drop.file);
+                    break;
+
+                case Native.SDL_EventType.SDL_DROPBEGIN:
+                    DropBegin?.Invoke(null, new DropEventArgs(e.drop));
+                    break;
+
+                case Native.SDL_EventType.SDL_DROPCOMPLETE:
+                    DropComplete?.Invoke(null, new DropEventArgs(e.drop));
+                    break;
+
+                case Native.SDL_EventType.SDL_AUDIODEVICEADDED:
+                case Native.SDL_EventType.SDL_AUDIODEVICEREMOVED:
+                    Audio.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_SENSORUPDATE:
+                    Sensor.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_RENDER_DEVICE_RESET:
+                case Native.SDL_EventType.SDL_RENDER_TARGETS_RESET:
+                    Display.DispatchEvent(e);
+                    break;
+
+                case Native.SDL_EventType.SDL_USEREVENT:
+                    // We don't expect to see this
+                    throw new InvalidOperationException();
 
                 default:
                     throw new InvalidOperationException();

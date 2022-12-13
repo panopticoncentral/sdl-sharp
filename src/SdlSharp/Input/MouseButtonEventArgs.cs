@@ -39,14 +39,14 @@ namespace SdlSharp.Input
         /// </summary>
         public Point Location { get; }
 
-        internal MouseButtonEventArgs(Native.SDL_MouseButtonEvent button) : base(button.Timestamp)
+        internal MouseButtonEventArgs(Native.SDL_MouseButtonEvent button) : base(button.timestamp)
         {
-            _windowId = button.WindowId;
-            IsTouch = button.Which == uint.MaxValue;
-            Button = (MouseButton)button.Button;
-            IsPressed = button.State;
-            Clicks = button.Clicks;
-            Location = (button.X, button.Y);
+            _windowId = button.windowID;
+            IsTouch = button.which == uint.MaxValue;
+            Button = (MouseButton)button.button;
+            IsPressed = button.state != 0;
+            Clicks = button.clicks;
+            Location = (button.x, button.y);
         }
     }
 }

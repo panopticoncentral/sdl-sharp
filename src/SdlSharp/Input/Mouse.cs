@@ -113,22 +113,22 @@ namespace SdlSharp.Input
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case Native.SDL_EventType.MouseButtonDown:
-                    ButtonDown?.Invoke(null, new MouseButtonEventArgs(e.Button));
+                case Native.SDL_EventType.SDL_MOUSEBUTTONDOWN:
+                    ButtonDown?.Invoke(null, new MouseButtonEventArgs(e.button));
                     break;
 
-                case Native.SDL_EventType.MouseButtonUp:
-                    ButtonUp?.Invoke(null, new MouseButtonEventArgs(e.Button));
+                case Native.SDL_EventType.SDL_MOUSEBUTTONUP:
+                    ButtonUp?.Invoke(null, new MouseButtonEventArgs(e.button));
                     break;
 
-                case Native.SDL_EventType.MouseMotion:
-                    Motion?.Invoke(null, new MouseMotionEventArgs(e.Motion));
+                case Native.SDL_EventType.SDL_MOUSEMOTION:
+                    Motion?.Invoke(null, new MouseMotionEventArgs(e.motion));
                     break;
 
-                case Native.SDL_EventType.MouseWheel:
-                    Wheel?.Invoke(null, new MouseWheelEventArgs(e.Wheel));
+                case Native.SDL_EventType.SDL_MOUSEWHEEL:
+                    Wheel?.Invoke(null, new MouseWheelEventArgs(e.wheel));
                     break;
 
                 default:

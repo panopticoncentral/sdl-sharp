@@ -34,13 +34,13 @@ namespace SdlSharp.Input
         /// </summary>
         public Point RelativeLocation { get; }
 
-        internal MouseMotionEventArgs(Native.SDL_MouseMotionEvent motion) : base(motion.Timestamp)
+        internal MouseMotionEventArgs(Native.SDL_MouseMotionEvent motion) : base(motion.timestamp)
         {
-            _windowId = motion.WindowId;
-            IsTouch = motion.Which == uint.MaxValue;
-            Buttons = (MouseButton)motion.State;
-            Location = (motion.X, motion.Y);
-            RelativeLocation = (motion.XRel, motion.YRel);
+            _windowId = motion.windowID;
+            IsTouch = motion.which == uint.MaxValue;
+            Buttons = (MouseButton)motion.state;
+            Location = (motion.x, motion.y);
+            RelativeLocation = (motion.xrel, motion.yrel);
         }
     }
 }

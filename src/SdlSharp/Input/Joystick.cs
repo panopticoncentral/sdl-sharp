@@ -227,55 +227,59 @@
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case SdlSharp.Native.SDL_EventType.JoystickAxisMotion:
+                case SdlSharp.Native.SDL_EventType.SDL_JOYAXISMOTION:
                     {
-                        var joystick = Get(e.Jaxis.Which);
-                        joystick?.AxisMotion?.Invoke(joystick, new JoystickAxisMotionEventArgs(e.Jaxis));
+                        var joystick = Get(e.jaxis.which);
+                        joystick?.AxisMotion?.Invoke(joystick, new JoystickAxisMotionEventArgs(e.jaxis));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.JoystickBallMotion:
+                case SdlSharp.Native.SDL_EventType.SDL_JOYBALLMOTION:
                     {
-                        var joystick = Get(e.Jball.Which);
-                        joystick?.BallMotion?.Invoke(joystick, new JoystickBallMotionEventArgs(e.Jball));
+                        var joystick = Get(e.jball.which);
+                        joystick?.BallMotion?.Invoke(joystick, new JoystickBallMotionEventArgs(e.jball));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.JoystickButtonDown:
+                case SdlSharp.Native.SDL_EventType.SDL_JOYBUTTONDOWN:
                     {
-                        var joystick = Get(e.Jbutton.Which);
-                        joystick?.ButtonDown?.Invoke(joystick, new JoystickButtonEventArgs(e.Jbutton));
+                        var joystick = Get(e.jbutton.which);
+                        joystick?.ButtonDown?.Invoke(joystick, new JoystickButtonEventArgs(e.jbutton));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.JoystickButtonUp:
+                case SdlSharp.Native.SDL_EventType.SDL_JOYBUTTONUP:
                     {
-                        var joystick = Get(e.Jbutton.Which);
-                        joystick?.ButtonUp?.Invoke(joystick, new JoystickButtonEventArgs(e.Jbutton));
+                        var joystick = Get(e.jbutton.which);
+                        joystick?.ButtonUp?.Invoke(joystick, new JoystickButtonEventArgs(e.jbutton));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.JoystickDeviceAdded:
+                case SdlSharp.Native.SDL_EventType.SDL_JOYDEVICEADDED:
                     {
-                        Added?.Invoke(null, new JoystickAddedEventArgs(e.Jdevice));
+                        Added?.Invoke(null, new JoystickAddedEventArgs(e.jdevice));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.JoystickDeviceRemoved:
+                case SdlSharp.Native.SDL_EventType.SDL_JOYDEVICEREMOVED:
                     {
-                        var joystick = Get(new Native.SDL_JoystickID(e.Jdevice.Which));
-                        joystick.Removed?.Invoke(joystick, new SdlEventArgs(e.Common));
+                        var joystick = Get(new Native.SDL_JoystickID(e.jdevice.which));
+                        joystick.Removed?.Invoke(joystick, new SdlEventArgs(e.common));
                         break;
                     }
 
-                case SdlSharp.Native.SDL_EventType.JoystickHatMotion:
+                case SdlSharp.Native.SDL_EventType.SDL_JOYHATMOTION:
                     {
-                        var joystick = Get(e.Jhat.Which);
-                        joystick?.HatMotion?.Invoke(joystick, new JoystickHatMotionEventArgs(e.Jhat));
+                        var joystick = Get(e.jhat.which);
+                        joystick?.HatMotion?.Invoke(joystick, new JoystickHatMotionEventArgs(e.jhat));
                         break;
                     }
+
+                case SdlSharp.Native.SDL_EventType.SDL_JOYBATTERYUPDATED:
+                    // TODO
+                    break;
 
                 default:
                     throw new InvalidOperationException();

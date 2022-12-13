@@ -10,9 +10,9 @@
         /// </summary>
         public Size Size { get; }
 
-        internal SizeEventArgs(Native.SDL_WindowEvent e) : base(e.Timestamp)
+        internal SizeEventArgs(Native.SDL_WindowEvent e) : base(e.timestamp)
         {
-            Size = (e.Data1, e.Data2);
+            Size = (e.data1, e.data2);
         }
     }
 }

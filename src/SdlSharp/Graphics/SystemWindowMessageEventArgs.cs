@@ -12,9 +12,9 @@ namespace SdlSharp.Graphics
         /// </summary>
         public SystemWindowMessage Message { get; }
 
-        internal SystemWindowMessageEventArgs(Native.SDL_SysWMEvent wmevent) : base(wmevent.Timestamp)
+        internal SystemWindowMessageEventArgs(Native.SDL_SysWMEvent wmevent) : base(wmevent.timestamp)
         {
-            Message = wmevent.Msg == null ? new SystemWindowMessage() : Marshal.PtrToStructure<SystemWindowMessage>((nint)wmevent.Msg);
+            Message = wmevent.msg == null ? new SystemWindowMessage() : Marshal.PtrToStructure<SystemWindowMessage>((nint)wmevent.msg);
         }
     }
 }

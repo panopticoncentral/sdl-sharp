@@ -20,21 +20,33 @@ namespace SdlSharp.Input
         public bool IsTouch { get; }
 
         /// <summary>
-        /// The location of the event.
+        /// The scroll amount of the event.
         /// </summary>
-        public Point Location { get; }
+        public Point Scroll { get; }
 
         /// <summary>
         /// The direction of the wheel movement.
         /// </summary>
         public MouseWheelDirection Direction { get; }
 
-        internal MouseWheelEventArgs(Native.SDL_MouseWheelEvent wheel) : base(wheel.Timestamp)
+        /// <summary>
+        /// The precise location of the event.
+        /// </summary>
+        public PointF PreciseLocation { get; }
+
+        /// <summary>
+        /// The mouse location relative to the window.
+        /// </summary>
+        public Point Location { get; }
+
+        internal MouseWheelEventArgs(Native.SDL_MouseWheelEvent wheel) : base(wheel.timestamp)
         {
-            _windowId = wheel.WindowId;
-            IsTouch = wheel.Which == uint.MaxValue;
-            Location = (wheel.X, wheel.Y);
-            Direction = wheel.Direction;
+            _windowId = wheel.windowID;
+            IsTouch = wheel.which == uint.MaxValue;
+            Scroll = (wheel.x, wheel.y);
+            Direction = (MouseWheelDirection)wheel.direction;
+            PreciseLocation = (PointF)(wheel.preciseX, wheel.preciseY);
+            Location = (wheel.mouseX, wheel.mouseY);
         }
     }
 }

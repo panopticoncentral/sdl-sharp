@@ -97,26 +97,30 @@ namespace SdlSharp.Input
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            switch (e.Type)
+            switch ((Native.SDL_EventType)e.type)
             {
-                case Native.SDL_EventType.KeyUp:
-                    KeyUp?.Invoke(null, new KeyboardEventArgs(e.Key));
+                case Native.SDL_EventType.SDL_KEYUP:
+                    KeyUp?.Invoke(null, new KeyboardEventArgs(e.key));
                     break;
 
-                case Native.SDL_EventType.KeyDown:
-                    KeyDown?.Invoke(null, new KeyboardEventArgs(e.Key));
+                case Native.SDL_EventType.SDL_KEYDOWN:
+                    KeyDown?.Invoke(null, new KeyboardEventArgs(e.key));
                     break;
 
-                case Native.SDL_EventType.TextEditing:
-                    TextEdited?.Invoke(null, new TextEditedEventArgs(e.Edit));
+                case Native.SDL_EventType.SDL_TEXTEDITING:
+                    TextEdited?.Invoke(null, new TextEditedEventArgs(e.edit));
                     break;
 
-                case Native.SDL_EventType.TextInput:
-                    TextInput?.Invoke(null, new TextInputEventArgs(e.Text));
+                case Native.SDL_EventType.SDL_TEXTINPUT:
+                    TextInput?.Invoke(null, new TextInputEventArgs(e.text));
                     break;
 
-                case Native.SDL_EventType.KeymapChanged:
-                    KeymapChanged?.Invoke(null, new SdlEventArgs(e.Common));
+                case Native.SDL_EventType.SDL_KEYMAPCHANGED:
+                    KeymapChanged?.Invoke(null, new SdlEventArgs(e.common));
+                    break;
+
+                case Native.SDL_EventType.SDL_TEXTEDITING_EXT:
+                    // TODO!
                     break;
 
                 default:

@@ -15,10 +15,10 @@
         /// </summary>
         public short Value { get; }
 
-        internal JoystickAxisMotionEventArgs(Native.SDL_JoyAxisEvent axis) : base(axis.Timestamp)
+        internal JoystickAxisMotionEventArgs(Native.SDL_JoyAxisEvent axis) : base(axis.timestamp)
         {
-            Axis = axis.Axis;
-            Value = axis.Value;
+            Axis = axis.axis;
+            Value = axis.value;
         }
     }
 }

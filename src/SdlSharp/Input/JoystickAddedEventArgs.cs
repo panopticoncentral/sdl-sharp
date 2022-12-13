@@ -12,9 +12,9 @@
         /// </summary>
         public JoystickInfo Device => JoystickInfo.Get(_index);
 
-        internal JoystickAddedEventArgs(Native.SDL_JoyDeviceEvent device) : base(device.Timestamp)
+        internal JoystickAddedEventArgs(Native.SDL_JoyDeviceEvent device) : base(device.timestamp)
         {
-            _index = device.Which;
+            _index = device.which;
         }
     }
 }
