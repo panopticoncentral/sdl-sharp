@@ -1,4 +1,6 @@
-﻿namespace SdlSharp
+﻿using static System.Net.Mime.MediaTypeNames;
+
+namespace SdlSharp
 {
     /// <summary>
     /// The system clipboard.
@@ -15,18 +17,13 @@
         /// </summary>
         public static unsafe string? Text
         {
-            get
-            {
-                var text = Native.SDL_GetClipboardText();
-                var result = Native.Utf8ToString(text);
-                Native.SDL_free(text);
-                return result;
-            }
+            get => Native.Utf8ToStringAndFree(Native.SDL_GetClipboardText());
             set
             {
-                var text = Native.StringToUtf8(value);
-                _ = Native.CheckError(Native.SDL_SetClipboardText(text));
-                Native.SDL_free(text);
+                fixed (byte* ptr = Native.StringToUtf8(value))
+                {
+                    _ = Native.CheckError(Native.SDL_SetClipboardText(ptr));
+                }
             }
         }
 

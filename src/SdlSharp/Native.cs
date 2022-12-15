@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using SdlSharp.Graphics;
@@ -164,28 +165,35 @@ namespace SdlSharp
         }
 
         /// <summary>
+        /// Converts a UTF8 string to a string and frees the UTF8 string.
+        /// </summary>
+        /// <param name="utf8">Pointer to the UFT8 string storage.</param>
+        /// <returns>The string.</returns>
+        public static string? Utf8ToStringAndFree(byte* utf8)
+        {
+            var result = Utf8ToString(utf8);
+            SDL_free(utf8);
+            return result;
+        }
+
+        /// <summary>
         /// Convert a regular string to a UTF-8 string.
         /// </summary>
         /// <param name="s">The regular string.</param>
         /// <returns>The new UTF-8 string.</returns>
-        public static byte* StringToUtf8(string? s)
+        public static Span<byte> StringToUtf8(string? s)
         {
-            byte* pointer = null;
-
             if (s != null)
             {
                 var terminatedString = s + '\0';
                 var byteCount = Encoding.UTF8.GetByteCount(terminatedString);
+                var buffer = new byte[byteCount];
 
-                pointer = (byte*)SDL_malloc((nuint)byteCount);
-
-                fixed (char* terminatedStringBuffer = terminatedString)
-                {
-                    _ = Encoding.UTF8.GetBytes(terminatedStringBuffer, terminatedString.Length, pointer, byteCount);
-                }
+                _ = Encoding.UTF8.GetBytes(terminatedString, 0, terminatedString.Length, buffer, byteCount);
+                return new Span<byte>(buffer, 0, byteCount);
             }
 
-            return pointer;
+            return null;
         }
 
         /// <summary>
@@ -251,7 +259,7 @@ namespace SdlSharp
         public static extern void SDL_QuitSubSystem(uint flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint SDL_WasInit(Subsystems flags);
+        public static extern uint SDL_WasInit(uint flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_Quit();
@@ -634,8 +642,8 @@ namespace SdlSharp
 
         #region SDL_error.h
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int SDL_SetError(string message /* ... */);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_SetError(byte* message /* ... */);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern byte* SDL_GetError();
@@ -908,7 +916,7 @@ namespace SdlSharp
             public readonly uint type;
             public readonly uint timestamp;
             public readonly SDL_JoystickID which;
-            public readonly JoystickPowerLevel level;
+            public readonly SDL_JoystickPowerLevel level;
         }
 
         public readonly struct SDL_ControllerAxisEvent
@@ -1232,84 +1240,103 @@ namespace SdlSharp
         #region SDL_filesystem.h
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Utf8String SDL_GetBasePath();
+        public static extern byte* SDL_GetBasePath();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Utf8String SDL_GetPrefPath(Utf8String org, Utf8String app);
+        public static extern byte* SDL_GetPrefPath(byte* org, byte* app);
 
         #endregion
 
         #region SDL_gamecontroller.h
 
-        public readonly struct SDL_GameController
+        public struct SDL_GameController { }
+
+        public enum SDL_GameControllerType
         {
+            SDL_CONTROLLER_TYPE_UNKNOWN = 0,
+            SDL_CONTROLLER_TYPE_XBOX360,
+            SDL_CONTROLLER_TYPE_XBOXONE,
+            SDL_CONTROLLER_TYPE_PS3,
+            SDL_CONTROLLER_TYPE_PS4,
+            SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO,
+            SDL_CONTROLLER_TYPE_VIRTUAL,
+            SDL_CONTROLLER_TYPE_PS5,
+            SDL_CONTROLLER_TYPE_AMAZON_LUNA,
+            SDL_CONTROLLER_TYPE_GOOGLE_STADIA,
+            SDL_CONTROLLER_TYPE_NVIDIA_SHIELD,
+            SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT,
+            SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT,
+            SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR
         }
 
         public enum SDL_ControllerBindType
         {
-            None,
-            Button,
-            Axis,
-            Hat
+            SDL_CONTROLLER_BINDTYPE_NONE = 0,
+            SDL_CONTROLLER_BINDTYPE_BUTTON,
+            SDL_CONTROLLER_BINDTYPE_AXIS,
+            SDL_CONTROLLER_BINDTYPE_HAT
         }
 
         public readonly struct SDL_GameControllerButtonBind
         {
-            public readonly SDL_ControllerBindType Type { get; }
-            public readonly GameControllerButtonBindUnion Value { get; }
+            public readonly SDL_ControllerBindType bindType;
+            public readonly SDL_GameControllerButtonBindUnion value;
 
             [StructLayout(LayoutKind.Explicit)]
-            public readonly struct GameControllerButtonBindUnion
+            public readonly struct SDL_GameControllerButtonBindUnion
             {
                 [field: FieldOffset(0)]
-                public readonly int Button { get; }
+                public readonly int button;
 
                 [field: FieldOffset(0)]
-                public readonly int Axis { get; }
+                public readonly int axis;
 
                 [field: FieldOffset(0)]
-                public readonly HatValue Hat { get; }
+                public readonly SDL_GameControllerButtonBindUnionHatUnion hat;
 
-                public readonly struct HatValue
+                public readonly struct SDL_GameControllerButtonBindUnionHatUnion
                 {
-                    public readonly int Hat { get; }
-                    public readonly int HatMask { get; }
+                    public readonly int hat;
+                    public readonly int hat_mask;
                 }
             }
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GameControllerAddMappingsFromRW(SDL_RWops* rw, bool freerw);
+        public static extern int SDL_GameControllerAddMappingsFromRW(SDL_RWops* rw, int freerw);
 
         public static int SDL_GameControllerAddMappingsFromFile(string file) =>
-            SDL_GameControllerAddMappingsFromRW(SDL_RWFromFile(file, "rb"), true);
+            SDL_GameControllerAddMappingsFromRW(SDL_RWFromFile(file, "rb"), BoolToInt(true));
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int SDL_GameControllerAddMapping(string mappingString);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerAddMapping(byte* mappingString);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GameControllerNumMappings();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern DisposableAnsiString SDL_GameControllerMappingForIndex(int mapping_index);
+        public static extern byte* SDL_GameControllerMappingForIndex(int mapping_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern DisposableAnsiString SDL_GameControllerMappingForGUID(Guid id);
+        public static extern byte* SDL_GameControllerMappingForGUID(Guid id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern DisposableAnsiString SDL_GameControllerMapping(SDL_GameController* gamecontroller);
+        public static extern byte* SDL_GameControllerMapping(SDL_GameController* gamecontroller);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_IsGameController(int joystick_index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GameControllerNameForIndex(int joystick_index);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GameControllerNameForIndex(int joystick_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GameControllerType SDL_GameControllerTypeForIndex(int joystick_index);
+        public static extern byte* SDL_GameControllerPathForIndex(int joystick_index);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_GameControllerType SDL_GameControllerTypeForIndex(int joystick_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern DisposableAnsiString SDL_GameControllerMappingForDeviceIndex(int joystick_index);
+        public static extern byte* SDL_GameControllerMappingForDeviceIndex(int joystick_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_GameController* SDL_GameControllerOpen(int joystick_index);
@@ -1320,11 +1347,14 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_GameController* SDL_GameControllerFromPlayerIndex(int player_index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string? SDL_GameControllerName(SDL_GameController* gamecontroller);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GameControllerName(SDL_GameController* gamecontroller);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern GameControllerType SDL_GameControllerGetType(SDL_GameController* gamecontroller);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GameControllerPath(SDL_GameController* gamecontroller);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_GameControllerType SDL_GameControllerGetType(SDL_GameController* gamecontroller);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GameControllerGetPlayerIndex(SDL_GameController* gamecontroller);
@@ -1342,51 +1372,148 @@ namespace SdlSharp
         public static extern ushort SDL_GameControllerGetProductVersion(SDL_GameController* gamecontroller);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern ushort SDL_GameControllerGetFirmwareVersion(SDL_GameController* gamecontroller);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GameControllerGetSerial(SDL_GameController* gamecontroller);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_GameControllerGetAttached(SDL_GameController* gamecontroller);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Joystick* SDL_GameControllerGetJoystick(SDL_GameController* gamecontroller);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GameControllerEventState(State state);
+        public static extern int SDL_GameControllerEventState(int state);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_GameControllerUpdate();
 
-        // SDL_GameControllerAxis is covered by ControllerAxis.cs
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern GameControllerAxis SDL_GameControllerGetAxisFromString(string pchString);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GameControllerGetStringForAxis(GameControllerAxis axis);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_GameControllerButtonBind SDL_GameControllerGetBindForAxis(SDL_GameController* gamecontroller, GameControllerAxis axis);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern short SDL_GameControllerGetAxis(SDL_GameController* gamecontroller, GameControllerAxis axis);
-
-        // SDL_GameControllerButton is covered by ControllerButton.cs
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern GameControllerButton SDL_GameControllerGetButtonFromString(string pchString);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GameControllerGetStringForButton(GameControllerButton button);
+        public enum SDL_GameControllerAxis
+        {
+            SDL_CONTROLLER_AXIS_INVALID = -1,
+            SDL_CONTROLLER_AXIS_LEFTX,
+            SDL_CONTROLLER_AXIS_LEFTY,
+            SDL_CONTROLLER_AXIS_RIGHTX,
+            SDL_CONTROLLER_AXIS_RIGHTY,
+            SDL_CONTROLLER_AXIS_TRIGGERLEFT,
+            SDL_CONTROLLER_AXIS_TRIGGERRIGHT,
+            SDL_CONTROLLER_AXIS_MAX
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_GameControllerButtonBind SDL_GameControllerGetBindForButton(SDL_GameController* gamecontroller, GameControllerButton button);
+        public static extern SDL_GameControllerAxis SDL_GameControllerGetAxisFromString(byte* pchString);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool SDL_GameControllerGetButton(SDL_GameController* gamecontroller, GameControllerButton button);
+        public static extern byte* SDL_GameControllerGetStringForAxis(SDL_GameControllerAxis axis);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_GameControllerButtonBind SDL_GameControllerGetBindForAxis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GameControllerHasAxis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern short SDL_GameControllerGetAxis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis);
+
+        public enum SDL_GameControllerButton
+        {
+            SDL_CONTROLLER_BUTTON_INVALID = -1,
+            SDL_CONTROLLER_BUTTON_A,
+            SDL_CONTROLLER_BUTTON_B,
+            SDL_CONTROLLER_BUTTON_X,
+            SDL_CONTROLLER_BUTTON_Y,
+            SDL_CONTROLLER_BUTTON_BACK,
+            SDL_CONTROLLER_BUTTON_GUIDE,
+            SDL_CONTROLLER_BUTTON_START,
+            SDL_CONTROLLER_BUTTON_LEFTSTICK,
+            SDL_CONTROLLER_BUTTON_RIGHTSTICK,
+            SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
+            SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
+            SDL_CONTROLLER_BUTTON_DPAD_UP,
+            SDL_CONTROLLER_BUTTON_DPAD_DOWN,
+            SDL_CONTROLLER_BUTTON_DPAD_LEFT,
+            SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
+            SDL_CONTROLLER_BUTTON_MISC1,
+            SDL_CONTROLLER_BUTTON_PADDLE1,
+            SDL_CONTROLLER_BUTTON_PADDLE2,
+            SDL_CONTROLLER_BUTTON_PADDLE3,
+            SDL_CONTROLLER_BUTTON_PADDLE4,
+            SDL_CONTROLLER_BUTTON_TOUCHPAD,
+            SDL_CONTROLLER_BUTTON_MAX
+        }
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_GameControllerButton SDL_GameControllerGetButtonFromString(byte* pchString);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GameControllerGetStringForButton(SDL_GameControllerButton button);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_GameControllerButtonBind SDL_GameControllerGetBindForButton(SDL_GameController* gamecontroller, SDL_GameControllerButton button);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GameControllerHasButton(SDL_GameController* gamecontroller, SDL_GameControllerButton button);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte SDL_GameControllerGetButton(SDL_GameController* gamecontroller, SDL_GameControllerButton button);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerGetNumTouchpads(SDL_GameController* gamecontroller);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerGetNumTouchpadFingers(SDL_GameController* gamecontroller, int touchpad);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerGetTouchpadFinger(SDL_GameController* gamecontroller, int touchpad, int finger, byte* state, float* x, float* y, float* pressure);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GameControllerHasSensor(SDL_GameController* gamecontroller, SDL_SensorType type);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerSetSensorEnabled(SDL_GameController* gamecontroller, SDL_SensorType type, bool enabled);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GameControllerIsSensorEnabled(SDL_GameController* gamecontroller, SDL_SensorType type);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern float SDL_GameControllerGetSensorDataRate(SDL_GameController* gamecontroller, SDL_SensorType type);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerGetSensorData(SDL_GameController* gamecontroller, SDL_SensorType type, float* data, int num_values);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerGetSensorDataWithTimestamp(SDL_GameController* gamecontroller, SDL_SensorType type, ulong* timestamp, float* data, int num_values);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GameControllerRumble(SDL_GameController* gamecontroller, ushort low_frequency_rumble, ushort high_frequency_rumble, uint duration_ms);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerRumbleTriggers(SDL_GameController* gamecontroller, ushort left_rumble, ushort right_rumble, uint duration_ms);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GameControllerHasLED(SDL_GameController* gamecontroller);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GameControllerHasRumble(SDL_GameController* gamecontroller);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GameControllerHasRumbleTriggers(SDL_GameController* gamecontroller);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerSetLED(SDL_GameController* gamecontroller, byte red, byte green, byte blue);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GameControllerSendEffect(SDL_GameController* gamecontroller, void* data, int size);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_GameControllerClose(SDL_GameController* gamecontroller);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GameControllerGetAppleSFSymbolsNameForButton(SDL_GameController* gamecontroller, SDL_GameControllerButton button);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GameControllerGetAppleSFSymbolsNameForAxis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis);
 
         #endregion
 
@@ -1846,18 +1973,32 @@ namespace SdlSharp
 
         // SDL_JoystickGUID is just System.Guid
 
-        public readonly struct SDL_JoystickID
-        {
-            public readonly int Id { get; }
+        public readonly record struct SDL_JoystickID(int Id);
 
-            public SDL_JoystickID(int id)
-            {
-                Id = id;
-            }
+        public enum SDL_JoystickType
+        {
+            SDL_JOYSTICK_TYPE_UNKNOWN,
+            SDL_JOYSTICK_TYPE_GAMECONTROLLER,
+            SDL_JOYSTICK_TYPE_WHEEL,
+            SDL_JOYSTICK_TYPE_ARCADE_STICK,
+            SDL_JOYSTICK_TYPE_FLIGHT_STICK,
+            SDL_JOYSTICK_TYPE_DANCE_PAD,
+            SDL_JOYSTICK_TYPE_GUITAR,
+            SDL_JOYSTICK_TYPE_DRUM_KIT,
+            SDL_JOYSTICK_TYPE_ARCADE_PAD,
+            SDL_JOYSTICK_TYPE_THROTTLE
         }
 
-        // SDL_JoystickType is covered by JoystickType.cs
-        // SDL_JoystickPowerLevel is covered by JoystickPowerLevel.cs
+        public enum SDL_JoystickPowerLevel
+        {
+            SDL_JOYSTICK_POWER_UNKNOWN = -1,
+            SDL_JOYSTICK_POWER_EMPTY,   /* <= 5% */
+            SDL_JOYSTICK_POWER_LOW,     /* <= 20% */
+            SDL_JOYSTICK_POWER_MEDIUM,  /* <= 70% */
+            SDL_JOYSTICK_POWER_FULL,    /* <= 100% */
+            SDL_JOYSTICK_POWER_WIRED,
+            SDL_JOYSTICK_POWER_MAX
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_LockJoysticks();
@@ -2839,7 +2980,17 @@ namespace SdlSharp
         {
         }
 
-        // SDL_SensorType is covered by SensorType.cs
+        public enum SDL_SensorType
+        {
+            SDL_SENSOR_INVALID = -1,
+            SDL_SENSOR_UNKNOWN,
+            SDL_SENSOR_ACCEL,
+            SDL_SENSOR_GYRO,
+            SDL_SENSOR_ACCEL_L,
+            SDL_SENSOR_GYRO_L,
+            SDL_SENSOR_ACCEL_R,
+            SDL_SENSOR_GYRO_R
+        }
 
         public readonly record struct SDL_SensorID(int Id);
 

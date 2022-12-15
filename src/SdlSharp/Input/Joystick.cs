@@ -82,6 +82,12 @@
         public JoystickPowerLevel PowerLevel => SdlSharp.Native.SDL_JoystickCurrentPowerLevel(Native);
 
         /// <summary>
+        /// The game controller associated with this joystick.
+        /// </summary>
+        public GameController GameController => 
+            new(SdlSharp.Native.CheckPointer(SdlSharp.Native.SDL_GameControllerFromInstanceID(SdlSharp.Native.CheckError(SdlSharp.Native.SDL_JoystickInstanceID(Native), joystickId => joystickId.Id >= 0))));
+
+        /// <summary>
         /// Whether the joystick supports haptic effects.
         /// </summary>
         public bool IsHaptic =>

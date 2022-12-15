@@ -4,7 +4,7 @@
     /// An audio stream that converts audio from one format to another.
     /// </summary>
 #pragma warning disable CA1711 // Identifiers should not have incorrect suffix
-    public unsafe struct AudioStream : IDisposable
+    public sealed unsafe class AudioStream : IDisposable
 #pragma warning restore CA1711 // Identifiers should not have incorrect suffix
     {
         private Native.SDL_AudioStream* _audioStream;

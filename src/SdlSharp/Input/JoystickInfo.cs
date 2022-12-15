@@ -46,26 +46,28 @@
         public bool IsGameController => Native.SDL_IsGameController(Index);
 
         /// <summary>
-        /// The name of the game controller.
+        /// The name of the game controller associated with this joystick.
         /// </summary>
-        public string GameControllerName => Native.SDL_GameControllerNameForIndex(Index);
+        public string? GameControllerName =>
+            Native.Utf8ToString(Native.SDL_GameControllerNameForIndex(Index));
+
+        /// <summary>
+        /// The game controller path for this joystick.
+        /// </summary>
+        public string? GameControllerPath =>
+            Native.Utf8ToString(Native.SDL_GameControllerPathForIndex(Index));
 
         /// <summary>
         /// The type of the game controller.
         /// </summary>
-        public GameControllerType GameControllerType => Native.SDL_GameControllerTypeForIndex(Index);
+        public GameControllerType GameControllerType => 
+            (GameControllerType)Native.SDL_GameControllerTypeForIndex(Index);
 
         /// <summary>
         /// The mapping for the game controller.
         /// </summary>
-        public string? GameControllerMapping
-        {
-            get
-            {
-                using var mapping = Native.SDL_GameControllerMappingForDeviceIndex(Index);
-                return mapping.ToString();
-            }
-        }
+        public string? GameControllerMapping => 
+            Native.Utf8ToStringAndFree(Native.SDL_GameControllerMappingForDeviceIndex(Index));
 
         internal static JoystickInfo Get(int index) =>
             IndexToInstance(index);
@@ -82,6 +84,6 @@
         /// </summary>
         /// <returns>The game controller instance.</returns>
         public GameController OpenGameController() =>
-            GameController.PointerToInstanceNotNull(Native.SDL_GameControllerOpen(Index));
+            new(Native.CheckPointer(Native.SDL_GameControllerOpen(Index)));
     }
 }

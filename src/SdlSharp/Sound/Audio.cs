@@ -93,8 +93,6 @@
         /// <returns>The audio device that was opened.</returns>
         public static AudioDevice Open(string? device, bool isCapture, AudioSpecification desired, AudioCallback? callback, out AudioSpecification obtained, AudioAllowChange allowedChanges)
         {
-            var utf8Device = Native.StringToUtf8(device);
-
             var desiredNativeSpec = new Native.SDL_AudioSpec(
                 desired.Frequency,
                 desired.Format.Format,
@@ -105,20 +103,21 @@
 
             Native.SDL_AudioSpec obtainedNativeSpec;
 
-            var audioDeviceId = Native.CheckError(Native.SDL_OpenAudioDevice(
-                utf8Device,
-                Native.BoolToInt(isCapture),
-                &desiredNativeSpec,
-                &obtainedNativeSpec,
-                (int)allowedChanges),
-                d => d.Id != 0);
+            fixed (byte* utf8Device = Native.StringToUtf8(device))
+            {
+                var audioDeviceId = Native.CheckError(Native.SDL_OpenAudioDevice(
+                    utf8Device,
+                    Native.BoolToInt(isCapture),
+                    &desiredNativeSpec,
+                    &obtainedNativeSpec,
+                    (int)allowedChanges),
+                    d => d.Id != 0);
 
-            Native.SDL_free(utf8Device);
+                var audioDevice = new AudioDevice(audioDeviceId, callback);
+                obtained = new AudioSpecification(obtainedNativeSpec);
 
-            var audioDevice = new AudioDevice(audioDeviceId, callback);
-            obtained = new AudioSpecification(obtainedNativeSpec);
-
-            return audioDevice;
+                return audioDevice;
+            }
         }
 
         /// <summary>
@@ -247,8 +246,8 @@
             Native.SDL_AudioSpec spec;
 
             _ = Native.CheckError(Native.SDL_GetDefaultAudioInfo(&nameBuffer, &spec, Native.BoolToInt(isCapture)));
-            using var utf8Name = new Utf8String(nameBuffer);
-            return (utf8Name.ToString()!, new AudioSpecification(spec));
+            var name = Native.Utf8ToStringAndFree(nameBuffer);
+            return (name!, new AudioSpecification(spec));
         }
 
         internal static void DispatchEvent(Native.SDL_Event e)

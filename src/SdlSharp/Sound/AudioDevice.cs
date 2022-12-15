@@ -6,7 +6,7 @@ namespace SdlSharp.Sound
     /// <summary>
     /// An audio device.
     /// </summary>
-    public unsafe struct AudioDevice : IDisposable
+    public sealed unsafe class AudioDevice : IDisposable
     {
         private static Dictionary<nint, AudioCallback>? s_audioCallbacks;
 

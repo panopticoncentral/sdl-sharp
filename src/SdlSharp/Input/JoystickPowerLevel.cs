@@ -8,36 +8,36 @@
         /// <summary>
         /// Unknown.
         /// </summary>
-        Unknown = -1,
+        Unknown = Native.SDL_JoystickPowerLevel.SDL_JOYSTICK_POWER_UNKNOWN,
 
         /// <summary>
-        /// Empty.
+        /// Empty (5% or less).
         /// </summary>
-        Empty,
+        Empty = Native.SDL_JoystickPowerLevel.SDL_JOYSTICK_POWER_EMPTY,
 
         /// <summary>
-        /// Low.
+        /// Low (20% or less).
         /// </summary>
-        Low,
+        Low = Native.SDL_JoystickPowerLevel.SDL_JOYSTICK_POWER_LOW,
 
         /// <summary>
-        /// Medium.
+        /// Medium (70% or less).
         /// </summary>
-        Medium,
+        Medium = Native.SDL_JoystickPowerLevel.SDL_JOYSTICK_POWER_MEDIUM,
 
         /// <summary>
-        /// Full.
+        /// Full (100% or less).
         /// </summary>
-        Full,
+        Full = Native.SDL_JoystickPowerLevel.SDL_JOYSTICK_POWER_FULL,
 
         /// <summary>
         /// Wired.
         /// </summary>
-        Wired,
+        Wired = Native.SDL_JoystickPowerLevel.SDL_JOYSTICK_POWER_WIRED,
 
         /// <summary>
         /// The maximum value.
         /// </summary>
-        Max
+        Max = Native.SDL_JoystickPowerLevel.SDL_JOYSTICK_POWER_MAX
     }
 }

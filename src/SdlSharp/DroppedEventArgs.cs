@@ -12,7 +12,7 @@
 
         internal unsafe DroppedEventArgs(Native.SDL_DropEvent drop) : base(drop)
         {
-            Value = Native.Utf8ToString(drop.file);
+            Value = Native.Utf8ToStringAndFree(drop.file);
         }
     }
 }

@@ -88,9 +88,8 @@ namespace SdlSharp
         /// <summary>
         /// The base path of the application.
         /// </summary>
-        public static string BasePath =>
-            Native.CheckNotNull(Native.SDL_GetBasePath().ToString());
-
+        public static string BasePath => Native.Utf8ToStringAndFree(Native.CheckPointer(Native.SDL_GetBasePath()))!;
+ 
         /// <summary>
         /// Information about the power state of the computer.
         /// </summary>
@@ -287,9 +286,11 @@ namespace SdlSharp
         /// <returns>The path to store preferences.</returns>
         public static string GetPreferencesPath(string organization, string application)
         {
-            using var organizationString = Utf8String.ToUtf8String(organization);
-            using var applicationString = Utf8String.ToUtf8String(application);
-            return Native.CheckNotNull(Native.SDL_GetPrefPath(organizationString, applicationString).ToString());
+            fixed (byte* organizationString = Native.StringToUtf8(organization))
+            fixed (byte* applicationString = Native.StringToUtf8(application))
+            {
+                return Native.Utf8ToStringAndFree(Native.SDL_GetPrefPath(organizationString, applicationString))!;
+            }
         }
 
         /// <summary>
@@ -421,12 +422,10 @@ namespace SdlSharp
 
                 case Native.SDL_EventType.SDL_DROPFILE:
                     FileDropped?.Invoke(null, new DroppedEventArgs(e.drop));
-                    Native.SDL_free(e.drop.file);
                     break;
 
                 case Native.SDL_EventType.SDL_DROPTEXT:
                     TextDropped?.Invoke(null, new DroppedEventArgs(e.drop));
-                    Native.SDL_free(e.drop.file);
                     break;
 
                 case Native.SDL_EventType.SDL_DROPBEGIN:
