@@ -122,7 +122,7 @@
         /// </summary>
         public static GameControllerButton Max => new(Native.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_MAX);
 
-        private GameControllerButton(Native.SDL_GameControllerButton value)
+        internal GameControllerButton(Native.SDL_GameControllerButton value)
         {
             Value = value;
         }

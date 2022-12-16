@@ -47,7 +47,7 @@
         /// </summary>
         public static GameControllerAxis Max => new(Native.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_MAX);
 
-        private GameControllerAxis(Native.SDL_GameControllerAxis value)
+        internal GameControllerAxis(Native.SDL_GameControllerAxis value)
         {
             Value = value;
         }

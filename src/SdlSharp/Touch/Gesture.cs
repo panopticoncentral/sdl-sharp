@@ -3,8 +3,10 @@
     /// <summary>
     /// A touch gesture.
     /// </summary>
-    public sealed unsafe class Gesture : NativeStaticIndexBase<Native.SDL_GestureID, Gesture>
+    public sealed unsafe class Gesture
     {
+        private readonly Native.SDL_GestureID _gestureId;
+
         /// <summary>
         /// An event fired when a multi-finger gesture was made.
         /// </summary>
@@ -48,7 +50,12 @@
         /// </summary>
         /// <param name="rwops">The storage.</param>
         public void SaveDollarTemplate(RWOps rwops) =>
-            Native.CheckError(Native.SDL_SaveDollarTemplate(Index, rwops.Native));
+            Native.CheckError(Native.SDL_SaveDollarTemplate(_gestureId, rwops.Native));
+
+        internal Gesture(Native.SDL_GestureID gestureId)
+        {
+            _gestureId = gestureId;
+        }
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {

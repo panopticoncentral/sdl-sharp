@@ -1519,10 +1519,7 @@ namespace SdlSharp
 
         #region SDL_gesture.h
 
-        public readonly struct SDL_GestureID
-        {
-            public long Id { get; }
-        }
+        public readonly record struct SDL_GestureID(long Id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_RecordGesture(SDL_TouchID touchId);

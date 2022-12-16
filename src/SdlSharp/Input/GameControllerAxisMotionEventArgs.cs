@@ -17,7 +17,7 @@
 
         internal GameControllerAxisMotionEventArgs(Native.SDL_ControllerAxisEvent axis) : base(axis.timestamp)
         {
-            Axis = (GameControllerAxis)axis.axis;
+            Axis = new((Native.SDL_GameControllerAxis)axis.axis);
             Value = axis.value;
         }
     }

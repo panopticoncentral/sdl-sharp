@@ -41,9 +41,10 @@
         /// <param name="timestamp">The timestamp.</param>
         public void GetData(Span<float> data, out ulong timestamp)
         {
-            fixed (float* ptr = data)
+            fixed (float* dataPtr = data)
+            fixed (ulong* timestampPtr = &timestamp)
             {
-                _ = Native.CheckError(Native.SDL_GameControllerGetSensorDataWithTimestamp(_gameController, _sensorType, &timestamp, ptr, data.Length));
+                _ = Native.CheckError(Native.SDL_GameControllerGetSensorDataWithTimestamp(_gameController, _sensorType, timestampPtr, dataPtr, data.Length));
             }
         }
 

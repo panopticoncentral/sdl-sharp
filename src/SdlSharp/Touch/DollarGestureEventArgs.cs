@@ -16,7 +16,7 @@
         /// <summary>
         /// The gesture.
         /// </summary>
-        public Gesture Gesture => Gesture.IndexToInstance(_gestureId);
+        public Gesture Gesture => new(_gestureId);
 
         /// <summary>
         /// The number of fingers involed.
