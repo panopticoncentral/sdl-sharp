@@ -1249,7 +1249,7 @@ namespace SdlSharp
 
         #region SDL_gamecontroller.h
 
-        public struct SDL_GameController { }
+        public readonly struct SDL_GameController { }
 
         public enum SDL_GameControllerType
         {
@@ -1537,307 +1537,187 @@ namespace SdlSharp
 
         #region SDL_haptic.h
 
-        public readonly struct SDL_Haptic
+        public readonly struct SDL_Haptic { }
+
+        public const ushort SDL_HAPTIC_CONSTANT = 1 << 0;
+        public const ushort SDL_HAPTIC_SINE = 1 << 1;
+        public const ushort SDL_HAPTIC_LEFTRIGHT = 1 << 2;
+        public const ushort SDL_HAPTIC_TRIANGLE = 1 << 3;
+        public const ushort SDL_HAPTIC_SAWTOOTHUP = 1 << 4;
+        public const ushort SDL_HAPTIC_SAWTOOTHDOWN = 1 << 5;
+        public const ushort SDL_HAPTIC_RAMP = 1 << 6;
+        public const ushort SDL_HAPTIC_SPRING = 1 << 7;
+        public const ushort SDL_HAPTIC_DAMPER = 1 << 8;
+        public const ushort SDL_HAPTIC_INERTIA = 1 << 9;
+        public const ushort SDL_HAPTIC_FRICTION = 1 << 10;
+        public const ushort SDL_HAPTIC_CUSTOM = 1 << 11;
+        public const ushort SDL_HAPTIC_GAIN = 1 << 12;
+        public const ushort SDL_HAPTIC_AUTOCENTER = 1 << 13;
+        public const ushort SDL_HAPTIC_STATUS = 1 << 14;
+        public const ushort SDL_HAPTIC_PAUSE = 1 << 15;
+
+        public const byte SDL_HAPTIC_POALR = 0;
+        public const byte SDL_HAPTIC_CARTESIAN = 1;
+        public const byte SDL_HAPTIC_SPHERICAL = 2;
+        public const byte SDL_HAPTIC_STEERING_AXIS = 3;
+
+        public const uint SDL_HAPTIC_INFINITY = 4294967295U;
+
+        public readonly struct SDL_HapticDirection
         {
-        }
-
-        [Flags]
-        public enum SDL_HapticType : uint
-        {
-            None = 0,
-            Constant = 1u << 0,
-            Sine = 1u << 1,
-            LeftRight = 1u << 2,
-            Triangle = 1u << 3,
-            SawToothUp = 1u << 4,
-            SawToothDown = 1u << 5,
-            Ramp = 1u << 6,
-            Spring = 1u << 7,
-            Damper = 1u << 8,
-            Inertia = 1u << 9,
-            Friction = 1u << 10,
-            Custom = 1u << 11,
-            Gain = 1u << 12,
-            Autocenter = 1u << 13,
-            Status = 1u << 14,
-            Pause = 1u << 15
-        }
-
-        public enum SDL_HapticDirectionType : byte
-        {
-            Polar,
-            Cartesian,
-            Spherical
-        }
-
-        public struct SDL_HapticDirection
-        {
-            private readonly SDL_HapticDirectionType _type;
-
-            private fixed short _dir[3];
-
-            public SDL_HapticDirection(SDL_HapticDirectionType type, short dir1)
-            {
-                _type = type;
-                _dir[0] = dir1;
-            }
-
-            public SDL_HapticDirection(SDL_HapticDirectionType type, short dir1, short dir2)
-            {
-                _type = type;
-                _dir[0] = dir1;
-                _dir[1] = dir2;
-            }
-
-            public SDL_HapticDirection(SDL_HapticDirectionType type, short dir1, short dir2, short dir3)
-            {
-                _type = type;
-                _dir[0] = dir1;
-                _dir[1] = dir2;
-                _dir[2] = dir3;
-            }
+            public readonly byte type;
+            public readonly int dir0;
+            public readonly int dir1;
+            public readonly int dir2;
         }
 
         public readonly struct SDL_HapticConstant
         {
-            private readonly SDL_HapticType _type;
-            private readonly SDL_HapticDirection _direction;
+            public readonly ushort type;
+            public readonly SDL_HapticDirection direction;
 
-            private readonly uint _length;
-            private readonly ushort _delay;
+            public readonly uint length;
+            public readonly ushort delay;
 
-            private readonly ushort _button;
-            private readonly ushort _interval;
+            public readonly ushort button;
+            public readonly ushort interval;
 
-            private readonly short _level;
+            public readonly short level;
 
-            private readonly ushort _attackLength;
-            private readonly ushort _attackLevel;
-            private readonly ushort _fadeLength;
-            private readonly ushort _fadeLevel;
-
-            public SDL_HapticConstant(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, short level, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
-            {
-                _type = type;
-                _direction = direction;
-                _length = length;
-                _delay = delay;
-                _button = button;
-                _interval = interval;
-                _level = level;
-                _attackLength = attackLength;
-                _attackLevel = attackLevel;
-                _fadeLength = fadeLength;
-                _fadeLevel = fadeLevel;
-            }
+            public readonly ushort attack_length;
+            public readonly ushort attack_level;
+            public readonly ushort fade_length;
+            public readonly ushort fade_level;
         }
 
         public readonly struct SDL_HapticPeriodic
         {
-            private readonly SDL_HapticType _type;
-            private readonly SDL_HapticDirection _direction;
+            public readonly ushort type;
+            public readonly SDL_HapticDirection direction;
 
-            private readonly uint _length;
-            private readonly ushort _delay;
+            public readonly uint length;
+            public readonly ushort delay;
 
-            private readonly ushort _button;
-            private readonly ushort _interval;
+            public readonly ushort button;
+            public readonly ushort interval;
 
-            private readonly ushort _period;
-            private readonly short _magnitude;
-            private readonly short _offset;
-            private readonly ushort _phase;
+            public readonly ushort period;
+            public readonly short magnitude;
+            public readonly short offset;
+            public readonly ushort phase;
 
-            private readonly ushort _attackLength;
-            private readonly ushort _attackLevel;
-            private readonly ushort _fadeLength;
-            private readonly ushort _fadeLevel;
-
-            public SDL_HapticPeriodic(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, ushort period, short magnitude, short offset, ushort phase, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
-            {
-                _type = type;
-                _direction = direction;
-                _length = length;
-                _delay = delay;
-                _button = button;
-                _interval = interval;
-                _period = period;
-                _magnitude = magnitude;
-                _offset = offset;
-                _phase = phase;
-                _attackLength = attackLength;
-                _attackLevel = attackLevel;
-                _fadeLength = fadeLength;
-                _fadeLevel = fadeLevel;
-            }
+            public readonly ushort attack_length;
+            public readonly ushort attack_level;
+            public readonly ushort fade_length;
+            public readonly ushort fade_level;
         }
 
-        public struct SDL_HapticCondition
+        public readonly struct SDL_HapticCondition
         {
-            private readonly SDL_HapticType _type;
-            private readonly SDL_HapticDirection _direction;
+            public readonly ushort type;
+            public readonly SDL_HapticDirection direction;
 
-            private readonly uint _length;
-            private readonly ushort _delay;
+            public readonly uint length;
+            public readonly ushort delay;
 
-            private readonly ushort _button;
-            private readonly ushort _interval;
+            public readonly ushort button;
+            public readonly ushort interval;
 
-            private fixed ushort _rightSat[3];
-            private fixed ushort _leftSat[3];
-            private fixed short _rightCoeff[3];
-            private fixed short _leftCoeff[3];
-            private fixed ushort _deadband[3];
-            private fixed short _center[3];
-
-            public SDL_HapticCondition(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, (ushort XAxis, ushort YAxis, ushort ZAxis) rightSat, (ushort XAxis, ushort YAxis, ushort ZAxis) leftSat, (short XAxis, short YAxis, short ZAxis) rightCoeff, (short XAxis, short YAxis, short ZAxis) leftCoeff, (ushort XAxis, ushort YAxis, ushort ZAxis) deadband, (short XAxis, short YAxis, short ZAxis) center)
-            {
-                _type = type;
-                _direction = direction;
-                _length = length;
-                _delay = delay;
-                _button = button;
-                _interval = interval;
-                _rightSat[0] = rightSat.XAxis;
-                _rightSat[1] = rightSat.YAxis;
-                _rightSat[2] = rightSat.ZAxis;
-                _leftSat[0] = leftSat.XAxis;
-                _leftSat[1] = leftSat.YAxis;
-                _leftSat[2] = leftSat.ZAxis;
-                _rightCoeff[0] = rightCoeff.XAxis;
-                _rightCoeff[1] = rightCoeff.YAxis;
-                _rightCoeff[2] = rightCoeff.ZAxis;
-                _leftCoeff[0] = leftCoeff.XAxis;
-                _leftCoeff[1] = leftCoeff.YAxis;
-                _leftCoeff[2] = leftCoeff.ZAxis;
-                _deadband[0] = deadband.XAxis;
-                _deadband[1] = deadband.YAxis;
-                _deadband[2] = deadband.ZAxis;
-                _center[0] = center.XAxis;
-                _center[1] = center.YAxis;
-                _center[2] = center.ZAxis;
-            }
+            public readonly ushort right_sat0;
+            public readonly ushort right_sat1;
+            public readonly ushort right_sat2;
+            public readonly ushort left_sat0;
+            public readonly ushort left_sat1;
+            public readonly ushort left_sat2;
+            public readonly short right_coeff0;
+            public readonly short right_coeff1;
+            public readonly short right_coeff2;
+            public readonly short left_coeff0;
+            public readonly short left_coeff1;
+            public readonly short left_coeff2;
+            public readonly ushort deadband0;
+            public readonly ushort deadband1;
+            public readonly ushort deadband2;
+            public readonly short center0;
+            public readonly short center1;
+            public readonly short center2;
         }
 
         public readonly struct SDL_HapticRamp
         {
-            private readonly SDL_HapticType _type;
-            private readonly SDL_HapticDirection _direction;
+            public readonly ushort type;
+            public readonly SDL_HapticDirection direction;
 
-            private readonly uint _length;
-            private readonly ushort _delay;
+            public readonly uint length;
+            public readonly ushort delay;
 
-            private readonly ushort _button;
-            private readonly ushort _interval;
+            public readonly ushort button;
+            public readonly ushort interval;
 
-            private readonly short _start;
-            private readonly short _end;
+            public readonly short start;
+            public readonly short end;
 
-            private readonly ushort _attackLength;
-            private readonly ushort _attackLevel;
-            private readonly ushort _fadeLength;
-            private readonly ushort _fadeLevel;
-
-            public SDL_HapticRamp(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, short start, short end, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
-            {
-                _type = type;
-                _direction = direction;
-                _length = length;
-                _delay = delay;
-                _button = button;
-                _interval = interval;
-                _start = start;
-                _end = end;
-                _attackLength = attackLength;
-                _attackLevel = attackLevel;
-                _fadeLength = fadeLength;
-                _fadeLevel = fadeLevel;
-            }
+            public readonly ushort attack_length;
+            public readonly ushort attack_level;
+            public readonly ushort fade_length;
+            public readonly ushort fade_level;
         }
 
         public readonly struct SDL_HapticLeftRight
         {
-            private readonly SDL_HapticType _type;
+            public readonly ushort type;
 
-            private readonly uint _length;
+            public readonly uint length;
 
-            private readonly ushort _largeMagnitude;
-            private readonly ushort _smallMagnitude;
-
-            public SDL_HapticLeftRight(SDL_HapticType type, uint length, ushort largeMagnitude, ushort smallMagnitude)
-            {
-                _type = type;
-                _length = length;
-                _largeMagnitude = largeMagnitude;
-                _smallMagnitude = smallMagnitude;
-            }
+            public readonly ushort large_magnitude;
+            public readonly ushort small_magnitude;
         }
 
         public readonly struct SDL_HapticCustom
         {
-            private readonly SDL_HapticType _type;
-            private readonly SDL_HapticDirection _direction;
+            public readonly ushort type;
+            public readonly SDL_HapticDirection direction;
 
-            private readonly uint _length;
-            private readonly ushort _delay;
+            public readonly uint length;
+            public readonly ushort delay;
 
-            private readonly ushort _button;
-            private readonly ushort _interval;
+            public readonly ushort button;
+            public readonly ushort interval;
 
-            private readonly byte _channels;
-            private readonly ushort _period;
-            private readonly ushort _samples;
+            public readonly byte channels;
+            public readonly ushort period;
+            public readonly ushort samples;
+            public readonly ushort* data;
 
-            [MarshalAs(UnmanagedType.LPArray)]
-            private readonly ushort[] _data;
-
-            private readonly ushort _attackLength;
-            private readonly ushort _attackLevel;
-            private readonly ushort _fadeLength;
-            private readonly ushort _fadeLevel;
-
-            public SDL_HapticCustom(SDL_HapticType type, SDL_HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, byte channels, ushort period, ushort samples, ushort[] data, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
-            {
-                _type = type;
-                _direction = direction;
-                _length = length;
-                _delay = delay;
-                _button = button;
-                _interval = interval;
-                _channels = channels;
-                _period = period;
-                _samples = samples;
-                _data = data;
-                _attackLength = attackLength;
-                _attackLevel = attackLevel;
-                _fadeLength = fadeLength;
-                _fadeLevel = fadeLevel;
-            }
+            public readonly ushort attack_length;
+            public readonly ushort attack_level;
+            public readonly ushort fade_length;
+            public readonly ushort fade_level;
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        public struct SDL_HapticEffect
+        public readonly struct SDL_HapticEffect
         {
             [FieldOffset(0)]
-            public SDL_HapticType _type;
+            public readonly byte _type;
 
             [FieldOffset(0)]
-            public SDL_HapticConstant _constant;
+            public readonly SDL_HapticConstant constant;
 
             [FieldOffset(0)]
-            public SDL_HapticPeriodic _periodic;
+            public readonly SDL_HapticPeriodic periodic;
 
             [FieldOffset(0)]
-            public SDL_HapticCondition _condition;
+            public readonly SDL_HapticCondition condition;
 
             [FieldOffset(0)]
-            public SDL_HapticRamp _ramp;
+            public readonly SDL_HapticRamp ramp;
 
             [FieldOffset(0)]
-            public SDL_HapticLeftRight _leftright;
+            public readonly SDL_HapticLeftRight leftright;
 
             [FieldOffset(0)]
-            public SDL_HapticCustom _custom;
+            public readonly SDL_HapticCustom custom;
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -1877,19 +1757,19 @@ namespace SdlSharp
         public static extern int SDL_HapticNumEffectsPlaying(SDL_Haptic* haptic);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_HapticType SDL_HapticQuery(SDL_Haptic* haptic);
+        public static extern int SDL_HapticQuery(SDL_Haptic* haptic);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_HapticNumAxes(SDL_Haptic* haptic);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_HapticEffectSupported(SDL_Haptic* haptic, in SDL_HapticEffect effect);
+        public static extern int SDL_HapticEffectSupported(SDL_Haptic* haptic, SDL_HapticEffect* effect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_HapticNewEffect(SDL_Haptic* haptic, in SDL_HapticEffect effect);
+        public static extern int SDL_HapticNewEffect(SDL_Haptic* haptic, SDL_HapticEffect* effect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_HapticUpdateEffect(SDL_Haptic* haptic, int effect, in SDL_HapticEffect data);
+        public static extern int SDL_HapticUpdateEffect(SDL_Haptic* haptic, int effect, SDL_HapticEffect* data);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_HapticRunEffect(SDL_Haptic* haptic, int effect, uint iterations);
