@@ -54,11 +54,11 @@
         /// Opens an audio device.
         /// </summary>
         /// <param name="desired">The desired audio specification.</param>
-        /// <param name="callback">A data callback.</param>
+        /// <param name="source">An audio source.</param>
         /// <param name="obtained">The actual specifications for the device.</param>
         /// <returns>The audio device that was opened.</returns>
-        public static AudioDevice Open(AudioSpecification desired, AudioCallback? callback, out AudioSpecification obtained) =>
-            Open(null, false, desired, callback, out obtained, AudioAllowChange.Any);
+        public static AudioDevice Open(AudioSpecification desired, AudioSource? source, out AudioSpecification obtained) =>
+            Open(null, false, desired, source, out obtained, AudioAllowChange.Any);
 
         /// <summary>
         /// Opens an audio device.
@@ -87,19 +87,19 @@
         /// <param name="device">The device.</param>
         /// <param name="isCapture">Whether the device is a capture device.</param>
         /// <param name="desired">The desired audio specification.</param>
-        /// <param name="callback">A data callback.</param>
+        /// <param name="source">An audio source.</param>
         /// <param name="obtained">The actual specifications for the device.</param>
         /// <param name="allowedChanges">What changes can be made between the desired and actual specifications.</param>
         /// <returns>The audio device that was opened.</returns>
-        public static AudioDevice Open(string? device, bool isCapture, AudioSpecification desired, AudioCallback? callback, out AudioSpecification obtained, AudioAllowChange allowedChanges)
+        public static AudioDevice Open(string? device, bool isCapture, AudioSpecification desired, AudioSource? source, out AudioSpecification obtained, AudioAllowChange allowedChanges)
         {
             var desiredNativeSpec = new Native.SDL_AudioSpec(
                 desired.Frequency,
                 desired.Format.Format,
                 desired.Channels,
                 desired.Samples,
-                callback != null ? (delegate* unmanaged[Cdecl]<nint, byte*, int, void>)&AudioDevice.AudioCallback : null,
-                callback != null ? callback.GetHashCode() : 0);
+                source != null ? (delegate* unmanaged[Cdecl]<nint, byte*, int, void>)&AudioSource.AudioCallback : null,
+                source != null ? source.GetHashCode() : 0);
 
             Native.SDL_AudioSpec obtainedNativeSpec;
 
@@ -113,7 +113,7 @@
                     (int)allowedChanges),
                     d => d.Id != 0);
 
-                var audioDevice = new AudioDevice(audioDeviceId, callback);
+                var audioDevice = new AudioDevice(audioDeviceId);
                 obtained = new AudioSpecification(obtainedNativeSpec);
 
                 return audioDevice;

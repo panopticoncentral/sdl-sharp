@@ -17,7 +17,7 @@
 
         internal AudioDeviceRemovedEventArgs(Native.SDL_AudioDeviceEvent device) : base(device.timestamp)
         {
-            Device = device.which == 0 ? null : new AudioDevice(new(device.which), null);
+            Device = device.which == 0 ? null : new AudioDevice(new(device.which));
             IsCapture = device.iscapture != 0;
         }
     }

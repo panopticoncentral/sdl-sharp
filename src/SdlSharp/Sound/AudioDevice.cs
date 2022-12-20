@@ -1,19 +1,11 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
-namespace SdlSharp.Sound
+﻿namespace SdlSharp.Sound
 {
     /// <summary>
     /// An audio device.
     /// </summary>
     public sealed unsafe class AudioDevice : IDisposable
     {
-        private static Dictionary<nint, AudioCallback>? s_audioCallbacks;
-
         private readonly Native.SDL_AudioDeviceID _deviceId;
-        private readonly AudioCallback? _callback;
-
-        private static Dictionary<nint, AudioCallback> AudioCallbacks => s_audioCallbacks ??= new();
 
         /// <summary>
         /// The status of the audio device.
@@ -27,15 +19,9 @@ namespace SdlSharp.Sound
         public uint QueuedAudioSize =>
             Native.SDL_GetQueuedAudioSize(_deviceId);
 
-        internal AudioDevice(Native.SDL_AudioDeviceID deviceId, AudioCallback? callback)
+        internal AudioDevice(Native.SDL_AudioDeviceID deviceId)
         {
             _deviceId = deviceId;
-            _callback = callback;
-
-            if (callback != null)
-            {
-                AudioCallbacks[callback.GetHashCode()] = callback;
-            }
         }
 
         /// <summary>
@@ -96,23 +82,6 @@ namespace SdlSharp.Sound
         /// <summary>
         /// Closes the audio device.
         /// </summary>
-        public void Dispose()
-        {
-            Native.SDL_CloseAudioDevice(_deviceId);
-
-            if (_callback != null)
-            {
-                _ = AudioCallbacks.Remove(_callback.GetHashCode());
-            }
-        }
-
-        [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
-        internal static void AudioCallback(nint userData, byte* stream, int len)
-        {
-            if (AudioCallbacks.TryGetValue(userData, out var callback))
-            {
-                callback(new Span<byte>(stream, len));
-            }
-        }
+        public void Dispose() => Native.SDL_CloseAudioDevice(_deviceId);
     }
 }

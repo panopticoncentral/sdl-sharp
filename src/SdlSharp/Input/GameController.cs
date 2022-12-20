@@ -127,42 +127,64 @@
         /// <summary>
         /// An event fired when the game controller axis is moved.
         /// </summary>
-        public event EventHandler<GameControllerAxisMotionEventArgs>? AxisMotion;
+        public static event EventHandler<GameControllerAxisMotionEventArgs>? AxisMotion;
 
         /// <summary>
         /// An event fired when the game controller button is pressed.
         /// </summary>
-        public event EventHandler<GameControllerButtonEventArgs>? ButtonDown;
+        public static event EventHandler<GameControllerButtonEventArgs>? ButtonDown;
 
         /// <summary>
         /// An event fired when the game controller button is released.
         /// </summary>
-        public event EventHandler<GameControllerButtonEventArgs>? ButtonUp;
+        public static event EventHandler<GameControllerButtonEventArgs>? ButtonUp;
 
         /// <summary>
         /// An event fired when a game controller is removed.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Removed;
+        public static event EventHandler<SdlEventArgs>? Removed;
 
         /// <summary>
         /// An event fired when a game controller is remapped.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Remapped;
+        public static event EventHandler<SdlEventArgs>? Remapped;
+
+        /// <summary>
+        /// An event fired when a finger goes down on a controller touchpad.
+        /// </summary>
+        public static event EventHandler<GameControllerTouchpadEventArgs>? TouchPadDown;
+
+        /// <summary>
+        /// An event fired when a finger moves on a controller touchpad.
+        /// </summary>
+        public static event EventHandler<GameControllerTouchpadEventArgs>? TouchPadMotion;
+
+        /// <summary>
+        /// An event fired when a finger goes up on a controller touchpad.
+        /// </summary>
+        public static event EventHandler<GameControllerTouchpadEventArgs>? TouchPadUp;
+
+        /// <summary>
+        /// An event fired when a sensor on a controller updates.
+        /// </summary>
+        public static event EventHandler<GameControllerSensorEventArgs>? SensorUpdate;
 
         internal GameController(Native.SDL_GameController* gameController)
         {
             _gameController = gameController;
         }
 
-        internal static GameController? Get(Native.SDL_JoystickID joystickId) =>
-            new(Native.CheckPointer(Native.SDL_GameControllerFromInstanceID(joystickId)));
+        internal GameController(Native.SDL_JoystickID joystickId) 
+            : this(Native.CheckPointer(Native.SDL_GameControllerFromInstanceID(joystickId)))
+        {
+        }
 
         /// <summary>
         /// Gets the game controller corresponding to the player index.
         /// </summary>
         /// <param name="playerIndex">The index of the player.</param>
         /// <returns>The game controller corresponding to the player.</returns>
-        public static GameController? Get(int playerIndex) =>
+        public static GameController? GetPlayer(int playerIndex) =>
             new(Native.CheckPointer(Native.SDL_GameControllerFromPlayerIndex(playerIndex)));
 
         /// <summary>
@@ -352,22 +374,19 @@
             {
                 case Native.SDL_EventType.SDL_CONTROLLERAXISMOTION:
                     {
-                        var controller = Get(e.caxis.which);
-                        controller?.AxisMotion?.Invoke(controller, new GameControllerAxisMotionEventArgs(e.caxis));
+                        AxisMotion?.Invoke(new GameController(e.caxis.which), new GameControllerAxisMotionEventArgs(e.caxis));
                         break;
                     }
 
                 case Native.SDL_EventType.SDL_CONTROLLERBUTTONDOWN:
                     {
-                        var controller = Get(e.cbutton.which);
-                        controller?.ButtonDown?.Invoke(controller, new GameControllerButtonEventArgs(e.cbutton));
+                        ButtonDown?.Invoke(new GameController(e.cbutton.which), new GameControllerButtonEventArgs(e.cbutton));
                         break;
                     }
 
                 case Native.SDL_EventType.SDL_CONTROLLERBUTTONUP:
                     {
-                        var controller = Get(e.caxis.which);
-                        controller?.ButtonUp?.Invoke(controller, new GameControllerButtonEventArgs(e.cbutton));
+                        ButtonUp?.Invoke(new GameController(e.caxis.which), new GameControllerButtonEventArgs(e.cbutton));
                         break;
                     }
 
@@ -379,24 +398,39 @@
 
                 case Native.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED:
                     {
-                        var controller = Get(new Native.SDL_JoystickID(e.cdevice.which));
-                        controller?.Removed?.Invoke(controller, new SdlEventArgs(e.common));
+                        Removed?.Invoke(new GameController(new Native.SDL_JoystickID(e.cdevice.which)), new SdlEventArgs(e.common));
                         break;
                     }
 
                 case Native.SDL_EventType.SDL_CONTROLLERDEVICEREMAPPED:
                     {
-                        var controller = Get(new Native.SDL_JoystickID(e.cdevice.which));
-                        controller?.Remapped?.Invoke(controller, new SdlEventArgs(e.common));
+                        Remapped?.Invoke(new GameController(new Native.SDL_JoystickID(e.cdevice.which)), new SdlEventArgs(e.common));
                         break;
                     }
 
                 case Native.SDL_EventType.SDL_CONTROLLERTOUCHPADDOWN:
+                    {
+                        TouchPadDown?.Invoke(new GameController(e.ctouchpad.which), new GameControllerTouchpadEventArgs(e.ctouchpad));
+                        break;
+                    }
+
                 case Native.SDL_EventType.SDL_CONTROLLERTOUCHPADMOTION:
+                    {
+                        TouchPadMotion?.Invoke(new GameController(e.ctouchpad.which), new GameControllerTouchpadEventArgs(e.ctouchpad));
+                        break;
+                    }
+
                 case Native.SDL_EventType.SDL_CONTROLLERTOUCHPADUP:
+                    {
+                        TouchPadUp?.Invoke(new GameController(e.ctouchpad.which), new GameControllerTouchpadEventArgs(e.ctouchpad));
+                        break;
+                    }
+
                 case Native.SDL_EventType.SDL_CONTROLLERSENSORUPDATE:
-                    // TODO
-                    break;
+                    {
+                        SensorUpdate?.Invoke(new GameController(e.csensor.which), new GameControllerSensorEventArgs(e.csensor));
+                        break;
+                    }
 
                 default:
                     throw new InvalidOperationException();

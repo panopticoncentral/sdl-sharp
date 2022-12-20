@@ -6,19 +6,25 @@
     public sealed class GameControllerSensorEventArgs : SdlEventArgs
     {
         /// <summary>
-        /// The button.
+        /// The sensor.
         /// </summary>
-        public GameControllerButton Button { get; }
+        public SensorType Sensor { get; }
 
         /// <summary>
-        /// Whether the button is pressed.
+        /// The sensor data.
         /// </summary>
-        public bool IsPressed { get; }
+        public float[] Data { get; }
+
+        /// <summary>
+        /// The sensor data timestamp.
+        /// </summary>
+        public ulong SensorTimestamp { get; }
 
         internal GameControllerSensorEventArgs(Native.SDL_ControllerSensorEvent sensor) : base(sensor.timestamp)
         {
-            Button = new((Native.SDL_GameControllerButton)button.button);
-            IsPressed = button.state != 0;
+            Sensor = (SensorType)sensor.sensor;
+            Data = new[] { sensor.data1, sensor.data2, sensor.data3 };
+            SensorTimestamp = sensor.timestamp;
         }
     }
 }
