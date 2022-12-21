@@ -61,13 +61,13 @@ namespace SdlSharp.Input
         /// Whether the mouse supports haptic effects.
         /// </summary>
         public static bool IsHaptic =>
-            Native.SDL_MouseIsHaptic();
+            Native.SDL_MouseIsHaptic() != 0;
 
         /// <summary>
         /// Returns the haptic device for the mouse;
         /// </summary>
         public static Haptic Haptic =>
-            Haptic.PointerToInstanceNotNull(Native.SDL_HapticOpenFromMouse());
+            new(Native.SDL_HapticOpenFromMouse());
 
         /// <summary>
         /// Warps the mouse to a location in a window.

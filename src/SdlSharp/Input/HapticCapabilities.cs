@@ -14,22 +14,22 @@
         /// <summary>
         /// Device supports setting the global gain.
         /// </summary>
-        Gain = 1u << 12,
+        Gain = Native.SDL_HAPTIC_GAIN,
 
         /// <summary>
         /// Device supports setting autocenter.
         /// </summary>
-        Autocenter = 1u << 13,
+        Autocenter = Native.SDL_HAPTIC_AUTOCENTER,
 
         /// <summary>
         /// Device supports querying effect status.
         /// </summary>
-        Status = 1u << 14,
+        Status = Native.SDL_HAPTIC_STATUS,
 
         /// <summary>
         /// Devices supports being paused.
         /// </summary>
-        Pause = 1u << 15,
+        Pause = Native.SDL_HAPTIC_PAUSE,
 
         /// <summary>
         /// All capabilities.

@@ -91,13 +91,13 @@
         /// Whether the joystick supports haptic effects.
         /// </summary>
         public bool IsHaptic =>
-            SdlSharp.Native.SDL_JoystickIsHaptic(Native);
+            SdlSharp.Native.SDL_JoystickIsHaptic(Native) != 0;
 
         /// <summary>
         /// Returns the haptic support for the joystick.
         /// </summary>
         public Haptic Haptic =>
-            Haptic.PointerToInstanceNotNull(SdlSharp.Native.SDL_HapticOpenFromJoystick(Native));
+            new(SdlSharp.Native.SDL_HapticOpenFromJoystick(Native));
 
         /// <summary>
         /// An event that is fired when a joystick is added.

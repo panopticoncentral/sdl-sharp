@@ -1721,26 +1721,26 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_NumHaptics();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_HapticName(int device_index);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_HapticName(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Haptic* SDL_HapticOpen(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_HapticOpened(int device_index);
+        public static extern int SDL_HapticOpened(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_HapticIndex(SDL_Haptic* haptic);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_MouseIsHaptic();
+        public static extern int SDL_MouseIsHaptic();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Haptic* SDL_HapticOpenFromMouse();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_JoystickIsHaptic(SDL_Joystick* joystick);
+        public static extern int SDL_JoystickIsHaptic(SDL_Joystick* joystick);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Haptic* SDL_HapticOpenFromJoystick(SDL_Joystick* joystick);
