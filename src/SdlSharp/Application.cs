@@ -1,7 +1,6 @@
 ﻿using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
-using SdlSharp.Touch;
 
 namespace SdlSharp
 {

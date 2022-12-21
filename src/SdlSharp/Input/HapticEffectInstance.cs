@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// An instance of a haptic effect.
@@ -15,11 +15,8 @@
         /// Updates the effect instance.
         /// </summary>
         /// <param name="effect">The effect to update to.</param>
-        public void UpdateEffect(HapticEffect effect)
-        {
-            var nativeEffect = effect.ToNative();
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_HapticUpdateEffect(Native, Index, in nativeEffect));
-        }
+        public void UpdateEffect(HapticEffect effect) => 
+            _ = SdlSharp.Native.CheckError(effect.NativeCall(effect => SdlSharp.Native.SDL_HapticUpdateEffect(Native, Index, effect)));
 
         /// <summary>
         /// Runs the effect.

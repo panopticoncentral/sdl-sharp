@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// Event arguments for dollar gesture events.

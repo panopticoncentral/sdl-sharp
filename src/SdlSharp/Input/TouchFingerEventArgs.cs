@@ -1,6 +1,6 @@
 ﻿using SdlSharp.Graphics;
 
-namespace SdlSharp.Touch
+namespace SdlSharp.Input
 {
     /// <summary>
     /// Event arguments for a finger touch event.

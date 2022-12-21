@@ -1,4 +1,6 @@
-﻿namespace SdlSharp.Touch
+﻿using System.Numerics;
+
+namespace SdlSharp.Input
 {
     /// <summary>
     /// A ramp haptic effect.
@@ -89,10 +91,29 @@
             FadeLevel = fadeLevel;
         }
 
-        internal override Native.SDL_HapticEffect ToNative() =>
-            new()
-            {
-                _ramp = new Native.SDL_HapticRamp(Native.SDL_HapticType.Ramp, Direction.ToNative(), Length, Delay, Button, Interval, Start, End, AttackLength, AttackLevel, FadeLength, FadeLevel)
-            };
+        internal override unsafe T NativeCall<T>(NativeHapticAction<T> call)
+        {
+            Native.SDL_HapticEffect nativeEffect =
+                new()
+                {
+                    ramp = new()
+                    {
+                        type = Native.SDL_HAPTIC_RAMP,
+                        direction = Direction.ToNative(),
+                        length = Length,
+                        delay = Delay,
+                        button = Button,
+                        interval = Interval,
+                        start = Start,
+                        end = End,
+                        attack_length = AttackLength,
+                        attack_level = AttackLevel,
+                        fade_length = FadeLength,
+                        fade_level = FadeLevel
+                    }
+                };
+
+            return call(&nativeEffect);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// The event arguments for a multi-gesture event.

@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// Capabilities that a haptic device can support.

@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// Information about a haptic effect.

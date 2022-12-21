@@ -1,6 +1,4 @@
-﻿using SdlSharp.Touch;
-
-namespace SdlSharp
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A class that represents a haptic effect.
@@ -68,22 +66,16 @@ namespace SdlSharp
         /// </summary>
         /// <param name="effect">The effect.</param>
         /// <returns>Whether the effect is supported.</returns>
-        public bool EffectSupported(HapticEffect effect)
-        {
-            var nativeEffect = effect.ToNative();
-            return SdlSharp.Native.SDL_HapticEffectSupported(Native, in nativeEffect);
-        }
+        public bool EffectSupported(HapticEffect effect) => 
+            effect.NativeCall(effect => SdlSharp.Native.SDL_HapticEffectSupported(Native, effect)) != 0;
 
         /// <summary>
         /// Creates a new instance of a haptic effect.
         /// </summary>
         /// <param name="effect">The effect.</param>
         /// <returns>The effect instance.</returns>
-        public HapticEffectInstance NewEffect(HapticEffect effect)
-        {
-            var nativeEffect = effect.ToNative();
-            return HapticEffectInstance.IndexToInstance(Native, SdlSharp.Native.CheckError(SdlSharp.Native.SDL_HapticNewEffect(Native, in nativeEffect)));
-        }
+        public HapticEffectInstance NewEffect(HapticEffect effect) =>
+            HapticEffectInstance.IndexToInstance(Native, SdlSharp.Native.CheckError(effect.NativeCall(effect => SdlSharp.Native.SDL_HapticNewEffect(Native, effect))));
 
         /// <summary>
         /// Sets the gain.

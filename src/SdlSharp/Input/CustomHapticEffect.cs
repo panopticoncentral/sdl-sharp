@@ -1,9 +1,11 @@
-﻿namespace SdlSharp.Touch
+﻿using System.Reflection.Emit;
+
+namespace SdlSharp.Input
 {
     /// <summary>
-    /// A constant haptic effect.
+    /// A custom haptic effect.
     /// </summary>
-    public sealed class ConstantHapticEffect : HapticEffect
+    public sealed class CustomHapticEffect : HapticEffect
     {
         /// <summary>
         /// The direction of the effect.
@@ -31,9 +33,24 @@
         public ushort Interval { get; }
 
         /// <summary>
-        /// The level of the effect.
+        /// Axes to use.
         /// </summary>
-        public short Level { get; }
+        public byte Channels { get; }
+
+        /// <summary>
+        /// Sample periods.
+        /// </summary>
+        public ushort Period { get; }
+
+        /// <summary>
+        /// Amount of samples.
+        /// </summary>
+        public ushort Samples { get; }
+
+        /// <summary>
+        /// The samples.
+        /// </summary>
+        public ushort[] Data { get; }
 
         /// <summary>
         /// The attach length of the effect.
@@ -56,36 +73,66 @@
         public ushort FadeLevel { get; }
 
         /// <summary>
-        /// Constructs a new constant haptic effect.
+        /// Creates a new custom haptic effect.
         /// </summary>
         /// <param name="direction">The direction of the effect.</param>
         /// <param name="length">The length of the effect.</param>
         /// <param name="delay">The delay before the effect.</param>
         /// <param name="button">The button that triggers the effect.</param>
         /// <param name="interval">Minimum interval between effects.</param>
-        /// <param name="level">The level of the effect.</param>
+        /// <param name="channels">Axes to use.</param>
+        /// <param name="period">Sample periods.</param>
+        /// <param name="samples">Amount of samples.</param>
+        /// <param name="data">The samples.</param>
         /// <param name="attackLength">The attach length of the effect.</param>
         /// <param name="attackLevel">The attack level of the effect.</param>
         /// <param name="fadeLength">The fade length of the effect.</param>
         /// <param name="fadeLevel">The fade level of the effect.</param>
-        public ConstantHapticEffect(HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, short level, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
+        public CustomHapticEffect(HapticDirection direction, uint length, ushort delay, ushort button, ushort interval, byte channels, ushort period, ushort samples, ushort[] data, ushort attackLength, ushort attackLevel, ushort fadeLength, ushort fadeLevel)
         {
             Direction = direction;
             Length = length;
             Delay = delay;
             Button = button;
             Interval = interval;
-            Level = level;
+            Channels = channels;
+            Period = period;
+            Samples = samples;
+            Data = data;
             AttackLength = attackLength;
             AttackLevel = attackLevel;
             FadeLength = fadeLength;
             FadeLevel = fadeLevel;
         }
 
-        internal override Native.SDL_HapticEffect ToNative() =>
-            new()
+        internal override unsafe T NativeCall<T>(NativeHapticAction<T> call)
+        {
+            fixed (ushort* dataPtr = Data)
             {
-                _constant = new Native.SDL_HapticConstant(Native.SDL_HapticType.Constant, Direction.ToNative(), Length, Delay, Button, Interval, Level, AttackLength, AttackLevel, FadeLength, FadeLevel)
-            };
+                Native.SDL_HapticEffect nativeEffect =
+                    new()
+                    {
+                        custom = new()
+                        {
+                            type = Native.SDL_HAPTIC_CUSTOM,
+                            direction = Direction.ToNative(),
+                            length = Length,
+                            delay = Delay,
+                            button = Button,
+                            interval = Interval,
+                            channels = Channels,
+                            period = Period,
+                            samples = Samples,
+                            data = dataPtr,
+                            attack_length = AttackLength,
+                            attack_level = AttackLevel,
+                            fade_length = FadeLength,
+                            fade_level = FadeLevel
+                        }
+                    };
+
+                return call(&nativeEffect);
+            }
+        }
     }
 }

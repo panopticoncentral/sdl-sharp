@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A spherical haptic direction.
@@ -27,6 +27,11 @@
         }
 
         internal override Native.SDL_HapticDirection ToNative() =>
-            new(Native.SDL_HapticDirectionType.Spherical, XYDegrees, ZDegrees);
+            new()
+            {
+                type = Native.SDL_HAPTIC_SPHERICAL,
+                dir0 = XYDegrees,
+                dir1 = ZDegrees
+            };
     }
 }

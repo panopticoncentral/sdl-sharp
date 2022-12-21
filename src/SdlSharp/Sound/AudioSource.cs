@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Sound
 {
+    /// <summary>
+    /// A source of audio data.
+    /// </summary>
     public abstract class AudioSource : IDisposable
     {
         private static Dictionary<nint, AudioSource>? s_audioCallbacks;

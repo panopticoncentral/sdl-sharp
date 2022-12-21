@@ -1,11 +1,9 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
-using SdlSharp.Touch;
 
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible
@@ -1563,161 +1561,161 @@ namespace SdlSharp
 
         public const uint SDL_HAPTIC_INFINITY = 4294967295U;
 
-        public readonly struct SDL_HapticDirection
+        public struct SDL_HapticDirection
         {
-            public readonly byte type;
-            public readonly int dir0;
-            public readonly int dir1;
-            public readonly int dir2;
+            public byte type;
+            public int dir0;
+            public int dir1;
+            public int dir2;
         }
 
-        public readonly struct SDL_HapticConstant
+        public struct SDL_HapticConstant
         {
-            public readonly ushort type;
-            public readonly SDL_HapticDirection direction;
+            public ushort type;
+            public SDL_HapticDirection direction;
 
-            public readonly uint length;
-            public readonly ushort delay;
+            public uint length;
+            public ushort delay;
 
-            public readonly ushort button;
-            public readonly ushort interval;
+            public ushort button;
+            public ushort interval;
 
-            public readonly short level;
+            public short level;
 
-            public readonly ushort attack_length;
-            public readonly ushort attack_level;
-            public readonly ushort fade_length;
-            public readonly ushort fade_level;
+            public ushort attack_length;
+            public ushort attack_level;
+            public ushort fade_length;
+            public ushort fade_level;
         }
 
-        public readonly struct SDL_HapticPeriodic
+        public struct SDL_HapticPeriodic
         {
-            public readonly ushort type;
-            public readonly SDL_HapticDirection direction;
+            public ushort type;
+            public SDL_HapticDirection direction;
 
-            public readonly uint length;
-            public readonly ushort delay;
+            public uint length;
+            public ushort delay;
 
-            public readonly ushort button;
-            public readonly ushort interval;
+            public ushort button;
+            public ushort interval;
 
-            public readonly ushort period;
-            public readonly short magnitude;
-            public readonly short offset;
-            public readonly ushort phase;
+            public ushort period;
+            public short magnitude;
+            public short offset;
+            public ushort phase;
 
-            public readonly ushort attack_length;
-            public readonly ushort attack_level;
-            public readonly ushort fade_length;
-            public readonly ushort fade_level;
+            public ushort attack_length;
+            public ushort attack_level;
+            public ushort fade_length;
+            public ushort fade_level;
         }
 
-        public readonly struct SDL_HapticCondition
+        public struct SDL_HapticCondition
         {
-            public readonly ushort type;
-            public readonly SDL_HapticDirection direction;
+            public ushort type;
+            public SDL_HapticDirection direction;
 
-            public readonly uint length;
-            public readonly ushort delay;
+            public uint length;
+            public ushort delay;
 
-            public readonly ushort button;
-            public readonly ushort interval;
+            public ushort button;
+            public ushort interval;
 
-            public readonly ushort right_sat0;
-            public readonly ushort right_sat1;
-            public readonly ushort right_sat2;
-            public readonly ushort left_sat0;
-            public readonly ushort left_sat1;
-            public readonly ushort left_sat2;
-            public readonly short right_coeff0;
-            public readonly short right_coeff1;
-            public readonly short right_coeff2;
-            public readonly short left_coeff0;
-            public readonly short left_coeff1;
-            public readonly short left_coeff2;
-            public readonly ushort deadband0;
-            public readonly ushort deadband1;
-            public readonly ushort deadband2;
-            public readonly short center0;
-            public readonly short center1;
-            public readonly short center2;
+            public ushort right_sat0;
+            public ushort right_sat1;
+            public ushort right_sat2;
+            public ushort left_sat0;
+            public ushort left_sat1;
+            public ushort left_sat2;
+            public short right_coeff0;
+            public short right_coeff1;
+            public short right_coeff2;
+            public short left_coeff0;
+            public short left_coeff1;
+            public short left_coeff2;
+            public ushort deadband0;
+            public ushort deadband1;
+            public ushort deadband2;
+            public short center0;
+            public short center1;
+            public short center2;
         }
 
-        public readonly struct SDL_HapticRamp
+        public struct SDL_HapticRamp
         {
-            public readonly ushort type;
-            public readonly SDL_HapticDirection direction;
+            public ushort type;
+            public SDL_HapticDirection direction;
 
-            public readonly uint length;
-            public readonly ushort delay;
+            public uint length;
+            public ushort delay;
 
-            public readonly ushort button;
-            public readonly ushort interval;
+            public ushort button;
+            public ushort interval;
 
-            public readonly short start;
-            public readonly short end;
+            public short start;
+            public short end;
 
-            public readonly ushort attack_length;
-            public readonly ushort attack_level;
-            public readonly ushort fade_length;
-            public readonly ushort fade_level;
+            public ushort attack_length;
+            public ushort attack_level;
+            public ushort fade_length;
+            public ushort fade_level;
         }
 
-        public readonly struct SDL_HapticLeftRight
+        public struct SDL_HapticLeftRight
         {
-            public readonly ushort type;
+            public ushort type;
 
-            public readonly uint length;
+            public uint length;
 
-            public readonly ushort large_magnitude;
-            public readonly ushort small_magnitude;
+            public ushort large_magnitude;
+            public ushort small_magnitude;
         }
 
-        public readonly struct SDL_HapticCustom
+        public struct SDL_HapticCustom
         {
-            public readonly ushort type;
-            public readonly SDL_HapticDirection direction;
+            public ushort type;
+            public SDL_HapticDirection direction;
 
-            public readonly uint length;
-            public readonly ushort delay;
+            public uint length;
+            public ushort delay;
 
-            public readonly ushort button;
-            public readonly ushort interval;
+            public ushort button;
+            public ushort interval;
 
-            public readonly byte channels;
-            public readonly ushort period;
-            public readonly ushort samples;
-            public readonly ushort* data;
+            public byte channels;
+            public ushort period;
+            public ushort samples;
+            public ushort* data;
 
-            public readonly ushort attack_length;
-            public readonly ushort attack_level;
-            public readonly ushort fade_length;
-            public readonly ushort fade_level;
+            public ushort attack_length;
+            public ushort attack_level;
+            public ushort fade_length;
+            public ushort fade_level;
         }
 
         [StructLayout(LayoutKind.Explicit)]
-        public readonly struct SDL_HapticEffect
+        public struct SDL_HapticEffect
         {
             [FieldOffset(0)]
-            public readonly byte _type;
+            public byte _type;
 
             [FieldOffset(0)]
-            public readonly SDL_HapticConstant constant;
+            public SDL_HapticConstant constant;
 
             [FieldOffset(0)]
-            public readonly SDL_HapticPeriodic periodic;
+            public SDL_HapticPeriodic periodic;
 
             [FieldOffset(0)]
-            public readonly SDL_HapticCondition condition;
+            public SDL_HapticCondition condition;
 
             [FieldOffset(0)]
-            public readonly SDL_HapticRamp ramp;
+            public SDL_HapticRamp ramp;
 
             [FieldOffset(0)]
-            public readonly SDL_HapticLeftRight leftright;
+            public SDL_HapticLeftRight leftright;
 
             [FieldOffset(0)]
-            public readonly SDL_HapticCustom custom;
+            public SDL_HapticCustom custom;
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]

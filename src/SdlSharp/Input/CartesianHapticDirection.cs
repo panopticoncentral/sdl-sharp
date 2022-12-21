@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A cartesian haptic direction.
@@ -34,6 +34,12 @@
         }
 
         internal override Native.SDL_HapticDirection ToNative() =>
-            new(Native.SDL_HapticDirectionType.Cartesian, XAxis, YAxis, ZAxis);
+            new()
+            {
+                type = Native.SDL_HAPTIC_CARTESIAN,
+                dir0 = XAxis,
+                dir1 = YAxis,
+                dir2 = ZAxis
+            };
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A polar haptic direction.
@@ -20,6 +20,10 @@
         }
 
         internal override Native.SDL_HapticDirection ToNative() =>
-            new(Native.SDL_HapticDirectionType.Polar, Degree);
+            new()
+            {
+                type = Native.SDL_HAPTIC_POALR,
+                dir0 = Degree
+            };
     }
 }

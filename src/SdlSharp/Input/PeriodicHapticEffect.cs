@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A periodic haptic effect.
@@ -10,17 +10,17 @@
         /// </summary>
         public HapticEffectType Type { get; }
 
-        private Native.SDL_HapticType NativeFlags => Type switch
+        private ushort NativeFlags => Type switch
         {
-            HapticEffectType.Sine => Native.SDL_HapticType.Sine,
+            HapticEffectType.Sine => Native.SDL_HAPTIC_SINE,
 
-            HapticEffectType.Triangle => Native.SDL_HapticType.Triangle,
+            HapticEffectType.Triangle => Native.SDL_HAPTIC_TRIANGLE,
 
-            HapticEffectType.SawToothUp => Native.SDL_HapticType.SawToothUp,
+            HapticEffectType.SawToothUp => Native.SDL_HAPTIC_SAWTOOTHUP,
 
-            HapticEffectType.SawToothDown => Native.SDL_HapticType.SawToothDown,
+            HapticEffectType.SawToothDown => Native.SDL_HAPTIC_SAWTOOTHDOWN,
 
-            _ => Native.SDL_HapticType.None,
+            _ => 0,
         };
 
         /// <summary>
@@ -135,10 +135,31 @@
             FadeLevel = fadeLevel;
         }
 
-        internal override Native.SDL_HapticEffect ToNative() =>
-            new()
-            {
-                _periodic = new Native.SDL_HapticPeriodic(NativeFlags, Direction.ToNative(), Length, Delay, Button, Interval, Period, Magnitude, Offset, Phase, AttackLength, AttackLevel, FadeLength, FadeLevel)
-            };
+        internal override unsafe T NativeCall<T>(NativeHapticAction<T> call)
+        {
+            Native.SDL_HapticEffect nativeEffect =
+                new()
+                {
+                    periodic = new()
+                    {
+                        type = NativeFlags,
+                        direction = Direction.ToNative(),
+                        length = Length,
+                        delay = Delay,
+                        button = Button,
+                        interval = Interval,
+                        period = Period,
+                        magnitude = Magnitude,
+                        offset = Offset,
+                        phase = Phase,
+                        attack_length = AttackLength,
+                        attack_level = AttackLevel,
+                        fade_length = FadeLength,
+                        fade_level = FadeLevel
+                    }
+                };
+
+            return call(&nativeEffect);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SdlSharp.Touch
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A condition haptic effect.
@@ -10,17 +10,17 @@
         /// </summary>
         public HapticEffectType Type { get; }
 
-        private Native.SDL_HapticType NativeFlags => Type switch
+        private ushort NativeFlags => Type switch
         {
-            HapticEffectType.Spring => Native.SDL_HapticType.Spring,
+            HapticEffectType.Spring => Native.SDL_HAPTIC_SPRING,
 
-            HapticEffectType.Damper => Native.SDL_HapticType.Damper,
+            HapticEffectType.Damper => Native.SDL_HAPTIC_DAMPER,
 
-            HapticEffectType.Inertia => Native.SDL_HapticType.Inertia,
+            HapticEffectType.Inertia => Native.SDL_HAPTIC_INERTIA,
 
-            HapticEffectType.Friction => Native.SDL_HapticType.Friction,
+            HapticEffectType.Friction => Native.SDL_HAPTIC_FRICTION,
 
-            _ => Native.SDL_HapticType.None,
+            _ => 0,
         };
 
         /// <summary>
@@ -121,10 +121,41 @@
             Center = center;
         }
 
-        internal override Native.SDL_HapticEffect ToNative() =>
-            new()
-            {
-                _condition = new Native.SDL_HapticCondition(NativeFlags, Direction.ToNative(), Length, Delay, Button, Interval, RightSat, LeftSat, RightCoefficient, LeftCoefficient, Deadband, Center)
-            };
+        internal override unsafe T NativeCall<T>(NativeHapticAction<T> call)
+        {
+            Native.SDL_HapticEffect nativeEffect =
+                new()
+                {
+                    condition = new()
+                    {
+                        type = NativeFlags,
+                        direction = Direction.ToNative(),
+                        length = Length,
+                        delay = Delay,
+                        button = Button,
+                        interval = Interval,
+                        right_sat0 = RightSat.XAxis,
+                        right_sat1 = RightSat.YAxis,
+                        right_sat2 = RightSat.ZAxis,
+                        left_sat0 = LeftSat.XAxis,
+                        left_sat1 = LeftSat.YAxis,
+                        left_sat2 = LeftSat.ZAxis,
+                        right_coeff0 = RightCoefficient.XAxis,
+                        right_coeff1 = RightCoefficient.YAxis,
+                        right_coeff2 = RightCoefficient.ZAxis,
+                        left_coeff0 = LeftCoefficient.XAxis,
+                        left_coeff1 = LeftCoefficient.YAxis,
+                        left_coeff2 = LeftCoefficient.ZAxis,
+                        deadband0 = Deadband.XAxis,
+                        deadband1 = Deadband.YAxis,
+                        deadband2 = Deadband.ZAxis,
+                        center0 = Center.XAxis,
+                        center1 = Center.YAxis,
+                        center2 = Center.ZAxis
+                    }
+                };
+
+            return call(&nativeEffect);
+        }
     }
 }

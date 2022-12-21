@@ -1,4 +1,7 @@
-﻿namespace SdlSharp.Touch
+﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Threading.Channels;
+
+namespace SdlSharp.Input
 {
     /// <summary>
     /// A left-right haptic effect.
@@ -33,10 +36,21 @@
             SmallMagnitude = smallMagnitude;
         }
 
-        internal override Native.SDL_HapticEffect ToNative() =>
-            new()
-            {
-                _leftright = new Native.SDL_HapticLeftRight(Native.SDL_HapticType.LeftRight, Length, LargeMagnitude, SmallMagnitude)
-            };
+        internal override unsafe T NativeCall<T>(NativeHapticAction<T> call)
+        {
+            Native.SDL_HapticEffect nativeEffect =
+                new()
+                {
+                    leftright = new()
+                    {
+                        type = Native.SDL_HAPTIC_LEFTRIGHT,
+                        length = Length,
+                        large_magnitude = LargeMagnitude,
+                        small_magnitude = SmallMagnitude
+                    }
+                };
+
+            return call(&nativeEffect);
+        }
     }
 }
