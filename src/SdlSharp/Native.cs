@@ -2000,6 +2000,88 @@ namespace SdlSharp
 
         #endregion
 
+        #region SDL_hidapi.h
+
+        public readonly struct SDL_hid_device { }
+
+        public readonly struct SDL_hid_device_info
+        {
+            public readonly byte* path;
+            public readonly ushort vendor_id;
+            public readonly ushort product_id;
+            public readonly char* serial_number;
+            public readonly ushort release_number;
+            public readonly char* manufacturer_string;
+            public readonly char* product_string;
+            public readonly ushort usage_page;
+            public readonly ushort usage;
+            public readonly int interface_number;
+            public readonly int interface_class;
+            public readonly int interface_subclass;
+            public readonly int interface_protocol;
+
+            public readonly SDL_hid_device_info* next;
+        }
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_init();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_exit();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint SDL_hid_device_change_count();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_hid_device_info* SDL_hid_enumerate(ushort vendor_id, ushort product_id);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_hid_free_enumeration(SDL_hid_device_info* devs);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_hid_device* SDL_hid_open(ushort vendor_id, ushort product_id, char* serial_number);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_hid_device* SDL_hid_open_path(byte* path, int bExclusive);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_write(SDL_hid_device* dev, byte* data, nint length);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_read_timeout(SDL_hid_device* dev, byte* data, nint length, int milliseconds);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_read(SDL_hid_device* dev, byte* data, nint length);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_set_nonblocking(SDL_hid_device* dev, int nonblock);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_send_feature_report(SDL_hid_device* dev, byte* data, nint length);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_get_feature_report(SDL_hid_device* dev, byte* data, nint length);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_hid_close(SDL_hid_device* dev);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_get_manufacturer_string(SDL_hid_device* dev, char* s, nint maxlen);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_get_product_string(SDL_hid_device* dev, char* s, nint maxlen);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_get_serial_number_string(SDL_hid_device* dev, char* s, nint maxlen);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_hid_get_indexed_string(SDL_hid_device* dev, int string_index, char* s, nint maxlen);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_hid_ble_scan(bool active);
+
+        #endregion
+
         #region SDL_keyboard.h
 
         public readonly struct SDL_Keysym
