@@ -1,471 +1,944 @@
-﻿namespace SdlSharp
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+namespace SdlSharp
 {
     /// <summary>
     /// A hint is a setting that can change SDL behavior.
     /// </summary>
-    public sealed class Hint
+    public sealed unsafe class Hint
     {
+        private static readonly Dictionary<string, Hint> s_hints = new();
+
+        private readonly byte[] _name;
+        private EventHandler<HintChangedEventArgs>? _hintChanged;
+
+        /// <summary>
+        /// A variable controlling whether the Android / iOS built-in accelerometer should be listed as a joystick device.
+        /// </summary>
+        public static Hint AccelerometerAsJoystick => GetHint(Native.SDL_HINT_ACCELEROMETER_AS_JOYSTICK);
+
+        /// <summary>
+        /// Specify the behavior of Alt+Tab while the keyboard is grabbed.
+        /// </summary>
+        public static Hint AllowAltTabWhileGrabbed => GetHint(Native.SDL_HINT_ALLOW_ALT_TAB_WHILE_GRABBED);
+
+        /// <summary>
+        /// If set to "0" then never set the top most bit on a SDL Window, even if the video mode expects it.
+        /// </summary>
+        public static Hint AllowTopmost => GetHint(Native.SDL_HINT_ALLOW_TOPMOST);
+
+        /// <summary>
+        /// Android APK expansion main file version. Should be a string number like "1", "2" etc.
+        /// </summary>
+        public static Hint AndroidApkExpansionMainFileVersion => GetHint(Native.SDL_HINT_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION);
+
+        /// <summary>
+        /// Android APK expansion patch file version. Should be a string number like "1", "2" etc.
+        /// </summary>
+        public static Hint AndroidApkExpansionPatchFileVersion => GetHint(Native.SDL_HINT_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION);
+
+        /// <summary>
+        /// A variable to control whether the event loop will block itself when the app is paused.
+        /// </summary>
+        public static Hint AndroidBlockOnPause => GetHint(Native.SDL_HINT_ANDROID_BLOCK_ON_PAUSE);
+
+        /// <summary>
+        /// A variable to control whether SDL will pause audio in background.
+        /// </summary>
+        public static Hint AndroidBlockOnPausePauseAudio => GetHint(Native.SDL_HINT_ANDROID_BLOCK_ON_PAUSE_PAUSEAUDIO);
+
+        /// <summary>
+        /// A variable to control whether we trap the Android back button to handle it manually.
+        /// </summary>
+        public static Hint AndroidTrapBackButton => GetHint(Native.SDL_HINT_ANDROID_TRAP_BACK_BUTTON);
+
+        /// <summary>
+        /// Specify an application name.
+        /// </summary>
+        public static Hint AppName => GetHint(Native.SDL_HINT_APP_NAME);
+
+        /// <summary>
+        /// A variable controlling whether controllers used with the Apple TV generate UI events.
+        /// </summary>
+        public static Hint AppleTvControllerUiEvents => GetHint(Native.SDL_HINT_APPLE_TV_CONTROLLER_UI_EVENTS);
+
+        /// <summary>
+        /// A variable controlling whether the Apple TV remote's joystick axes will automatically match the rotation of the remote.
+        /// </summary>
+        public static Hint AppleTvRemoteAllowRotation => GetHint(Native.SDL_HINT_APPLE_TV_REMOTE_ALLOW_ROTATION);
+
+        /// <summary>
+        /// A variable controlling the audio category on iOS and Mac OS X.
+        /// </summary>
+        public static Hint AudioCategory => GetHint(Native.SDL_HINT_AUDIO_CATEGORY);
+
+        /// <summary>
+        /// Specify an application name for an audio device.
+        /// </summary>
+        public static Hint AudioDeviceAppName => GetHint(Native.SDL_HINT_AUDIO_DEVICE_APP_NAME);
+
+        /// <summary>
+        /// Specify an application name for an audio device.
+        /// </summary>
+        public static Hint AudioDeviceStreamName => GetHint(Native.SDL_HINT_AUDIO_DEVICE_STREAM_NAME);
+
+        /// <summary>
+        /// Specify an application role for an audio device.
+        /// </summary>
+        public static Hint AudioDeviceStreamRole => GetHint(Native.SDL_HINT_AUDIO_DEVICE_STREAM_ROLE);
+
+        /// <summary>
+        /// A variable controlling speed/quality tradeoff of audio resampling.
+        /// </summary>
+        public static Hint AudioResamplingMode => GetHint(Native.SDL_HINT_AUDIO_RESAMPLING_MODE);
+
+        /// <summary>
+        /// A variable controlling whether SDL updates joystick state when getting input events.
+        /// </summary>
+        public static Hint AutoUpdateJoysticks => GetHint(Native.SDL_HINT_AUTO_UPDATE_JOYSTICKS);
+
+        /// <summary>
+        /// A variable controlling whether SDL updates sensor state when getting input events.
+        /// </summary>
+        public static Hint AutoUpdateSensors => GetHint(Native.SDL_HINT_AUTO_UPDATE_SENSORS);
+
+        /// <summary>
+        /// Prevent SDL from using version 4 of the bitmap header when saving BMPs.
+        /// </summary>
+        public static Hint BmpSaveLegacyFormat => GetHint(Native.SDL_HINT_BMP_SAVE_LEGACY_FORMAT);
+
+        /// <summary>
+        /// Override for SDL_GetDisplayUsableBounds().
+        /// </summary>
+        public static Hint DisplayUsableBounds => GetHint(Native.SDL_HINT_DISPLAY_USABLE_BOUNDS);
+
+        /// <summary>
+        /// Disable giving back control to the browser automatically when running with asyncify.
+        /// </summary>
+        public static Hint EmscriptemAsyncify => GetHint(Native.SDL_HINT_EMSCRIPTEN_ASYNCIFY);
+
+        /// <summary>
+        /// Override the binding element for keyboard inputs for Emscripten builds.
+        /// </summary>
+        public static Hint EmscriptemKeyboardElement => GetHint(Native.SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT);
+
+        /// <summary>
+        /// A variable that controls whether Steam Controllers should be exposed using the SDL joystick and game controller APIs.
+        /// </summary>
+        public static Hint EnableSteamControllers => GetHint(Native.SDL_HINT_ENABLE_STEAM_CONTROLLERS);
+
+        /// <summary>
+        /// A variable controlling verbosity of the logging of SDL events pushed onto the internal queue.
+        /// </summary>
+        public static Hint EventLogging => GetHint(Native.SDL_HINT_EVENT_LOGGING);
+
+        /// <summary>
+        /// A variable controlling whether raising the window should be done more forcefully.
+        /// </summary>
+        public static Hint ForceRaiseWindow => GetHint(Native.SDL_HINT_FORCE_RAISEWINDOW);
+
+        /// <summary>
+        /// A variable controlling how 3D acceleration is used to accelerate the SDL screen surface.
+        /// </summary>
+        public static Hint FramebufferAcceleration => GetHint(Native.SDL_HINT_FRAMEBUFFER_ACCELERATION);
+
+        /// <summary>
+        /// A variable that lets you manually hint extra gamecontroller db entries.
+        /// </summary>
+        public static Hint GameControllerConfig => GetHint(Native.SDL_HINT_GAMECONTROLLERCONFIG);
+
+        /// <summary>
+        /// A variable that lets you provide a file with extra gamecontroller db entries.
+        /// </summary>
+        public static Hint GameControllerConfigFile => GetHint(Native.SDL_HINT_GAMECONTROLLERCONFIG_FILE);
+
+        /// <summary>
+        /// A variable that overrides the automatic controller type detection.
+        /// </summary>
+        public static Hint GameControllerType => GetHint(Native.SDL_HINT_GAMECONTROLLERTYPE);
+
+        /// <summary>
+        /// A variable containing a list of devices to skip when scanning for game controllers.
+        /// </summary>
+        public static Hint GameControllerIgnoreDevices => GetHint(Native.SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES);
+
+        /// <summary>
+        /// If set, all devices will be skipped when scanning for game controllers except for the ones listed in this variable.
+        /// </summary>
+        public static Hint GameControllerIgnoreDevicesExcept => GetHint(Native.SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT);
+
+        /// <summary>
+        /// If set, game controller face buttons report their values according to their labels instead of their positional layout.
+        /// </summary>
+        public static Hint GameControllerUseButtonLabels => GetHint(Native.SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS);
+
+        /// <summary>
+        /// A variable controlling whether grabbing input grabs the keyboard.
+        /// </summary>
+        public static Hint GrabKeyboards => GetHint(Native.SDL_HINT_GRAB_KEYBOARD);
+
+        /// <summary>
+        /// A variable containing a list of devices to ignore in SDL_hid_enumerate().
+        /// </summary>
+        public static Hint HidApiIgnoreDevices => GetHint(Native.SDL_HINT_HIDAPI_IGNORE_DEVICES);
+
+        /// <summary>
+        /// A variable controlling whether the idle timer is disabled on iOS.
+        /// </summary>
+        public static Hint IdleTimerDisabled => GetHint(Native.SDL_HINT_IDLE_TIMER_DISABLED);
+
+        /// <summary>
+        /// A variable to control whether certain IMEs should handle text editing internally instead of sending SDL_TEXTEDITING events.
+        /// </summary>
+        public static Hint ImeInternalEditing => GetHint(Native.SDL_HINT_IME_INTERNAL_EDITING);
+
+        /// <summary>
+        /// A variable to control whether certain IMEs should show native UI components (such as the Candidate List) instead of suppressing them.
+        /// </summary>
+        public static Hint ImeShowUi => GetHint(Native.SDL_HINT_IME_SHOW_UI);
+
+        /// <summary>
+        /// A variable to control if extended IME text support is enabled.
+        /// </summary>
+        public static Hint ImeSupportExtendedText => GetHint(Native.SDL_HINT_IME_SUPPORT_EXTENDED_TEXT);
+
+        /// <summary>
+        /// A variable controlling whether the home indicator bar on iPhone X should be hidden.
+        /// </summary>
+        public static Hint IosHideHomeIndicator => GetHint(Native.SDL_HINT_IOS_HIDE_HOME_INDICATOR);
+
+        /// <summary>
+        /// A variable that lets you enable joystick (and gamecontroller) events even when your app is in the background.
+        /// </summary>
+        public static Hint JoystickAllowBackgroundEvents => GetHint(Native.SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI joystick drivers should be used.
+        /// </summary>
+        public static Hint JoystickHidApi => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for Nintendo GameCube controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiGamecube => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_GAMECUBE);
+
+        /// <summary>
+        /// A variable controlling whether "low_frequency_rumble" and "high_frequency_rumble" is used to implement
+        /// the GameCube controller's 3 rumble modes.
+        /// </summary>
+        public static Hint JoystickGamecubRumbleBrake => GetHint(Native.SDL_HINT_JOYSTICK_GAMECUBE_RUMBLE_BRAKE);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for Nintendo Switch Joy-Cons should be used.
+        /// </summary>
+        public static Hint JoystickHidApiJoyCons => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_JOY_CONS);
+
+        /// <summary>
+        /// A variable controlling whether Nintendo Switch Joy-Con controllers will be combined into a single Pro-like controller when using the HIDAPI driver.
+        /// </summary>
+        public static Hint JoystickHidApiCombineJoyCons => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_COMBINE_JOY_CONS);
+
+        /// <summary>
+        /// A variable controlling whether Nintendo Switch Joy-Con controllers will be in vertical mode when using the HIDAPI driver.
+        /// </summary>
+        public static Hint JoystickHidApiVerticalJoyCons => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_VERTICAL_JOY_CONS);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for Amazon Luna controllers connected via Bluetooth should be used.
+        /// </summary>
+        public static Hint JoystickHidApiLuna => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_LUNA);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for Nintendo Online classic controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiNintendoClassic => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_NINTENDO_CLASSIC);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for NVIDIA SHIELD controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiShield => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_SHIELD);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for PS3 controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiPs3 => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_PS3);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for PS4 controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiPs4 => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_PS4);
+
+        /// <summary>
+        /// A variable controlling whether extended input reports should be used for PS4 controllers when using the HIDAPI driver.
+        /// </summary>
+        public static Hint JoystickHidApiPs4Rumble => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_PS4_RUMBLE);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for PS5 controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiPs5 => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_PS5);
+
+        /// <summary>
+        /// A variable controlling whether the player LEDs should be lit to indicate which player is associated with a PS5 controller.
+        /// </summary>
+        public static Hint JoystickHidApiPs5PlayerLed => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_PS5_PLAYER_LED);
+
+        /// <summary>
+        /// A variable controlling whether extended input reports should be used for PS5 controllers when using the HIDAPI driver.
+        /// </summary>
+        public static Hint JoystockHidApiPs5Rumble => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_PS5_RUMBLE);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for Google Stadia controllers should be used.
+        /// </summary>
+        public static Hint JoystackHidApiStadia => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_STADIA);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for Bluetooth Steam Controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiSteam => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_STEAM);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for Nintendo Switch controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiSwitch => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_SWITCH);
+
+        /// <summary>
+        /// A variable controlling whether the Home button LED should be turned on when a Nintendo Switch Pro controller is opened.
+        /// </summary>
+        public static Hint JoystickHidApiSwitchHomeLed => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_SWITCH_HOME_LED);
+
+        /// <summary>
+        /// A variable controlling whether the Home button LED should be turned on when a Nintendo Switch Joy-Con controller is opened.
+        /// </summary>
+        public static Hint JoystickHidApiJoyconHomeLed => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_JOYCON_HOME_LED);
+
+        /// <summary>
+        /// A variable controlling whether the player LEDs should be lit to indicate which player is associated with a Nintendo Switch controller.
+        /// </summary>
+        public static Hint JoystickHidApiSwitchPlayerLed => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_SWITCH_PLAYER_LED);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for Nintendo Wii and Wii U controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiWii => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_WII);
+
+        /// <summary>
+        /// A variable controlling whether the player LEDs should be lit to indicate which player is associated with a Wii controller.
+        /// </summary>
+        public static Hint JoystickHidApiWiiPlayerLed => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_WII_PLAYER_LED);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for XBox controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiXbox => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_XBOX);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for XBox 360 controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiXbox360 => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_XBOX_360);
+
+        /// <summary>
+        /// A variable controlling whether the player LEDs should be lit to indicate which player is associated with an Xbox 360 controller.
+        /// </summary>
+        public static Hint JoystickHidApiXbox360PlayerLed => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_XBOX_360_PLAYER_LED);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for XBox 360 wireless controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiXbox360Wireless => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_XBOX_360_WIRELESS);
+
+        /// <summary>
+        /// A variable controlling whether the HIDAPI driver for XBox One controllers should be used.
+        /// </summary>
+        public static Hint JoystickHidApiXboxOne => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_XBOX_ONE);
+
+        /// <summary>
+        /// A variable controlling whether the Home button LED should be turned on when an Xbox One controller is opened.
+        /// </summary>
+        public static Hint JoystickHidApiXboxOneHomeLed => GetHint(Native.SDL_HINT_JOYSTICK_HIDAPI_XBOX_ONE_HOME_LED);
+
+        /// <summary>
+        /// A variable controlling whether the RAWINPUT joystick drivers should be used for better handling XInput-capable devices.
+        /// </summary>
+        public static Hint JoystickRawInput => GetHint(Native.SDL_HINT_JOYSTICK_RAWINPUT);
+
+        /// <summary>
+        /// A variable controlling whether the RAWINPUT driver should pull correlated data from XInput.
+        /// </summary>
+        public static Hint JoystickRawInputCorrelateXinput => GetHint(Native.SDL_HINT_JOYSTICK_RAWINPUT_CORRELATE_XINPUT);
+
         /// <summary>
-        /// SDL_FRAMEBUFFER_ACCELERATION hint
+        /// A variable controlling whether the ROG Chakram mice should show up as joysticks.
         /// </summary>
-        public static readonly Hint FramebufferAcceleration = new("SDL_FRAMEBUFFER_ACCELERATION");
+        public static Hint JoystickRogChakram => GetHint(Native.SDL_HINT_JOYSTICK_ROG_CHAKRAM);
 
         /// <summary>
-        /// SDL_RENDER_DRIVER hint
+        /// A variable controlling whether a separate thread should be used.
         /// </summary>
-        public static readonly Hint RenderDriver = new("SDL_RENDER_DRIVER");
+        public static Hint JoystickThread => GetHint(Native.SDL_HINT_JOYSTICK_THREAD);
 
         /// <summary>
-        /// SDL_RENDER_OPENGL_SHADERS hint
+        /// Determines whether SDL enforces that DRM master is required in order to initialize the KMSDRM video backend.
         /// </summary>
-        public static readonly Hint RenderOpenGlShaders = new("SDL_RENDER_OPENGL_SHADERS");
+        public static Hint KmsDrmRequireDrmMaster => GetHint(Native.SDL_HINT_KMSDRM_REQUIRE_DRM_MASTER);
 
         /// <summary>
-        /// SDL_RENDER_DIRECT3D_THREADSAFE hint
+        /// A comma separated list of devices to open as joysticks.
         /// </summary>
-        public static readonly Hint RenderDirect3dThreadsafe = new("SDL_RENDER_DIRECT3D_THREADSAFE");
+        public static Hint JoystickDevice => GetHint(Native.SDL_HINT_JOYSTICK_DEVICE);
 
         /// <summary>
-        /// SDL_RENDER_DIRECT3D11_DEBUG hint
+        /// A variable controlling whether joysticks on Linux will always treat 'hat' axis inputs (ABS_HAT0X - ABS_HAT3Y) as 8-way digital hats without checking whether they may be analog.
         /// </summary>
-        public static readonly Hint RenderDirect3d11Debug = new("SDL_RENDER_DIRECT3D11_DEBUG");
+        public static Hint LinuxDigitalHats => GetHint(Native.SDL_HINT_LINUX_DIGITAL_HATS);
 
         /// <summary>
-        /// SDL_RENDER_LOGICAL_SIZE_MODE hint
+        /// A variable controlling whether digital hats on Linux will apply deadzones to their underlying input axes or use unfiltered values.
         /// </summary>
-        public static readonly Hint RenderLogicalSizeMode = new("SDL_RENDER_LOGICAL_SIZE_MODE");
+        public static Hint LinuxHatDeadZones => GetHint(Native.SDL_HINT_LINUX_HAT_DEADZONES);
 
         /// <summary>
-        /// SDL_RENDER_SCALE_QUALITY hint
+        /// A variable controlling whether to use the classic /dev/input/js.
         /// </summary>
-        public static readonly Hint RenderScaleQuality = new("SDL_RENDER_SCALE_QUALITY");
+        public static Hint LinuxJoystickClassic => GetHint(Native.SDL_HINT_LINUX_JOYSTICK_CLASSIC);
 
         /// <summary>
-        /// SDL_RENDER_VSYNC hint
+        /// A variable controlling whether joysticks on Linux adhere to their HID-defined deadzones or return unfiltered values.
         /// </summary>
-        public static readonly Hint RenderVsync = new("SDL_RENDER_VSYNC");
+        public static Hint LinuxJoystickDeadZones => GetHint(Native.SDL_HINT_LINUX_JOYSTICK_DEADZONES);
 
         /// <summary>
-        /// SDL_VIDEO_ALLOW_SCREENSAVER hint
+        /// When set don't force the SDL app to become a foreground process.
         /// </summary>
-        public static readonly Hint VideoAllowScreensaver = new("SDL_VIDEO_ALLOW_SCREENSAVER");
+        public static Hint MacBackgroundApp => GetHint(Native.SDL_HINT_MAC_BACKGROUND_APP);
 
         /// <summary>
-        /// SDL_VIDEO_EXTERNAL_CONTEXT hint
+        /// A variable that determines whether ctrl+click should generate a right-click event on Mac.
         /// </summary>
-        public static readonly Hint VideoExternalContext = new("SDL_VIDEO_EXTERNAL_CONTEXT");
+        public static Hint MacCtrlClickEmulateRightClick => GetHint(Native.SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK);
 
         /// <summary>
-        /// SDL_VIDEO_X11_XVIDMODE hint
+        /// A variable controlling whether dispatching OpenGL context updates should block the dispatching thread until the main thread finishes processing.
         /// </summary>
-        public static readonly Hint VideoX11XVidMode = new("SDL_VIDEO_X11_XVIDMODE");
+        public static Hint MacOpenGlAsyncDispatch => GetHint(Native.SDL_HINT_MAC_OPENGL_ASYNC_DISPATCH);
 
         /// <summary>
-        /// SDL_VIDEO_X11_XINERAMA hint
+        /// A variable setting the double click radius, in pixels.
         /// </summary>
-        public static readonly Hint VideoX11Xinerama = new("SDL_VIDEO_X11_XINERAMA");
+        public static Hint MouseDoubleClickRadius => GetHint(Native.SDL_HINT_MOUSE_DOUBLE_CLICK_RADIUS);
 
         /// <summary>
-        /// SDL_VIDEO_X11_XRANDR hint
+        /// A variable setting the double click time, in milliseconds.
         /// </summary>
-        public static readonly Hint VideoX11XrandR = new("SDL_VIDEO_X11_XRANDR");
+        public static Hint MouseDoubleClickTime => GetHint(Native.SDL_HINT_MOUSE_DOUBLE_CLICK_TIME);
 
         /// <summary>
-        /// SDL_VIDEO_X11_WINDOW_VISUALID hint
+        /// Allow mouse click events when clicking to focus an SDL window.
         /// </summary>
-        public static readonly Hint VideoX11WindowVisualId = new("SDL_VIDEO_X11_WINDOW_VISUALID");
+        public static Hint MouseFocusClickthrough => GetHint(Native.SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH);
 
         /// <summary>
-        /// SDL_VIDEO_X11_NET_WM_PING hint
+        /// A variable setting the speed scale for mouse motion, in floating point, when the mouse is not in relative mode.
         /// </summary>
-        public static readonly Hint VideoX11NetWmPing = new("SDL_VIDEO_X11_NET_WM_PING");
+        public static Hint MouseNormalSpeedScale => GetHint(Native.SDL_HINT_MOUSE_NORMAL_SPEED_SCALE);
 
         /// <summary>
-        /// SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR hint
+        /// A variable controlling whether relative mouse mode constrains the mouse to the center of the window.
         /// </summary>
-        public static readonly Hint VideoX11NetWmBypassCompositor = new("SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR");
+        public static Hint MouseRelativeModeCenter => GetHint(Native.SDL_HINT_MOUSE_RELATIVE_MODE_CENTER);
 
         /// <summary>
-        /// SDL_VIDEO_X11_FORCE_EGL hint
+        /// A variable controlling whether relative mouse mode is implemented using mouse warping.
         /// </summary>
-        public static readonly Hint VideoX11ForceEgl = new("SDL_VIDEO_X11_FORCE_EGL");
+        public static Hint MouseRelativeModeWarp => GetHint(Native.SDL_HINT_MOUSE_RELATIVE_MODE_WARP);
 
         /// <summary>
-        /// SDL_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN hint
+        /// A variable controlling whether relative mouse motion is affected by renderer scaling.
         /// </summary>
-        public static readonly Hint WindowFrameUsableWhileCursorHidden = new("SDL_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN");
+        public static Hint MouseRelativeScaling => GetHint(Native.SDL_HINT_MOUSE_RELATIVE_SCALING);
 
         /// <summary>
-        /// SDL_WINDOWS_INTRESOURCE_ICON hint
+        /// A variable setting the scale for mouse motion, in floating point, when the mouse is in relative mode.
         /// </summary>
-        public static readonly Hint WindowsIntResourceIcon = new("SDL_WINDOWS_INTRESOURCE_ICON");
+        public static Hint MouseRelativeSpeedScale => GetHint(Native.SDL_HINT_MOUSE_RELATIVE_SPEED_SCALE);
 
         /// <summary>
-        /// SDL_WINDOWS_INTRESOURCE_ICON_SMALL hint
+        /// A variable controlling whether the system mouse acceleration curve is used for relative mouse motion.
         /// </summary>
-        public static readonly Hint WindowsIntResourceIconSmall = new("SDL_WINDOWS_INTRESOURCE_ICON_SMALL");
+        public static Hint MouseRelativeSystemScale => GetHint(Native.SDL_HINT_MOUSE_RELATIVE_SYSTEM_SCALE);
 
         /// <summary>
-        /// SDL_WINDOWS_ENABLE_MESSAGELOOP hint
+        /// A variable controlling whether a motion event should be generated for mouse warping in relative mode.
         /// </summary>
-        public static readonly Hint WindowsEnableMessageLoop = new("SDL_WINDOWS_ENABLE_MESSAGELOOP");
+        public static Hint MouseRelativeWarpMotion => GetHint(Native.SDL_HINT_MOUSE_RELATIVE_WARP_MOTION);
 
         /// <summary>
-        /// SDL_GRAB_KEYBOARD hint
+        /// A variable controlling whether mouse events should generate synthetic touch events.
         /// </summary>
-        public static readonly Hint GrabKeyboard = new("SDL_GRAB_KEYBOARD");
+        public static Hint MouseTouchEvents => GetHint(Native.SDL_HINT_MOUSE_TOUCH_EVENTS);
 
         /// <summary>
-        /// SDL_MOUSE_DOUBLE_CLICK_TIME hint
+        /// A variable controlling whether the mouse is captured while mouse buttons are pressed.
         /// </summary>
-        public static readonly Hint MouseDoubleClickTime = new("SDL_MOUSE_DOUBLE_CLICK_TIME");
+        public static Hint MouseAutoCapture => GetHint(Native.SDL_HINT_MOUSE_AUTO_CAPTURE);
 
         /// <summary>
-        /// SDL_MOUSE_DOUBLE_CLICK_RADIUS hint
+        /// Tell SDL not to catch the SIGINT or SIGTERM signals.
         /// </summary>
-        public static readonly Hint MouseDoubleClickRadius = new("SDL_MOUSE_DOUBLE_CLICK_RADIUS");
+        public static Hint NoSignalHandlers => GetHint(Native.SDL_HINT_NO_SIGNAL_HANDLERS);
 
         /// <summary>
-        /// SDL_MOUSE_NORMAL_SPEED_SCALE hint
+        /// A variable controlling what driver to use for OpenGL ES contexts.
         /// </summary>
-        public static readonly Hint MouseNormalSpeedScale = new("SDL_MOUSE_NORMAL_SPEED_SCALE");
+        public static Hint OpenGlEsDriver => GetHint(Native.SDL_HINT_OPENGL_ES_DRIVER);
 
         /// <summary>
-        /// SDL_MOUSE_RELATIVE_SPEED_SCALE hint
+        /// A variable controlling which orientations are allowed on iOS/Android.
         /// </summary>
-        public static readonly Hint MouseRelativeSpeedScale = new("SDL_MOUSE_RELATIVE_SPEED_SCALE");
+        public static Hint Orientations => GetHint(Native.SDL_HINT_ORIENTATIONS);
 
         /// <summary>
-        /// SDL_MOUSE_RELATIVE_MODE_WARP hint
+        /// A variable controlling the use of a sentinel event when polling the event queue
         /// </summary>
-        public static readonly Hint MouseRelativeModeWarp = new("SDL_MOUSE_RELATIVE_MODE_WARP");
+        public static Hint PollSentinel => GetHint(Native.SDL_HINT_POLL_SENTINEL);
 
         /// <summary>
-        /// SDL_MOUSE_FOCUS_CLICKTHROUGH hint
+        /// Override for SDL_GetPreferredLocales()
         /// </summary>
-        public static readonly Hint MouseFocusClickthrough = new("SDL_MOUSE_FOCUS_CLICKTHROUGH");
+        public static Hint PreferredLocales => GetHint(Native.SDL_HINT_PREFERRED_LOCALES);
 
         /// <summary>
-        /// SDL_TOUCH_MOUSE_EVENTS hint
+        /// A variable describing the content orientation on QtWayland-based platforms.
         /// </summary>
-        public static readonly Hint TouchMouseEvents = new("SDL_TOUCH_MOUSE_EVENTS");
+        public static Hint QtWaylandContentOrientation => GetHint(Native.SDL_HINT_QTWAYLAND_CONTENT_ORIENTATION);
 
         /// <summary>
-        /// SDL_MOUSE_TOUCH_EVENTS hint
+        /// Flags to set on QtWayland windows to integrate with the native window manager.
         /// </summary>
-        public static readonly Hint MouseTouchEvents = new("SDL_MOUSE_TOUCH_EVENTS");
+        public static Hint QtWaylandWindowFlags => GetHint(Native.SDL_HINT_QTWAYLAND_WINDOW_FLAGS);
 
         /// <summary>
-        /// SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS hint
+        /// A variable controlling whether the 2D render API is compatible or efficient.
         /// </summary>
-        public static readonly Hint VideoMinimizeOnFocusLoss = new("SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS");
+        public static Hint RenderBatching => GetHint(Native.SDL_HINT_RENDER_BATCHING);
 
         /// <summary>
-        /// SDL_IOS_IDLE_TIMER_DISABLED hint
+        /// A variable controlling how the 2D render API renders lines
         /// </summary>
-        public static readonly Hint IosIdleTimerDisabled = new("SDL_IOS_IDLE_TIMER_DISABLED");
+        public static Hint RenderLineMethod => GetHint(Native.SDL_HINT_RENDER_LINE_METHOD);
 
         /// <summary>
-        /// SDL_IOS_ORIENTATIONS hint
+        /// A variable controlling whether to enable Direct3D 11+'s Debug Layer.
         /// </summary>
-        public static readonly Hint IosOrientations = new("SDL_IOS_ORIENTATIONS");
+        public static Hint RenderDirect3d11Debugs => GetHint(Native.SDL_HINT_RENDER_DIRECT3D11_DEBUG);
 
         /// <summary>
-        /// SDL_APPLE_TV_CONTROLLER_UI_EVENTS hint
+        /// A variable controlling whether the Direct3D device is initialized for thread-safe operations.
         /// </summary>
-        public static readonly Hint AppleTvControllerUiEvents = new("SDL_APPLE_TV_CONTROLLER_UI_EVENTS");
+        public static Hint RenderDirect3dThreadSafe => GetHint(Native.SDL_HINT_RENDER_DIRECT3D_THREADSAFE);
 
         /// <summary>
-        /// SDL_APPLE_TV_REMOTE_ALLOW_ROTATION hint
+        /// A variable specifying which render driver to use.
         /// </summary>
-        public static readonly Hint AppleTvRemoteAllowRotation = new("SDL_APPLE_TV_REMOTE_ALLOW_ROTATION");
+        public static Hint RenderDriver => GetHint(Native.SDL_HINT_RENDER_DRIVER);
 
         /// <summary>
-        /// SDL_IOS_HIDE_HOME_INDICATOR hint
+        /// A variable controlling the scaling policy for SDL_RenderSetLogicalSize.
         /// </summary>
-        public static readonly Hint IosHideHomeIndicator = new("SDL_IOS_HIDE_HOME_INDICATOR");
+        public static Hint RenderLogicalSizeMode => GetHint(Native.SDL_HINT_RENDER_LOGICAL_SIZE_MODE);
 
         /// <summary>
-        /// SDL_ACCELEROMETER_AS_JOYSTICK hint
+        /// A variable controlling whether the OpenGL render driver uses shaders if they are available.
         /// </summary>
-        public static readonly Hint AccelerometerAsJoystick = new("SDL_ACCELEROMETER_AS_JOYSTICK");
+        public static Hint RenderOpenGlShaders => GetHint(Native.SDL_HINT_RENDER_OPENGL_SHADERS);
 
         /// <summary>
-        /// SDL_TV_REMOTE_AS_JOYSTICK hint
+        /// A variable controlling the scaling quality
         /// </summary>
-        public static readonly Hint TvRemoteAsJoystick = new("SDL_TV_REMOTE_AS_JOYSTICK");
+        public static Hint RenderScaleQuality => GetHint(Native.SDL_HINT_RENDER_SCALE_QUALITY);
 
         /// <summary>
-        /// SDL_XINPUT_ENABLED hint
+        /// A variable controlling whether updates to the SDL screen surface should be synchronized with the vertical refresh, to avoid tearing.
         /// </summary>
-        public static readonly Hint XinputEnabled = new("SDL_XINPUT_ENABLED");
+        public static Hint RenderVsync => GetHint(Native.SDL_HINT_RENDER_VSYNC);
 
         /// <summary>
-        /// SDL_XINPUT_USE_OLD_JOYSTICK_MAPPING hint
+        /// A variable controlling if VSYNC is automatically disable if doesn't reach the enough FPS
         /// </summary>
-        public static readonly Hint XInputUseOldJoystickMapping = new("SDL_XINPUT_USE_OLD_JOYSTICK_MAPPING");
+        public static Hint Ps2DynamicVsync => GetHint(Native.SDL_HINT_PS2_DYNAMIC_VSYNC);
 
         /// <summary>
-        /// SDL_GAMECONTROLLERTYPE hint
+        /// A variable to control whether the return key on the soft keyboard
         /// </summary>
-        public static readonly Hint GameControllerType = new("SDL_GAMECONTROLLERTYPE");
+        public static Hint ReturnKeyHidesIme => GetHint(Native.SDL_HINT_RETURN_KEY_HIDES_IME);
 
         /// <summary>
-        /// SDL_GAMECONTROLLERCONFIG hint
+        /// Tell SDL which Dispmanx layer to use on a Raspberry PI
         /// </summary>
-        public static readonly Hint GameControllerConfig = new("SDL_GAMECONTROLLERCONFIG");
+        public static Hint RpiVideoLayer => GetHint(Native.SDL_HINT_RPI_VIDEO_LAYER);
 
         /// <summary>
-        /// SDL_GAMECONTROLLERCONFIG_FILE hint
+        /// Specify an "activity name" for screensaver inhibition.
         /// </summary>
-        public static readonly Hint GameControllerConfigFile = new("SDL_GAMECONTROLLERCONFIG_FILE");
+        public static Hint ScreensaverInhibitActivityName => GetHint(Native.SDL_HINT_SCREENSAVER_INHIBIT_ACTIVITY_NAME);
 
         /// <summary>
-        /// SDL_GAMECONTROLLER_IGNORE_DEVICES hint
+        /// Specifies whether SDL_THREAD_PRIORITY_TIME_CRITICAL should be treated as realtime.
         /// </summary>
-        public static readonly Hint GameControllerIgnoreDevices = new("SDL_GAMECONTROLLER_IGNORE_DEVICES");
+        public static Hint ThreadForceRealtimeTimeCritical => GetHint(Native.SDL_HINT_THREAD_FORCE_REALTIME_TIME_CRITICAL);
 
         /// <summary>
-        /// SDL_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT hint
+        /// A string specifying additional information to use with SDL_SetThreadPriority.
         /// </summary>
-        public static readonly Hint GameControllerIgnoreDevicesExcept = new("SDL_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT");
+        public static Hint ThreadPriorityPolicy => GetHint(Native.SDL_HINT_THREAD_PRIORITY_POLICY);
 
         /// <summary>
-        /// SDL_GAMECONTROLLER_USE_BUTTON_LABELS hint
+        /// A string specifying SDL's threads stack size in bytes or "0" for the backend's default size
         /// </summary>
-        public static readonly Hint GameControllerUseButtonLabels = new("SDL_GAMECONTROLLER_USE_BUTTON_LABELS");
+        public static Hint ThreadStackSize => GetHint(Native.SDL_HINT_THREAD_STACK_SIZE);
 
         /// <summary>
-        /// SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS hint
+        /// A variable that controls the timer resolution, in milliseconds.
         /// </summary>
-        public static readonly Hint JoystickAllowBackgroundEvents = new("SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS");
+        public static Hint TimerResolution => GetHint(Native.SDL_HINT_TIMER_RESOLUTION);
 
         /// <summary>
-        /// SDL_JOYSTICK_HIDAPI hint
+        /// A variable controlling whether touch events should generate synthetic mouse events
         /// </summary>
-        public static readonly Hint JoystickHidApi = new("SDL_JOYSTICK_HIDAPI");
+        public static Hint TouchMouseEvents => GetHint(Native.SDL_HINT_TOUCH_MOUSE_EVENTS);
 
         /// <summary>
-        /// SDL_JOYSTICK_HIDAPI_PS4 hint
+        /// A variable controlling which touchpad should generate synthetic mouse events
         /// </summary>
-        public static readonly Hint JoystickHidApiPs4 = new("SDL_JOYSTICK_HIDAPI_PS4");
+        public static Hint VitaTouchMouseDevice => GetHint(Native.SDL_HINT_VITA_TOUCH_MOUSE_DEVICE);
 
         /// <summary>
-        /// SDL_JOYSTICK_HIDAPI_PS4_RUMBLE hint
+        /// A variable controlling whether the Android / tvOS remotes
         /// </summary>
-        public static readonly Hint JoystickHidApiPs4Rumble = new("SDL_JOYSTICK_HIDAPI_PS4_RUMBLE");
+        public static Hint TvRemoteAsJoystick => GetHint(Native.SDL_HINT_TV_REMOTE_AS_JOYSTICK);
 
         /// <summary>
-        /// SDL_JOYSTICK_HIDAPI_STEAM hint
+        /// A variable controlling whether the screensaver is enabled. 
         /// </summary>
-        public static readonly Hint JoystickHidApiSteam = new("SDL_JOYSTICK_HIDAPI_STEAM");
+        public static Hint VideoAllowScreensaver => GetHint(Native.SDL_HINT_VIDEO_ALLOW_SCREENSAVER);
 
         /// <summary>
-        /// SDL_JOYSTICK_HIDAPI_SWITCH hint
+        /// Tell the video driver that we only want a double buffer.
         /// </summary>
-        public static readonly Hint JoystickHidApiSwitch = new("SDL_JOYSTICK_HIDAPI_SWITCH");
+        public static Hint VideoDoubleBuffer => GetHint(Native.SDL_HINT_VIDEO_DOUBLE_BUFFER);
 
         /// <summary>
-        /// SDL_JOYSTICK_HIDAPI_XBOX hint
+        /// A variable controlling whether the EGL window is allowed to be
         /// </summary>
-        public static readonly Hint JoystickHidApiXbox = new("SDL_JOYSTICK_HIDAPI_XBOX");
+        public static Hint VideoEglAllowTransparency => GetHint(Native.SDL_HINT_VIDEO_EGL_ALLOW_TRANSPARENCY);
 
         /// <summary>
-        /// SDL_JOYSTICK_HIDAPI_GAMECUBE hint
+        /// A variable controlling whether the graphics context is externally managed.
         /// </summary>
-        public static readonly Hint JoystickHidApiGameCube = new("SDL_JOYSTICK_HIDAPI_GAMECUBE");
+        public static Hint VideoExternalContext => GetHint(Native.SDL_HINT_VIDEO_EXTERNAL_CONTEXT);
 
         /// <summary>
-        /// SDL_ENABLE_STEAM_CONTROLLERS hint
+        /// If set to 1, then do not allow high-DPI windows. ("Retina" on Mac and iOS)
         /// </summary>
-        public static readonly Hint EnableSteamControllers = new("SDL_ENABLE_STEAM_CONTROLLERS");
+        public static Hint VideoHighDpiDisabled => GetHint(Native.SDL_HINT_VIDEO_HIGHDPI_DISABLED);
 
         /// <summary>
-        /// SDL_ALLOW_TOPMOST hint
+        /// A variable that dictates policy for fullscreen Spaces on Mac OS X.
         /// </summary>
-        public static readonly Hint AllowTopmost = new("SDL_ALLOW_TOPMOST");
+        public static Hint VideoMacFullscreenSpaces => GetHint(Native.SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES);
 
         /// <summary>
-        /// SDL_TIMER_RESOLUTION hint
+        /// Minimize your SDL_Window if it loses key focus when in fullscreen mode. Defaults to false.
         /// </summary>
-        public static readonly Hint TimerResolution = new("SDL_TIMER_RESOLUTION");
+        public static Hint VideoMinimizeOnFocusLoss => GetHint(Native.SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS);
 
         /// <summary>
-        /// SDL_QTWAYLAND_CONTENT_ORIENTATION hint
+        /// A variable controlling whether the libdecor Wayland backend is allowed to be used.
         /// </summary>
-        public static readonly Hint QtwaylandContentOrientation = new("SDL_QTWAYLAND_CONTENT_ORIENTATION");
+        public static Hint VideoWaylandAllowLibdecor => GetHint(Native.SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR);
 
         /// <summary>
-        /// SDL_QTWAYLAND_WINDOW_FLAGS hint
+        /// A variable controlling whether the libdecor Wayland backend is preferred over native decrations.
         /// </summary>
-        public static readonly Hint QtwaylandWindowFlags = new("SDL_QTWAYLAND_WINDOW_FLAGS");
+        public static Hint VideoWaylandPreferLibdecor => GetHint(Native.SDL_HINT_VIDEO_WAYLAND_PREFER_LIBDECOR);
 
         /// <summary>
-        /// SDL_THREAD_STACK_SIZE hint
+        /// A variable controlling whether video mode emulation is enabled under Wayland.
         /// </summary>
-        public static readonly Hint ThreadStackSize = new("SDL_THREAD_STACK_SIZE");
+        public static Hint VideoWaylandModeEmulation => GetHint(Native.SDL_HINT_VIDEO_WAYLAND_MODE_EMULATION);
 
         /// <summary>
-        /// SDL_VIDEO_HIGHDPI_DISABLED hint
+        /// Enable or disable mouse pointer warp emulation, needed by some older games.
         /// </summary>
-        public static readonly Hint VideoHighDpiDisabled = new("SDL_VIDEO_HIGHDPI_DISABLED");
+        public static Hint VideoWaylandEmulateMouseWarp => GetHint(Native.SDL_HINT_VIDEO_WAYLAND_EMULATE_MOUSE_WARP);
 
         /// <summary>
-        /// SDL_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK hint
+        /// A variable that is the address of another SDL_Window* (as a hex string formatted with "%p").
         /// </summary>
-        public static readonly Hint MacCtrlClickEmulateRightClick = new("SDL_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK");
+        public static Hint VideoWindowSharePixelFormat => GetHint(Native.SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT);
 
         /// <summary>
-        /// SDL_VIDEO_WIN_D3DCOMPILER hint
+        /// When calling SDL_CreateWindowFrom(), make the window compatible with OpenGL.
         /// </summary>
-        public static readonly Hint VideoWinD3dCompiler = new("SDL_VIDEO_WIN_D3DCOMPILER");
+        public static Hint VideoForeignWindowOpenGl => GetHint(Native.SDL_HINT_VIDEO_FOREIGN_WINDOW_OPENGL);
 
         /// <summary>
-        /// SDL_VIDEO_WINDOW_SHARE_PIXEL_FORMAT hint
+        /// When calling SDL_CreateWindowFrom(), make the window compatible with Vulkan.
         /// </summary>
-        public static readonly Hint VideoWindowSharePixelFormat = new("SDL_VIDEO_WINDOW_SHARE_PIXEL_FORMAT");
+        public static Hint VideoForeignWindowVulkan => GetHint(Native.SDL_HINT_VIDEO_FOREIGN_WINDOW_VULKAN);
 
         /// <summary>
-        /// SDL_WINRT_PRIVACY_POLICY_URL hint
+        /// A variable specifying which shader compiler to preload when using the Chrome ANGLE binaries
         /// </summary>
-        public static readonly Hint WinrtPrivacyPolicyUrl = new("SDL_WINRT_PRIVACY_POLICY_URL");
+        public static Hint VideoWinD3dCompiler => GetHint(Native.SDL_HINT_VIDEO_WIN_D3DCOMPILER);
 
         /// <summary>
-        /// SDL_WINRT_PRIVACY_POLICY_LABEL hint
+        /// A variable controlling whether X11 should use GLX or EGL by default
         /// </summary>
-        public static readonly Hint WinrtPrivacyPolicyLabel = new("SDL_WINRT_PRIVACY_POLICY_LABEL");
+        public static Hint VideoX11ForceEgl => GetHint(Native.SDL_HINT_VIDEO_X11_FORCE_EGL);
 
         /// <summary>
-        /// SDL_WINRT_HANDLE_BACK_BUTTON hint
+        /// A variable controlling whether the X11 _NET_WM_BYPASS_COMPOSITOR hint should be used.
         /// </summary>
-        public static readonly Hint WinrtHandleBackButton = new("SDL_WINRT_HANDLE_BACK_BUTTON");
+        public static Hint VideoX11NetWmBypassCompositor => GetHint(Native.SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR);
 
         /// <summary>
-        /// SDL_VIDEO_MAC_FULLSCREEN_SPACES hint
+        /// A variable controlling whether the X11 _NET_WM_PING protocol should be supported.
         /// </summary>
-        public static readonly Hint VideoMacFullscreenSpaces = new("SDL_VIDEO_MAC_FULLSCREEN_SPACES");
+        public static Hint VideoX11NetWmPing => GetHint(Native.SDL_HINT_VIDEO_X11_NET_WM_PING);
 
         /// <summary>
-        /// SDL_MAC_BACKGROUND_APP hint
+        /// A variable forcing the visual ID chosen for new X11 windows
         /// </summary>
-        public static readonly Hint MacBackgroundApp = new("SDL_MAC_BACKGROUND_APP");
+        public static Hint VideoX11WindowVisualId => GetHint(Native.SDL_HINT_VIDEO_X11_WINDOW_VISUALID);
 
         /// <summary>
-        /// SDL_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION hint
+        /// A no-longer-used variable controlling whether the X11 Xinerama extension should be used.
         /// </summary>
-        public static readonly Hint AndroidApkExpansionMainFileVersion = new("SDL_ANDROID_APK_EXPANSION_MAIN_FILE_VERSION");
+        public static Hint VideoX11Xinerama => GetHint(Native.SDL_HINT_VIDEO_X11_XINERAMA);
 
         /// <summary>
-        /// SDL_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION hint
+        /// A variable controlling whether the X11 XRandR extension should be used.
         /// </summary>
-        public static readonly Hint AndroidApkExpansionPatchFileVersion = new("SDL_ANDROID_APK_EXPANSION_PATCH_FILE_VERSION");
+        public static Hint VideoX11Xrandr => GetHint(Native.SDL_HINT_VIDEO_X11_XRANDR);
 
         /// <summary>
-        /// SDL_IME_INTERNAL_EDITING hint
+        /// A no-longer-used variable controlling whether the X11 VidMode extension should be used.
         /// </summary>
-        public static readonly Hint ImeInternalEditing = new("SDL_IME_INTERNAL_EDITING");
+        public static Hint VideoX11Xvidmode => GetHint(Native.SDL_HINT_VIDEO_X11_XVIDMODE);
 
         /// <summary>
-        /// SDL_ANDROID_TRAP_BACK_BUTTON hint
+        /// Controls how the fact chunk affects the loading of a WAVE file.
         /// </summary>
-        public static readonly Hint AndroidTrapBackButton = new("SDL_ANDROID_TRAP_BACK_BUTTON");
+        public static Hint WaveFactChunk => GetHint(Native.SDL_HINT_WAVE_FACT_CHUNK);
 
         /// <summary>
-        /// SDL_ANDROID_BLOCK_ON_PAUSE hint
+        /// Controls how the size of the RIFF chunk affects the loading of a WAVE file.
         /// </summary>
-        public static readonly Hint AndroidBlockOnPause = new("SDL_ANDROID_BLOCK_ON_PAUSE");
+        public static Hint WaveRiffChunkSize => GetHint(Native.SDL_HINT_WAVE_RIFF_CHUNK_SIZE);
 
         /// <summary>
-        /// SDL_RETURN_KEY_HIDES_IME hint
+        /// Controls how a truncated WAVE file is handled.
         /// </summary>
-        public static readonly Hint ReturnKeyHidesIme = new("SDL_RETURN_KEY_HIDES_IME");
+        public static Hint WaveTruncation => GetHint(Native.SDL_HINT_WAVE_TRUNCATION);
 
         /// <summary>
-        /// SDL_EMSCRIPTEN_KEYBOARD_ELEMENT hint
+        /// Tell SDL not to name threads on Windows with the 0x406D1388 Exception.
         /// </summary>
-        public static readonly Hint EmscriptenKeyboardElement = new("SDL_EMSCRIPTEN_KEYBOARD_ELEMENT");
+        public static Hint WindowsDisableThreadNaming => GetHint(Native.SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING);
 
         /// <summary>
-        /// SDL_NO_SIGNAL_HANDLERS hint
+        /// A variable controlling whether the windows message loop is processed by SDL 
         /// </summary>
-        public static readonly Hint NoSignalHandlers = new("SDL_NO_SIGNAL_HANDLERS");
+        public static Hint WindowsEnableMessageLoop => GetHint(Native.SDL_HINT_WINDOWS_ENABLE_MESSAGELOOP);
 
         /// <summary>
-        /// SDL_WINDOWS_NO_CLOSE_ON_ALT_F4 hint
+        /// Force SDL to use Critical Sections for mutexes on Windows.
         /// </summary>
-        public static readonly Hint WindowsNoCloseOnAltF4 = new("SDL_WINDOWS_NO_CLOSE_ON_ALT_F4");
+        public static Hint WindowsForceMutexCriticalSections => GetHint(Native.SDL_HINT_WINDOWS_FORCE_MUTEX_CRITICAL_SECTIONS);
 
         /// <summary>
-        /// SDL_BMP_SAVE_LEGACY_FORMAT hint
+        /// Force SDL to use Kernel Semaphores on Windows.
         /// </summary>
-        public static readonly Hint BmpSaveLegacyFormat = new("SDL_BMP_SAVE_LEGACY_FORMAT");
+        public static Hint WindowsForceSemaphoreKernel => GetHint(Native.SDL_HINT_WINDOWS_FORCE_SEMAPHORE_KERNEL);
 
         /// <summary>
-        /// SDL_WINDOWS_DISABLE_THREAD_NAMING hint
+        /// A variable to specify custom icon resource id from RC file on Windows platform 
         /// </summary>
-        public static readonly Hint WindowsDisableThreadNaming = new("SDL_WINDOWS_DISABLE_THREAD_NAMING");
+        public static Hint WindowsIntResourceIcon => GetHint(Native.SDL_HINT_WINDOWS_INTRESOURCE_ICON);
 
         /// <summary>
-        /// SDL_RPI_VIDEO_LAYER hint
+        /// A variable to specify custom icon resource id from RC file on Windows platform 
         /// </summary>
-        public static readonly Hint RpiVideoLayer = new("SDL_RPI_VIDEO_LAYER");
+        public static Hint WindowsIntResourceIconSmall => GetHint(Native.SDL_HINT_WINDOWS_INTRESOURCE_ICON_SMALL);
 
         /// <summary>
-        /// SDL_VIDEO_DOUBLE_BUFFER hint
+        /// Tell SDL not to generate window-close events for Alt+F4 on Windows.
         /// </summary>
-        public static readonly Hint VideoDoubleBuffer = new("SDL_VIDEO_DOUBLE_BUFFER");
+        public static Hint WindowsNoCloseOnAltF4 => GetHint(Native.SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4);
 
         /// <summary>
-        /// SDL_OPENGL_ES_DRIVER hint
+        /// Use the D3D9Ex API introduced in Windows Vista, instead of normal D3D9.
         /// </summary>
-        public static readonly Hint OpenglEsDriver = new("SDL_OPENGL_ES_DRIVER");
+        public static Hint WindowsUseD3d9ex => GetHint(Native.SDL_HINT_WINDOWS_USE_D3D9EX);
 
         /// <summary>
-        /// SDL_AUDIO_RESAMPLING_MODE hint
+        /// Controls whether SDL will declare the process to be DPI aware.
         /// </summary>
-        public static readonly Hint AudioResamplingMode = new("SDL_AUDIO_RESAMPLING_MODE");
+        public static Hint WindowsDpiAwareness => GetHint(Native.SDL_HINT_WINDOWS_DPI_AWARENESS);
 
         /// <summary>
-        /// SDL_AUDIO_CATEGORY hint
+        /// Uses DPI-scaled points as the SDL coordinate system on Windows.
         /// </summary>
-        public static readonly Hint AudioCategory = new("SDL_AUDIO_CATEGORY");
+        public static Hint WindowsDpiScaling => GetHint(Native.SDL_HINT_WINDOWS_DPI_SCALING);
 
         /// <summary>
-        /// SDL_RENDER_BATCHING hint
+        /// A variable controlling whether the window frame and title bar are interactive when the cursor is hidden 
         /// </summary>
-        public static readonly Hint RenderBatching = new("SDL_RENDER_BATCHING");
+        public static Hint WindowFrameUsableWhileCursorHidden => GetHint(Native.SDL_HINT_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN);
 
         /// <summary>
-        /// SDL_EVENT_LOGGING hint
+        /// A variable controlling whether the window is activated when the SDL_ShowWindow function is called 
         /// </summary>
-        public static readonly Hint EventLogging = new("SDL_EVENT_LOGGING");
+        public static Hint WindowNoActivationWhenShown => GetHint(Native.SDL_HINT_WINDOW_NO_ACTIVATION_WHEN_SHOWN);
 
+        //// Allows back-button-press events on Windows Phone to be marked as handled
+        /// </summary>
+        public static Hint WinrtHandleBackButton => GetHint(Native.SDL_HINT_WINRT_HANDLE_BACK_BUTTON);
+
+        //// Label text for a WinRT app's privacy policy link
+        /// </summary>
+        public static Hint WintrPrivacyPolicyLabel => GetHint(Native.SDL_HINT_WINRT_PRIVACY_POLICY_LABEL);
+
+        /// <summary>
+        /// A URL to a WinRT app's privacy policy
+        /// </summary>
+        public static Hint WinrtPrivatePolicyUrl => GetHint(Native.SDL_HINT_WINRT_PRIVACY_POLICY_URL);
+
+        /// <summary>
+        /// Mark X11 windows as override-redirect.
+        /// </summary>
+        public static Hint X11ForceOverrideRedirect => GetHint(Native.SDL_HINT_X11_FORCE_OVERRIDE_REDIRECT);
+
+        /// <summary>
+        /// A variable that lets you disable the detection and use of Xinput gamepad devices
+        /// </summary>
+        public static Hint XinputEnabled => GetHint(Native.SDL_HINT_XINPUT_ENABLED);
+
+        /// <summary>
+        /// A variable that lets you disable the detection and use of DirectInput gamepad devices
+        /// </summary>
+        public static Hint DirectInputEnabled => GetHint(Native.SDL_HINT_DIRECTINPUT_ENABLED);
+
+        /// <summary>
+        /// A variable that causes SDL to use the old axis and button mapping for XInput devices.
+        /// </summary>
+        public static Hint XinputUseOldJoystickMapping => GetHint(Native.SDL_HINT_XINPUT_USE_OLD_JOYSTICK_MAPPING);
+
+        /// <summary>
+        /// A variable that causes SDL to not ignore audio "monitors"
+        /// </summary>
+        public static Hint AudioIncludeMonitors => GetHint(Native.SDL_HINT_AUDIO_INCLUDE_MONITORS);
+
+        /// <summary>
+        /// A variable that forces X11 windows to create as a custom type.
+        /// </summary>
+        public static Hint X11WindowType => GetHint(Native.SDL_HINT_X11_WINDOW_TYPE);
+
+        /// <summary>
+        /// A variable that decides whether to send SDL_QUIT when closing the final window.
+        /// </summary>
+        public static Hint QuitOnLastWindowClose => GetHint(Native.SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE);
+
         /// <summary>
-        /// SDL_WAVE_RIFF_CHUNK_SIZE hint
+        /// A variable that decides what video backend to use.
         /// </summary>
-        public static readonly Hint WaveRiffChunkSize = new("SDL_WAVE_RIFF_CHUNK_SIZE");
+        public static Hint VideoDriver => GetHint(Native.SDL_HINT_VIDEODRIVER);
 
         /// <summary>
-        /// SDL_WAVE_TRUNCATION hint
+        /// A variable that decides what audio backend to use.
         /// </summary>
-        public static readonly Hint WaveTruncation = new("SDL_WAVE_TRUNCATION");
+        public static Hint AudioDriver => GetHint(Native.SDL_HINT_AUDIODRIVER);
 
         /// <summary>
-        /// SDL_WAVE_FACT_CHUNK hint
+        /// A variable that decides what KMSDRM device to use.
         /// </summary>
-        public static readonly Hint WaveFactChunk = new("SDL_WAVE_FACT_CHUNK");
+        public static Hint KmsdrmDeviceIndex => GetHint(Native.SDL_HINT_KMSDRM_DEVICE_INDEX);
 
         /// <summary>
-        /// SDL_DISPLAY_USABLE_BOUNDS hint
+        /// A variable that treats trackpads as touch devices.
         /// </summary>
-        public static readonly Hint DisplayUsableBounds = new("SDL_DISPLAY_USABLE_BOUNDS");
+        public static Hint TrackpadIsTouchOnly => GetHint(Native.SDL_HINT_TRACKPAD_IS_TOUCH_ONLY);
+
+        public event EventHandler<HintChangedEventArgs> HintChanged
+        {
+            add
+            {
+                lock (this)
+                {
+                    if (_hintChanged == null)
+                    {
+                        fixed (byte* namePtr = _name)
+                        {
+                            Native.SDL_AddHintCallback(namePtr, &HintCallback, 0);
+                        }
+                    }
+
+                    _hintChanged += value;
+                }
+            }
+
+            remove
+            {
+                lock (this)
+                {
+                    _hintChanged -= value;
 
-        private readonly string _name;
-        private Dictionary<HintCallback, int>? _callbacks;
+                    if (_hintChanged == null)
+                    {
+                        fixed (byte* namePtr = _name)
+                        {
+                            Native.SDL_DelHintCallback(namePtr, &HintCallback, 0);
+                        }
+                    }
+                }
+            }
+        }
 
         private Hint(string name)
         {
-            _name = name;
+            _name = Native.StringToUtf8(name).ToArray();
+        }
+
+        [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+        internal static unsafe void HintCallback(nint _, byte* name, byte* oldValue, byte* newValue)
+        {
+            var nameString = Native.Utf8ToString(name)!;
+            var hint = GetHint(nameString);
+
+            if (hint != null)
+            {
+                var oldValueString = Native.Utf8ToString(oldValue);
+                var newValueString = Native.Utf8ToString(newValue);
+                hint._hintChanged?.Invoke(hint, new HintChangedEventArgs(oldValueString, newValueString));
+            }
+        }
+
+        private static Hint GetHint(string name)
+        {
+            lock (s_hints)
+            {
+                if (s_hints.TryGetValue(name, out var hint))
+                {
+                    return hint;
+                }
+
+                hint = new Hint(name);
+                s_hints[name] = hint;
+                return hint;
+            }
         }
 
         /// <summary>
@@ -474,74 +947,68 @@
         /// <param name="value">The value to set.</param>
         /// <param name="priority">The priority of the value.</param>
         /// <returns><c>true</c> if the hint was set, <c>false</c> otherwise.</returns>
-        public bool Set(string value, HintPriority priority) =>
-            Native.SDL_SetHintWithPriority(_name, value, priority);
+        public bool Set(string value, HintPriority priority)
+        {
+            fixed (byte* namePtr = _name)
+            fixed (byte* valuePtr = Native.StringToUtf8(value))
+            {
+                return Native.SDL_SetHintWithPriority(namePtr, valuePtr, (Native.SDL_HintPriority)priority);
+            }
+        }
 
         /// <summary>
         /// Sets the hint's value.
         /// </summary>
         /// <param name="value">The value to set.</param>
         /// <returns><c>true</c> if the hint was set, <c>false</c> otherwise.</returns>
-        public bool Set(string value) =>
-            Native.SDL_SetHint(_name, value);
+        public bool Set(string value)
+        {
+            fixed (byte* namePtr = _name)
+            fixed (byte* valuePtr = Native.StringToUtf8(value))
+            {
+                return Native.SDL_SetHint(namePtr, valuePtr);
+            }
+        }
+
+        /// <summary>
+        /// Resets the hint's value.
+        /// </summary>
+        /// <returns><c>true</c> if the hint was reset, <c>false</c> otherwise.</returns>
+        public bool Reset()
+        {
+            fixed (byte* namePtr = _name)
+            {
+                return Native.SDL_ResetHint(namePtr);
+            }
+        }
+
+        /// <summary>
+        /// Resets all hints.
+        /// </summary>
+        public static void ResetHints() => Native.SDL_ResetHints();
 
         /// <summary>
         /// Get the hint's value.
         /// </summary>
         /// <returns>The hint's value.</returns>
-        public string Get() =>
-            Native.SDL_GetHint(_name);
+        public string? Get()
+        {
+            fixed (byte* namePtr = _name)
+            {
+                return Native.Utf8ToString(Native.SDL_GetHint(namePtr));
+            }
+        }
 
         /// <summary>
         /// Gets the value of hint as a Boolean value.
         /// </summary>
         /// <param name="defaultValue">The default value to return if the hint is not set.</param>
         /// <returns>The value of the hint.</returns>
-        public bool GetBoolean(bool defaultValue) =>
-            Native.SDL_GetHintBoolean(_name, defaultValue);
-
-        /// <summary>
-        /// Adds a callback for when the hint is set.
-        /// </summary>
-        /// <param name="callback">The callback.</param>
-        /// <param name="data">Data to pass to the callback.</param>
-        public void AddCallback(HintCallback callback, nint data)
+        public bool GetBoolean(bool defaultValue)
         {
-            Native.SDL_AddHintCallback(_name, callback, data);
-
-            if (_callbacks == null)
+            fixed (byte* namePtr = _name)
             {
-                _callbacks = new Dictionary<HintCallback, int>();
-            }
-
-            if (!_callbacks.TryGetValue(callback, out var count))
-            {
-                count = 1;
-            }
-
-            _callbacks[callback] = count;
-        }
-
-        /// <summary>
-        /// Deletes a callback for when the hint is set.
-        /// </summary>
-        /// <param name="callback">The callback.</param>
-        /// <param name="data">Data to pass to the callback.</param>
-        public void DeleteCallback(HintCallback callback, nint data)
-        {
-            Native.SDL_DelHintCallback(_name, callback, data);
-
-            if (_callbacks != null)
-            {
-                var count = _callbacks[callback] - 1;
-                if (count == 0)
-                {
-                    _ = _callbacks.Remove(callback);
-                }
-                else
-                {
-                    _callbacks[callback] = count;
-                }
+                return Native.SDL_GetHintBoolean(namePtr, defaultValue);
             }
         }
 
