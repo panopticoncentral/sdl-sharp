@@ -80,7 +80,7 @@
         /// Gets the underlying joystick.
         /// </summary>
         public Joystick Joystick =>
-            Joystick.PointerToInstanceNotNull(Native.SDL_GameControllerGetJoystick(_gameController));
+            new(Native.SDL_GameControllerGetJoystick(_gameController));
 
         /// <summary>
         /// Gets the type of the game controller.
@@ -373,64 +373,44 @@
             switch ((Native.SDL_EventType)e.type)
             {
                 case Native.SDL_EventType.SDL_CONTROLLERAXISMOTION:
-                    {
-                        AxisMotion?.Invoke(new GameController(e.caxis.which), new GameControllerAxisMotionEventArgs(e.caxis));
-                        break;
-                    }
+                    AxisMotion?.Invoke(new GameController(e.caxis.which), new GameControllerAxisMotionEventArgs(e.caxis));
+                    break;
 
                 case Native.SDL_EventType.SDL_CONTROLLERBUTTONDOWN:
-                    {
-                        ButtonDown?.Invoke(new GameController(e.cbutton.which), new GameControllerButtonEventArgs(e.cbutton));
-                        break;
-                    }
+                    ButtonDown?.Invoke(new GameController(e.cbutton.which), new GameControllerButtonEventArgs(e.cbutton));
+                    break;
 
                 case Native.SDL_EventType.SDL_CONTROLLERBUTTONUP:
-                    {
-                        ButtonUp?.Invoke(new GameController(e.caxis.which), new GameControllerButtonEventArgs(e.cbutton));
-                        break;
-                    }
+                    ButtonUp?.Invoke(new GameController(e.caxis.which), new GameControllerButtonEventArgs(e.cbutton));
+                    break;
 
                 case Native.SDL_EventType.SDL_CONTROLLERDEVICEADDED:
-                    {
-                        Added?.Invoke(null, new GameControllerAddedEventArgs(e.cdevice));
-                        break;
-                    }
+                    Added?.Invoke(null, new GameControllerAddedEventArgs(e.cdevice));
+                    break;
 
                 case Native.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED:
-                    {
-                        Removed?.Invoke(new GameController(new Native.SDL_JoystickID(e.cdevice.which)), new SdlEventArgs(e.common));
-                        break;
-                    }
+                    Removed?.Invoke(new GameController(new Native.SDL_JoystickID(e.cdevice.which)), new SdlEventArgs(e.common));
+                    break;
 
                 case Native.SDL_EventType.SDL_CONTROLLERDEVICEREMAPPED:
-                    {
-                        Remapped?.Invoke(new GameController(new Native.SDL_JoystickID(e.cdevice.which)), new SdlEventArgs(e.common));
-                        break;
-                    }
+                    Remapped?.Invoke(new GameController(new Native.SDL_JoystickID(e.cdevice.which)), new SdlEventArgs(e.common));
+                    break;
 
                 case Native.SDL_EventType.SDL_CONTROLLERTOUCHPADDOWN:
-                    {
-                        TouchPadDown?.Invoke(new GameController(e.ctouchpad.which), new GameControllerTouchpadEventArgs(e.ctouchpad));
-                        break;
-                    }
+                    TouchPadDown?.Invoke(new GameController(e.ctouchpad.which), new GameControllerTouchpadEventArgs(e.ctouchpad));
+                    break;
 
                 case Native.SDL_EventType.SDL_CONTROLLERTOUCHPADMOTION:
-                    {
-                        TouchPadMotion?.Invoke(new GameController(e.ctouchpad.which), new GameControllerTouchpadEventArgs(e.ctouchpad));
-                        break;
-                    }
+                    TouchPadMotion?.Invoke(new GameController(e.ctouchpad.which), new GameControllerTouchpadEventArgs(e.ctouchpad));
+                    break;
 
                 case Native.SDL_EventType.SDL_CONTROLLERTOUCHPADUP:
-                    {
-                        TouchPadUp?.Invoke(new GameController(e.ctouchpad.which), new GameControllerTouchpadEventArgs(e.ctouchpad));
-                        break;
-                    }
+                    TouchPadUp?.Invoke(new GameController(e.ctouchpad.which), new GameControllerTouchpadEventArgs(e.ctouchpad));
+                    break;
 
                 case Native.SDL_EventType.SDL_CONTROLLERSENSORUPDATE:
-                    {
-                        SensorUpdate?.Invoke(new GameController(e.csensor.which), new GameControllerSensorEventArgs(e.csensor));
-                        break;
-                    }
+                    SensorUpdate?.Invoke(new GameController(e.csensor.which), new GameControllerSensorEventArgs(e.csensor));
+                    break;
 
                 default:
                     throw new InvalidOperationException();

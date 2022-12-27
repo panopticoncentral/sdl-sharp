@@ -7,8 +7,6 @@
     {
         private readonly Native.SDL_Haptic* _haptic;
 
-        private static ItemCollection<HapticInfo>? s_hapticInfos;
-
         /// <summary>
         /// An infinity value.
         /// </summary>

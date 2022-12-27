@@ -39,6 +39,9 @@ using static SdlSharp.Native;
 // Do not prefix enum values with type name
 #pragma warning disable CA1712
 
+// Identifier contains type name
+#pragma warning disable CA1720
+
 namespace SdlSharp
 {
     /// <summary>

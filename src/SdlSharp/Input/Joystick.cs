@@ -168,6 +168,11 @@
         /// </summary>
         public static event EventHandler<JoystickHatMotionEventArgs>? HatMotion;
 
+        /// <summary>
+        /// An event that fires when a joystick's battery status is updated.
+        /// </summary>
+        public static event EventHandler<JoystickBatteryUpdatedEventArgs>? BatteryUpdated;
+
         internal Joystick(Native.SDL_JoystickID instanceId)
             : this(Native.SDL_JoystickFromInstanceID(instanceId))
         {
@@ -395,55 +400,35 @@
             switch ((Native.SDL_EventType)e.type)
             {
                 case Native.SDL_EventType.SDL_JOYAXISMOTION:
-                    {
-                        var joystick = Get(e.jaxis.which);
-                        joystick?.AxisMotion?.Invoke(joystick, new JoystickAxisMotionEventArgs(e.jaxis));
-                        break;
-                    }
+                    AxisMotion?.Invoke(new Joystick(e.jaxis.which), new JoystickAxisMotionEventArgs(e.jaxis));
+                    break;
 
                 case Native.SDL_EventType.SDL_JOYBALLMOTION:
-                    {
-                        var joystick = Get(e.jball.which);
-                        joystick?.BallMotion?.Invoke(joystick, new JoystickBallMotionEventArgs(e.jball));
-                        break;
-                    }
+                    BallMotion?.Invoke(new Joystick(e.jball.which), new JoystickBallMotionEventArgs(e.jball));
+                    break;
 
                 case Native.SDL_EventType.SDL_JOYBUTTONDOWN:
-                    {
-                        var joystick = Get(e.jbutton.which);
-                        joystick?.ButtonDown?.Invoke(joystick, new JoystickButtonEventArgs(e.jbutton));
-                        break;
-                    }
+                    ButtonDown?.Invoke(new Joystick(e.jbutton.which), new JoystickButtonEventArgs(e.jbutton));
+                    break;
 
                 case Native.SDL_EventType.SDL_JOYBUTTONUP:
-                    {
-                        var joystick = Get(e.jbutton.which);
-                        joystick?.ButtonUp?.Invoke(joystick, new JoystickButtonEventArgs(e.jbutton));
-                        break;
-                    }
+                    ButtonUp?.Invoke(new Joystick(e.jbutton.which), new JoystickButtonEventArgs(e.jbutton));
+                    break;
 
                 case Native.SDL_EventType.SDL_JOYDEVICEADDED:
-                    {
-                        Added?.Invoke(null, new JoystickAddedEventArgs(e.jdevice));
-                        break;
-                    }
+                    Added?.Invoke(null, new JoystickAddedEventArgs(e.jdevice));
+                    break;
 
                 case Native.SDL_EventType.SDL_JOYDEVICEREMOVED:
-                    {
-                        var joystick = Get(new Native.SDL_JoystickID(e.jdevice.which));
-                        joystick.Removed?.Invoke(joystick, new SdlEventArgs(e.common));
-                        break;
-                    }
+                    Removed?.Invoke(new Joystick(new Native.SDL_JoystickID(e.jdevice.which)), new SdlEventArgs(e.common));
+                    break;
 
                 case Native.SDL_EventType.SDL_JOYHATMOTION:
-                    {
-                        var joystick = Get(e.jhat.which);
-                        joystick?.HatMotion?.Invoke(joystick, new JoystickHatMotionEventArgs(e.jhat));
-                        break;
-                    }
+                    HatMotion?.Invoke(new Joystick(e.jhat.which), new JoystickHatMotionEventArgs(e.jhat));
+                    break;
 
                 case Native.SDL_EventType.SDL_JOYBATTERYUPDATED:
-                    // TODO
+                    BatteryUpdated?.Invoke(new Joystick(e.jbattery.which), new JoystickBatteryUpdatedEventArgs(e.jbattery));
                     break;
 
                 default:

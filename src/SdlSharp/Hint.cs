@@ -804,11 +804,13 @@ namespace SdlSharp
         /// </summary>
         public static Hint WindowNoActivationWhenShown => GetHint(Native.SDL_HINT_WINDOW_NO_ACTIVATION_WHEN_SHOWN);
 
-        //// Allows back-button-press events on Windows Phone to be marked as handled
+        /// <summary>
+        /// Allows back-button-press events on Windows Phone to be marked as handled
         /// </summary>
         public static Hint WinrtHandleBackButton => GetHint(Native.SDL_HINT_WINRT_HANDLE_BACK_BUTTON);
 
-        //// Label text for a WinRT app's privacy policy link
+        /// <summary>
+        /// Label text for a WinRT app's privacy policy link
         /// </summary>
         public static Hint WintrPrivacyPolicyLabel => GetHint(Native.SDL_HINT_WINRT_PRIVACY_POLICY_LABEL);
 
@@ -872,6 +874,9 @@ namespace SdlSharp
         /// </summary>
         public static Hint TrackpadIsTouchOnly => GetHint(Native.SDL_HINT_TRACKPAD_IS_TOUCH_ONLY);
 
+        /// <summary>
+        /// An event that fires when the hint is changed.
+        /// </summary>
         public event EventHandler<HintChangedEventArgs> HintChanged
         {
             add

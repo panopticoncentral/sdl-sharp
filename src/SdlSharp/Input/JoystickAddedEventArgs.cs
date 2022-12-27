@@ -10,7 +10,7 @@
         /// <summary>
         /// The new device.
         /// </summary>
-        public JoystickInfo Device => JoystickInfo.Get(_index);
+        public JoystickInfo Device => new(_index);
 
         internal JoystickAddedEventArgs(Native.SDL_JoyDeviceEvent device) : base(device.timestamp)
         {
