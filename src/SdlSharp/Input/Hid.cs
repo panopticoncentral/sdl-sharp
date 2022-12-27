@@ -18,7 +18,7 @@ namespace SdlSharp.Input
                 _productId = productId;
             }
 
-            public IEnumerator<HidDeviceInfo> GetEnumerator() => 
+            public IEnumerator<HidDeviceInfo> GetEnumerator() =>
                 new HidInfoEnumerator(Native.CheckPointer(Native.SDL_hid_enumerate(_vendorId, _productId)));
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

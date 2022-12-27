@@ -24,7 +24,7 @@
         /// Updates the effect instance.
         /// </summary>
         /// <param name="effect">The effect to update to.</param>
-        public void UpdateEffect(HapticEffect effect) => 
+        public void UpdateEffect(HapticEffect effect) =>
             _ = Native.CheckError(effect.NativeCall(effect => Native.SDL_HapticUpdateEffect(_haptic, _index, effect)));
 
         /// <summary>

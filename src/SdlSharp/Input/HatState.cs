@@ -9,46 +9,46 @@
         /// <summary>
         /// Centered.
         /// </summary>
-        Centered = 0x00,
+        Centered = Native.SDL_HAT_CENTERED,
 
         /// <summary>
         /// Up.
         /// </summary>
-        Up = 0x01,
+        Up = Native.SDL_HAT_UP,
 
         /// <summary>
         /// Right.
         /// </summary>
-        Right = 0x02,
+        Right = Native.SDL_HAT_RIGHT,
 
         /// <summary>
         /// Right and up.
         /// </summary>
-        RightUp = Right | Up,
+        RightUp = Native.SDL_HAT_RIGHTUP,
 
         /// <summary>
         /// Down.
         /// </summary>
-        Down = 0x04,
+        Down = Native.SDL_HAT_DOWN,
 
         /// <summary>
         /// Right and down.
         /// </summary>
-        RightDown = Right | Down,
+        RightDown = Native.SDL_HAT_RIGHTDOWN,
 
         /// <summary>
         /// Left.
         /// </summary>
-        Left = 0x08,
+        Left = Native.SDL_HAT_LEFT,
 
         /// <summary>
         /// Left and up.
         /// </summary>
-        LeftUp = Left | Up,
+        LeftUp = Native.SDL_HAT_LEFTUP,
 
         /// <summary>
         /// Left and down.
         /// </summary>
-        LeftDown = Left | Down
+        LeftDown = Native.SDL_HAT_LEFTDOWN
     }
 }

@@ -1,9 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
+
+using static SdlSharp.Native;
 
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible
@@ -1227,8 +1230,8 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern byte SDL_EventState(uint type, int state);
 
-        public static State SDL_GetEventState(uint type) =>
-            (State)SDL_EventState(type, SDL_QUERY);
+        public static int SDL_GetEventState(uint type) =>
+            SDL_EventState(type, SDL_QUERY);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_RegisterEvents(int numevents);
@@ -1387,9 +1390,9 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_GameControllerUpdate();
 
-        public enum SDL_GameControllerAxis
+        public enum SDL_GameControllerAxis : uint
         {
-            SDL_CONTROLLER_AXIS_INVALID = -1,
+            SDL_CONTROLLER_AXIS_INVALID,
             SDL_CONTROLLER_AXIS_LEFTX,
             SDL_CONTROLLER_AXIS_LEFTY,
             SDL_CONTROLLER_AXIS_RIGHTX,
@@ -2105,9 +2108,7 @@ namespace SdlSharp
 
         #region SDL_joystick.h
 
-        public readonly struct SDL_Joystick
-        {
-        }
+        public readonly struct SDL_Joystick { }
 
         // SDL_JoystickGUID is just System.Guid
 
@@ -2130,13 +2131,15 @@ namespace SdlSharp
         public enum SDL_JoystickPowerLevel
         {
             SDL_JOYSTICK_POWER_UNKNOWN = -1,
-            SDL_JOYSTICK_POWER_EMPTY,   /* <= 5% */
-            SDL_JOYSTICK_POWER_LOW,     /* <= 20% */
-            SDL_JOYSTICK_POWER_MEDIUM,  /* <= 70% */
-            SDL_JOYSTICK_POWER_FULL,    /* <= 100% */
+            SDL_JOYSTICK_POWER_EMPTY,
+            SDL_JOYSTICK_POWER_LOW,
+            SDL_JOYSTICK_POWER_MEDIUM,
+            SDL_JOYSTICK_POWER_FULL,
             SDL_JOYSTICK_POWER_WIRED,
             SDL_JOYSTICK_POWER_MAX
         }
+
+        public const float SDL_IPHONE_MAX_GFORCE = 5.0F;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_LockJoysticks();
@@ -2147,8 +2150,11 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_NumJoysticks();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string? SDL_JoystickNameForIndex(int device_index);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_JoystickNameForIndex(int device_index);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_JoystickPathForIndex(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_JoystickGetDevicePlayerIndex(int device_index);
@@ -2166,7 +2172,7 @@ namespace SdlSharp
         public static extern ushort SDL_JoystickGetDeviceProductVersion(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern JoystickType SDL_JoystickGetDeviceType(int device_index);
+        public static extern SDL_JoystickType SDL_JoystickGetDeviceType(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_JoystickID SDL_JoystickGetDeviceInstanceID(int device_index);
@@ -2180,8 +2186,57 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Joystick* SDL_JoystickFromPlayerIndex(int player_index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string? SDL_JoystickName(SDL_Joystick* joystick);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickAttachVirtual(SDL_JoystickType type, int naxes, int nbuttons, int nhats);
+
+        public struct SDL_VirtualJoystickDesc
+        {
+            public ushort version;
+            public ushort type;
+            public ushort naxes;
+            public ushort nbuttons;
+            public ushort nhats;
+            public ushort vendor_id;
+            public ushort product_id;
+            private ushort _padding;
+            public uint button_mask;
+            public uint axis_mask;
+            public byte* name;
+
+            public nint userdata;
+            public delegate* unmanaged[Cdecl]<nint, void> Update;
+            public delegate* unmanaged[Cdecl]<nint, int, void> SetPlayerIndex;
+            public delegate* unmanaged[Cdecl]<nint, ushort, ushort, int> Rumble;
+            public delegate* unmanaged[Cdecl]<nint, ushort, ushort, int> RumbleTriggers;
+            public delegate* unmanaged[Cdecl]<nint, byte, byte, byte, int> SetLED;
+            public delegate* unmanaged[Cdecl]<nint, byte*, int, int> SendEffect;
+        }
+
+        public const ushort SDL_VIRTUAL_JOYSTICK_DESC_VERSION = 1;
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickAttachVirtualEx(SDL_VirtualJoystickDesc* desc);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickDetachVirtual(int device_index);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_JoystickIsVirtual(int device_index);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickSetVirtualAxis(SDL_Joystick* joystick, int axis, short value);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickSetVirtualButton(SDL_Joystick* joystick, int button, byte value);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickSetVirtualHat(SDL_Joystick* joystick, int hat, byte value);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_JoystickName(SDL_Joystick* joystick);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_JoystickPath(SDL_Joystick* joystick);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_JoystickGetPlayerIndex(SDL_Joystick* joystick);
@@ -2202,13 +2257,22 @@ namespace SdlSharp
         public static extern ushort SDL_JoystickGetProductVersion(SDL_Joystick* joystick);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern JoystickType SDL_JoystickGetType(SDL_Joystick* joystick);
+        public static extern ushort SDL_JoystickGetFirmwareVersion(SDL_Joystick* joystick);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_JoystickGetGUIDString(Guid id, string pszGUID, int cbGUID);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_JoystickGetSerial(SDL_Joystick* joystick);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern Guid SDL_JoystickGetGUIDFromString(string pchGUID);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_JoystickType SDL_JoystickGetType(SDL_Joystick* joystick);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_JoystickGetGUIDString(Guid id, byte* pszGUID, int cbGUID);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Guid SDL_JoystickGetGUIDFromString(byte* pchGUID);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_GetJoystickGUIDInfo(Guid guid, ushort* vendor, ushort* product, ushort* version, ushort* crc16);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_JoystickGetAttached(SDL_Joystick* joystick);
@@ -2232,34 +2296,63 @@ namespace SdlSharp
         public static extern void SDL_JoystickUpdate();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_JoystickEventState(State state);
+        public static extern int SDL_JoystickEventState(int state);
+
+        public const short SDL_JOYSTICK_AXIS_MAX = 32767;
+        public const short SDL_JOYSTICK_AXIS_MIN = -32768;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern short SDL_JoystickGetAxis(SDL_Joystick* joystick, int axis);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_JoystickGetAxisInitialState(SDL_Joystick* joystick, int axis, out short state);
+        public static extern bool SDL_JoystickGetAxisInitialState(SDL_Joystick* joystick, int axis, short* state);
 
-        // SDL_HAT_* is covered by HatFlags.cs
+        public const byte SDL_HAT_CENTERED = 0x00;
+        public const byte SDL_HAT_UP = 0x01;
+        public const byte SDL_HAT_RIGHT = 0x02;
+        public const byte SDL_HAT_DOWN = 0x04;
+        public const byte SDL_HAT_LEFT = 0x08;
+        public const byte SDL_HAT_RIGHTUP = SDL_HAT_RIGHT | SDL_HAT_UP;
+        public const byte SDL_HAT_RIGHTDOWN = SDL_HAT_RIGHT | SDL_HAT_DOWN;
+        public const byte SDL_HAT_LEFTUP = SDL_HAT_LEFT | SDL_HAT_UP;
+        public const byte SDL_HAT_LEFTDOWN = SDL_HAT_LEFT | SDL_HAT_DOWN;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern HatState SDL_JoystickGetHat(SDL_Joystick* joystick, int hat);
+        public static extern byte SDL_JoystickGetHat(SDL_Joystick* joystick, int hat);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_JoystickGetBall(SDL_Joystick* joystick, int ball, out int dx, out int dy);
+        public static extern int SDL_JoystickGetBall(SDL_Joystick* joystick, int ball, int* dx, int* dy);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
-        public static extern bool SDL_JoystickGetButton(SDL_Joystick* joystick, int button);
+        public static extern byte SDL_JoystickGetButton(SDL_Joystick* joystick, int button);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_JoystickRumble(SDL_Joystick* joystick, ushort low_frequency_rumble, ushort high_frequency_rumble, uint duration_ms);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickRumbleTriggers(SDL_Joystick* joystick, ushort left_rumble, ushort right_rumble, uint duration_ms);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_JoystickHasLED(SDL_Joystick* joystick);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_JoystickHasRumble(SDL_Joystick* joystick);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_JoystickHasRumbleTriggers(SDL_Joystick* joystick);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickSetLED(SDL_Joystick* joystick, byte red, byte green, byte blue);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_JoystickSendEffect(SDL_Joystick* joystick, byte* data, int size);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_JoystickClose(SDL_Joystick* joystick);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern JoystickPowerLevel SDL_JoystickCurrentPowerLevel(SDL_Joystick* joystick);
+        public static extern SDL_JoystickPowerLevel SDL_JoystickCurrentPowerLevel(SDL_Joystick* joystick);
 
         #endregion
 

@@ -174,7 +174,7 @@
             _gameController = gameController;
         }
 
-        internal GameController(Native.SDL_JoystickID joystickId) 
+        internal GameController(Native.SDL_JoystickID joystickId)
             : this(Native.CheckPointer(Native.SDL_GameControllerFromInstanceID(joystickId)))
         {
         }
@@ -353,7 +353,7 @@
         /// <param name="red">The red value.</param>
         /// <param name="green">The green value.</param>
         /// <param name="blue">The blue value.</param>
-        public void SetLed(byte red, byte green, byte blue) => 
+        public void SetLed(byte red, byte green, byte blue) =>
             _ = Native.CheckError(Native.SDL_GameControllerSetLED(_gameController, red, green, blue));
 
         /// <summary>

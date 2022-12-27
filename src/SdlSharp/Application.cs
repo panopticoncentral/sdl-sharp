@@ -88,7 +88,7 @@ namespace SdlSharp
         /// The base path of the application.
         /// </summary>
         public static string BasePath => Native.Utf8ToStringAndFree(Native.CheckPointer(Native.SDL_GetBasePath()))!;
- 
+
         /// <summary>
         /// Information about the power state of the computer.
         /// </summary>

@@ -58,7 +58,7 @@ namespace SdlSharp.Input
         /// Sets the device to be non-blocking.
         /// </summary>
         /// <param name="nonBlocking">Whether the device is non-blocking.</param>
-        public void SetNonBlocking(bool nonBlocking) => 
+        public void SetNonBlocking(bool nonBlocking) =>
             _ = Native.CheckError(Native.SDL_hid_set_nonblocking(_device, Native.BoolToInt(nonBlocking)));
 
         /// <summary>

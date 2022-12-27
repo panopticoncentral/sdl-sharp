@@ -69,5 +69,18 @@
         /// </summary>
         public override unsafe string? ToString() =>
             Native.Utf8ToString(Native.SDL_GameControllerGetStringForAxis(Value));
+
+
+        /// <summary>
+        /// Converts an axis value to an int.
+        /// </summary>
+        /// <param name="button">The button value.</param>
+        public static explicit operator int(GameControllerAxis button) => (int)button.Value;
+
+        /// <summary>
+        /// Converts an int value to an axis value.
+        /// </summary>
+        /// <param name="value">The int value.</param>
+        public static explicit operator GameControllerAxis(int value) => new((Native.SDL_GameControllerAxis)value);
     }
 }

@@ -144,5 +144,17 @@
         /// </summary>
         public override unsafe string? ToString() =>
             Native.Utf8ToString(Native.SDL_GameControllerGetStringForButton(Value));
+
+        /// <summary>
+        /// Converts a button value to an int.
+        /// </summary>
+        /// <param name="button">The button value.</param>
+        public static explicit operator int(GameControllerButton button) => (int)button.Value;
+
+        /// <summary>
+        /// Converts an int value to a button value.
+        /// </summary>
+        /// <param name="value">The int value.</param>
+        public static explicit operator GameControllerButton(int value) => new((Native.SDL_GameControllerButton)value);
     }
 }
