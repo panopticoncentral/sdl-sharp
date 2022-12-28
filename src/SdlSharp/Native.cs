@@ -1,12 +1,9 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
 using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
-
-using static SdlSharp.Native;
 
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible
@@ -2363,9 +2360,9 @@ namespace SdlSharp
 
         public readonly struct SDL_Keysym
         {
-            public readonly Scancode Scancode;
-            public readonly Keycode Sym;
-            public readonly KeyModifier Mod;
+            public readonly Scancode scancode;
+            public readonly Keycode sym;
+            public readonly ushort mod;
             private readonly uint _unused;
         }
 
@@ -2373,7 +2370,10 @@ namespace SdlSharp
         public static extern SDL_Window* SDL_GetKeyboardFocus();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte* SDL_GetKeyboardState(out int numkeys);
+        public static extern byte* SDL_GetKeyboardState(int* numkeys);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_ResetKeyboard();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern KeyModifier SDL_GetModState();
@@ -2387,17 +2387,17 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern Scancode SDL_GetScancodeFromKey(Keycode key);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GetScancodeName(Scancode scancode);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetScancodeName(Scancode scancode);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern Scancode SDL_GetScancodeFromName(string name);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Scancode SDL_GetScancodeFromName(byte* name);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GetKeyName(Keycode key);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetKeyName(Keycode key);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern Keycode SDL_GetKeyFromName(string name);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Keycode SDL_GetKeyFromName(byte* name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_StartTextInput();
@@ -2409,7 +2409,13 @@ namespace SdlSharp
         public static extern void SDL_StopTextInput();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetTextInputRect(ref Rectangle rect);
+        public static extern void SDL_ClearComposition();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_IsTextInputShown();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_SetTextInputRect(Rectangle* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_HasScreenKeyboardSupport();
