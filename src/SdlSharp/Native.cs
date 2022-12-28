@@ -2360,8 +2360,8 @@ namespace SdlSharp
 
         public readonly struct SDL_Keysym
         {
-            public readonly Scancode scancode;
-            public readonly Keycode sym;
+            public readonly SDL_Scancode scancode;
+            public readonly SDL_KeycodeValue sym;
             public readonly ushort mod;
             private readonly uint _unused;
         }
@@ -2376,28 +2376,28 @@ namespace SdlSharp
         public static extern void SDL_ResetKeyboard();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern KeyModifier SDL_GetModState();
+        public static extern SDL_Keymod SDL_GetModState();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetModState(KeyModifier modstate);
+        public static extern void SDL_SetModState(SDL_Keymod modstate);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Keycode SDL_GetKeyFromScancode(Scancode scancode);
+        public static extern SDL_KeycodeValue SDL_GetKeyFromScancode(SDL_Scancode scancode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Scancode SDL_GetScancodeFromKey(Keycode key);
+        public static extern SDL_Scancode SDL_GetScancodeFromKey(SDL_KeycodeValue key);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte* SDL_GetScancodeName(Scancode scancode);
+        public static extern byte* SDL_GetScancodeName(SDL_Scancode scancode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Scancode SDL_GetScancodeFromName(byte* name);
+        public static extern SDL_Scancode SDL_GetScancodeFromName(byte* name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte* SDL_GetKeyName(Keycode key);
+        public static extern byte* SDL_GetKeyName(SDL_KeycodeValue key);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Keycode SDL_GetKeyFromName(byte* name);
+        public static extern SDL_KeycodeValue SDL_GetKeyFromName(byte* name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_StartTextInput();
@@ -2427,10 +2427,310 @@ namespace SdlSharp
 
         #region SDK_keycode.h
 
-        // SDL_Keycode is covered by Keycode.cs
-        // SDLK_SCANCODE_MASK is covered by Scancode.cs
+        public readonly record struct SDL_KeycodeValue(int Value);
 
-        // SDL_Keymod is covered by KeyModifier.cs
+        public const int SDLK_SCANCODE_MASK = 1 << 30;
+
+        public enum SDL_KeyCode
+        {
+            SDLK_UNKNOWN = 0,
+
+            SDLK_RETURN = '\r',
+            SDLK_ESCAPE = '\x1B',
+            SDLK_BACKSPACE = '\b',
+            SDLK_TAB = '\t',
+            SDLK_SPACE = ' ',
+            SDLK_EXCLAIM = '!',
+            SDLK_QUOTEDBL = '"',
+            SDLK_HASH = '#',
+            SDLK_PERCENT = '%',
+            SDLK_DOLLAR = '$',
+            SDLK_AMPERSAND = '&',
+            SDLK_QUOTE = '\'',
+            SDLK_LEFTPAREN = '(',
+            SDLK_RIGHTPAREN = ')',
+            SDLK_ASTERISK = '*',
+            SDLK_PLUS = '+',
+            SDLK_COMMA = ',',
+            SDLK_MINUS = '-',
+            SDLK_PERIOD = '.',
+            SDLK_SLASH = '/',
+            SDLK_0 = '0',
+            SDLK_1 = '1',
+            SDLK_2 = '2',
+            SDLK_3 = '3',
+            SDLK_4 = '4',
+            SDLK_5 = '5',
+            SDLK_6 = '6',
+            SDLK_7 = '7',
+            SDLK_8 = '8',
+            SDLK_9 = '9',
+            SDLK_COLON = ':',
+            SDLK_SEMICOLON = ';',
+            SDLK_LESS = '<',
+            SDLK_EQUALS = '=',
+            SDLK_GREATER = '>',
+            SDLK_QUESTION = '?',
+            SDLK_AT = '@',
+
+            /*
+               Skip uppercase letters
+             */
+
+            SDLK_LEFTBRACKET = '[',
+            SDLK_BACKSLASH = '\\',
+            SDLK_RIGHTBRACKET = ']',
+            SDLK_CARET = '^',
+            SDLK_UNDERSCORE = '_',
+            SDLK_BACKQUOTE = '`',
+            SDLK_a = 'a',
+            SDLK_b = 'b',
+            SDLK_c = 'c',
+            SDLK_d = 'd',
+            SDLK_e = 'e',
+            SDLK_f = 'f',
+            SDLK_g = 'g',
+            SDLK_h = 'h',
+            SDLK_i = 'i',
+            SDLK_j = 'j',
+            SDLK_k = 'k',
+            SDLK_l = 'l',
+            SDLK_m = 'm',
+            SDLK_n = 'n',
+            SDLK_o = 'o',
+            SDLK_p = 'p',
+            SDLK_q = 'q',
+            SDLK_r = 'r',
+            SDLK_s = 's',
+            SDLK_t = 't',
+            SDLK_u = 'u',
+            SDLK_v = 'v',
+            SDLK_w = 'w',
+            SDLK_x = 'x',
+            SDLK_y = 'y',
+            SDLK_z = 'z',
+
+            SDLK_CAPSLOCK = SDL_Scancode.SDL_SCANCODE_CAPSLOCK | SDLK_SCANCODE_MASK,
+
+            SDLK_F1 = SDL_Scancode.SDL_SCANCODE_F1 | SDLK_SCANCODE_MASK,
+            SDLK_F2 = SDL_Scancode.SDL_SCANCODE_F2 | SDLK_SCANCODE_MASK,
+            SDLK_F3 = SDL_Scancode.SDL_SCANCODE_F3 | SDLK_SCANCODE_MASK,
+            SDLK_F4 = SDL_Scancode.SDL_SCANCODE_F4 | SDLK_SCANCODE_MASK,
+            SDLK_F5 = SDL_Scancode.SDL_SCANCODE_F5 | SDLK_SCANCODE_MASK,
+            SDLK_F6 = SDL_Scancode.SDL_SCANCODE_F6 | SDLK_SCANCODE_MASK,
+            SDLK_F7 = SDL_Scancode.SDL_SCANCODE_F7 | SDLK_SCANCODE_MASK,
+            SDLK_F8 = SDL_Scancode.SDL_SCANCODE_F8 | SDLK_SCANCODE_MASK,
+            SDLK_F9 = SDL_Scancode.SDL_SCANCODE_F9 | SDLK_SCANCODE_MASK,
+            SDLK_F10 = SDL_Scancode.SDL_SCANCODE_F10 | SDLK_SCANCODE_MASK,
+            SDLK_F11 = SDL_Scancode.SDL_SCANCODE_F11 | SDLK_SCANCODE_MASK,
+            SDLK_F12 = SDL_Scancode.SDL_SCANCODE_F12 | SDLK_SCANCODE_MASK,
+
+            SDLK_PRINTSCREEN = SDL_Scancode.SDL_SCANCODE_PRINTSCREEN | SDLK_SCANCODE_MASK,
+            SDLK_SCROLLLOCK = SDL_Scancode.SDL_SCANCODE_SCROLLLOCK | SDLK_SCANCODE_MASK,
+            SDLK_PAUSE = SDL_Scancode.SDL_SCANCODE_PAUSE | SDLK_SCANCODE_MASK,
+            SDLK_INSERT = SDL_Scancode.SDL_SCANCODE_INSERT | SDLK_SCANCODE_MASK,
+            SDLK_HOME = SDL_Scancode.SDL_SCANCODE_HOME | SDLK_SCANCODE_MASK,
+            SDLK_PAGEUP = SDL_Scancode.SDL_SCANCODE_PAGEUP | SDLK_SCANCODE_MASK,
+            SDLK_DELETE = '\x7F',
+            SDLK_END = SDL_Scancode.SDL_SCANCODE_END | SDLK_SCANCODE_MASK,
+            SDLK_PAGEDOWN = SDL_Scancode.SDL_SCANCODE_PAGEDOWN | SDLK_SCANCODE_MASK,
+            SDLK_RIGHT = SDL_Scancode.SDL_SCANCODE_RIGHT | SDLK_SCANCODE_MASK,
+            SDLK_LEFT = SDL_Scancode.SDL_SCANCODE_LEFT | SDLK_SCANCODE_MASK,
+            SDLK_DOWN = SDL_Scancode.SDL_SCANCODE_DOWN | SDLK_SCANCODE_MASK,
+            SDLK_UP = SDL_Scancode.SDL_SCANCODE_UP | SDLK_SCANCODE_MASK,
+
+            SDLK_NUMLOCKCLEAR = SDL_Scancode.SDL_SCANCODE_NUMLOCKCLEAR | SDLK_SCANCODE_MASK,
+            SDLK_KP_DIVIDE = SDL_Scancode.SDL_SCANCODE_KP_DIVIDE | SDLK_SCANCODE_MASK,
+            SDLK_KP_MULTIPLY = SDL_Scancode.SDL_SCANCODE_KP_MULTIPLY | SDLK_SCANCODE_MASK,
+            SDLK_KP_MINUS = SDL_Scancode.SDL_SCANCODE_KP_MINUS | SDLK_SCANCODE_MASK,
+            SDLK_KP_PLUS = SDL_Scancode.SDL_SCANCODE_KP_PLUS | SDLK_SCANCODE_MASK,
+            SDLK_KP_ENTER = SDL_Scancode.SDL_SCANCODE_KP_ENTER | SDLK_SCANCODE_MASK,
+            SDLK_KP_1 = SDL_Scancode.SDL_SCANCODE_KP_1 | SDLK_SCANCODE_MASK,
+            SDLK_KP_2 = SDL_Scancode.SDL_SCANCODE_KP_2 | SDLK_SCANCODE_MASK,
+            SDLK_KP_3 = SDL_Scancode.SDL_SCANCODE_KP_3 | SDLK_SCANCODE_MASK,
+            SDLK_KP_4 = SDL_Scancode.SDL_SCANCODE_KP_4 | SDLK_SCANCODE_MASK,
+            SDLK_KP_5 = SDL_Scancode.SDL_SCANCODE_KP_5 | SDLK_SCANCODE_MASK,
+            SDLK_KP_6 = SDL_Scancode.SDL_SCANCODE_KP_6 | SDLK_SCANCODE_MASK,
+            SDLK_KP_7 = SDL_Scancode.SDL_SCANCODE_KP_7 | SDLK_SCANCODE_MASK,
+            SDLK_KP_8 = SDL_Scancode.SDL_SCANCODE_KP_8 | SDLK_SCANCODE_MASK,
+            SDLK_KP_9 = SDL_Scancode.SDL_SCANCODE_KP_9 | SDLK_SCANCODE_MASK,
+            SDLK_KP_0 = SDL_Scancode.SDL_SCANCODE_KP_0 | SDLK_SCANCODE_MASK,
+            SDLK_KP_PERIOD = SDL_Scancode.SDL_SCANCODE_KP_PERIOD | SDLK_SCANCODE_MASK,
+
+            SDLK_APPLICATION = SDL_Scancode.SDL_SCANCODE_APPLICATION | SDLK_SCANCODE_MASK,
+            SDLK_POWER = SDL_Scancode.SDL_SCANCODE_POWER | SDLK_SCANCODE_MASK,
+            SDLK_KP_EQUALS = SDL_Scancode.SDL_SCANCODE_KP_EQUALS | SDLK_SCANCODE_MASK,
+            SDLK_F13 = SDL_Scancode.SDL_SCANCODE_F13 | SDLK_SCANCODE_MASK,
+            SDLK_F14 = SDL_Scancode.SDL_SCANCODE_F14 | SDLK_SCANCODE_MASK,
+            SDLK_F15 = SDL_Scancode.SDL_SCANCODE_F15 | SDLK_SCANCODE_MASK,
+            SDLK_F16 = SDL_Scancode.SDL_SCANCODE_F16 | SDLK_SCANCODE_MASK,
+            SDLK_F17 = SDL_Scancode.SDL_SCANCODE_F17 | SDLK_SCANCODE_MASK,
+            SDLK_F18 = SDL_Scancode.SDL_SCANCODE_F18 | SDLK_SCANCODE_MASK,
+            SDLK_F19 = SDL_Scancode.SDL_SCANCODE_F19 | SDLK_SCANCODE_MASK,
+            SDLK_F20 = SDL_Scancode.SDL_SCANCODE_F20 | SDLK_SCANCODE_MASK,
+            SDLK_F21 = SDL_Scancode.SDL_SCANCODE_F21 | SDLK_SCANCODE_MASK,
+            SDLK_F22 = SDL_Scancode.SDL_SCANCODE_F22 | SDLK_SCANCODE_MASK,
+            SDLK_F23 = SDL_Scancode.SDL_SCANCODE_F23 | SDLK_SCANCODE_MASK,
+            SDLK_F24 = SDL_Scancode.SDL_SCANCODE_F24 | SDLK_SCANCODE_MASK,
+            SDLK_EXECUTE = SDL_Scancode.SDL_SCANCODE_EXECUTE | SDLK_SCANCODE_MASK,
+            SDLK_HELP = SDL_Scancode.SDL_SCANCODE_HELP | SDLK_SCANCODE_MASK,
+            SDLK_MENU = SDL_Scancode.SDL_SCANCODE_MENU | SDLK_SCANCODE_MASK,
+            SDLK_SELECT = SDL_Scancode.SDL_SCANCODE_SELECT | SDLK_SCANCODE_MASK,
+            SDLK_STOP = SDL_Scancode.SDL_SCANCODE_STOP | SDLK_SCANCODE_MASK,
+            SDLK_AGAIN = SDL_Scancode.SDL_SCANCODE_AGAIN | SDLK_SCANCODE_MASK,
+            SDLK_UNDO = SDL_Scancode.SDL_SCANCODE_UNDO | SDLK_SCANCODE_MASK,
+            SDLK_CUT = SDL_Scancode.SDL_SCANCODE_CUT | SDLK_SCANCODE_MASK,
+            SDLK_COPY = SDL_Scancode.SDL_SCANCODE_COPY | SDLK_SCANCODE_MASK,
+            SDLK_PASTE = SDL_Scancode.SDL_SCANCODE_PASTE | SDLK_SCANCODE_MASK,
+            SDLK_FIND = SDL_Scancode.SDL_SCANCODE_FIND | SDLK_SCANCODE_MASK,
+            SDLK_MUTE = SDL_Scancode.SDL_SCANCODE_MUTE | SDLK_SCANCODE_MASK,
+            SDLK_VOLUMEUP = SDL_Scancode.SDL_SCANCODE_VOLUMEUP | SDLK_SCANCODE_MASK,
+            SDLK_VOLUMEDOWN = SDL_Scancode.SDL_SCANCODE_VOLUMEDOWN | SDLK_SCANCODE_MASK,
+            SDLK_KP_COMMA = SDL_Scancode.SDL_SCANCODE_KP_COMMA | SDLK_SCANCODE_MASK,
+            SDLK_KP_EQUALSAS400 =
+                SDL_Scancode.SDL_SCANCODE_KP_EQUALSAS400 | SDLK_SCANCODE_MASK,
+
+            SDLK_ALTERASE = SDL_Scancode.SDL_SCANCODE_ALTERASE | SDLK_SCANCODE_MASK,
+            SDLK_SYSREQ = SDL_Scancode.SDL_SCANCODE_SYSREQ | SDLK_SCANCODE_MASK,
+            SDLK_CANCEL = SDL_Scancode.SDL_SCANCODE_CANCEL | SDLK_SCANCODE_MASK,
+            SDLK_CLEAR = SDL_Scancode.SDL_SCANCODE_CLEAR | SDLK_SCANCODE_MASK,
+            SDLK_PRIOR = SDL_Scancode.SDL_SCANCODE_PRIOR | SDLK_SCANCODE_MASK,
+            SDLK_RETURN2 = SDL_Scancode.SDL_SCANCODE_RETURN2 | SDLK_SCANCODE_MASK,
+            SDLK_SEPARATOR = SDL_Scancode.SDL_SCANCODE_SEPARATOR | SDLK_SCANCODE_MASK,
+            SDLK_OUT = SDL_Scancode.SDL_SCANCODE_OUT | SDLK_SCANCODE_MASK,
+            SDLK_OPER = SDL_Scancode.SDL_SCANCODE_OPER | SDLK_SCANCODE_MASK,
+            SDLK_CLEARAGAIN = SDL_Scancode.SDL_SCANCODE_CLEARAGAIN | SDLK_SCANCODE_MASK,
+            SDLK_CRSEL = SDL_Scancode.SDL_SCANCODE_CRSEL | SDLK_SCANCODE_MASK,
+            SDLK_EXSEL = SDL_Scancode.SDL_SCANCODE_EXSEL | SDLK_SCANCODE_MASK,
+
+            SDLK_KP_00 = SDL_Scancode.SDL_SCANCODE_KP_00 | SDLK_SCANCODE_MASK,
+            SDLK_KP_000 = SDL_Scancode.SDL_SCANCODE_KP_000 | SDLK_SCANCODE_MASK,
+            SDLK_THOUSANDSSEPARATOR =
+                SDL_Scancode.SDL_SCANCODE_THOUSANDSSEPARATOR | SDLK_SCANCODE_MASK,
+            SDLK_DECIMALSEPARATOR =
+                SDL_Scancode.SDL_SCANCODE_DECIMALSEPARATOR | SDLK_SCANCODE_MASK,
+            SDLK_CURRENCYUNIT = SDL_Scancode.SDL_SCANCODE_CURRENCYUNIT | SDLK_SCANCODE_MASK,
+            SDLK_CURRENCYSUBUNIT =
+                SDL_Scancode.SDL_SCANCODE_CURRENCYSUBUNIT | SDLK_SCANCODE_MASK,
+            SDLK_KP_LEFTPAREN = SDL_Scancode.SDL_SCANCODE_KP_LEFTPAREN | SDLK_SCANCODE_MASK,
+            SDLK_KP_RIGHTPAREN = SDL_Scancode.SDL_SCANCODE_KP_RIGHTPAREN | SDLK_SCANCODE_MASK,
+            SDLK_KP_LEFTBRACE = SDL_Scancode.SDL_SCANCODE_KP_LEFTBRACE | SDLK_SCANCODE_MASK,
+            SDLK_KP_RIGHTBRACE = SDL_Scancode.SDL_SCANCODE_KP_RIGHTBRACE | SDLK_SCANCODE_MASK,
+            SDLK_KP_TAB = SDL_Scancode.SDL_SCANCODE_KP_TAB | SDLK_SCANCODE_MASK,
+            SDLK_KP_BACKSPACE = SDL_Scancode.SDL_SCANCODE_KP_BACKSPACE | SDLK_SCANCODE_MASK,
+            SDLK_KP_A = SDL_Scancode.SDL_SCANCODE_KP_A | SDLK_SCANCODE_MASK,
+            SDLK_KP_B = SDL_Scancode.SDL_SCANCODE_KP_B | SDLK_SCANCODE_MASK,
+            SDLK_KP_C = SDL_Scancode.SDL_SCANCODE_KP_C | SDLK_SCANCODE_MASK,
+            SDLK_KP_D = SDL_Scancode.SDL_SCANCODE_KP_D | SDLK_SCANCODE_MASK,
+            SDLK_KP_E = SDL_Scancode.SDL_SCANCODE_KP_E | SDLK_SCANCODE_MASK,
+            SDLK_KP_F = SDL_Scancode.SDL_SCANCODE_KP_F | SDLK_SCANCODE_MASK,
+            SDLK_KP_XOR = SDL_Scancode.SDL_SCANCODE_KP_XOR | SDLK_SCANCODE_MASK,
+            SDLK_KP_POWER = SDL_Scancode.SDL_SCANCODE_KP_POWER | SDLK_SCANCODE_MASK,
+            SDLK_KP_PERCENT = SDL_Scancode.SDL_SCANCODE_KP_PERCENT | SDLK_SCANCODE_MASK,
+            SDLK_KP_LESS = SDL_Scancode.SDL_SCANCODE_KP_LESS | SDLK_SCANCODE_MASK,
+            SDLK_KP_GREATER = SDL_Scancode.SDL_SCANCODE_KP_GREATER | SDLK_SCANCODE_MASK,
+            SDLK_KP_AMPERSAND = SDL_Scancode.SDL_SCANCODE_KP_AMPERSAND | SDLK_SCANCODE_MASK,
+            SDLK_KP_DBLAMPERSAND =
+                SDL_Scancode.SDL_SCANCODE_KP_DBLAMPERSAND | SDLK_SCANCODE_MASK,
+            SDLK_KP_VERTICALBAR =
+                SDL_Scancode.SDL_SCANCODE_KP_VERTICALBAR | SDLK_SCANCODE_MASK,
+            SDLK_KP_DBLVERTICALBAR =
+                SDL_Scancode.SDL_SCANCODE_KP_DBLVERTICALBAR | SDLK_SCANCODE_MASK,
+            SDLK_KP_COLON = SDL_Scancode.SDL_SCANCODE_KP_COLON | SDLK_SCANCODE_MASK,
+            SDLK_KP_HASH = SDL_Scancode.SDL_SCANCODE_KP_HASH | SDLK_SCANCODE_MASK,
+            SDLK_KP_SPACE = SDL_Scancode.SDL_SCANCODE_KP_SPACE | SDLK_SCANCODE_MASK,
+            SDLK_KP_AT = SDL_Scancode.SDL_SCANCODE_KP_AT | SDLK_SCANCODE_MASK,
+            SDLK_KP_EXCLAM = SDL_Scancode.SDL_SCANCODE_KP_EXCLAM | SDLK_SCANCODE_MASK,
+            SDLK_KP_MEMSTORE = SDL_Scancode.SDL_SCANCODE_KP_MEMSTORE | SDLK_SCANCODE_MASK,
+            SDLK_KP_MEMRECALL = SDL_Scancode.SDL_SCANCODE_KP_MEMRECALL | SDLK_SCANCODE_MASK,
+            SDLK_KP_MEMCLEAR = SDL_Scancode.SDL_SCANCODE_KP_MEMCLEAR | SDLK_SCANCODE_MASK,
+            SDLK_KP_MEMADD = SDL_Scancode.SDL_SCANCODE_KP_MEMADD | SDLK_SCANCODE_MASK,
+            SDLK_KP_MEMSUBTRACT =
+                SDL_Scancode.SDL_SCANCODE_KP_MEMSUBTRACT | SDLK_SCANCODE_MASK,
+            SDLK_KP_MEMMULTIPLY =
+                SDL_Scancode.SDL_SCANCODE_KP_MEMMULTIPLY | SDLK_SCANCODE_MASK,
+            SDLK_KP_MEMDIVIDE = SDL_Scancode.SDL_SCANCODE_KP_MEMDIVIDE | SDLK_SCANCODE_MASK,
+            SDLK_KP_PLUSMINUS = SDL_Scancode.SDL_SCANCODE_KP_PLUSMINUS | SDLK_SCANCODE_MASK,
+            SDLK_KP_CLEAR = SDL_Scancode.SDL_SCANCODE_KP_CLEAR | SDLK_SCANCODE_MASK,
+            SDLK_KP_CLEARENTRY = SDL_Scancode.SDL_SCANCODE_KP_CLEARENTRY | SDLK_SCANCODE_MASK,
+            SDLK_KP_BINARY = SDL_Scancode.SDL_SCANCODE_KP_BINARY | SDLK_SCANCODE_MASK,
+            SDLK_KP_OCTAL = SDL_Scancode.SDL_SCANCODE_KP_OCTAL | SDLK_SCANCODE_MASK,
+            SDLK_KP_DECIMAL = SDL_Scancode.SDL_SCANCODE_KP_DECIMAL | SDLK_SCANCODE_MASK,
+            SDLK_KP_HEXADECIMAL =
+                SDL_Scancode.SDL_SCANCODE_KP_HEXADECIMAL | SDLK_SCANCODE_MASK,
+
+            SDLK_LCTRL = SDL_Scancode.SDL_SCANCODE_LCTRL | SDLK_SCANCODE_MASK,
+            SDLK_LSHIFT = SDL_Scancode.SDL_SCANCODE_LSHIFT | SDLK_SCANCODE_MASK,
+            SDLK_LALT = SDL_Scancode.SDL_SCANCODE_LALT | SDLK_SCANCODE_MASK,
+            SDLK_LGUI = SDL_Scancode.SDL_SCANCODE_LGUI | SDLK_SCANCODE_MASK,
+            SDLK_RCTRL = SDL_Scancode.SDL_SCANCODE_RCTRL | SDLK_SCANCODE_MASK,
+            SDLK_RSHIFT = SDL_Scancode.SDL_SCANCODE_RSHIFT | SDLK_SCANCODE_MASK,
+            SDLK_RALT = SDL_Scancode.SDL_SCANCODE_RALT | SDLK_SCANCODE_MASK,
+            SDLK_RGUI = SDL_Scancode.SDL_SCANCODE_RGUI | SDLK_SCANCODE_MASK,
+
+            SDLK_MODE = SDL_Scancode.SDL_SCANCODE_MODE | SDLK_SCANCODE_MASK,
+
+            SDLK_AUDIONEXT = SDL_Scancode.SDL_SCANCODE_AUDIONEXT | SDLK_SCANCODE_MASK,
+            SDLK_AUDIOPREV = SDL_Scancode.SDL_SCANCODE_AUDIOPREV | SDLK_SCANCODE_MASK,
+            SDLK_AUDIOSTOP = SDL_Scancode.SDL_SCANCODE_AUDIOSTOP | SDLK_SCANCODE_MASK,
+            SDLK_AUDIOPLAY = SDL_Scancode.SDL_SCANCODE_AUDIOPLAY | SDLK_SCANCODE_MASK,
+            SDLK_AUDIOMUTE = SDL_Scancode.SDL_SCANCODE_AUDIOMUTE | SDLK_SCANCODE_MASK,
+            SDLK_MEDIASELECT = SDL_Scancode.SDL_SCANCODE_MEDIASELECT | SDLK_SCANCODE_MASK,
+            SDLK_WWW = SDL_Scancode.SDL_SCANCODE_WWW | SDLK_SCANCODE_MASK,
+            SDLK_MAIL = SDL_Scancode.SDL_SCANCODE_MAIL | SDLK_SCANCODE_MASK,
+            SDLK_CALCULATOR = SDL_Scancode.SDL_SCANCODE_CALCULATOR | SDLK_SCANCODE_MASK,
+            SDLK_COMPUTER = SDL_Scancode.SDL_SCANCODE_COMPUTER | SDLK_SCANCODE_MASK,
+            SDLK_AC_SEARCH = SDL_Scancode.SDL_SCANCODE_AC_SEARCH | SDLK_SCANCODE_MASK,
+            SDLK_AC_HOME = SDL_Scancode.SDL_SCANCODE_AC_HOME | SDLK_SCANCODE_MASK,
+            SDLK_AC_BACK = SDL_Scancode.SDL_SCANCODE_AC_BACK | SDLK_SCANCODE_MASK,
+            SDLK_AC_FORWARD = SDL_Scancode.SDL_SCANCODE_AC_FORWARD | SDLK_SCANCODE_MASK,
+            SDLK_AC_STOP = SDL_Scancode.SDL_SCANCODE_AC_STOP | SDLK_SCANCODE_MASK,
+            SDLK_AC_REFRESH = SDL_Scancode.SDL_SCANCODE_AC_REFRESH | SDLK_SCANCODE_MASK,
+            SDLK_AC_BOOKMARKS = SDL_Scancode.SDL_SCANCODE_AC_BOOKMARKS | SDLK_SCANCODE_MASK,
+
+            SDLK_BRIGHTNESSDOWN =
+                SDL_Scancode.SDL_SCANCODE_BRIGHTNESSDOWN | SDLK_SCANCODE_MASK,
+            SDLK_BRIGHTNESSUP = SDL_Scancode.SDL_SCANCODE_BRIGHTNESSUP | SDLK_SCANCODE_MASK,
+            SDLK_DISPLAYSWITCH = SDL_Scancode.SDL_SCANCODE_DISPLAYSWITCH | SDLK_SCANCODE_MASK,
+            SDLK_KBDILLUMTOGGLE =
+                SDL_Scancode.SDL_SCANCODE_KBDILLUMTOGGLE | SDLK_SCANCODE_MASK,
+            SDLK_KBDILLUMDOWN = SDL_Scancode.SDL_SCANCODE_KBDILLUMDOWN | SDLK_SCANCODE_MASK,
+            SDLK_KBDILLUMUP = SDL_Scancode.SDL_SCANCODE_KBDILLUMUP | SDLK_SCANCODE_MASK,
+            SDLK_EJECT = SDL_Scancode.SDL_SCANCODE_EJECT | SDLK_SCANCODE_MASK,
+            SDLK_SLEEP = SDL_Scancode.SDL_SCANCODE_SLEEP | SDLK_SCANCODE_MASK,
+            SDLK_APP1 = SDL_Scancode.SDL_SCANCODE_APP1 | SDLK_SCANCODE_MASK,
+            SDLK_APP2 = SDL_Scancode.SDL_SCANCODE_APP2 | SDLK_SCANCODE_MASK,
+
+            SDLK_AUDIOREWIND = SDL_Scancode.SDL_SCANCODE_AUDIOREWIND | SDLK_SCANCODE_MASK,
+            SDLK_AUDIOFASTFORWARD = SDL_Scancode.SDL_SCANCODE_AUDIOFASTFORWARD | SDLK_SCANCODE_MASK,
+
+            SDLK_SOFTLEFT = SDL_Scancode.SDL_SCANCODE_SOFTLEFT | SDLK_SCANCODE_MASK,
+            SDLK_SOFTRIGHT = SDL_Scancode.SDL_SCANCODE_SOFTRIGHT | SDLK_SCANCODE_MASK,
+            SDLK_CALL = SDL_Scancode.SDL_SCANCODE_CALL | SDLK_SCANCODE_MASK,
+            SDLK_ENDCALL = SDL_Scancode.SDL_SCANCODE_ENDCALL | SDLK_SCANCODE_MASK
+        }
+
+        public enum SDL_Keymod
+        {
+            KMOD_NONE = 0x0000,
+            KMOD_LSHIFT = 0x0001,
+            KMOD_RSHIFT = 0x0002,
+            KMOD_LCTRL = 0x0040,
+            KMOD_RCTRL = 0x0080,
+            KMOD_LALT = 0x0100,
+            KMOD_RALT = 0x0200,
+            KMOD_LGUI = 0x0400,
+            KMOD_RGUI = 0x0800,
+            KMOD_NUM = 0x1000,
+            KMOD_CAPS = 0x2000,
+            KMOD_MODE = 0x4000,
+            KMOD_SCROLL = 0x8000,
+
+            KMOD_CTRL = KMOD_LCTRL | KMOD_RCTRL,
+            KMOD_SHIFT = KMOD_LSHIFT | KMOD_RSHIFT,
+            KMOD_ALT = KMOD_LALT | KMOD_RALT,
+            KMOD_GUI = KMOD_LGUI | KMOD_RGUI,
+        }
 
         #endregion
 
@@ -3210,7 +3510,277 @@ namespace SdlSharp
 
         #region SDL_scancode.h
 
-        // SDL_Scancode is covered by Scancode.cs
+        public enum SDL_Scancode
+        {
+            SDL_SCANCODE_UNKNOWN = 0,
+
+            SDL_SCANCODE_A = 4,
+            SDL_SCANCODE_B = 5,
+            SDL_SCANCODE_C = 6,
+            SDL_SCANCODE_D = 7,
+            SDL_SCANCODE_E = 8,
+            SDL_SCANCODE_F = 9,
+            SDL_SCANCODE_G = 10,
+            SDL_SCANCODE_H = 11,
+            SDL_SCANCODE_I = 12,
+            SDL_SCANCODE_J = 13,
+            SDL_SCANCODE_K = 14,
+            SDL_SCANCODE_L = 15,
+            SDL_SCANCODE_M = 16,
+            SDL_SCANCODE_N = 17,
+            SDL_SCANCODE_O = 18,
+            SDL_SCANCODE_P = 19,
+            SDL_SCANCODE_Q = 20,
+            SDL_SCANCODE_R = 21,
+            SDL_SCANCODE_S = 22,
+            SDL_SCANCODE_T = 23,
+            SDL_SCANCODE_U = 24,
+            SDL_SCANCODE_V = 25,
+            SDL_SCANCODE_W = 26,
+            SDL_SCANCODE_X = 27,
+            SDL_SCANCODE_Y = 28,
+            SDL_SCANCODE_Z = 29,
+
+            SDL_SCANCODE_1 = 30,
+            SDL_SCANCODE_2 = 31,
+            SDL_SCANCODE_3 = 32,
+            SDL_SCANCODE_4 = 33,
+            SDL_SCANCODE_5 = 34,
+            SDL_SCANCODE_6 = 35,
+            SDL_SCANCODE_7 = 36,
+            SDL_SCANCODE_8 = 37,
+            SDL_SCANCODE_9 = 38,
+            SDL_SCANCODE_0 = 39,
+
+            SDL_SCANCODE_RETURN = 40,
+            SDL_SCANCODE_ESCAPE = 41,
+            SDL_SCANCODE_BACKSPACE = 42,
+            SDL_SCANCODE_TAB = 43,
+            SDL_SCANCODE_SPACE = 44,
+
+            SDL_SCANCODE_MINUS = 45,
+            SDL_SCANCODE_EQUALS = 46,
+            SDL_SCANCODE_LEFTBRACKET = 47,
+            SDL_SCANCODE_RIGHTBRACKET = 48,
+            SDL_SCANCODE_BACKSLASH = 49,
+            SDL_SCANCODE_NONUSHASH = 50,
+            SDL_SCANCODE_SEMICOLON = 51,
+            SDL_SCANCODE_APOSTROPHE = 52,
+            SDL_SCANCODE_GRAVE = 53,
+            SDL_SCANCODE_COMMA = 54,
+            SDL_SCANCODE_PERIOD = 55,
+            SDL_SCANCODE_SLASH = 56,
+
+            SDL_SCANCODE_CAPSLOCK = 57,
+
+            SDL_SCANCODE_F1 = 58,
+            SDL_SCANCODE_F2 = 59,
+            SDL_SCANCODE_F3 = 60,
+            SDL_SCANCODE_F4 = 61,
+            SDL_SCANCODE_F5 = 62,
+            SDL_SCANCODE_F6 = 63,
+            SDL_SCANCODE_F7 = 64,
+            SDL_SCANCODE_F8 = 65,
+            SDL_SCANCODE_F9 = 66,
+            SDL_SCANCODE_F10 = 67,
+            SDL_SCANCODE_F11 = 68,
+            SDL_SCANCODE_F12 = 69,
+
+            SDL_SCANCODE_PRINTSCREEN = 70,
+            SDL_SCANCODE_SCROLLLOCK = 71,
+            SDL_SCANCODE_PAUSE = 72,
+            SDL_SCANCODE_INSERT = 73,
+            SDL_SCANCODE_HOME = 74,
+            SDL_SCANCODE_PAGEUP = 75,
+            SDL_SCANCODE_DELETE = 76,
+            SDL_SCANCODE_END = 77,
+            SDL_SCANCODE_PAGEDOWN = 78,
+            SDL_SCANCODE_RIGHT = 79,
+            SDL_SCANCODE_LEFT = 80,
+            SDL_SCANCODE_DOWN = 81,
+            SDL_SCANCODE_UP = 82,
+
+            SDL_SCANCODE_NUMLOCKCLEAR = 83,
+            SDL_SCANCODE_KP_DIVIDE = 84,
+            SDL_SCANCODE_KP_MULTIPLY = 85,
+            SDL_SCANCODE_KP_MINUS = 86,
+            SDL_SCANCODE_KP_PLUS = 87,
+            SDL_SCANCODE_KP_ENTER = 88,
+            SDL_SCANCODE_KP_1 = 89,
+            SDL_SCANCODE_KP_2 = 90,
+            SDL_SCANCODE_KP_3 = 91,
+            SDL_SCANCODE_KP_4 = 92,
+            SDL_SCANCODE_KP_5 = 93,
+            SDL_SCANCODE_KP_6 = 94,
+            SDL_SCANCODE_KP_7 = 95,
+            SDL_SCANCODE_KP_8 = 96,
+            SDL_SCANCODE_KP_9 = 97,
+            SDL_SCANCODE_KP_0 = 98,
+            SDL_SCANCODE_KP_PERIOD = 99,
+
+            SDL_SCANCODE_NONUSBACKSLASH = 100,
+            SDL_SCANCODE_APPLICATION = 101,
+            SDL_SCANCODE_POWER = 102,
+            SDL_SCANCODE_KP_EQUALS = 103,
+            SDL_SCANCODE_F13 = 104,
+            SDL_SCANCODE_F14 = 105,
+            SDL_SCANCODE_F15 = 106,
+            SDL_SCANCODE_F16 = 107,
+            SDL_SCANCODE_F17 = 108,
+            SDL_SCANCODE_F18 = 109,
+            SDL_SCANCODE_F19 = 110,
+            SDL_SCANCODE_F20 = 111,
+            SDL_SCANCODE_F21 = 112,
+            SDL_SCANCODE_F22 = 113,
+            SDL_SCANCODE_F23 = 114,
+            SDL_SCANCODE_F24 = 115,
+            SDL_SCANCODE_EXECUTE = 116,
+            SDL_SCANCODE_HELP = 117,
+            SDL_SCANCODE_MENU = 118,
+            SDL_SCANCODE_SELECT = 119,
+            SDL_SCANCODE_STOP = 120,
+            SDL_SCANCODE_AGAIN = 121,
+            SDL_SCANCODE_UNDO = 122,
+            SDL_SCANCODE_CUT = 123,
+            SDL_SCANCODE_COPY = 124,
+            SDL_SCANCODE_PASTE = 125,
+            SDL_SCANCODE_FIND = 126,
+            SDL_SCANCODE_MUTE = 127,
+            SDL_SCANCODE_VOLUMEUP = 128,
+            SDL_SCANCODE_VOLUMEDOWN = 129,
+            SDL_SCANCODE_KP_COMMA = 133,
+            SDL_SCANCODE_KP_EQUALSAS400 = 134,
+
+            SDL_SCANCODE_INTERNATIONAL1 = 135,
+            SDL_SCANCODE_INTERNATIONAL2 = 136,
+            SDL_SCANCODE_INTERNATIONAL3 = 137,
+            SDL_SCANCODE_INTERNATIONAL4 = 138,
+            SDL_SCANCODE_INTERNATIONAL5 = 139,
+            SDL_SCANCODE_INTERNATIONAL6 = 140,
+            SDL_SCANCODE_INTERNATIONAL7 = 141,
+            SDL_SCANCODE_INTERNATIONAL8 = 142,
+            SDL_SCANCODE_INTERNATIONAL9 = 143,
+            SDL_SCANCODE_LANG1 = 144,
+            SDL_SCANCODE_LANG2 = 145,
+            SDL_SCANCODE_LANG3 = 146,
+            SDL_SCANCODE_LANG4 = 147,
+            SDL_SCANCODE_LANG5 = 148,
+            SDL_SCANCODE_LANG6 = 149,
+            SDL_SCANCODE_LANG7 = 150,
+            SDL_SCANCODE_LANG8 = 151,
+            SDL_SCANCODE_LANG9 = 152,
+
+            SDL_SCANCODE_ALTERASE = 153,
+            SDL_SCANCODE_SYSREQ = 154,
+            SDL_SCANCODE_CANCEL = 155,
+            SDL_SCANCODE_CLEAR = 156,
+            SDL_SCANCODE_PRIOR = 157,
+            SDL_SCANCODE_RETURN2 = 158,
+            SDL_SCANCODE_SEPARATOR = 159,
+            SDL_SCANCODE_OUT = 160,
+            SDL_SCANCODE_OPER = 161,
+            SDL_SCANCODE_CLEARAGAIN = 162,
+            SDL_SCANCODE_CRSEL = 163,
+            SDL_SCANCODE_EXSEL = 164,
+
+            SDL_SCANCODE_KP_00 = 176,
+            SDL_SCANCODE_KP_000 = 177,
+            SDL_SCANCODE_THOUSANDSSEPARATOR = 178,
+            SDL_SCANCODE_DECIMALSEPARATOR = 179,
+            SDL_SCANCODE_CURRENCYUNIT = 180,
+            SDL_SCANCODE_CURRENCYSUBUNIT = 181,
+            SDL_SCANCODE_KP_LEFTPAREN = 182,
+            SDL_SCANCODE_KP_RIGHTPAREN = 183,
+            SDL_SCANCODE_KP_LEFTBRACE = 184,
+            SDL_SCANCODE_KP_RIGHTBRACE = 185,
+            SDL_SCANCODE_KP_TAB = 186,
+            SDL_SCANCODE_KP_BACKSPACE = 187,
+            SDL_SCANCODE_KP_A = 188,
+            SDL_SCANCODE_KP_B = 189,
+            SDL_SCANCODE_KP_C = 190,
+            SDL_SCANCODE_KP_D = 191,
+            SDL_SCANCODE_KP_E = 192,
+            SDL_SCANCODE_KP_F = 193,
+            SDL_SCANCODE_KP_XOR = 194,
+            SDL_SCANCODE_KP_POWER = 195,
+            SDL_SCANCODE_KP_PERCENT = 196,
+            SDL_SCANCODE_KP_LESS = 197,
+            SDL_SCANCODE_KP_GREATER = 198,
+            SDL_SCANCODE_KP_AMPERSAND = 199,
+            SDL_SCANCODE_KP_DBLAMPERSAND = 200,
+            SDL_SCANCODE_KP_VERTICALBAR = 201,
+            SDL_SCANCODE_KP_DBLVERTICALBAR = 202,
+            SDL_SCANCODE_KP_COLON = 203,
+            SDL_SCANCODE_KP_HASH = 204,
+            SDL_SCANCODE_KP_SPACE = 205,
+            SDL_SCANCODE_KP_AT = 206,
+            SDL_SCANCODE_KP_EXCLAM = 207,
+            SDL_SCANCODE_KP_MEMSTORE = 208,
+            SDL_SCANCODE_KP_MEMRECALL = 209,
+            SDL_SCANCODE_KP_MEMCLEAR = 210,
+            SDL_SCANCODE_KP_MEMADD = 211,
+            SDL_SCANCODE_KP_MEMSUBTRACT = 212,
+            SDL_SCANCODE_KP_MEMMULTIPLY = 213,
+            SDL_SCANCODE_KP_MEMDIVIDE = 214,
+            SDL_SCANCODE_KP_PLUSMINUS = 215,
+            SDL_SCANCODE_KP_CLEAR = 216,
+            SDL_SCANCODE_KP_CLEARENTRY = 217,
+            SDL_SCANCODE_KP_BINARY = 218,
+            SDL_SCANCODE_KP_OCTAL = 219,
+            SDL_SCANCODE_KP_DECIMAL = 220,
+            SDL_SCANCODE_KP_HEXADECIMAL = 221,
+
+            SDL_SCANCODE_LCTRL = 224,
+            SDL_SCANCODE_LSHIFT = 225,
+            SDL_SCANCODE_LALT = 226,
+            SDL_SCANCODE_LGUI = 227,
+            SDL_SCANCODE_RCTRL = 228,
+            SDL_SCANCODE_RSHIFT = 229,
+            SDL_SCANCODE_RALT = 230,
+            SDL_SCANCODE_RGUI = 231,
+
+            SDL_SCANCODE_MODE = 257,
+
+            SDL_SCANCODE_AUDIONEXT = 258,
+            SDL_SCANCODE_AUDIOPREV = 259,
+            SDL_SCANCODE_AUDIOSTOP = 260,
+            SDL_SCANCODE_AUDIOPLAY = 261,
+            SDL_SCANCODE_AUDIOMUTE = 262,
+            SDL_SCANCODE_MEDIASELECT = 263,
+            SDL_SCANCODE_WWW = 264,
+            SDL_SCANCODE_MAIL = 265,
+            SDL_SCANCODE_CALCULATOR = 266,
+            SDL_SCANCODE_COMPUTER = 267,
+            SDL_SCANCODE_AC_SEARCH = 268,
+            SDL_SCANCODE_AC_HOME = 269,
+            SDL_SCANCODE_AC_BACK = 270,
+            SDL_SCANCODE_AC_FORWARD = 271,
+            SDL_SCANCODE_AC_STOP = 272,
+            SDL_SCANCODE_AC_REFRESH = 273,
+            SDL_SCANCODE_AC_BOOKMARKS = 274,
+
+            SDL_SCANCODE_BRIGHTNESSDOWN = 275,
+            SDL_SCANCODE_BRIGHTNESSUP = 276,
+            SDL_SCANCODE_DISPLAYSWITCH = 277,
+            SDL_SCANCODE_KBDILLUMTOGGLE = 278,
+            SDL_SCANCODE_KBDILLUMDOWN = 279,
+            SDL_SCANCODE_KBDILLUMUP = 280,
+            SDL_SCANCODE_EJECT = 281,
+            SDL_SCANCODE_SLEEP = 282,
+
+            SDL_SCANCODE_APP1 = 283,
+            SDL_SCANCODE_APP2 = 284,
+
+            SDL_SCANCODE_AUDIOREWIND = 285,
+            SDL_SCANCODE_AUDIOFASTFORWARD = 286,
+
+            SDL_SCANCODE_SOFTLEFT = 287,
+            SDL_SCANCODE_SOFTRIGHT = 288,
+            SDL_SCANCODE_CALL = 289,
+            SDL_SCANCODE_ENDCALL = 290,
+
+            SDL_NUM_SCANCODES = 512
+        }
 
         #endregion
 

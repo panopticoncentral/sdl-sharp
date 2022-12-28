@@ -84,8 +84,8 @@ namespace SdlSharp.Input
         /// </summary>
         public static KeyModifier KeyModifierState
         {
-            get => Native.SDL_GetModState();
-            set => Native.SDL_SetModState(value);
+            get => (KeyModifier)Native.SDL_GetModState();
+            set => Native.SDL_SetModState((Native.SDL_Keymod)value);
         }
 
         /// <summary>

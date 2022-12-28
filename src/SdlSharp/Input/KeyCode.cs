@@ -9,1201 +9,1221 @@
         /// <summary>
         /// Unknown key
         /// </summary>
-        Unknown = 0,
-
-        /// <summary>
-        /// Backspace key
-        /// </summary>
-        Backspace = '\b',
-
-        /// <summary>
-        /// Tab key
-        /// </summary>
-        Tab = '\t',
+        Unknown = Native.SDL_KeyCode.SDLK_UNKNOWN,
 
         /// <summary>
         /// Return key
         /// </summary>
-        Return = '\r',
+        Return = Native.SDL_KeyCode.SDLK_RETURN,
 
         /// <summary>
         /// Escape key
         /// </summary>
-        Escape = 27,
+        Escape = Native.SDL_KeyCode.SDLK_ESCAPE,
+
+        /// <summary>
+        /// Backspace key
+        /// </summary>
+        Backspace = Native.SDL_KeyCode.SDLK_BACKSPACE,
+
+        /// <summary>
+        /// Tab key
+        /// </summary>
+        Tab = Native.SDL_KeyCode.SDLK_TAB,
 
         /// <summary>
         /// Space key
         /// </summary>
-        Space = ' ',
+        Space = Native.SDL_KeyCode.SDLK_SPACE,
 
         /// <summary>
         /// ExclamationMark key
         /// </summary>
-        ExclamationMark = '!',
+        ExclamationMark = Native.SDL_KeyCode.SDLK_EXCLAIM,
 
         /// <summary>
         /// DoubleQuote key
         /// </summary>
-        DoubleQuote = '"',
+        DoubleQuote = Native.SDL_KeyCode.SDLK_QUOTEDBL,
 
         /// <summary>
         /// Hash key
         /// </summary>
-        Hash = '#',
+        Hash = Native.SDL_KeyCode.SDLK_HASH,
 
         /// <summary>
         /// Dollar key
         /// </summary>
-        Dollar = '$',
+        Dollar = Native.SDL_KeyCode.SDLK_PERCENT,
 
         /// <summary>
         /// Percent key
         /// </summary>
-        Percent = '%',
+        Percent = Native.SDL_KeyCode.SDLK_DOLLAR,
 
         /// <summary>
         /// Ampersand key
         /// </summary>
-        Ampersand = '&',
+        Ampersand = Native.SDL_KeyCode.SDLK_AMPERSAND,
 
         /// <summary>
         /// Quote key
         /// </summary>
-        Quote = '\'',
+        Quote = Native.SDL_KeyCode.SDLK_QUOTE,
 
         /// <summary>
         /// LeftParen key
         /// </summary>
-        LeftParen = '(',
+        LeftParen = Native.SDL_KeyCode.SDLK_LEFTPAREN,
 
         /// <summary>
         /// RightParen key
         /// </summary>
-        RightParen = ')',
+        RightParen = Native.SDL_KeyCode.SDLK_RIGHTPAREN,
 
         /// <summary>
         /// Asterisk key
         /// </summary>
-        Asterisk = '*',
+        Asterisk = Native.SDL_KeyCode.SDLK_ASTERISK,
 
         /// <summary>
         /// Plus key
         /// </summary>
-        Plus = '+',
+        Plus = Native.SDL_KeyCode.SDLK_PLUS,
 
         /// <summary>
         /// Comma key
         /// </summary>
-        Comma = ',',
+        Comma = Native.SDL_KeyCode.SDLK_COMMA,
 
         /// <summary>
         /// Minus key
         /// </summary>
-        Minus = '-',
+        Minus = Native.SDL_KeyCode.SDLK_MINUS,
 
         /// <summary>
         /// Period key
         /// </summary>
-        Period = '.',
+        Period = Native.SDL_KeyCode.SDLK_PERIOD,
 
         /// <summary>
         /// Slash key
         /// </summary>
-        Slash = '/',
+        Slash = Native.SDL_KeyCode.SDLK_SLASH,
 
         /// <summary>
         /// Number0 key
         /// </summary>
-        Number0 = '0',
+        Number0 = Native.SDL_KeyCode.SDLK_0,
 
         /// <summary>
         /// Number1 key
         /// </summary>
-        Number1 = '1',
+        Number1 = Native.SDL_KeyCode.SDLK_1,
 
         /// <summary>
         /// Number2 key
         /// </summary>
-        Number2 = '2',
+        Number2 = Native.SDL_KeyCode.SDLK_2,
 
         /// <summary>
         /// Number3 key
         /// </summary>
-        Number3 = '3',
+        Number3 = Native.SDL_KeyCode.SDLK_3,
 
         /// <summary>
         /// Number4 key
         /// </summary>
-        Number4 = '4',
+        Number4 = Native.SDL_KeyCode.SDLK_4,
 
         /// <summary>
         /// Number5 key
         /// </summary>
-        Number5 = '5',
+        Number5 = Native.SDL_KeyCode.SDLK_5,
 
         /// <summary>
         /// Number6 key
         /// </summary>
-        Number6 = '6',
+        Number6 = Native.SDL_KeyCode.SDLK_6,
 
         /// <summary>
         /// Number7 key
         /// </summary>
-        Number7 = '7',
+        Number7 = Native.SDL_KeyCode.SDLK_7,
 
         /// <summary>
         /// Number8 key
         /// </summary>
-        Number8 = '8',
+        Number8 = Native.SDL_KeyCode.SDLK_8,
 
         /// <summary>
         /// Number9 key
         /// </summary>
-        Number9 = '9',
+        Number9 = Native.SDL_KeyCode.SDLK_9,
 
         /// <summary>
         /// Colon key
         /// </summary>
-        Colon = ':',
+        Colon = Native.SDL_KeyCode.SDLK_COLON,
 
         /// <summary>
         /// Semicolon key
         /// </summary>
-        Semicolon = ';',
+        Semicolon = Native.SDL_KeyCode.SDLK_SEMICOLON,
 
         /// <summary>
         /// Less key
         /// </summary>
-        Less = '<',
+        Less = Native.SDL_KeyCode.SDLK_LESS,
 
         /// <summary>
         /// Equals key
         /// </summary>
-        Equals = '=',
+        Equals = Native.SDL_KeyCode.SDLK_EQUALS,
 
         /// <summary>
         /// Greater key
         /// </summary>
-        Greater = '>',
+        Greater = Native.SDL_KeyCode.SDLK_GREATER,
 
         /// <summary>
         /// QuestionMark key
         /// </summary>
-        QuestionMark = '?',
+        QuestionMark = Native.SDL_KeyCode.SDLK_QUESTION,
 
         /// <summary>
         /// At key
         /// </summary>
-        At = '@',
+        At = Native.SDL_KeyCode.SDLK_AT,
 
         /// <summary>
         /// LeftBracket key
         /// </summary>
-        LeftBracket = '[',
+        LeftBracket = Native.SDL_KeyCode.SDLK_LEFTBRACKET,
 
         /// <summary>
         /// Backslash key
         /// </summary>
-        Backslash = '\\',
+        Backslash = Native.SDL_KeyCode.SDLK_BACKSLASH,
 
         /// <summary>
         /// RightBracket key
         /// </summary>
-        RightBracket = ']',
+        RightBracket = Native.SDL_KeyCode.SDLK_RIGHTBRACKET,
 
         /// <summary>
         /// Caret key
         /// </summary>
-        Caret = '^',
+        Caret = Native.SDL_KeyCode.SDLK_CARET,
 
         /// <summary>
         /// Underscore key
         /// </summary>
-        Underscore = '_',
+        Underscore = Native.SDL_KeyCode.SDLK_UNDERSCORE,
 
         /// <summary>
         /// Backquote key
         /// </summary>
-        Backquote = '`',
+        Backquote = Native.SDL_KeyCode.SDLK_BACKQUOTE,
 
         /// <summary>
         /// a key
         /// </summary>
-        a = 'a',
+        a = Native.SDL_KeyCode.SDLK_a,
 
         /// <summary>
         /// b key
         /// </summary>
-        b = 'b',
+        b = Native.SDL_KeyCode.SDLK_b,
 
         /// <summary>
         /// c key
         /// </summary>
-        c = 'c',
+        c = Native.SDL_KeyCode.SDLK_c,
 
         /// <summary>
         /// d key
         /// </summary>
-        d = 'd',
+        d = Native.SDL_KeyCode.SDLK_d,
 
         /// <summary>
         /// e key
         /// </summary>
-        e = 'e',
+        e = Native.SDL_KeyCode.SDLK_e,
 
         /// <summary>
         /// f key
         /// </summary>
-        f = 'f',
+        f = Native.SDL_KeyCode.SDLK_f,
 
         /// <summary>
         /// g key
         /// </summary>
-        g = 'g',
+        g = Native.SDL_KeyCode.SDLK_g,
 
         /// <summary>
         /// h key
         /// </summary>
-        h = 'h',
+        h = Native.SDL_KeyCode.SDLK_h,
 
         /// <summary>
         /// i key
         /// </summary>
-        i = 'i',
+        i = Native.SDL_KeyCode.SDLK_i,
 
         /// <summary>
         /// j key
         /// </summary>
-        j = 'j',
+        j = Native.SDL_KeyCode.SDLK_j,
 
         /// <summary>
         /// k key
         /// </summary>
-        k = 'k',
+        k = Native.SDL_KeyCode.SDLK_k,
 
         /// <summary>
         /// l key
         /// </summary>
-        l = 'l',
+        l = Native.SDL_KeyCode.SDLK_l,
 
         /// <summary>
         /// m key
         /// </summary>
-        m = 'm',
+        m = Native.SDL_KeyCode.SDLK_m,
 
         /// <summary>
         /// n key
         /// </summary>
-        n = 'n',
+        n = Native.SDL_KeyCode.SDLK_n,
 
         /// <summary>
         /// o key
         /// </summary>
-        o = 'o',
+        o = Native.SDL_KeyCode.SDLK_o,
 
         /// <summary>
         /// p key
         /// </summary>
-        p = 'p',
+        p = Native.SDL_KeyCode.SDLK_p,
 
         /// <summary>
         /// q key
         /// </summary>
-        q = 'q',
+        q = Native.SDL_KeyCode.SDLK_q,
 
         /// <summary>
         /// r key
         /// </summary>
-        r = 'r',
+        r = Native.SDL_KeyCode.SDLK_r,
 
         /// <summary>
         /// s key
         /// </summary>
-        s = 's',
+        s = Native.SDL_KeyCode.SDLK_s,
 
         /// <summary>
         /// t key
         /// </summary>
-        t = 't',
+        t = Native.SDL_KeyCode.SDLK_t,
 
         /// <summary>
         /// u key
         /// </summary>
-        u = 'u',
+        u = Native.SDL_KeyCode.SDLK_u,
 
         /// <summary>
         /// v key
         /// </summary>
-        v = 'v',
+        v = Native.SDL_KeyCode.SDLK_v,
 
         /// <summary>
         /// w key
         /// </summary>
-        w = 'w',
+        w = Native.SDL_KeyCode.SDLK_w,
 
         /// <summary>
         /// x key
         /// </summary>
-        x = 'x',
+        x = Native.SDL_KeyCode.SDLK_x,
 
         /// <summary>
         /// y key
         /// </summary>
-        y = 'y',
+        y = Native.SDL_KeyCode.SDLK_y,
 
         /// <summary>
         /// z key
         /// </summary>
-        z = 'z',
-
-        /// <summary>
-        /// Delete key
-        /// </summary>
-        Delete = 127,
+        z = Native.SDL_KeyCode.SDLK_z,
 
         /// <summary>
         /// Capslock key
         /// </summary>
-        Capslock = Scancode.Capslock | Scancode.Mask,
+        Capslock = Native.SDL_KeyCode.SDLK_CAPSLOCK,
 
         /// <summary>
         /// F1 key
         /// </summary>
-        F1 = Scancode.F1 | Scancode.Mask,
+        F1 = Native.SDL_KeyCode.SDLK_F1,
 
         /// <summary>
         /// F2 key
         /// </summary>
-        F2 = Scancode.F2 | Scancode.Mask,
+        F2 = Native.SDL_KeyCode.SDLK_F2,
 
         /// <summary>
         /// F3 key
         /// </summary>
-        F3 = Scancode.F3 | Scancode.Mask,
+        F3 = Native.SDL_KeyCode.SDLK_F3,
 
         /// <summary>
         /// F4 key
         /// </summary>
-        F4 = Scancode.F4 | Scancode.Mask,
+        F4 = Native.SDL_KeyCode.SDLK_F4,
 
         /// <summary>
         /// F5 key
         /// </summary>
-        F5 = Scancode.F5 | Scancode.Mask,
+        F5 = Native.SDL_KeyCode.SDLK_F5,
 
         /// <summary>
         /// F6 key
         /// </summary>
-        F6 = Scancode.F6 | Scancode.Mask,
+        F6 = Native.SDL_KeyCode.SDLK_F6,
 
         /// <summary>
         /// F7 key
         /// </summary>
-        F7 = Scancode.F7 | Scancode.Mask,
+        F7 = Native.SDL_KeyCode.SDLK_F7,
 
         /// <summary>
         /// F8 key
         /// </summary>
-        F8 = Scancode.F8 | Scancode.Mask,
+        F8 = Native.SDL_KeyCode.SDLK_F8,
 
         /// <summary>
         /// F9 key
         /// </summary>
-        F9 = Scancode.F9 | Scancode.Mask,
+        F9 = Native.SDL_KeyCode.SDLK_F9,
 
         /// <summary>
         /// F10 key
         /// </summary>
-        F10 = Scancode.F10 | Scancode.Mask,
+        F10 = Native.SDL_KeyCode.SDLK_F10,
 
         /// <summary>
         /// F11 key
         /// </summary>
-        F11 = Scancode.F11 | Scancode.Mask,
+        F11 = Native.SDL_KeyCode.SDLK_F11,
 
         /// <summary>
         /// F12 key
         /// </summary>
-        F12 = Scancode.F12 | Scancode.Mask,
+        F12 = Native.SDL_KeyCode.SDLK_F12,
 
         /// <summary>
         /// PrintScreen key
         /// </summary>
-        PrintScreen = Scancode.PrintScreen | Scancode.Mask,
+        PrintScreen = Native.SDL_KeyCode.SDLK_PRINTSCREEN,
 
         /// <summary>
         /// ScrollLock key
         /// </summary>
-        ScrollLock = Scancode.ScrollLock | Scancode.Mask,
+        ScrollLock = Native.SDL_KeyCode.SDLK_SCROLLLOCK,
 
         /// <summary>
         /// Pause key
         /// </summary>
-        Pause = Scancode.Pause | Scancode.Mask,
+        Pause = Native.SDL_KeyCode.SDLK_PAUSE,
 
         /// <summary>
         /// Insert key
         /// </summary>
-        Insert = Scancode.Insert | Scancode.Mask,
+        Insert = Native.SDL_KeyCode.SDLK_INSERT,
 
         /// <summary>
         /// Home key
         /// </summary>
-        Home = Scancode.Home | Scancode.Mask,
+        Home = Native.SDL_KeyCode.SDLK_HOME,
 
         /// <summary>
         /// PageUp key
         /// </summary>
-        PageUp = Scancode.PageUp | Scancode.Mask,
+        PageUp = Native.SDL_KeyCode.SDLK_PAGEUP,
+
+        /// <summary>
+        /// Delete key
+        /// </summary>
+        Delete = Native.SDL_KeyCode.SDLK_DELETE,
 
         /// <summary>
         /// End key
         /// </summary>
-        End = Scancode.End | Scancode.Mask,
+        End = Native.SDL_KeyCode.SDLK_END,
 
         /// <summary>
         /// PageDown key
         /// </summary>
-        PageDown = Scancode.PageDown | Scancode.Mask,
+        PageDown = Native.SDL_KeyCode.SDLK_PAGEDOWN,
 
         /// <summary>
         /// Right key
         /// </summary>
-        Right = Scancode.Right | Scancode.Mask,
+        Right = Native.SDL_KeyCode.SDLK_RIGHT,
 
         /// <summary>
         /// Left key
         /// </summary>
-        Left = Scancode.Left | Scancode.Mask,
+        Left = Native.SDL_KeyCode.SDLK_LEFT,
 
         /// <summary>
         /// Down key
         /// </summary>
-        Down = Scancode.Down | Scancode.Mask,
+        Down = Native.SDL_KeyCode.SDLK_DOWN,
 
         /// <summary>
         /// Up key
         /// </summary>
-        Up = Scancode.Up | Scancode.Mask,
+        Up = Native.SDL_KeyCode.SDLK_UP,
 
         /// <summary>
         /// NumLockClear key
         /// </summary>
-        NumLockClear = Scancode.NumLockClear | Scancode.Mask,
+        NumLockClear = Native.SDL_KeyCode.SDLK_NUMLOCKCLEAR,
 
         /// <summary>
         /// NumPadDivide key
         /// </summary>
-        NumPadDivide = Scancode.NumPadDivide | Scancode.Mask,
+        NumPadDivide = Native.SDL_KeyCode.SDLK_KP_DIVIDE,
 
         /// <summary>
         /// NumPadMultiply key
         /// </summary>
-        NumPadMultiply = Scancode.NumPadMultiply | Scancode.Mask,
+        NumPadMultiply = Native.SDL_KeyCode.SDLK_KP_MULTIPLY,
 
         /// <summary>
         /// NumPadMinus key
         /// </summary>
-        NumPadMinus = Scancode.NumPadMinus | Scancode.Mask,
+        NumPadMinus = Native.SDL_KeyCode.SDLK_KP_MINUS,
 
         /// <summary>
         /// NumPadPlus key
         /// </summary>
-        NumPadPlus = Scancode.NumPadPlus | Scancode.Mask,
+        NumPadPlus = Native.SDL_KeyCode.SDLK_KP_PLUS,
 
         /// <summary>
         /// NumPadEnter key
         /// </summary>
-        NumPadEnter = Scancode.NumPadEnter | Scancode.Mask,
+        NumPadEnter = Native.SDL_KeyCode.SDLK_KP_ENTER,
 
         /// <summary>
         /// NumPad1 key
         /// </summary>
-        NumPad1 = Scancode.NumPad1 | Scancode.Mask,
+        NumPad1 = Native.SDL_KeyCode.SDLK_KP_1,
 
         /// <summary>
         /// NumPad2 key
         /// </summary>
-        NumPad2 = Scancode.NumPad2 | Scancode.Mask,
+        NumPad2 = Native.SDL_KeyCode.SDLK_KP_2,
 
         /// <summary>
         /// NumPad3 key
         /// </summary>
-        NumPad3 = Scancode.NumPad3 | Scancode.Mask,
+        NumPad3 = Native.SDL_KeyCode.SDLK_KP_3,
 
         /// <summary>
         /// NumPad4 key
         /// </summary>
-        NumPad4 = Scancode.NumPad4 | Scancode.Mask,
+        NumPad4 = Native.SDL_KeyCode.SDLK_KP_4,
 
         /// <summary>
         /// NumPad5 key
         /// </summary>
-        NumPad5 = Scancode.NumPad5 | Scancode.Mask,
+        NumPad5 = Native.SDL_KeyCode.SDLK_KP_5,
 
         /// <summary>
         /// NumPad6 key
         /// </summary>
-        NumPad6 = Scancode.NumPad6 | Scancode.Mask,
+        NumPad6 = Native.SDL_KeyCode.SDLK_KP_6,
 
         /// <summary>
         /// NumPad7 key
         /// </summary>
-        NumPad7 = Scancode.NumPad7 | Scancode.Mask,
+        NumPad7 = Native.SDL_KeyCode.SDLK_KP_7,
 
         /// <summary>
         /// NumPad8 key
         /// </summary>
-        NumPad8 = Scancode.NumPad8 | Scancode.Mask,
+        NumPad8 = Native.SDL_KeyCode.SDLK_KP_8,
 
         /// <summary>
         /// NumPad9 key
         /// </summary>
-        NumPad9 = Scancode.NumPad9 | Scancode.Mask,
+        NumPad9 = Native.SDL_KeyCode.SDLK_KP_9,
 
         /// <summary>
         /// NumPad0 key
         /// </summary>
-        NumPad0 = Scancode.NumPad0 | Scancode.Mask,
+        NumPad0 = Native.SDL_KeyCode.SDLK_KP_0,
 
         /// <summary>
         /// NumPadPeriod key
         /// </summary>
-        NumPadPeriod = Scancode.NumPadPeriod | Scancode.Mask,
+        NumPadPeriod = Native.SDL_KeyCode.SDLK_KP_PERIOD,
 
         /// <summary>
         /// Application key
         /// </summary>
-        Application = Scancode.Application | Scancode.Mask,
+        Application = Native.SDL_KeyCode.SDLK_APPLICATION,
 
         /// <summary>
         /// Power key
         /// </summary>
-        Power = Scancode.Power | Scancode.Mask,
+        Power = Native.SDL_KeyCode.SDLK_POWER,
 
         /// <summary>
         /// NumPadEquals key
         /// </summary>
-        NumPadEquals = Scancode.NumPadEquals | Scancode.Mask,
+        NumPadEquals = Native.SDL_KeyCode.SDLK_KP_EQUALS,
 
         /// <summary>
         /// F13 key
         /// </summary>
-        F13 = Scancode.F13 | Scancode.Mask,
+        F13 = Native.SDL_KeyCode.SDLK_F13,
 
         /// <summary>
         /// F14 key
         /// </summary>
-        F14 = Scancode.F14 | Scancode.Mask,
+        F14 = Native.SDL_KeyCode.SDLK_F14,
 
         /// <summary>
         /// F15 key
         /// </summary>
-        F15 = Scancode.F15 | Scancode.Mask,
+        F15 = Native.SDL_KeyCode.SDLK_F15,
 
         /// <summary>
         /// F16 key
         /// </summary>
-        F16 = Scancode.F16 | Scancode.Mask,
+        F16 = Native.SDL_KeyCode.SDLK_F16,
 
         /// <summary>
         /// F17 key
         /// </summary>
-        F17 = Scancode.F17 | Scancode.Mask,
+        F17 = Native.SDL_KeyCode.SDLK_F17,
 
         /// <summary>
         /// F18 key
         /// </summary>
-        F18 = Scancode.F18 | Scancode.Mask,
+        F18 = Native.SDL_KeyCode.SDLK_F18,
 
         /// <summary>
         /// F19 key
         /// </summary>
-        F19 = Scancode.F19 | Scancode.Mask,
+        F19 = Native.SDL_KeyCode.SDLK_F19,
 
         /// <summary>
         /// F20 key
         /// </summary>
-        F20 = Scancode.F20 | Scancode.Mask,
+        F20 = Native.SDL_KeyCode.SDLK_F20,
 
         /// <summary>
         /// F21 key
         /// </summary>
-        F21 = Scancode.F21 | Scancode.Mask,
+        F21 = Native.SDL_KeyCode.SDLK_F21,
 
         /// <summary>
         /// F22 key
         /// </summary>
-        F22 = Scancode.F22 | Scancode.Mask,
+        F22 = Native.SDL_KeyCode.SDLK_F22,
 
         /// <summary>
         /// F23 key
         /// </summary>
-        F23 = Scancode.F23 | Scancode.Mask,
+        F23 = Native.SDL_KeyCode.SDLK_F23,
 
         /// <summary>
         /// F24 key
         /// </summary>
-        F24 = Scancode.F24 | Scancode.Mask,
+        F24 = Native.SDL_KeyCode.SDLK_F24,
 
         /// <summary>
         /// Execute key
         /// </summary>
-        Execute = Scancode.Execute | Scancode.Mask,
+        Execute = Native.SDL_KeyCode.SDLK_EXECUTE,
 
         /// <summary>
         /// Help key
         /// </summary>
-        Help = Scancode.Help | Scancode.Mask,
+        Help = Native.SDL_KeyCode.SDLK_HELP,
 
         /// <summary>
         /// Menu key
         /// </summary>
-        Menu = Scancode.Menu | Scancode.Mask,
+        Menu = Native.SDL_KeyCode.SDLK_MENU,
 
         /// <summary>
         /// Select key
         /// </summary>
-        Select = Scancode.Select | Scancode.Mask,
+        Select = Native.SDL_KeyCode.SDLK_SELECT,
 
         /// <summary>
         /// Stop key
         /// </summary>
-        Stop = Scancode.Stop | Scancode.Mask,
+        Stop = Native.SDL_KeyCode.SDLK_STOP,
 
         /// <summary>
         /// Again key
         /// </summary>
-        Again = Scancode.Again | Scancode.Mask,
+        Again = Native.SDL_KeyCode.SDLK_AGAIN,
 
         /// <summary>
         /// Undo key
         /// </summary>
-        Undo = Scancode.Undo | Scancode.Mask,
+        Undo = Native.SDL_KeyCode.SDLK_UNDO,
 
         /// <summary>
         /// Cut key
         /// </summary>
-        Cut = Scancode.Cut | Scancode.Mask,
+        Cut = Native.SDL_KeyCode.SDLK_CUT,
 
         /// <summary>
         /// Copy key
         /// </summary>
-        Copy = Scancode.Copy | Scancode.Mask,
+        Copy = Native.SDL_KeyCode.SDLK_COPY,
 
         /// <summary>
         /// Paste key
         /// </summary>
-        Paste = Scancode.Paste | Scancode.Mask,
+        Paste = Native.SDL_KeyCode.SDLK_PASTE,
 
         /// <summary>
         /// Find key
         /// </summary>
-        Find = Scancode.Find | Scancode.Mask,
+        Find = Native.SDL_KeyCode.SDLK_FIND,
 
         /// <summary>
         /// Mute key
         /// </summary>
-        Mute = Scancode.Mute | Scancode.Mask,
+        Mute = Native.SDL_KeyCode.SDLK_MUTE,
 
         /// <summary>
         /// VolumeUp key
         /// </summary>
-        VolumeUp = Scancode.VolumeUp | Scancode.Mask,
+        VolumeUp = Native.SDL_KeyCode.SDLK_VOLUMEUP,
 
         /// <summary>
         /// VolumeDown key
         /// </summary>
-        VolumeDown = Scancode.VolumeDown | Scancode.Mask,
+        VolumeDown = Native.SDL_KeyCode.SDLK_VOLUMEDOWN,
 
         /// <summary>
         /// NumPadComma key
         /// </summary>
-        NumPadComma = Scancode.NumPadComma | Scancode.Mask,
+        NumPadComma = Native.SDL_KeyCode.SDLK_KP_COMMA,
 
         /// <summary>
         /// NumPadEqualsAS400 key
         /// </summary>
-        NumPadEqualsAS400 = Scancode.NumPadEqualsAS400 | Scancode.Mask,
+        NumPadEqualsAS400 = Native.SDL_KeyCode.SDLK_KP_EQUALSAS400,
 
         /// <summary>
         /// AltErase key
         /// </summary>
-        AltErase = Scancode.AltErase | Scancode.Mask,
+        AltErase = Native.SDL_KeyCode.SDLK_ALTERASE,
 
         /// <summary>
         /// SysReq key
         /// </summary>
-        SysReq = Scancode.SysReq | Scancode.Mask,
+        SysReq = Native.SDL_KeyCode.SDLK_SYSREQ,
 
         /// <summary>
         /// Cancel key
         /// </summary>
-        Cancel = Scancode.Cancel | Scancode.Mask,
+        Cancel = Native.SDL_KeyCode.SDLK_CANCEL,
 
         /// <summary>
         /// Clear key
         /// </summary>
-        Clear = Scancode.Clear | Scancode.Mask,
+        Clear = Native.SDL_KeyCode.SDLK_CLEAR,
 
         /// <summary>
         /// Prior key
         /// </summary>
-        Prior = Scancode.Prior | Scancode.Mask,
+        Prior = Native.SDL_KeyCode.SDLK_PRIOR,
 
         /// <summary>
         /// Return2 key
         /// </summary>
-        Return2 = Scancode.Return2 | Scancode.Mask,
+        Return2 = Native.SDL_KeyCode.SDLK_RETURN2,
 
         /// <summary>
         /// Separator key
         /// </summary>
-        Separator = Scancode.Separator | Scancode.Mask,
+        Separator = Native.SDL_KeyCode.SDLK_SEPARATOR,
 
         /// <summary>
         /// Out key
         /// </summary>
-        Out = Scancode.Out | Scancode.Mask,
+        Out = Native.SDL_KeyCode.SDLK_OUT,
 
         /// <summary>
         /// Oper key
         /// </summary>
-        Oper = Scancode.Oper | Scancode.Mask,
+        Oper = Native.SDL_KeyCode.SDLK_OPER,
 
         /// <summary>
         /// ClearAgain key
         /// </summary>
-        ClearAgain = Scancode.ClearAgain | Scancode.Mask,
+        ClearAgain = Native.SDL_KeyCode.SDLK_CLEARAGAIN,
 
         /// <summary>
         /// CrSel key
         /// </summary>
-        CrSel = Scancode.CrSel | Scancode.Mask,
+        CrSel = Native.SDL_KeyCode.SDLK_CRSEL,
 
         /// <summary>
         /// ExSel key
         /// </summary>
-        ExSel = Scancode.ExSel | Scancode.Mask,
+        ExSel = Native.SDL_KeyCode.SDLK_EXSEL,
 
         /// <summary>
         /// NumPad00 key
         /// </summary>
-        NumPad00 = Scancode.NumPad00 | Scancode.Mask,
+        NumPad00 = Native.SDL_KeyCode.SDLK_KP_00,
 
         /// <summary>
         /// NumPad000 key
         /// </summary>
-        NumPad000 = Scancode.NumPad000 | Scancode.Mask,
+        NumPad000 = Native.SDL_KeyCode.SDLK_KP_000,
 
         /// <summary>
         /// ThousandsSeparator key
         /// </summary>
-        ThousandsSeparator = Scancode.ThousandsSeparator | Scancode.Mask,
+        ThousandsSeparator = Native.SDL_KeyCode.SDLK_THOUSANDSSEPARATOR,
 
         /// <summary>
         /// DecimalSeparator key
         /// </summary>
-        DecimalSeparator = Scancode.DecimalSeparator | Scancode.Mask,
+        DecimalSeparator = Native.SDL_KeyCode.SDLK_DECIMALSEPARATOR,
 
         /// <summary>
         /// CurrencyUnit key
         /// </summary>
-        CurrencyUnit = Scancode.CurrencyUnit | Scancode.Mask,
+        CurrencyUnit = Native.SDL_KeyCode.SDLK_CURRENCYUNIT,
 
         /// <summary>
         /// CurrencySubunit key
         /// </summary>
-        CurrencySubunit = Scancode.CurrencySubunit | Scancode.Mask,
+        CurrencySubunit = Native.SDL_KeyCode.SDLK_CURRENCYSUBUNIT,
 
         /// <summary>
         /// NumPadLeftParen key
         /// </summary>
-        NumPadLeftParen = Scancode.NumPadLeftParen | Scancode.Mask,
+        NumPadLeftParen = Native.SDL_KeyCode.SDLK_KP_LEFTPAREN,
 
         /// <summary>
         /// NumPadRightParen key
         /// </summary>
-        NumPadRightParen = Scancode.NumPadRightParen | Scancode.Mask,
+        NumPadRightParen = Native.SDL_KeyCode.SDLK_KP_RIGHTPAREN,
 
         /// <summary>
         /// NumPadLeftBrace key
         /// </summary>
-        NumPadLeftBrace = Scancode.NumPadLeftBrace | Scancode.Mask,
+        NumPadLeftBrace = Native.SDL_KeyCode.SDLK_KP_LEFTBRACE,
 
         /// <summary>
         /// NumPadRightBrace key
         /// </summary>
-        NumPadRightBrace = Scancode.NumPadRightBrace | Scancode.Mask,
+        NumPadRightBrace = Native.SDL_KeyCode.SDLK_KP_RIGHTBRACE,
 
         /// <summary>
         /// NumPadTab key
         /// </summary>
-        NumPadTab = Scancode.NumPadTab | Scancode.Mask,
+        NumPadTab = Native.SDL_KeyCode.SDLK_KP_TAB,
 
         /// <summary>
         /// NumPadBackspace key
         /// </summary>
-        NumPadBackspace = Scancode.NumPadBackspace | Scancode.Mask,
+        NumPadBackspace = Native.SDL_KeyCode.SDLK_KP_BACKSPACE,
 
         /// <summary>
         /// NumPadA key
         /// </summary>
-        NumPadA = Scancode.NumPadA | Scancode.Mask,
+        NumPadA = Native.SDL_KeyCode.SDLK_KP_A,
 
         /// <summary>
         /// NumPadB key
         /// </summary>
-        NumPadB = Scancode.NumPadB | Scancode.Mask,
+        NumPadB = Native.SDL_KeyCode.SDLK_KP_B,
 
         /// <summary>
         /// NumPadC key
         /// </summary>
-        NumPadC = Scancode.NumPadC | Scancode.Mask,
+        NumPadC = Native.SDL_KeyCode.SDLK_KP_C,
 
         /// <summary>
         /// NumPadD key
         /// </summary>
-        NumPadD = Scancode.NumPadD | Scancode.Mask,
+        NumPadD = Native.SDL_KeyCode.SDLK_KP_D,
 
         /// <summary>
         /// NumPadE key
         /// </summary>
-        NumPadE = Scancode.NumPadE | Scancode.Mask,
+        NumPadE = Native.SDL_KeyCode.SDLK_KP_E,
 
         /// <summary>
         /// NumPadF key
         /// </summary>
-        NumPadF = Scancode.NumPadF | Scancode.Mask,
+        NumPadF = Native.SDL_KeyCode.SDLK_KP_F,
 
         /// <summary>
         /// NumPadXor key
         /// </summary>
-        NumPadXor = Scancode.NumPadXor | Scancode.Mask,
+        NumPadXor = Native.SDL_KeyCode.SDLK_KP_XOR,
 
         /// <summary>
         /// NumPadPower key
         /// </summary>
-        NumPadPower = Scancode.NumPadPower | Scancode.Mask,
+        NumPadPower = Native.SDL_KeyCode.SDLK_KP_POWER,
 
         /// <summary>
         /// NumPadPercent key
         /// </summary>
-        NumPadPercent = Scancode.NumPadPercent | Scancode.Mask,
+        NumPadPercent = Native.SDL_KeyCode.SDLK_KP_PERCENT,
 
         /// <summary>
         /// NumPadLess key
         /// </summary>
-        NumPadLess = Scancode.NumPadLess | Scancode.Mask,
+        NumPadLess = Native.SDL_KeyCode.SDLK_KP_LESS,
 
         /// <summary>
         /// NumPadGreater key
         /// </summary>
-        NumPadGreater = Scancode.NumPadGreater | Scancode.Mask,
+        NumPadGreater = Native.SDL_KeyCode.SDLK_KP_GREATER,
 
         /// <summary>
         /// NumPadAmpersand key
         /// </summary>
-        NumPadAmpersand = Scancode.NumPadAmpersand | Scancode.Mask,
+        NumPadAmpersand = Native.SDL_KeyCode.SDLK_KP_AMPERSAND,
 
         /// <summary>
         /// NumPadDoubleAmpersand key
         /// </summary>
-        NumPadDoubleAmpersand = Scancode.NumPadDoubleAmpersand | Scancode.Mask,
+        NumPadDoubleAmpersand = Native.SDL_KeyCode.SDLK_KP_DBLAMPERSAND,
 
         /// <summary>
         /// NumPadVerticalBar key
         /// </summary>
-        NumPadVerticalBar = Scancode.NumPadVerticalBar | Scancode.Mask,
+        NumPadVerticalBar = Native.SDL_KeyCode.SDLK_KP_VERTICALBAR,
 
         /// <summary>
         /// NumPadDoubleVerticalBar key
         /// </summary>
-        NumPadDoubleVerticalBar = Scancode.NumPadDoubleVerticalBar | Scancode.Mask,
+        NumPadDoubleVerticalBar = Native.SDL_KeyCode.SDLK_KP_DBLVERTICALBAR,
 
         /// <summary>
         /// NumPadColon key
         /// </summary>
-        NumPadColon = Scancode.NumPadColon | Scancode.Mask,
+        NumPadColon = Native.SDL_KeyCode.SDLK_KP_COLON,
 
         /// <summary>
         /// NumPadHash key
         /// </summary>
-        NumPadHash = Scancode.NumPadHash | Scancode.Mask,
+        NumPadHash = Native.SDL_KeyCode.SDLK_KP_HASH,
 
         /// <summary>
         /// NumPadSpace key
         /// </summary>
-        NumPadSpace = Scancode.NumPadSpace | Scancode.Mask,
+        NumPadSpace = Native.SDL_KeyCode.SDLK_KP_SPACE,
 
         /// <summary>
         /// NumPadAt key
         /// </summary>
-        NumPadAt = Scancode.NumPadAt | Scancode.Mask,
+        NumPadAt = Native.SDL_KeyCode.SDLK_KP_AT,
 
         /// <summary>
         /// NumPadExclamation key
         /// </summary>
-        NumPadExclamation = Scancode.NumPadExclamation | Scancode.Mask,
+        NumPadExclamation = Native.SDL_KeyCode.SDLK_KP_EXCLAM,
 
         /// <summary>
         /// NumPadMemStore key
         /// </summary>
-        NumPadMemStore = Scancode.NumPadMemStore | Scancode.Mask,
+        NumPadMemStore = Native.SDL_KeyCode.SDLK_KP_MEMSTORE,
 
         /// <summary>
         /// NumPadMemRecall key
         /// </summary>
-        NumPadMemRecall = Scancode.NumPadMemRecall | Scancode.Mask,
+        NumPadMemRecall = Native.SDL_KeyCode.SDLK_KP_MEMRECALL,
 
         /// <summary>
         /// NumPadMemClear key
         /// </summary>
-        NumPadMemClear = Scancode.NumPadMemClear | Scancode.Mask,
+        NumPadMemClear = Native.SDL_KeyCode.SDLK_KP_MEMCLEAR,
 
         /// <summary>
         /// NumPadMemAdd key
         /// </summary>
-        NumPadMemAdd = Scancode.NumPadMemAdd | Scancode.Mask,
+        NumPadMemAdd = Native.SDL_KeyCode.SDLK_KP_MEMADD,
 
         /// <summary>
         /// NumPadMemSubtract key
         /// </summary>
-        NumPadMemSubtract = Scancode.NumPadMemSubtract | Scancode.Mask,
+        NumPadMemSubtract = Native.SDL_KeyCode.SDLK_KP_MEMSUBTRACT,
 
         /// <summary>
         /// NumPadMemMultiply key
         /// </summary>
-        NumPadMemMultiply = Scancode.NumPadMemMultiply | Scancode.Mask,
+        NumPadMemMultiply = Native.SDL_KeyCode.SDLK_KP_MEMMULTIPLY,
 
         /// <summary>
         /// NumPadMemDivide key
         /// </summary>
-        NumPadMemDivide = Scancode.NumPadMemDivide | Scancode.Mask,
+        NumPadMemDivide = Native.SDL_KeyCode.SDLK_KP_MEMDIVIDE,
 
         /// <summary>
         /// NumPadPlusMinus key
         /// </summary>
-        NumPadPlusMinus = Scancode.NumPadPlusMinus | Scancode.Mask,
+        NumPadPlusMinus = Native.SDL_KeyCode.SDLK_KP_PLUSMINUS,
 
         /// <summary>
         /// NumPadClear key
         /// </summary>
-        NumPadClear = Scancode.NumPadClear | Scancode.Mask,
+        NumPadClear = Native.SDL_KeyCode.SDLK_KP_CLEAR,
 
         /// <summary>
         /// NumPadClearEntry key
         /// </summary>
-        NumPadClearEntry = Scancode.NumPadClearEntry | Scancode.Mask,
+        NumPadClearEntry = Native.SDL_KeyCode.SDLK_KP_CLEARENTRY,
 
         /// <summary>
         /// NumPadBinary key
         /// </summary>
-        NumPadBinary = Scancode.NumPadBinary | Scancode.Mask,
+        NumPadBinary = Native.SDL_KeyCode.SDLK_KP_BINARY,
 
         /// <summary>
         /// NumPadOctal key
         /// </summary>
-        NumPadOctal = Scancode.NumPadOctal | Scancode.Mask,
+        NumPadOctal = Native.SDL_KeyCode.SDLK_KP_OCTAL,
 
         /// <summary>
         /// NumPadDecimal key
         /// </summary>
-        NumPadDecimal = Scancode.NumPadDecimal | Scancode.Mask,
+        NumPadDecimal = Native.SDL_KeyCode.SDLK_KP_DECIMAL,
 
         /// <summary>
         /// NumPadHexadecimal key
         /// </summary>
-        NumPadHexadecimal = Scancode.NumPadHexadecimal | Scancode.Mask,
+        NumPadHexadecimal = Native.SDL_KeyCode.SDLK_KP_HEXADECIMAL,
 
         /// <summary>
         /// LeftCtrl key
         /// </summary>
-        LeftCtrl = Scancode.LeftCtrl | Scancode.Mask,
+        LeftCtrl = Native.SDL_KeyCode.SDLK_LCTRL,
 
         /// <summary>
         /// LeftShift key
         /// </summary>
-        LeftShift = Scancode.LeftShift | Scancode.Mask,
+        LeftShift = Native.SDL_KeyCode.SDLK_LSHIFT,
 
         /// <summary>
         /// LeftAlt key
         /// </summary>
-        LeftAlt = Scancode.LeftAlt | Scancode.Mask,
+        LeftAlt = Native.SDL_KeyCode.SDLK_LALT,
 
         /// <summary>
         /// LeftGui key
         /// </summary>
-        LeftGui = Scancode.LeftGui | Scancode.Mask,
+        LeftGui = Native.SDL_KeyCode.SDLK_LGUI,
 
         /// <summary>
         /// RightCtrl key
         /// </summary>
-        RightCtrl = Scancode.RightCtrl | Scancode.Mask,
+        RightCtrl = Native.SDL_KeyCode.SDLK_RCTRL,
 
         /// <summary>
         /// RightShift key
         /// </summary>
-        RightShift = Scancode.RightShift | Scancode.Mask,
+        RightShift = Native.SDL_KeyCode.SDLK_RSHIFT,
 
         /// <summary>
         /// RightAlt key
         /// </summary>
-        RightAlt = Scancode.RightAlt | Scancode.Mask,
+        RightAlt = Native.SDL_KeyCode.SDLK_RALT,
 
         /// <summary>
         /// RightGui key
         /// </summary>
-        RightGui = Scancode.RightGui | Scancode.Mask,
+        RightGui = Native.SDL_KeyCode.SDLK_RGUI,
 
         /// <summary>
         /// Mode key
         /// </summary>
-        Mode = Scancode.Mode | Scancode.Mask,
+        Mode = Native.SDL_KeyCode.SDLK_MODE,
 
         /// <summary>
         /// AudioNext key
         /// </summary>
-        AudioNext = Scancode.AudioNext | Scancode.Mask,
+        AudioNext = Native.SDL_KeyCode.SDLK_AUDIONEXT,
 
         /// <summary>
         /// AudioPrev key
         /// </summary>
-        AudioPrev = Scancode.AudioPrev | Scancode.Mask,
+        AudioPrev = Native.SDL_KeyCode.SDLK_AUDIOPREV,
 
         /// <summary>
         /// AudioStop key
         /// </summary>
-        AudioStop = Scancode.AudioStop | Scancode.Mask,
+        AudioStop = Native.SDL_KeyCode.SDLK_AUDIOSTOP,
 
         /// <summary>
         /// AudioPlay key
         /// </summary>
-        AudioPlay = Scancode.AudioPlay | Scancode.Mask,
+        AudioPlay = Native.SDL_KeyCode.SDLK_AUDIOPLAY,
 
         /// <summary>
         /// AudioMute key
         /// </summary>
-        AudioMute = Scancode.AudioMute | Scancode.Mask,
+        AudioMute = Native.SDL_KeyCode.SDLK_AUDIOMUTE,
 
         /// <summary>
         /// MediaSelect key
         /// </summary>
-        MediaSelect = Scancode.MediaSelect | Scancode.Mask,
+        MediaSelect = Native.SDL_KeyCode.SDLK_MEDIASELECT,
 
         /// <summary>
         /// WWW key
         /// </summary>
-        WWW = Scancode.WWW | Scancode.Mask,
+        WWW = Native.SDL_KeyCode.SDLK_WWW,
 
         /// <summary>
         /// Mail key
         /// </summary>
-        Mail = Scancode.Mail | Scancode.Mask,
+        Mail = Native.SDL_KeyCode.SDLK_MAIL,
 
         /// <summary>
         /// Calculator key
         /// </summary>
-        Calculator = Scancode.Calculator | Scancode.Mask,
+        Calculator = Native.SDL_KeyCode.SDLK_CALCULATOR,
 
         /// <summary>
         /// Computer key
         /// </summary>
-        Computer = Scancode.Computer | Scancode.Mask,
+        Computer = Native.SDL_KeyCode.SDLK_COMPUTER,
 
         /// <summary>
         /// ApplicationSearch key
         /// </summary>
-        ApplicationSearch = Scancode.ApplicationSearch | Scancode.Mask,
+        ApplicationSearch = Native.SDL_KeyCode.SDLK_AC_SEARCH,
 
         /// <summary>
         /// ApplicationHome key
         /// </summary>
-        ApplicationHome = Scancode.ApplicationHome | Scancode.Mask,
+        ApplicationHome = Native.SDL_KeyCode.SDLK_AC_HOME,
 
         /// <summary>
         /// ApplicationBack key
         /// </summary>
-        ApplicationBack = Scancode.ApplicationBack | Scancode.Mask,
+        ApplicationBack = Native.SDL_KeyCode.SDLK_AC_BACK,
 
         /// <summary>
         /// ApplicationForward key
         /// </summary>
-        ApplicationForward = Scancode.ApplicationForward | Scancode.Mask,
+        ApplicationForward = Native.SDL_KeyCode.SDLK_AC_FORWARD,
 
         /// <summary>
         /// ApplicationStop key
         /// </summary>
-        ApplicationStop = Scancode.ApplicationStop | Scancode.Mask,
+        ApplicationStop = Native.SDL_KeyCode.SDLK_AC_STOP,
 
         /// <summary>
         /// ApplicationRefresh key
         /// </summary>
-        ApplicationRefresh = Scancode.ApplicationRefresh | Scancode.Mask,
+        ApplicationRefresh = Native.SDL_KeyCode.SDLK_AC_REFRESH,
 
         /// <summary>
         /// ApplicationBookmarks key
         /// </summary>
-        ApplicationBookmarks = Scancode.ApplicationBookmarks | Scancode.Mask,
+        ApplicationBookmarks = Native.SDL_KeyCode.SDLK_AC_BOOKMARKS,
 
         /// <summary>
         /// BrightnessDown key
         /// </summary>
-        BrightnessDown = Scancode.BrightnessDown | Scancode.Mask,
+        BrightnessDown = Native.SDL_KeyCode.SDLK_BRIGHTNESSDOWN,
 
         /// <summary>
         /// BrightnessUp key
         /// </summary>
-        BrightnessUp = Scancode.BrightnessUp | Scancode.Mask,
+        BrightnessUp = Native.SDL_KeyCode.SDLK_BRIGHTNESSUP,
 
         /// <summary>
         /// DisplaySwitch key
         /// </summary>
-        DisplaySwitch = Scancode.DisplaySwitch | Scancode.Mask,
+        DisplaySwitch = Native.SDL_KeyCode.SDLK_DISPLAYSWITCH,
 
         /// <summary>
         /// KeyboardIlluminationToggle key
         /// </summary>
-        KeyboardIlluminationToggle = Scancode.KeyboardIlluminationToggle | Scancode.Mask,
+        KeyboardIlluminationToggle = Native.SDL_KeyCode.SDLK_KBDILLUMTOGGLE,
 
         /// <summary>
         /// KeyboardIlluminationDown key
         /// </summary>
-        KeyboardIlluminationDown = Scancode.KeyboardIlluminationDown | Scancode.Mask,
+        KeyboardIlluminationDown = Native.SDL_KeyCode.SDLK_KBDILLUMDOWN,
 
         /// <summary>
         /// KeyboardIlluminationUp key
         /// </summary>
-        KeyboardIlluminationUp = Scancode.KeyboardIlluminationUp | Scancode.Mask,
+        KeyboardIlluminationUp = Native.SDL_KeyCode.SDLK_KBDILLUMUP,
 
         /// <summary>
         /// Eject key
         /// </summary>
-        Eject = Scancode.Eject | Scancode.Mask,
+        Eject = Native.SDL_KeyCode.SDLK_EJECT,
 
         /// <summary>
         /// Sleep key
         /// </summary>
-        Sleep = Scancode.Sleep | Scancode.Mask,
+        Sleep = Native.SDL_KeyCode.SDLK_SLEEP,
 
         /// <summary>
         /// App1 key
         /// </summary>
-        App1 = Scancode.App1 | Scancode.Mask,
+        App1 = Native.SDL_KeyCode.SDLK_APP1,
 
         /// <summary>
         /// App2 key
         /// </summary>
-        App2 = Scancode.App2 | Scancode.Mask,
+        App2 = Native.SDL_KeyCode.SDLK_APP2,
 
         /// <summary>
         /// AudioRewind key
         /// </summary>
-        AudioRewind = Scancode.AudioRewind | Scancode.Mask,
+        AudioRewind = Native.SDL_KeyCode.SDLK_AUDIOREWIND,
 
         /// <summary>
         /// AudioFastForward key
         /// </summary>
-        AudioFastForward = Scancode.AudioFastForward | Scancode.Mask
+        AudioFastForward = Native.SDL_KeyCode.SDLK_AUDIOFASTFORWARD,
+
+        /// <summary>
+        /// SoftLeft key
+        /// </summary>
+        SoftLeft = Native.SDL_KeyCode.SDLK_SOFTLEFT,
+
+        /// <summary>
+        /// SoftRight key
+        /// </summary>
+        SoftRight = Native.SDL_KeyCode.SDLK_SOFTRIGHT,
+
+        /// <summary>
+        /// Call key
+        /// </summary>
+        Call = Native.SDL_KeyCode.SDLK_CALL,
+
+        /// <summary>
+        /// EndCall key
+        /// </summary>
+        EndCall = Native.SDL_KeyCode.SDLK_ENDCALL
     }
 }

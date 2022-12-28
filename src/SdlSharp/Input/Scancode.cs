@@ -8,1261 +8,1242 @@
         /// <summary>
         /// Unknown
         /// </summary>
-        Unknown = 0,
-
+        Unknown = Native.SDL_Scancode.SDL_SCANCODE_UNKNOWN,
 
         /// <summary>
         /// A
         /// </summary>
-        A = 4,
+        A = Native.SDL_Scancode.SDL_SCANCODE_A,
 
         /// <summary>
         /// B
         /// </summary>
-        B = 5,
+        B = Native.SDL_Scancode.SDL_SCANCODE_B,
 
         /// <summary>
         /// C
         /// </summary>
-        C = 6,
+        C = Native.SDL_Scancode.SDL_SCANCODE_C,
 
         /// <summary>
         /// D
         /// </summary>
-        D = 7,
+        D = Native.SDL_Scancode.SDL_SCANCODE_D,
 
         /// <summary>
         /// E
         /// </summary>
-        E = 8,
+        E = Native.SDL_Scancode.SDL_SCANCODE_E,
 
         /// <summary>
         /// F
         /// </summary>
-        F = 9,
+        F = Native.SDL_Scancode.SDL_SCANCODE_F,
 
         /// <summary>
         /// G
         /// </summary>
-        G = 10,
+        G = Native.SDL_Scancode.SDL_SCANCODE_G,
 
         /// <summary>
         /// H
         /// </summary>
-        H = 11,
+        H = Native.SDL_Scancode.SDL_SCANCODE_H,
 
         /// <summary>
         /// I
         /// </summary>
-        I = 12,
+        I = Native.SDL_Scancode.SDL_SCANCODE_I,
 
         /// <summary>
         /// J
         /// </summary>
-        J = 13,
+        J = Native.SDL_Scancode.SDL_SCANCODE_J,
 
         /// <summary>
         /// K
         /// </summary>
-        K = 14,
+        K = Native.SDL_Scancode.SDL_SCANCODE_K,
 
         /// <summary>
         /// L
         /// </summary>
-        L = 15,
+        L = Native.SDL_Scancode.SDL_SCANCODE_L,
 
         /// <summary>
         /// M
         /// </summary>
-        M = 16,
+        M = Native.SDL_Scancode.SDL_SCANCODE_M,
 
         /// <summary>
         /// N
         /// </summary>
-        N = 17,
+        N = Native.SDL_Scancode.SDL_SCANCODE_N,
 
         /// <summary>
         /// O
         /// </summary>
-        O = 18,
+        O = Native.SDL_Scancode.SDL_SCANCODE_O,
 
         /// <summary>
         /// P
         /// </summary>
-        P = 19,
+        P = Native.SDL_Scancode.SDL_SCANCODE_P,
 
         /// <summary>
         /// Q
         /// </summary>
-        Q = 20,
+        Q = Native.SDL_Scancode.SDL_SCANCODE_Q,
 
         /// <summary>
         /// R
         /// </summary>
-        R = 21,
+        R = Native.SDL_Scancode.SDL_SCANCODE_R,
 
         /// <summary>
         /// S
         /// </summary>
-        S = 22,
+        S = Native.SDL_Scancode.SDL_SCANCODE_S,
 
         /// <summary>
         /// T
         /// </summary>
-        T = 23,
+        T = Native.SDL_Scancode.SDL_SCANCODE_T,
 
         /// <summary>
         /// U
         /// </summary>
-        U = 24,
+        U = Native.SDL_Scancode.SDL_SCANCODE_U,
 
         /// <summary>
         /// V
         /// </summary>
-        V = 25,
+        V = Native.SDL_Scancode.SDL_SCANCODE_V,
 
         /// <summary>
         /// W
         /// </summary>
-        W = 26,
+        W = Native.SDL_Scancode.SDL_SCANCODE_W,
 
         /// <summary>
         /// X
         /// </summary>
-        X = 27,
+        X = Native.SDL_Scancode.SDL_SCANCODE_X,
 
         /// <summary>
         /// Y
         /// </summary>
-        Y = 28,
+        Y = Native.SDL_Scancode.SDL_SCANCODE_Y,
 
         /// <summary>
         /// Z
         /// </summary>
-        Z = 29,
-
+        Z = Native.SDL_Scancode.SDL_SCANCODE_Z,
 
         /// <summary>
         /// Number1
         /// </summary>
-        Number1 = 30,
+        Number1 = Native.SDL_Scancode.SDL_SCANCODE_1,
 
         /// <summary>
         /// Number2
         /// </summary>
-        Number2 = 31,
+        Number2 = Native.SDL_Scancode.SDL_SCANCODE_2,
 
         /// <summary>
         /// Number3
         /// </summary>
-        Number3 = 32,
+        Number3 = Native.SDL_Scancode.SDL_SCANCODE_3,
 
         /// <summary>
         /// Number4
         /// </summary>
-        Number4 = 33,
+        Number4 = Native.SDL_Scancode.SDL_SCANCODE_4,
 
         /// <summary>
         /// Number5
         /// </summary>
-        Number5 = 34,
+        Number5 = Native.SDL_Scancode.SDL_SCANCODE_5,
 
         /// <summary>
         /// Number6
         /// </summary>
-        Number6 = 35,
+        Number6 = Native.SDL_Scancode.SDL_SCANCODE_6,
 
         /// <summary>
         /// Number7
         /// </summary>
-        Number7 = 36,
+        Number7 = Native.SDL_Scancode.SDL_SCANCODE_7,
 
         /// <summary>
         /// Number8
         /// </summary>
-        Number8 = 37,
+        Number8 = Native.SDL_Scancode.SDL_SCANCODE_8,
 
         /// <summary>
         /// Number9
         /// </summary>
-        Number9 = 38,
+        Number9 = Native.SDL_Scancode.SDL_SCANCODE_9,
 
         /// <summary>
         /// Number0
         /// </summary>
-        Number0 = 39,
-
+        Number0 = Native.SDL_Scancode.SDL_SCANCODE_0,
 
         /// <summary>
         /// Return
         /// </summary>
-        Return = 40,
+        Return = Native.SDL_Scancode.SDL_SCANCODE_RETURN,
 
         /// <summary>
         /// Escape
         /// </summary>
-        Escape = 41,
+        Escape = Native.SDL_Scancode.SDL_SCANCODE_ESCAPE,
 
         /// <summary>
         /// Backspace
         /// </summary>
-        Backspace = 42,
+        Backspace = Native.SDL_Scancode.SDL_SCANCODE_BACKSPACE,
 
         /// <summary>
         /// Tab
         /// </summary>
-        Tab = 43,
+        Tab = Native.SDL_Scancode.SDL_SCANCODE_TAB,
 
         /// <summary>
         /// Space
         /// </summary>
-        Space = 44,
-
+        Space = Native.SDL_Scancode.SDL_SCANCODE_SPACE,
 
         /// <summary>
         /// Minus
         /// </summary>
-        Minus = 45,
+        Minus = Native.SDL_Scancode.SDL_SCANCODE_MINUS,
 
         /// <summary>
         /// Equals
         /// </summary>
-        Equals = 46,
+        Equals = Native.SDL_Scancode.SDL_SCANCODE_EQUALS,
 
         /// <summary>
         /// LeftBracket
         /// </summary>
-        LeftBracket = 47,
+        LeftBracket = Native.SDL_Scancode.SDL_SCANCODE_LEFTBRACKET,
 
         /// <summary>
         /// RightBracket
         /// </summary>
-        RightBracket = 48,
+        RightBracket = Native.SDL_Scancode.SDL_SCANCODE_RIGHTBRACKET,
 
         /// <summary>
         /// Backslash
         /// </summary>
-        Backslash = 49,
+        Backslash = Native.SDL_Scancode.SDL_SCANCODE_BACKSLASH,
 
         /// <summary>
         /// NonUSHash
         /// </summary>
-        NonUSHash = 50,
+        NonUSHash = Native.SDL_Scancode.SDL_SCANCODE_NONUSHASH,
 
         /// <summary>
         /// Semicolon
         /// </summary>
-        Semicolon = 51,
+        Semicolon = Native.SDL_Scancode.SDL_SCANCODE_SEMICOLON,
 
         /// <summary>
         /// Apostrophe
         /// </summary>
-        Apostrophe = 52,
+        Apostrophe = Native.SDL_Scancode.SDL_SCANCODE_APOSTROPHE,
 
         /// <summary>
         /// Grave
         /// </summary>
-        Grave = 53,
+        Grave = Native.SDL_Scancode.SDL_SCANCODE_GRAVE,
 
         /// <summary>
         /// Comma
         /// </summary>
-        Comma = 54,
+        Comma = Native.SDL_Scancode.SDL_SCANCODE_COMMA,
 
         /// <summary>
         /// Period
         /// </summary>
-        Period = 55,
+        Period = Native.SDL_Scancode.SDL_SCANCODE_PERIOD,
 
         /// <summary>
         /// Slash
         /// </summary>
-        Slash = 56,
-
+        Slash = Native.SDL_Scancode.SDL_SCANCODE_SLASH,
 
         /// <summary>
         /// Capslock
         /// </summary>
-        Capslock = 57,
-
+        Capslock = Native.SDL_Scancode.SDL_SCANCODE_CAPSLOCK,
 
         /// <summary>
         /// F1
         /// </summary>
-        F1 = 58,
+        F1 = Native.SDL_Scancode.SDL_SCANCODE_F1,
 
         /// <summary>
         /// F2
         /// </summary>
-        F2 = 59,
+        F2 = Native.SDL_Scancode.SDL_SCANCODE_F2,
 
         /// <summary>
         /// F3
         /// </summary>
-        F3 = 60,
+        F3 = Native.SDL_Scancode.SDL_SCANCODE_F3,
 
         /// <summary>
         /// F4
         /// </summary>
-        F4 = 61,
+        F4 = Native.SDL_Scancode.SDL_SCANCODE_F4,
 
         /// <summary>
         /// F5
         /// </summary>
-        F5 = 62,
+        F5 = Native.SDL_Scancode.SDL_SCANCODE_F5,
 
         /// <summary>
         /// F6
         /// </summary>
-        F6 = 63,
+        F6 = Native.SDL_Scancode.SDL_SCANCODE_F6,
 
         /// <summary>
         /// F7
         /// </summary>
-        F7 = 64,
+        F7 = Native.SDL_Scancode.SDL_SCANCODE_F7,
 
         /// <summary>
         /// F8
         /// </summary>
-        F8 = 65,
+        F8 = Native.SDL_Scancode.SDL_SCANCODE_F8,
 
         /// <summary>
         /// F9
         /// </summary>
-        F9 = 66,
+        F9 = Native.SDL_Scancode.SDL_SCANCODE_F9,
 
         /// <summary>
         /// F10
         /// </summary>
-        F10 = 67,
+        F10 = Native.SDL_Scancode.SDL_SCANCODE_F10,
 
         /// <summary>
         /// F11
         /// </summary>
-        F11 = 68,
+        F11 = Native.SDL_Scancode.SDL_SCANCODE_F11,
 
         /// <summary>
         /// F12
         /// </summary>
-        F12 = 69,
-
+        F12 = Native.SDL_Scancode.SDL_SCANCODE_F12,
 
         /// <summary>
         /// PrintScreen
         /// </summary>
-        PrintScreen = 70,
+        PrintScreen = Native.SDL_Scancode.SDL_SCANCODE_PRINTSCREEN,
 
         /// <summary>
         /// ScrollLock
         /// </summary>
-        ScrollLock = 71,
+        ScrollLock = Native.SDL_Scancode.SDL_SCANCODE_SCROLLLOCK,
 
         /// <summary>
         /// Pause
         /// </summary>
-        Pause = 72,
+        Pause = Native.SDL_Scancode.SDL_SCANCODE_PAUSE,
 
         /// <summary>
         /// Insert
         /// </summary>
-        Insert = 73,
+        Insert = Native.SDL_Scancode.SDL_SCANCODE_INSERT,
 
         /// <summary>
         /// Home
         /// </summary>
-        Home = 74,
+        Home = Native.SDL_Scancode.SDL_SCANCODE_HOME,
 
         /// <summary>
         /// PageUp
         /// </summary>
-        PageUp = 75,
+        PageUp = Native.SDL_Scancode.SDL_SCANCODE_PAGEUP,
 
         /// <summary>
         /// Delete
         /// </summary>
-        Delete = 76,
+        Delete = Native.SDL_Scancode.SDL_SCANCODE_DELETE,
 
         /// <summary>
         /// End
         /// </summary>
-        End = 77,
+        End = Native.SDL_Scancode.SDL_SCANCODE_END,
 
         /// <summary>
         /// PageDown
         /// </summary>
-        PageDown = 78,
+        PageDown = Native.SDL_Scancode.SDL_SCANCODE_PAGEDOWN,
 
         /// <summary>
         /// Right
         /// </summary>
-        Right = 79,
+        Right = Native.SDL_Scancode.SDL_SCANCODE_RIGHT,
 
         /// <summary>
         /// Left
         /// </summary>
-        Left = 80,
+        Left = Native.SDL_Scancode.SDL_SCANCODE_LEFT,
 
         /// <summary>
         /// Down
         /// </summary>
-        Down = 81,
+        Down = Native.SDL_Scancode.SDL_SCANCODE_DOWN,
 
         /// <summary>
         /// Up
         /// </summary>
-        Up = 82,
-
+        Up = Native.SDL_Scancode.SDL_SCANCODE_UP,
 
         /// <summary>
         /// NumLockClear
         /// </summary>
-        NumLockClear = 83,
+        NumLockClear = Native.SDL_Scancode.SDL_SCANCODE_NUMLOCKCLEAR,
 
         /// <summary>
         /// NumPadDivide
         /// </summary>
-        NumPadDivide = 84,
+        NumPadDivide = Native.SDL_Scancode.SDL_SCANCODE_KP_DIVIDE,
 
         /// <summary>
         /// NumPadMultiply
         /// </summary>
-        NumPadMultiply = 85,
+        NumPadMultiply = Native.SDL_Scancode.SDL_SCANCODE_KP_MULTIPLY,
 
         /// <summary>
         /// NumPadMinus
         /// </summary>
-        NumPadMinus = 86,
+        NumPadMinus = Native.SDL_Scancode.SDL_SCANCODE_KP_MINUS,
 
         /// <summary>
         /// NumPadPlus
         /// </summary>
-        NumPadPlus = 87,
+        NumPadPlus = Native.SDL_Scancode.SDL_SCANCODE_KP_PLUS,
 
         /// <summary>
         /// NumPadEnter
         /// </summary>
-        NumPadEnter = 88,
+        NumPadEnter = Native.SDL_Scancode.SDL_SCANCODE_KP_ENTER,
 
         /// <summary>
         /// NumPad1
         /// </summary>
-        NumPad1 = 89,
+        NumPad1 = Native.SDL_Scancode.SDL_SCANCODE_KP_1,
 
         /// <summary>
         /// NumPad2
         /// </summary>
-        NumPad2 = 90,
+        NumPad2 = Native.SDL_Scancode.SDL_SCANCODE_KP_2,
 
         /// <summary>
         /// NumPad3
         /// </summary>
-        NumPad3 = 91,
+        NumPad3 = Native.SDL_Scancode.SDL_SCANCODE_KP_3,
 
         /// <summary>
         /// NumPad4
         /// </summary>
-        NumPad4 = 92,
+        NumPad4 = Native.SDL_Scancode.SDL_SCANCODE_KP_4,
 
         /// <summary>
         /// NumPad5
         /// </summary>
-        NumPad5 = 93,
+        NumPad5 = Native.SDL_Scancode.SDL_SCANCODE_KP_5,
 
         /// <summary>
         /// NumPad6
         /// </summary>
-        NumPad6 = 94,
+        NumPad6 = Native.SDL_Scancode.SDL_SCANCODE_KP_6,
 
         /// <summary>
         /// NumPad7
         /// </summary>
-        NumPad7 = 95,
+        NumPad7 = Native.SDL_Scancode.SDL_SCANCODE_KP_7,
 
         /// <summary>
         /// NumPad8
         /// </summary>
-        NumPad8 = 96,
+        NumPad8 = Native.SDL_Scancode.SDL_SCANCODE_KP_8,
 
         /// <summary>
         /// NumPad9
         /// </summary>
-        NumPad9 = 97,
+        NumPad9 = Native.SDL_Scancode.SDL_SCANCODE_KP_9,
 
         /// <summary>
         /// NumPad0
         /// </summary>
-        NumPad0 = 98,
+        NumPad0 = Native.SDL_Scancode.SDL_SCANCODE_KP_0,
 
         /// <summary>
         /// NumPadPeriod
         /// </summary>
-        NumPadPeriod = 99,
-
+        NumPadPeriod = Native.SDL_Scancode.SDL_SCANCODE_KP_PERIOD,
 
         /// <summary>
         /// NonUSBackslash
         /// </summary>
-        NonUSBackslash = 100,
+        NonUSBackslash = Native.SDL_Scancode.SDL_SCANCODE_NONUSBACKSLASH,
 
         /// <summary>
         /// Application
         /// </summary>
-        Application = 101,
+        Application = Native.SDL_Scancode.SDL_SCANCODE_APPLICATION,
 
         /// <summary>
         /// Power
         /// </summary>
-        Power = 102,
+        Power = Native.SDL_Scancode.SDL_SCANCODE_POWER,
 
         /// <summary>
         /// NumPadEquals
         /// </summary>
-        NumPadEquals = 103,
+        NumPadEquals = Native.SDL_Scancode.SDL_SCANCODE_KP_EQUALS,
 
         /// <summary>
         /// F13
         /// </summary>
-        F13 = 104,
+        F13 = Native.SDL_Scancode.SDL_SCANCODE_F13,
 
         /// <summary>
         /// F14
         /// </summary>
-        F14 = 105,
+        F14 = Native.SDL_Scancode.SDL_SCANCODE_F14,
 
         /// <summary>
         /// F15
         /// </summary>
-        F15 = 106,
+        F15 = Native.SDL_Scancode.SDL_SCANCODE_F15,
 
         /// <summary>
         /// F16
         /// </summary>
-        F16 = 107,
+        F16 = Native.SDL_Scancode.SDL_SCANCODE_F16,
 
         /// <summary>
         /// F17
         /// </summary>
-        F17 = 108,
+        F17 = Native.SDL_Scancode.SDL_SCANCODE_F17,
 
         /// <summary>
         /// F18
         /// </summary>
-        F18 = 109,
+        F18 = Native.SDL_Scancode.SDL_SCANCODE_F18,
 
         /// <summary>
         /// F19
         /// </summary>
-        F19 = 110,
+        F19 = Native.SDL_Scancode.SDL_SCANCODE_F19,
 
         /// <summary>
         /// F20
         /// </summary>
-        F20 = 111,
+        F20 = Native.SDL_Scancode.SDL_SCANCODE_F20,
 
         /// <summary>
         /// F21
         /// </summary>
-        F21 = 112,
+        F21 = Native.SDL_Scancode.SDL_SCANCODE_F21,
 
         /// <summary>
         /// F22
         /// </summary>
-        F22 = 113,
+        F22 = Native.SDL_Scancode.SDL_SCANCODE_F22,
 
         /// <summary>
         /// F23
         /// </summary>
-        F23 = 114,
+        F23 = Native.SDL_Scancode.SDL_SCANCODE_F23,
 
         /// <summary>
         /// F24
         /// </summary>
-        F24 = 115,
+        F24 = Native.SDL_Scancode.SDL_SCANCODE_F24,
 
         /// <summary>
         /// Execute
         /// </summary>
-        Execute = 116,
+        Execute = Native.SDL_Scancode.SDL_SCANCODE_EXECUTE,
 
         /// <summary>
         /// Help
         /// </summary>
-        Help = 117,
+        Help = Native.SDL_Scancode.SDL_SCANCODE_HELP,
 
         /// <summary>
         /// Menu
         /// </summary>
-        Menu = 118,
+        Menu = Native.SDL_Scancode.SDL_SCANCODE_MENU,
 
         /// <summary>
         /// Select
         /// </summary>
-        Select = 119,
+        Select = Native.SDL_Scancode.SDL_SCANCODE_SELECT,
 
         /// <summary>
         /// Stop
         /// </summary>
-        Stop = 120,
+        Stop = Native.SDL_Scancode.SDL_SCANCODE_STOP,
 
         /// <summary>
         /// Again
         /// </summary>
-        Again = 121,
+        Again = Native.SDL_Scancode.SDL_SCANCODE_AGAIN,
 
         /// <summary>
         /// Undo
         /// </summary>
-        Undo = 122,
+        Undo = Native.SDL_Scancode.SDL_SCANCODE_UNDO,
 
         /// <summary>
         /// Cut
         /// </summary>
-        Cut = 123,
+        Cut = Native.SDL_Scancode.SDL_SCANCODE_CUT,
 
         /// <summary>
         /// Copy
         /// </summary>
-        Copy = 124,
+        Copy = Native.SDL_Scancode.SDL_SCANCODE_COPY,
 
         /// <summary>
         /// Paste
         /// </summary>
-        Paste = 125,
+        Paste = Native.SDL_Scancode.SDL_SCANCODE_PASTE,
 
         /// <summary>
         /// Find
         /// </summary>
-        Find = 126,
+        Find = Native.SDL_Scancode.SDL_SCANCODE_FIND,
 
         /// <summary>
         /// Mute
         /// </summary>
-        Mute = 127,
+        Mute = Native.SDL_Scancode.SDL_SCANCODE_MUTE,
 
         /// <summary>
         /// VolumeUp
         /// </summary>
-        VolumeUp = 128,
+        VolumeUp = Native.SDL_Scancode.SDL_SCANCODE_VOLUMEUP,
 
         /// <summary>
         /// VolumeDown
         /// </summary>
-        VolumeDown = 129,
-
-        /// <summary>
-        /// LockingCapsLock
-        /// </summary>
-        LockingCapsLock = 130,
-
-        /// <summary>
-        /// LockingNumLock
-        /// </summary>
-        LockingNumLock = 131,
-
-        /// <summary>
-        /// LockingScrollLock
-        /// </summary>
-        LockingScrollLock = 132,
+        VolumeDown = Native.SDL_Scancode.SDL_SCANCODE_VOLUMEDOWN,
 
         /// <summary>
         /// NumPadComma
         /// </summary>
-        NumPadComma = 133,
+        NumPadComma = Native.SDL_Scancode.SDL_SCANCODE_KP_COMMA,
 
         /// <summary>
         /// NumPadEqualsAS400
         /// </summary>
-        NumPadEqualsAS400 = 134,
-
+        NumPadEqualsAS400 = Native.SDL_Scancode.SDL_SCANCODE_KP_EQUALSAS400,
 
         /// <summary>
         /// International1
         /// </summary>
-        International1 = 135,
+        International1 = Native.SDL_Scancode.SDL_SCANCODE_INTERNATIONAL1,
 
         /// <summary>
         /// International2
         /// </summary>
-        International2 = 136,
+        International2 = Native.SDL_Scancode.SDL_SCANCODE_INTERNATIONAL2,
 
         /// <summary>
         /// International3
         /// </summary>
-        International3 = 137,
+        International3 = Native.SDL_Scancode.SDL_SCANCODE_INTERNATIONAL3,
 
         /// <summary>
         /// International4
         /// </summary>
-        International4 = 138,
+        International4 = Native.SDL_Scancode.SDL_SCANCODE_INTERNATIONAL4,
 
         /// <summary>
         /// International5
         /// </summary>
-        International5 = 139,
+        International5 = Native.SDL_Scancode.SDL_SCANCODE_INTERNATIONAL5,
 
         /// <summary>
         /// International6
         /// </summary>
-        International6 = 140,
+        International6 = Native.SDL_Scancode.SDL_SCANCODE_INTERNATIONAL6,
 
         /// <summary>
         /// International7
         /// </summary>
-        International7 = 141,
+        International7 = Native.SDL_Scancode.SDL_SCANCODE_INTERNATIONAL7,
 
         /// <summary>
         /// International8
         /// </summary>
-        International8 = 142,
+        International8 = Native.SDL_Scancode.SDL_SCANCODE_INTERNATIONAL8,
 
         /// <summary>
         /// International9
         /// </summary>
-        International9 = 143,
+        International9 = Native.SDL_Scancode.SDL_SCANCODE_INTERNATIONAL9,
 
         /// <summary>
         /// Lang1
         /// </summary>
-        Lang1 = 144,
+        Lang1 = Native.SDL_Scancode.SDL_SCANCODE_LANG1,
 
         /// <summary>
         /// Lang2
         /// </summary>
-        Lang2 = 145,
+        Lang2 = Native.SDL_Scancode.SDL_SCANCODE_LANG2,
 
         /// <summary>
         /// Lang3
         /// </summary>
-        Lang3 = 146,
+        Lang3 = Native.SDL_Scancode.SDL_SCANCODE_LANG3,
 
         /// <summary>
         /// Lang4
         /// </summary>
-        Lang4 = 147,
+        Lang4 = Native.SDL_Scancode.SDL_SCANCODE_LANG4,
 
         /// <summary>
         /// Lang5
         /// </summary>
-        Lang5 = 148,
+        Lang5 = Native.SDL_Scancode.SDL_SCANCODE_LANG5,
 
         /// <summary>
         /// Lang6
         /// </summary>
-        Lang6 = 149,
+        Lang6 = Native.SDL_Scancode.SDL_SCANCODE_LANG6,
 
         /// <summary>
         /// Lang7
         /// </summary>
-        Lang7 = 150,
+        Lang7 = Native.SDL_Scancode.SDL_SCANCODE_LANG7,
 
         /// <summary>
         /// Lang8
         /// </summary>
-        Lang8 = 151,
+        Lang8 = Native.SDL_Scancode.SDL_SCANCODE_LANG8,
 
         /// <summary>
         /// Lang9
         /// </summary>
-        Lang9 = 152,
+        Lang9 = Native.SDL_Scancode.SDL_SCANCODE_LANG9,
 
 
         /// <summary>
         /// AltErase
         /// </summary>
-        AltErase = 153,
+        AltErase = Native.SDL_Scancode.SDL_SCANCODE_ALTERASE,
 
         /// <summary>
         /// SysReq
         /// </summary>
-        SysReq = 154,
+        SysReq = Native.SDL_Scancode.SDL_SCANCODE_SYSREQ,
 
         /// <summary>
         /// Cancel
         /// </summary>
-        Cancel = 155,
+        Cancel = Native.SDL_Scancode.SDL_SCANCODE_CANCEL,
 
         /// <summary>
         /// Clear
         /// </summary>
-        Clear = 156,
+        Clear = Native.SDL_Scancode.SDL_SCANCODE_CLEAR,
 
         /// <summary>
         /// Prior
         /// </summary>
-        Prior = 157,
+        Prior = Native.SDL_Scancode.SDL_SCANCODE_PRIOR,
 
         /// <summary>
         /// Return2
         /// </summary>
-        Return2 = 158,
+        Return2 = Native.SDL_Scancode.SDL_SCANCODE_RETURN2,
 
         /// <summary>
         /// Separator
         /// </summary>
-        Separator = 159,
+        Separator = Native.SDL_Scancode.SDL_SCANCODE_SEPARATOR,
 
         /// <summary>
         /// Out
         /// </summary>
-        Out = 160,
+        Out = Native.SDL_Scancode.SDL_SCANCODE_OUT,
 
         /// <summary>
         /// Oper
         /// </summary>
-        Oper = 161,
+        Oper = Native.SDL_Scancode.SDL_SCANCODE_OPER,
 
         /// <summary>
         /// ClearAgain
         /// </summary>
-        ClearAgain = 162,
+        ClearAgain = Native.SDL_Scancode.SDL_SCANCODE_CLEARAGAIN,
 
         /// <summary>
         /// CrSel
         /// </summary>
-        CrSel = 163,
+        CrSel = Native.SDL_Scancode.SDL_SCANCODE_CRSEL,
 
         /// <summary>
         /// ExSel
         /// </summary>
-        ExSel = 164,
-
+        ExSel = Native.SDL_Scancode.SDL_SCANCODE_EXSEL,
 
         /// <summary>
         /// NumPad00
         /// </summary>
-        NumPad00 = 176,
+        NumPad00 = Native.SDL_Scancode.SDL_SCANCODE_KP_00,
 
         /// <summary>
         /// NumPad000
         /// </summary>
-        NumPad000 = 177,
+        NumPad000 = Native.SDL_Scancode.SDL_SCANCODE_KP_000,
 
         /// <summary>
         /// ThousandsSeparator
         /// </summary>
-        ThousandsSeparator = 178,
+        ThousandsSeparator = Native.SDL_Scancode.SDL_SCANCODE_THOUSANDSSEPARATOR,
 
         /// <summary>
         /// DecimalSeparator
         /// </summary>
-        DecimalSeparator = 179,
+        DecimalSeparator = Native.SDL_Scancode.SDL_SCANCODE_DECIMALSEPARATOR,
 
         /// <summary>
         /// CurrencyUnit
         /// </summary>
-        CurrencyUnit = 180,
+        CurrencyUnit = Native.SDL_Scancode.SDL_SCANCODE_CURRENCYUNIT,
 
         /// <summary>
         /// CurrencySubunit
         /// </summary>
-        CurrencySubunit = 181,
+        CurrencySubunit = Native.SDL_Scancode.SDL_SCANCODE_CURRENCYSUBUNIT,
 
         /// <summary>
         /// NumPadLeftParen
         /// </summary>
-        NumPadLeftParen = 182,
+        NumPadLeftParen = Native.SDL_Scancode.SDL_SCANCODE_KP_LEFTPAREN,
 
         /// <summary>
         /// NumPadRightParen
         /// </summary>
-        NumPadRightParen = 183,
+        NumPadRightParen = Native.SDL_Scancode.SDL_SCANCODE_KP_RIGHTPAREN,
 
         /// <summary>
         /// NumPadLeftBrace
         /// </summary>
-        NumPadLeftBrace = 184,
+        NumPadLeftBrace = Native.SDL_Scancode.SDL_SCANCODE_KP_LEFTBRACE,
 
         /// <summary>
         /// NumPadRightBrace
         /// </summary>
-        NumPadRightBrace = 185,
+        NumPadRightBrace = Native.SDL_Scancode.SDL_SCANCODE_KP_RIGHTBRACE,
 
         /// <summary>
         /// NumPadTab
         /// </summary>
-        NumPadTab = 186,
+        NumPadTab = Native.SDL_Scancode.SDL_SCANCODE_KP_TAB,
 
         /// <summary>
         /// NumPadBackspace
         /// </summary>
-        NumPadBackspace = 187,
+        NumPadBackspace = Native.SDL_Scancode.SDL_SCANCODE_KP_BACKSPACE,
 
         /// <summary>
         /// NumPadA
         /// </summary>
-        NumPadA = 188,
+        NumPadA = Native.SDL_Scancode.SDL_SCANCODE_KP_A,
 
         /// <summary>
         /// NumPadB
         /// </summary>
-        NumPadB = 189,
+        NumPadB = Native.SDL_Scancode.SDL_SCANCODE_KP_B,
 
         /// <summary>
         /// NumPadC
         /// </summary>
-        NumPadC = 190,
+        NumPadC = Native.SDL_Scancode.SDL_SCANCODE_KP_C,
 
         /// <summary>
         /// NumPadD
         /// </summary>
-        NumPadD = 191,
+        NumPadD = Native.SDL_Scancode.SDL_SCANCODE_KP_D,
 
         /// <summary>
         /// NumPadE
         /// </summary>
-        NumPadE = 192,
+        NumPadE = Native.SDL_Scancode.SDL_SCANCODE_KP_E,
 
         /// <summary>
         /// NumPadF
         /// </summary>
-        NumPadF = 193,
+        NumPadF = Native.SDL_Scancode.SDL_SCANCODE_KP_F,
 
         /// <summary>
         /// NumPadXor
         /// </summary>
-        NumPadXor = 194,
+        NumPadXor = Native.SDL_Scancode.SDL_SCANCODE_KP_XOR,
 
         /// <summary>
         /// NumPadPower
         /// </summary>
-        NumPadPower = 195,
+        NumPadPower = Native.SDL_Scancode.SDL_SCANCODE_KP_POWER,
 
         /// <summary>
         /// NumPadPercent
         /// </summary>
-        NumPadPercent = 196,
+        NumPadPercent = Native.SDL_Scancode.SDL_SCANCODE_KP_PERCENT,
 
         /// <summary>
         /// NumPadLess
         /// </summary>
-        NumPadLess = 197,
+        NumPadLess = Native.SDL_Scancode.SDL_SCANCODE_KP_LESS,
 
         /// <summary>
         /// NumPadGreater
         /// </summary>
-        NumPadGreater = 198,
+        NumPadGreater = Native.SDL_Scancode.SDL_SCANCODE_KP_GREATER,
 
         /// <summary>
         /// NumPadAmpersand
         /// </summary>
-        NumPadAmpersand = 199,
+        NumPadAmpersand = Native.SDL_Scancode.SDL_SCANCODE_KP_AMPERSAND,
 
         /// <summary>
         /// NumPadDoubleAmpersand
         /// </summary>
-        NumPadDoubleAmpersand = 200,
+        NumPadDoubleAmpersand = Native.SDL_Scancode.SDL_SCANCODE_KP_DBLAMPERSAND,
 
         /// <summary>
         /// NumPadVerticalBar
         /// </summary>
-        NumPadVerticalBar = 201,
+        NumPadVerticalBar = Native.SDL_Scancode.SDL_SCANCODE_KP_VERTICALBAR,
 
         /// <summary>
         /// NumPadDoubleVerticalBar
         /// </summary>
-        NumPadDoubleVerticalBar = 202,
+        NumPadDoubleVerticalBar = Native.SDL_Scancode.SDL_SCANCODE_KP_DBLVERTICALBAR,
 
         /// <summary>
         /// NumPadColon
         /// </summary>
-        NumPadColon = 203,
+        NumPadColon = Native.SDL_Scancode.SDL_SCANCODE_KP_COLON,
 
         /// <summary>
         /// NumPadHash
         /// </summary>
-        NumPadHash = 204,
+        NumPadHash = Native.SDL_Scancode.SDL_SCANCODE_KP_HASH,
 
         /// <summary>
         /// NumPadSpace
         /// </summary>
-        NumPadSpace = 205,
+        NumPadSpace = Native.SDL_Scancode.SDL_SCANCODE_KP_SPACE,
 
         /// <summary>
         /// NumPadAt
         /// </summary>
-        NumPadAt = 206,
+        NumPadAt = Native.SDL_Scancode.SDL_SCANCODE_KP_AT,
 
         /// <summary>
         /// NumPadExclamation
         /// </summary>
-        NumPadExclamation = 207,
+        NumPadExclamation = Native.SDL_Scancode.SDL_SCANCODE_KP_EXCLAM,
 
         /// <summary>
         /// NumPadMemStore
         /// </summary>
-        NumPadMemStore = 208,
+        NumPadMemStore = Native.SDL_Scancode.SDL_SCANCODE_KP_MEMSTORE,
 
         /// <summary>
         /// NumPadMemRecall
         /// </summary>
-        NumPadMemRecall = 209,
+        NumPadMemRecall = Native.SDL_Scancode.SDL_SCANCODE_KP_MEMRECALL,
 
         /// <summary>
         /// NumPadMemClear
         /// </summary>
-        NumPadMemClear = 210,
+        NumPadMemClear = Native.SDL_Scancode.SDL_SCANCODE_KP_MEMCLEAR,
 
         /// <summary>
         /// NumPadMemAdd
         /// </summary>
-        NumPadMemAdd = 211,
+        NumPadMemAdd = Native.SDL_Scancode.SDL_SCANCODE_KP_MEMADD,
 
         /// <summary>
         /// NumPadMemSubtract
         /// </summary>
-        NumPadMemSubtract = 212,
+        NumPadMemSubtract = Native.SDL_Scancode.SDL_SCANCODE_KP_MEMSUBTRACT,
 
         /// <summary>
         /// NumPadMemMultiply
         /// </summary>
-        NumPadMemMultiply = 213,
+        NumPadMemMultiply = Native.SDL_Scancode.SDL_SCANCODE_KP_MEMMULTIPLY,
 
         /// <summary>
         /// NumPadMemDivide
         /// </summary>
-        NumPadMemDivide = 214,
+        NumPadMemDivide = Native.SDL_Scancode.SDL_SCANCODE_KP_MEMDIVIDE,
 
         /// <summary>
         /// NumPadPlusMinus
         /// </summary>
-        NumPadPlusMinus = 215,
+        NumPadPlusMinus = Native.SDL_Scancode.SDL_SCANCODE_KP_PLUSMINUS,
 
         /// <summary>
         /// NumPadClear
         /// </summary>
-        NumPadClear = 216,
+        NumPadClear = Native.SDL_Scancode.SDL_SCANCODE_KP_CLEAR,
 
         /// <summary>
         /// NumPadClearEntry
         /// </summary>
-        NumPadClearEntry = 217,
+        NumPadClearEntry = Native.SDL_Scancode.SDL_SCANCODE_KP_CLEARENTRY,
 
         /// <summary>
         /// NumPadBinary
         /// </summary>
-        NumPadBinary = 218,
+        NumPadBinary = Native.SDL_Scancode.SDL_SCANCODE_KP_BINARY,
 
         /// <summary>
         /// NumPadOctal
         /// </summary>
-        NumPadOctal = 219,
+        NumPadOctal = Native.SDL_Scancode.SDL_SCANCODE_KP_OCTAL,
 
         /// <summary>
         /// NumPadDecimal
         /// </summary>
-        NumPadDecimal = 220,
+        NumPadDecimal = Native.SDL_Scancode.SDL_SCANCODE_KP_DECIMAL,
 
         /// <summary>
         /// NumPadHexadecimal
         /// </summary>
-        NumPadHexadecimal = 221,
-
+        NumPadHexadecimal = Native.SDL_Scancode.SDL_SCANCODE_KP_HEXADECIMAL,
 
         /// <summary>
         /// LeftCtrl
         /// </summary>
-        LeftCtrl = 224,
+        LeftCtrl = Native.SDL_Scancode.SDL_SCANCODE_LCTRL,
 
         /// <summary>
         /// LeftShift
         /// </summary>
-        LeftShift = 225,
+        LeftShift = Native.SDL_Scancode.SDL_SCANCODE_LSHIFT,
 
         /// <summary>
         /// LeftAlt
         /// </summary>
-        LeftAlt = 226,
+        LeftAlt = Native.SDL_Scancode.SDL_SCANCODE_LALT,
 
         /// <summary>
         /// LeftGui
         /// </summary>
-        LeftGui = 227,
+        LeftGui = Native.SDL_Scancode.SDL_SCANCODE_LGUI,
 
         /// <summary>
         /// RightCtrl
         /// </summary>
-        RightCtrl = 228,
+        RightCtrl = Native.SDL_Scancode.SDL_SCANCODE_RCTRL,
 
         /// <summary>
         /// RightShift
         /// </summary>
-        RightShift = 229,
+        RightShift = Native.SDL_Scancode.SDL_SCANCODE_RSHIFT,
 
         /// <summary>
         /// RightAlt
         /// </summary>
-        RightAlt = 230,
+        RightAlt = Native.SDL_Scancode.SDL_SCANCODE_RALT,
 
         /// <summary>
         /// RightGui
         /// </summary>
-        RightGui = 231,
-
+        RightGui = Native.SDL_Scancode.SDL_SCANCODE_RGUI,
 
         /// <summary>
         /// Mode
         /// </summary>
-        Mode = 257,
-
-        /* These come from the USB consumer page (0x0C) */
+        Mode = Native.SDL_Scancode.SDL_SCANCODE_MODE,
 
         /// <summary>
         /// AudioNext
         /// </summary>
-        AudioNext = 258,
+        AudioNext = Native.SDL_Scancode.SDL_SCANCODE_AUDIONEXT,
 
         /// <summary>
         /// AudioPrev
         /// </summary>
-        AudioPrev = 259,
+        AudioPrev = Native.SDL_Scancode.SDL_SCANCODE_AUDIOPREV,
 
         /// <summary>
         /// AudioStop
         /// </summary>
-        AudioStop = 260,
+        AudioStop = Native.SDL_Scancode.SDL_SCANCODE_AUDIOSTOP,
 
         /// <summary>
         /// AudioPlay
         /// </summary>
-        AudioPlay = 261,
+        AudioPlay = Native.SDL_Scancode.SDL_SCANCODE_AUDIOPLAY,
 
         /// <summary>
         /// AudioMute
         /// </summary>
-        AudioMute = 262,
+        AudioMute = Native.SDL_Scancode.SDL_SCANCODE_AUDIOMUTE,
 
         /// <summary>
         /// MediaSelect
         /// </summary>
-        MediaSelect = 263,
+        MediaSelect = Native.SDL_Scancode.SDL_SCANCODE_MEDIASELECT,
 
         /// <summary>
         /// WWW
         /// </summary>
-        WWW = 264,
+        WWW = Native.SDL_Scancode.SDL_SCANCODE_WWW,
 
         /// <summary>
         /// Mail
         /// </summary>
-        Mail = 265,
+        Mail = Native.SDL_Scancode.SDL_SCANCODE_MAIL,
 
         /// <summary>
         /// Calculator
         /// </summary>
-        Calculator = 266,
+        Calculator = Native.SDL_Scancode.SDL_SCANCODE_CALCULATOR,
 
         /// <summary>
         /// Computer
         /// </summary>
-        Computer = 267,
+        Computer = Native.SDL_Scancode.SDL_SCANCODE_COMPUTER,
 
         /// <summary>
         /// ApplicationSearch
         /// </summary>
-        ApplicationSearch = 268,
+        ApplicationSearch = Native.SDL_Scancode.SDL_SCANCODE_AC_SEARCH,
 
         /// <summary>
         /// ApplicationHome
         /// </summary>
-        ApplicationHome = 269,
+        ApplicationHome = Native.SDL_Scancode.SDL_SCANCODE_AC_HOME,
 
         /// <summary>
         /// ApplicationBack
         /// </summary>
-        ApplicationBack = 270,
+        ApplicationBack = Native.SDL_Scancode.SDL_SCANCODE_AC_BACK,
 
         /// <summary>
         /// ApplicationForward
         /// </summary>
-        ApplicationForward = 271,
+        ApplicationForward = Native.SDL_Scancode.SDL_SCANCODE_AC_FORWARD,
 
         /// <summary>
         /// ApplicationStop
         /// </summary>
-        ApplicationStop = 272,
+        ApplicationStop = Native.SDL_Scancode.SDL_SCANCODE_AC_STOP,
 
         /// <summary>
         /// ApplicationRefresh
         /// </summary>
-        ApplicationRefresh = 273,
+        ApplicationRefresh = Native.SDL_Scancode.SDL_SCANCODE_AC_REFRESH,
 
         /// <summary>
         /// ApplicationBookmarks
         /// </summary>
-        ApplicationBookmarks = 274,
-
+        ApplicationBookmarks = Native.SDL_Scancode.SDL_SCANCODE_AC_BOOKMARKS,
 
         /// <summary>
         /// BrightnessDown
         /// </summary>
-        BrightnessDown = 275,
+        BrightnessDown = Native.SDL_Scancode.SDL_SCANCODE_BRIGHTNESSDOWN,
 
         /// <summary>
         /// BrightnessUp
         /// </summary>
-        BrightnessUp = 276,
+        BrightnessUp = Native.SDL_Scancode.SDL_SCANCODE_BRIGHTNESSUP,
 
         /// <summary>
         /// DisplaySwitch
         /// </summary>
-        DisplaySwitch = 277,
+        DisplaySwitch = Native.SDL_Scancode.SDL_SCANCODE_DISPLAYSWITCH,
 
         /// <summary>
         /// KeyboardIlluminationToggle
         /// </summary>
-        KeyboardIlluminationToggle = 278,
+        KeyboardIlluminationToggle = Native.SDL_Scancode.SDL_SCANCODE_KBDILLUMTOGGLE,
 
         /// <summary>
         /// KeyboardIlluminationDown
         /// </summary>
-        KeyboardIlluminationDown = 279,
+        KeyboardIlluminationDown = Native.SDL_Scancode.SDL_SCANCODE_KBDILLUMDOWN,
 
         /// <summary>
         /// KeyboardIlluminationUp
         /// </summary>
-        KeyboardIlluminationUp = 280,
+        KeyboardIlluminationUp = Native.SDL_Scancode.SDL_SCANCODE_KBDILLUMUP,
 
         /// <summary>
         /// Eject
         /// </summary>
-        Eject = 281,
+        Eject = Native.SDL_Scancode.SDL_SCANCODE_EJECT,
 
         /// <summary>
         /// Sleep
         /// </summary>
-        Sleep = 282,
-
+        Sleep = Native.SDL_Scancode.SDL_SCANCODE_SLEEP,
 
         /// <summary>
         /// App1
         /// </summary>
-        App1 = 283,
+        App1 = Native.SDL_Scancode.SDL_SCANCODE_APP1,
 
         /// <summary>
         /// App2
         /// </summary>
-        App2 = 284,
-
+        App2 = Native.SDL_Scancode.SDL_SCANCODE_APP2,
 
         /// <summary>
         /// AudioRewind
         /// </summary>
-        AudioRewind = 285,
+        AudioRewind = Native.SDL_Scancode.SDL_SCANCODE_AUDIOREWIND,
 
         /// <summary>
         /// AudioFastForward
         /// </summary>
-        AudioFastForward = 286,
+        AudioFastForward = Native.SDL_Scancode.SDL_SCANCODE_AUDIOFASTFORWARD,
 
+        /// <summary>
+        /// SoftLeft
+        /// </summary>
+        SoftLeft = Native.SDL_Scancode.SDL_SCANCODE_SOFTLEFT,
+
+        /// <summary>
+        /// SoftRight
+        /// </summary>
+        SoftRight = Native.SDL_Scancode.SDL_SCANCODE_SOFTRIGHT,
+
+        /// <summary>
+        /// Call
+        /// </summary>
+        Call = Native.SDL_Scancode.SDL_SCANCODE_CALL,
+
+        /// <summary>
+        /// EndCall
+        /// </summary>
+        EndCall = Native.SDL_Scancode.SDL_SCANCODE_ENDCALL,
 
         /// <summary>
         /// Max value
         /// </summary>
-        Max = 512,
-
-        /// <summary>
-        /// Mask for scan code.
-        /// </summary>
-        Mask = 1 << 30
+        Max = Native.SDL_Scancode.SDL_NUM_SCANCODES,
     }
 }

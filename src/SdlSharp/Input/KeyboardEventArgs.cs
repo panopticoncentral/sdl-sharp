@@ -44,9 +44,9 @@ namespace SdlSharp.Input
             _windowId = keyboard.windowID;
             IsPressed = keyboard.state != 0;
             Repeat = keyboard.repeat;
-            Scancode = keyboard.keysym.Scancode;
-            Keycode = keyboard.keysym.Sym;
-            Modifiers = keyboard.keysym.Mod;
+            Scancode = (Scancode)keyboard.keysym.scancode;
+            Keycode = (Keycode)keyboard.keysym.sym.Value;
+            Modifiers = (KeyModifier)keyboard.keysym.mod;
         }
     }
 }

@@ -9,86 +9,86 @@
         /// <summary>
         /// None
         /// </summary>
-        None = 0x0000,
+        None = Native.SDL_Keymod.KMOD_NONE,
 
         /// <summary>
         /// Left shift is pressed.
         /// </summary>
-        LeftShift = 0x0001,
+        LeftShift = Native.SDL_Keymod.KMOD_LSHIFT,
 
         /// <summary>
         /// Right shift is pressed.
         /// </summary>
-        RightShift = 0x0002,
+        RightShift = Native.SDL_Keymod.KMOD_RSHIFT,
 
         /// <summary>
         /// A shift key is pressed.
         /// </summary>
-        Shift = LeftShift | RightShift,
+        Shift = Native.SDL_Keymod.KMOD_SHIFT,
 
         /// <summary>
         /// Left ctrl is pressed.
         /// </summary>
-        LeftCtrl = 0x0040,
+        LeftCtrl = Native.SDL_Keymod.KMOD_LCTRL,
 
         /// <summary>
         /// Right ctrl is pressed.
         /// </summary>
-        RightCtrl = 0x0080,
+        RightCtrl = Native.SDL_Keymod.KMOD_RCTRL,
 
         /// <summary>
         /// A ctrl key is pressed.
         /// </summary>
-        Ctrl = LeftCtrl | RightCtrl,
+        Ctrl = Native.SDL_Keymod.KMOD_CTRL,
 
         /// <summary>
         /// Left alt is pressed.
         /// </summary>
-        LeftAlt = 0x0100,
+        LeftAlt = Native.SDL_Keymod.KMOD_LALT,
 
         /// <summary>
         /// Right alt is pressed.
         /// </summary>
-        RightAlt = 0x0200,
+        RightAlt = Native.SDL_Keymod.KMOD_RALT,
 
         /// <summary>
         /// An alt key is pressed.
         /// </summary>
-        Alt = LeftAlt | RightAlt,
+        Alt = Native.SDL_Keymod.KMOD_ALT,
 
         /// <summary>
         /// Left GUI key is pressed.
         /// </summary>
-        LeftGui = 0x0400,
+        LeftGui = Native.SDL_Keymod.KMOD_LGUI,
 
         /// <summary>
         /// Right GUI key is pressed.
         /// </summary>
-        RightGui = 0x0800,
+        RightGui = Native.SDL_Keymod.KMOD_RGUI,
 
         /// <summary>
         /// A GUI key is pressed.
         /// </summary>
-        Gui = LeftGui | RightGui,
+        Gui = Native.SDL_Keymod.KMOD_GUI,
 
         /// <summary>
         /// NumLock key is active.
         /// </summary>
-        Num = 0x1000,
+        Num = Native.SDL_Keymod.KMOD_NUM,
 
         /// <summary>
         /// CapsLock key is active.
         /// </summary>
-        Caps = 0x2000,
+        Caps = Native.SDL_Keymod.KMOD_CAPS,
 
         /// <summary>
         /// Mode key is active.
         /// </summary>
-        Mode = 0x4000,
+        Mode = Native.SDL_Keymod.KMOD_MODE,
 
         /// <summary>
-        /// Reserved.
+        /// Scroll key is active.
         /// </summary>
-        Reserved = 0x8000
+        Scroll = Native.SDL_Keymod.KMOD_SCROLL
     }
 }
