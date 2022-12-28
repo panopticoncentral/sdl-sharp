@@ -225,7 +225,7 @@
         /// <summary>
         /// Whether the screen keyboard is being shown for this window.
         /// </summary>
-        public bool IsScreenKeyboardShown =>
+        public bool ScreenKeyboardShown =>
             SdlSharp.Native.SDL_IsScreenKeyboardShown(Native);
 
         /// <summary>

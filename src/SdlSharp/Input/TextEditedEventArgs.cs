@@ -36,5 +36,14 @@ namespace SdlSharp.Input
             Start = textEdit.start;
             Length = textEdit.length;
         }
+
+        internal unsafe TextEditedEventArgs(Native.SDL_TextEditingExtEvent textEdit) : base(textEdit.timestamp)
+        {
+            _windowId = textEdit.windowID;
+            Text = Native.Utf8ToString(textEdit.text)!;
+            Native.SDL_free(textEdit.text);
+            Start = textEdit.start;
+            Length = textEdit.length;
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using SdlSharp.Graphics;
+﻿using System.Collections;
+
+using SdlSharp.Graphics;
 
 namespace SdlSharp.Input
 {
@@ -7,6 +9,58 @@ namespace SdlSharp.Input
     /// </summary>
     public static unsafe class Keyboard
     {
+        private sealed class KeyboardStateWrapperEnumerator : IEnumerator<bool>
+        {
+            private readonly KeyboardStateWrapper _wrapper;
+            private int _current;
+
+            public bool Current => 
+                (_current == -1 || _current == _wrapper.Count)
+                    ? throw new InvalidOperationException() 
+                    : _wrapper[_current];
+
+            object IEnumerator.Current => Current;
+
+            public KeyboardStateWrapperEnumerator(KeyboardStateWrapper wrapper)
+            {
+                _wrapper = wrapper;
+                _current = -1;
+            }
+
+            public void Dispose() { }
+
+            public bool MoveNext()
+            {
+                if (_current < _wrapper.Count)
+                {
+                    _current++;
+                }
+
+                return _current != _wrapper.Count;
+            }
+
+            public void Reset() => _current = -1;
+        }
+
+        private sealed unsafe class KeyboardStateWrapper : IReadOnlyList<bool>
+        {
+            private readonly byte* _buffer;
+
+            public bool this[int index] => _buffer[Count] != 0;
+
+            public int Count { get; }
+
+            public KeyboardStateWrapper(byte* buffer, int count)
+            {
+                _buffer = buffer;
+                Count = count;
+            }
+
+            public IEnumerator<bool> GetEnumerator() => new KeyboardStateWrapperEnumerator(this);
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
         /// <summary>
         /// The window that has keyboard focus, if any.
         /// </summary>
@@ -15,20 +69,13 @@ namespace SdlSharp.Input
         /// <summary>
         /// The state of the keyboard.
         /// </summary>
-        public static bool[] State
+        public static IReadOnlyList<bool> State
         {
             get
             {
-                var state = Native.SDL_GetKeyboardState(out var numkeys);
-                var current = new Span<byte>(state, numkeys);
-                var ret = new bool[numkeys];
-
-                for (var i = 0; i < numkeys; i++)
-                {
-                    ret[i] = current[i] != 0;
-                }
-
-                return ret;
+                int numkeys;
+                var state = Native.SDL_GetKeyboardState(&numkeys);
+                return new KeyboardStateWrapper(state, numkeys);
             }
         }
 
@@ -50,6 +97,11 @@ namespace SdlSharp.Input
         /// Whether the text input is active.
         /// </summary>
         public static bool TextInputActive => Native.SDL_IsTextInputActive();
+
+        /// <summary>
+        /// Whether an IME composite or candidate window is currently shown.
+        /// </summary>
+        public static bool TextInputShown => Native.SDL_IsTextInputShown();
 
         /// <summary>
         /// An event that is fired when a key is pressed.
@@ -77,6 +129,11 @@ namespace SdlSharp.Input
         public static event EventHandler<SdlEventArgs>? KeymapChanged;
 
         /// <summary>
+        /// Resets the state of the keyboard.
+        /// </summary>
+        public static void Reset() => Native.SDL_ResetKeyboard();
+
+        /// <summary>
         /// Starts text input.
         /// </summary>
         public static void StartTextInput() =>
@@ -87,6 +144,11 @@ namespace SdlSharp.Input
         /// </summary>
         public static void StopTextInput() =>
             Native.SDL_StopTextInput();
+
+        /// <summary>
+        /// Dismiss the composition window/IME without disabling the subsystem.
+        /// </summary>
+        public static void ClearComposition() => Native.SDL_ClearComposition();
 
         /// <summary>
         /// Sets the rectangle for text input.
@@ -120,7 +182,7 @@ namespace SdlSharp.Input
                     break;
 
                 case Native.SDL_EventType.SDL_TEXTEDITING_EXT:
-                    // TODO!
+                    TextEdited?.Invoke(null, new TextEditedEventArgs(e.editExt));
                     break;
 
                 default:

@@ -800,7 +800,7 @@ namespace SdlSharp
             public readonly uint type;
             public readonly uint timestamp;
             public readonly uint windowID;
-            public readonly byte* test;
+            public readonly byte* text;
             public readonly int start;
             public readonly int length;
         }
@@ -2415,7 +2415,7 @@ namespace SdlSharp
         public static extern bool SDL_IsTextInputShown();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetTextInputRect(Rectangle* rect);
+        public static extern void SDL_SetTextInputRect(ref Rectangle rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_HasScreenKeyboardSupport();
