@@ -55,7 +55,7 @@ namespace SdlSharp.Input
         /// <param name="systemCursor">The system cursor.</param>
         /// <returns>The cursor.</returns>
         public static Cursor Create(SystemCursor systemCursor) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateSystemCursor(systemCursor));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateSystemCursor((Native.SDL_SystemCursor)systemCursor));
 
         /// <inheritdoc/>
         public override void Dispose()

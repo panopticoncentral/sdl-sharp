@@ -336,7 +336,7 @@
         /// </summary>
         /// <param name="axis">The axis.</param>
         /// <param name="value">The value.</param>
-        public void SetVirtualAxis(int axis, short value) => 
+        public void SetVirtualAxis(int axis, short value) =>
             Native.CheckError(Native.SDL_JoystickSetVirtualAxis(_joystick, axis, value));
 
         /// <summary>

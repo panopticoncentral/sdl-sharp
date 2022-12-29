@@ -2895,27 +2895,51 @@ namespace SdlSharp
 
         // SDL_metal.h -- macOS/iOS specific window routines
 
+        #region SDL_misc.h
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_OpenURL(byte* url);
+
+        #endregion
+
         #region SDL_mouse.h
 
-        public readonly struct SDL_Cursor
+        public readonly struct SDL_Cursor { }
+
+        public enum SDL_SystemCursor
         {
+            SDL_SYSTEM_CURSOR_ARROW,
+            SDL_SYSTEM_CURSOR_IBEAM,
+            SDL_SYSTEM_CURSOR_WAIT,
+            SDL_SYSTEM_CURSOR_CROSSHAIR,
+            SDL_SYSTEM_CURSOR_WAITARROW,
+            SDL_SYSTEM_CURSOR_SIZENWSE,
+            SDL_SYSTEM_CURSOR_SIZENESW,
+            SDL_SYSTEM_CURSOR_SIZEWE,
+            SDL_SYSTEM_CURSOR_SIZENS,
+            SDL_SYSTEM_CURSOR_SIZEALL,
+            SDL_SYSTEM_CURSOR_NO,
+            SDL_SYSTEM_CURSOR_HAND,
+            SDL_NUM_SYSTEM_CURSORS
         }
 
-        // SDL_SYSTEM_CURSOR_* is covered by SystemCursor.cs
-
-        // SDL_MouseWheelDirection is covered by MouseWheelDirection.cs
+        public enum SDL_MouseWheelDirection
+        {
+            SDL_MOUSEWHEEL_NORMAL,
+            SDL_MOUSEWHEEL_FLIPPED
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Window* SDL_GetMouseFocus();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern MouseButton SDL_GetMouseState(out int x, out int y);
+        public static extern uint SDL_GetMouseState(int* x, int* y);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern MouseButton SDL_GetGlobalMouseState(out int x, out int y);
+        public static extern uint SDL_GetGlobalMouseState(int* x, int* y);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern MouseButton SDL_GetRelativeMouseState(out int x, out int y);
+        public static extern uint SDL_GetRelativeMouseState(int* x, int* y);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_WarpMouseInWindow(SDL_Window* window, int x, int y);
@@ -2939,7 +2963,7 @@ namespace SdlSharp
         public static extern SDL_Cursor* SDL_CreateColorCursor(SDL_Surface* surface, int hot_x, int hot_y);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Cursor* SDL_CreateSystemCursor(SystemCursor id);
+        public static extern SDL_Cursor* SDL_CreateSystemCursor(SDL_SystemCursor id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetCursor(SDL_Cursor* cursor);
@@ -2956,7 +2980,16 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_ShowCursor(State toggle);
 
-        // SDL_BUTTON_* is covered by MouseButton.cs
+        public const int SDL_BUTTON_LEFT = 1;
+        public const int SDL_BUTTON_MIDDLE = 2;
+        public const int SDL_BUTTON_RIGHT = 3;
+        public const int SDL_BUTTON_X1 = 4;
+        public const int SDL_BUTTON_X2 = 5;
+        public const int SDL_BUTTON_LMASK = 1 << (SDL_BUTTON_LEFT - 1);
+        public const int SDL_BUTTON_MMASK = 1 << (SDL_BUTTON_MIDDLE - 1);
+        public const int SDL_BUTTON_RMASK = 1 << (SDL_BUTTON_RIGHT - 1);
+        public const int SDL_BUTTON_X1MASK = 1 << (SDL_BUTTON_X1 - 1);
+        public const int SDL_BUTTON_X2MASK = 1 << (SDL_BUTTON_X2 - 1);
 
         #endregion
 

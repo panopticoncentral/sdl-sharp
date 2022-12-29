@@ -9,31 +9,31 @@
         /// <summary>
         /// None
         /// </summary>
-        None = 0x0,
+        None = 0,
 
         /// <summary>
         /// Left
         /// </summary>
-        Left = 0x1,
+        Left = Native.SDL_BUTTON_LEFT,
 
         /// <summary>
         /// Middle
         /// </summary>
-        Middle = 0x2,
+        Middle = Native.SDL_BUTTON_MIDDLE,
 
         /// <summary>
         /// Right
         /// </summary>
-        Right = 0x4,
+        Right = Native.SDL_BUTTON_RIGHT,
 
         /// <summary>
         /// X1
         /// </summary>
-        X1 = 0x8,
+        X1 = Native.SDL_BUTTON_X1,
 
         /// <summary>
         /// X2
         /// </summary>
-        X2 = 0x10
+        X2 = Native.SDL_BUTTON_X2
     }
 }

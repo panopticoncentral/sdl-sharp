@@ -21,7 +21,7 @@ namespace SdlSharp
         }
 
         [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
-        private static unsafe void LogCallback(nint userData, int category, Native.SDL_LogPriority priority, byte* message) => 
+        private static unsafe void LogCallback(nint userData, int category, Native.SDL_LogPriority priority, byte* message) =>
             s_handler?.Invoke((LogCategory)category, (LogPriority)priority, Native.Utf8ToString(message));
 
         /// <summary>

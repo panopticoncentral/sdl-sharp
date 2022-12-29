@@ -14,9 +14,9 @@ namespace SdlSharp.Input
             private readonly KeyboardStateWrapper _wrapper;
             private int _current;
 
-            public bool Current => 
+            public bool Current =>
                 (_current == -1 || _current == _wrapper.Count)
-                    ? throw new InvalidOperationException() 
+                    ? throw new InvalidOperationException()
                     : _wrapper[_current];
 
             object IEnumerator.Current => Current;

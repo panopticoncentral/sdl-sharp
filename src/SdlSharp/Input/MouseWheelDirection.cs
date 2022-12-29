@@ -8,11 +8,11 @@
         /// <summary>
         /// Normal
         /// </summary>
-        Normal,
+        Normal = Native.SDL_MouseWheelDirection.SDL_MOUSEWHEEL_NORMAL,
 
         /// <summary>
         /// Flipped
         /// </summary>
-        Flipped
+        Flipped = Native.SDL_MouseWheelDirection.SDL_MOUSEWHEEL_FLIPPED
     }
 }

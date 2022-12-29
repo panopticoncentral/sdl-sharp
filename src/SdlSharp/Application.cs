@@ -333,6 +333,18 @@ namespace SdlSharp
         }
 
         /// <summary>
+        /// Opens a URL, if possible.
+        /// </summary>
+        /// <param name="url">The URL to open.</param>
+        public static void OpenUrl(string url)
+        {
+            fixed (byte* urlPtr = Native.StringToUtf8(url))
+            {
+                _ = Native.CheckError(Native.SDL_OpenURL(urlPtr));
+            }
+        }
+
+        /// <summary>
         /// Dispatches one event.
         /// </summary>
         /// <param name="timeout">How long to wait for an event.</param>
