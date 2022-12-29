@@ -8,101 +8,51 @@
         /// <summary>
         /// Application
         /// </summary>
-        Application,
+        Application = Native.SDL_LogCategory.SDL_LOG_CATEGORY_APPLICATION,
 
         /// <summary>
         /// Error
         /// </summary>
-        Error,
+        Error = Native.SDL_LogCategory.SDL_LOG_CATEGORY_ERROR,
 
         /// <summary>
         /// Assert
         /// </summary>
-        Assert,
+        Assert = Native.SDL_LogCategory.SDL_LOG_CATEGORY_ASSERT,
 
         /// <summary>
         /// System
         /// </summary>
-        System,
+        System = Native.SDL_LogCategory.SDL_LOG_CATEGORY_SYSTEM,
 
         /// <summary>
         /// Audio
         /// </summary>
-        Audio,
+        Audio = Native.SDL_LogCategory.SDL_LOG_CATEGORY_AUDIO,
 
         /// <summary>
         /// Video
         /// </summary>
-        Video,
+        Video = Native.SDL_LogCategory.SDL_LOG_CATEGORY_VIDEO,
 
         /// <summary>
         /// Render
         /// </summary>
-        Render,
+        Render = Native.SDL_LogCategory.SDL_LOG_CATEGORY_RENDER,
 
         /// <summary>
         /// Input
         /// </summary>
-        Input,
+        Input = Native.SDL_LogCategory.SDL_LOG_CATEGORY_INPUT,
 
         /// <summary>
         /// Test
         /// </summary>
-        Test,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved1,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved2,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved3,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved4,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved5,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved6,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved7,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved8,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved9,
-
-        /// <summary>
-        /// Reserved
-        /// </summary>
-        Reserved10,
+        Test = Native.SDL_LogCategory.SDL_LOG_CATEGORY_TEST,
 
         /// <summary>
         /// Custom
         /// </summary>
-        Custom
+        Custom = Native.SDL_LogCategory.SDL_LOG_CATEGORY_CUSTOM
     }
 }

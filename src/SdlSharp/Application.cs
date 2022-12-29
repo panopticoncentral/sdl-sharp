@@ -90,6 +90,26 @@ namespace SdlSharp
         public static string BasePath => Native.Utf8ToStringAndFree(Native.CheckPointer(Native.SDL_GetBasePath()))!;
 
         /// <summary>
+        /// Preferred locales, in order of preference.
+        /// </summary>
+        public static IReadOnlyList<(string? Language, string? Country)> PreferredLocales
+        {
+            get
+            {
+                var locales = new List<(string? Language, string? Country)>();
+                var locale = Native.CheckPointer(Native.SDL_GetPreferredLocales());
+                var current = locale;
+                while (current->language != null || current->country != null)
+                {
+                    locales.Add((Native.Utf8ToString(current->language), Native.Utf8ToString(current->country)));
+                    current++;
+                }
+                Native.SDL_free(locale);
+                return locales;
+            }
+        }
+
+        /// <summary>
         /// Information about the power state of the computer.
         /// </summary>
         public static (PowerState State, int Seconds, int Percent) PowerInfo

@@ -8,36 +8,36 @@
         /// <summary>
         /// Verbose.
         /// </summary>
-        Verbose = 1,
+        Verbose = Native.SDL_LogPriority.SDL_LOG_PRIORITY_VERBOSE,
 
         /// <summary>
         /// Debug.
         /// </summary>
-        Debug,
+        Debug = Native.SDL_LogPriority.SDL_LOG_PRIORITY_DEBUG,
 
         /// <summary>
         /// Info.
         /// </summary>
-        Info,
+        Info = Native.SDL_LogPriority.SDL_LOG_PRIORITY_INFO,
 
         /// <summary>
         /// Warn.
         /// </summary>
-        Warn,
+        Warn = Native.SDL_LogPriority.SDL_LOG_PRIORITY_WARN,
 
         /// <summary>
         /// Error.
         /// </summary>
-        Error,
+        Error = Native.SDL_LogPriority.SDL_LOG_PRIORITY_ERROR,
 
         /// <summary>
         /// Critical.
         /// </summary>
-        Critical,
+        Critical = Native.SDL_LogPriority.SDL_LOG_PRIORITY_CRITICAL,
 
         /// <summary>
         /// The number of priorities.
         /// </summary>
-        PriorityCount
+        PriorityCount = Native.SDL_LogPriority.SDL_NUM_LOG_PRIORITIES
     }
 }

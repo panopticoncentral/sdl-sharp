@@ -2736,19 +2736,66 @@ namespace SdlSharp
 
         // SDL_loadso.h -- Should use platform assembly loading methods
 
+        #region SDL_locale.h
+
+        public struct SDL_Locale
+        {
+            public readonly byte* language;
+            public readonly byte* country;
+        }
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Locale* SDL_GetPreferredLocales();
+
+        #endregion
+
         #region SDL_log.h
 
-        // SDL_LOG_CATEGORY_* is covered by LogCategory.cs
-        // SDL_LogPriority is covered by LogPriority.cs
+        public enum SDL_LogCategory
+        {
+            SDL_LOG_CATEGORY_APPLICATION,
+            SDL_LOG_CATEGORY_ERROR,
+            SDL_LOG_CATEGORY_ASSERT,
+            SDL_LOG_CATEGORY_SYSTEM,
+            SDL_LOG_CATEGORY_AUDIO,
+            SDL_LOG_CATEGORY_VIDEO,
+            SDL_LOG_CATEGORY_RENDER,
+            SDL_LOG_CATEGORY_INPUT,
+            SDL_LOG_CATEGORY_TEST,
+
+            SDL_LOG_CATEGORY_RESERVED1,
+            SDL_LOG_CATEGORY_RESERVED2,
+            SDL_LOG_CATEGORY_RESERVED3,
+            SDL_LOG_CATEGORY_RESERVED4,
+            SDL_LOG_CATEGORY_RESERVED5,
+            SDL_LOG_CATEGORY_RESERVED6,
+            SDL_LOG_CATEGORY_RESERVED7,
+            SDL_LOG_CATEGORY_RESERVED8,
+            SDL_LOG_CATEGORY_RESERVED9,
+            SDL_LOG_CATEGORY_RESERVED10,
+
+            SDL_LOG_CATEGORY_CUSTOM
+        }
+
+        public enum SDL_LogPriority
+        {
+            SDL_LOG_PRIORITY_VERBOSE = 1,
+            SDL_LOG_PRIORITY_DEBUG,
+            SDL_LOG_PRIORITY_INFO,
+            SDL_LOG_PRIORITY_WARN,
+            SDL_LOG_PRIORITY_ERROR,
+            SDL_LOG_PRIORITY_CRITICAL,
+            SDL_NUM_LOG_PRIORITIES
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_LogSetAllPriority(LogPriority priority);
+        public static extern void SDL_LogSetAllPriority(SDL_LogPriority priority);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_LogSetPriority(LogCategory category, LogPriority priority);
+        public static extern void SDL_LogSetPriority(int category, SDL_LogPriority priority);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern LogPriority SDL_LogGetPriority(LogCategory category);
+        public static extern SDL_LogPriority SDL_LogGetPriority(int category);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_LogResetPriorities();
@@ -2757,35 +2804,33 @@ namespace SdlSharp
         public static extern void SDL_Log(string fmt /*, ...*/);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogVerbose(LogCategory category, string fmt /*, ...*/);
+        public static extern void SDL_LogVerbose(int category, string fmt /*, ...*/);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogDebug(LogCategory category, string fmt /*, ...*/);
+        public static extern void SDL_LogDebug(int category, string fmt /*, ...*/);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogInfo(LogCategory category, string fmt /*, ...*/);
+        public static extern void SDL_LogInfo(int category, string fmt /*, ...*/);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogWarn(LogCategory category, string fmt /*, ...*/);
+        public static extern void SDL_LogWarn(int category, string fmt /*, ...*/);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogError(LogCategory category, string fmt /*, ...*/);
+        public static extern void SDL_LogError(int category, string fmt /*, ...*/);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogCritical(LogCategory category, string fmt /*, ...*/);
+        public static extern void SDL_LogCritical(int category, string fmt /*, ...*/);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogMessage(LogCategory category, LogPriority priority, string fmt /*, ...*/);
+        public static extern void SDL_LogMessage(int category, SDL_LogPriority priority, string fmt /*, ...*/);
 
         // public static extern void SDL_LogMessageV(LogCategory category, LogPriority priority, string fmt, va_list ap);
 
-        // SDL_LogOutputFunction is covered by LogOutputFunction.cs
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_LogGetOutputFunction(delegate* unmanaged[Cdecl]<nint, int, SDL_LogPriority, byte*, void>* callback, nint* userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_LogGetOutputFunction(out LogOutputFunction callback, out nint userdata);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_LogSetOutputFunction(LogOutputFunction callback, nint userdata);
+        public static extern void SDL_LogSetOutputFunction(delegate* unmanaged[Cdecl]<nint, int, SDL_LogPriority, byte*, void> callback, nint userdata);
 
         #endregion
 
