@@ -82,7 +82,7 @@ namespace SdlSharp
         /// The platform the application is running on.
         /// </summary>
         public static string Platform =>
-            Native.SDL_GetPlatform();
+            Native.Utf8ToString(Native.SDL_GetPlatform());
 
         /// <summary>
         /// The base path of the application.
@@ -116,8 +116,9 @@ namespace SdlSharp
         {
             get
             {
-                var state = Native.SDL_GetPowerInfo(out var seconds, out var percent);
-                return (state, seconds, percent);
+                int seconds, percent;
+                var state = Native.SDL_GetPowerInfo(&seconds, &percent);
+                return ((PowerState)state, seconds, percent);
             }
         }
 

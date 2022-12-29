@@ -1,42 +1,20 @@
-﻿using System.Diagnostics;
-
-namespace SdlSharp
+﻿namespace SdlSharp
 {
     /// <summary>
     /// A rectangle.
     /// </summary>
-    [DebuggerDisplay("({Location.X}, {Location.Y}, {Size.Width}, {Size.Height})")]
-    public readonly struct RectangleF : IEquatable<RectangleF>
+    public readonly unsafe record struct RectangleF(PointF Location, SizeF Size)
     {
-        /// <summary>
-        /// The location of the upper-left corner of the rectangle.
-        /// </summary>
-        public PointF Location { get; }
-
-        /// <summary>
-        /// The size of the rectangle.
-        /// </summary>
-        public SizeF Size { get; }
-
-        /// <summary>
-        /// Constructs a new rectangle.
-        /// </summary>
-        /// <param name="location">The location of the upper-left corner of the rectangle.</param>
-        /// <param name="size">The size of the rectangle.</param>
-        public RectangleF(PointF location, SizeF size)
-        {
-            Location = location;
-            Size = size;
-        }
-
         /// <summary>
         /// Constructs a new rectangle with an origin location.
         /// </summary>
         /// <param name="size">The size of the rectangle.</param>
-        public RectangleF(SizeF size)
+        public RectangleF(SizeF size) : this(PointF.Origin, size)
         {
-            Location = PointF.Origin;
-            Size = size;
+        }
+
+        private RectangleF(Native.SDL_FRect native) : this((PointF)(native.x, native.y), (SizeF)(native.w, native.h))
+        {
         }
 
         /// <summary>
@@ -50,20 +28,115 @@ namespace SdlSharp
         /// </summary>
         public bool IsEmpty => Size.Width == 0 && Size.Height == 0;
 
-        /// <inheritdoc/>
-        public override bool Equals(object? obj) => obj is RectangleF rectangle && Equals(rectangle);
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => HashCode.Combine(Location, Size);
-
         /// <summary>
-        /// Compares two rectangles.
+        /// Determines whether the rectangles are equal within a given epsilon.
         /// </summary>
         /// <param name="other">The other rectangle.</param>
-        /// <returns>Whether the two rectangles are equal.</returns>
-        public bool Equals(RectangleF other) =>
-            Location.X == other.Location.X && Location.Y == other.Location.Y
-            && Size.Width == other.Size.Width && Size.Height == other.Size.Height;
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns>Whether the rectangles are equal.</returns>
+        public bool EqualsEpsilon(RectangleF other, float epsilon) =>
+            (Math.Abs(Location.X - other.Location.X) <= epsilon)
+            && (Math.Abs(Location.Y - other.Location.Y) <= epsilon)
+            && (Math.Abs(Size.Width - other.Size.Width) <= epsilon)
+            && (Math.Abs(Size.Height - other.Size.Height) <= epsilon);
+
+        /// <summary>
+        /// Determines whether the rectangles are equal within a given default epsilon.
+        /// </summary>
+        /// <param name="other">The other rectangle.</param>
+        /// <returns>Whether the rectangles are equal.</returns>
+        public bool EqualsEpsilon(RectangleF other) => EqualsEpsilon(other, 1.192092896e-07F);
+
+        /// <summary>
+        /// Whether there is an intersection between the two rectangles.
+        /// </summary>
+        /// <param name="other">The other rectangle.</param>
+        /// <returns>true if there is, false otherwise.</returns>
+        public bool HasIntersection(RectangleF other)
+        {
+            var rect = ToNative();
+            var otherRect = other.ToNative();
+            return Native.SDL_HasIntersectionF(&rect, &otherRect);
+        }
+
+        /// <summary>
+        /// Returns the intersection of two rectangles.
+        /// </summary>
+        /// <param name="other">The other rectangle.</param>
+        /// <returns>The intersection of the two rectangles if there was an intersection, null otherwise.</returns>
+        public RectangleF? Intersect(RectangleF other)
+        {
+            var rect = ToNative();
+            var otherRect = other.ToNative();
+            Native.SDL_FRect resultRect;
+            var result = Native.SDL_IntersectFRect(&rect, &otherRect, &resultRect);
+            return result ? new(resultRect) : null;
+        }
+
+        /// <summary>
+        /// Returns the union of two rectangles.
+        /// </summary>
+        /// <param name="other">The other rectangle.</param>
+        /// <returns>The union of the two rectangles.</returns>
+        public RectangleF Union(RectangleF other)
+        {
+            var rect = ToNative();
+            var otherRect = other.ToNative();
+            Native.SDL_FRect resultRect;
+            Native.SDL_UnionFRect(&rect, &otherRect, &resultRect);
+            return new(resultRect);
+        }
+
+        /// <summary>
+        /// Calculates the minumum recangle that encloses a set of points.
+        /// </summary>
+        /// <param name="points">The points.</param>
+        /// <param name="clip">A clipping rectangle.</param>
+        /// <returns>The enclosing rectangle if all the points were enclosed, null otherwise.</returns>
+        public static RectangleF? EnclosePoints(PointF[] points, RectangleF clip)
+        {
+            fixed (PointF* pointsPtr = points)
+            {
+                var clipRect = clip.ToNative();
+                Native.SDL_FRect resultRect;
+                var result = Native.SDL_EncloseFPoints((Native.SDL_FPoint*)pointsPtr, points.Length, &clipRect, &resultRect);
+                return result ? new(resultRect) : null;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the intersection of the rectangle and a line segment.
+        /// </summary>
+        /// <param name="line">The line segment.</param>
+        /// <returns>The intersecting line segment if there is one, null otherwise.</returns>
+        public (PointF Start, PointF End)? IntersectLine((PointF Start, PointF End) line)
+        {
+            var x1 = line.Start.X;
+            var y1 = line.Start.Y;
+            var x2 = line.End.X;
+            var y2 = line.End.Y;
+            var rect = ToNative();
+            var result = Native.SDL_IntersectFRectAndLine(&rect, &x1, &y1, &x2, &y2);
+            return result ? ((PointF)(x1, y1), (PointF)(x2, y2)) : null;
+        }
+
+        /// <summary>
+        /// Determines if there is an intersection between a line and the rectangle.
+        /// </summary>
+        /// <param name="start">The start of the line.</param>
+        /// <param name="end">The end of the line.</param>
+        /// <returns>true if they intersect, false otherwise.</returns>
+        public bool IntersectLine(PointF start, PointF end)
+        {
+            var x1 = start.X;
+            var y1 = start.Y;
+            var x2 = end.X;
+            var y2 = end.Y;
+            var rect = ToNative();
+            return Native.SDL_IntersectFRectAndLine(&rect, &x1, &y1, &x2, &y2);
+        }
+
+        private Native.SDL_FRect ToNative() => new(Location.X, Location.Y, Size.Width, Size.Height);
 
         /// <summary>
         /// Returns whether the rectangle contains the point.
@@ -89,22 +162,5 @@ namespace SdlSharp
         /// <returns>The center point.</returns>
         public PointF Center() =>
             (PointF)(Location.X + (Size.Width / 2), Location.Y + (Size.Height / 2));
-
-
-        /// <summary>
-        /// Compares two rectangles for equality.
-        /// </summary>
-        /// <param name="left">The left rectangle.</param>
-        /// <param name="right">The right rectangle.</param>
-        /// <returns>Whether they are equal.</returns>
-        public static bool operator ==(RectangleF left, RectangleF right) => left.Equals(right);
-
-        /// <summary>
-        /// Compares two rectangles for inequality.
-        /// </summary>
-        /// <param name="left">The left rectangle.</param>
-        /// <param name="right">The right rectangle.</param>
-        /// <returns>Whether they are not equal.</returns>
-        public static bool operator !=(RectangleF left, RectangleF right) => !(left == right);
     }
 }

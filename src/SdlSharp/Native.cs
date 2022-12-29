@@ -5,6 +5,8 @@ using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
 
+using static SdlSharp.Native;
+
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible
 
@@ -3308,17 +3310,24 @@ namespace SdlSharp
 
         #region SDL_platform.h
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GetPlatform();
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetPlatform();
 
         #endregion
 
         #region SDL_power.h
 
-        // SDL_PowerState is covered by PowerState.cs
+        public enum SDL_PowerState
+        {
+            SDL_POWERSTATE_UNKNOWN,
+            SDL_POWERSTATE_ON_BATTERY,
+            SDL_POWERSTATE_NO_BATTERY,
+            SDL_POWERSTATE_CHARGING,
+            SDL_POWERSTATE_CHARGED
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern PowerState SDL_GetPowerInfo(out int secs, out int pct);
+        public static extern SDL_PowerState SDL_GetPowerInfo(int* secs, int* pct);
 
         #endregion
 
@@ -3326,25 +3335,69 @@ namespace SdlSharp
 
         #region SDL_rect.h
 
-        // SDL_Point is covered by Point.cs
-        // SDL_FPoint is covered by PointF.cs
-        // SDL_Rect is covered by Rectangle.cs
-        // SDL_FRect is covered by RectangleF.cs
+        public readonly record struct SDL_Point(int x, int y);
+
+        public readonly record struct SDL_FPoint(float x, float y);
+
+        public readonly record struct SDL_Rect(int x, int y, int w, int h);
+
+        public readonly record struct SDL_FRect(float x, float y, float w, float h);
+
+        public static bool SDL_PointInRect(SDL_Point* p, SDL_Rect* r) =>
+            (p->x >= r->x) && (p->x < (r->x + r->w)) && (p->y >= r->y) && (p->y < (r->y + r->h));
+
+        public static bool SDL_RectEmpty(SDL_Rect* r) =>
+            (r == null) || (r->w <= 0) || (r->h <= 0);
+
+        public static bool SDL_RectEquals(SDL_Rect* a, SDL_Rect* b) =>
+            a != null && b != null && (a->x == b->x) && (a->y == b->y) && (a->w == b->w) && (a->h == b->h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_HasIntersection(in Rectangle a, in Rectangle b);
+        public static extern bool SDL_HasIntersection(SDL_Rect* a, SDL_Rect* b);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_IntersectRect(in Rectangle a, in Rectangle b, out Rectangle result);
+        public static extern bool SDL_IntersectRect(SDL_Rect* a, SDL_Rect* b, SDL_Rect* result);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_UnionRect(in Rectangle a, in Rectangle b, out Rectangle result);
+        public static extern void SDL_UnionRect(SDL_Rect* a, SDL_Rect* b, SDL_Rect* result);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_EnclosePoints([In] Point[] points, int count, in Rectangle clip, out Rectangle result);
+        public static extern bool SDL_EnclosePoints(SDL_Point* points, int count, SDL_Rect* clip, SDL_Rect* result);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_IntersectRectAndLine(in Rectangle rect, in int x1, in int y1, in int x2, in int y2);
+        public static extern bool SDL_IntersectRectAndLine(SDL_Rect* rect, int* x1, int* y1, int* x2, int* y2);
+
+        public static bool SDL_PointInFRect(SDL_FPoint* p, SDL_FRect* r) =>
+            (p->x >= r->x) && (p->x < (r->x + r->w)) && (p->y >= r->y) && (p->y < (r->y + r->h));
+
+        public static bool SDL_FRectEmpty(SDL_FRect* r) =>
+            (r == null) || (r->w <= 0.0f) || (r->h <= 0.0f);
+
+        public static bool SDL_FRectEqualsEpsilon(SDL_FRect* a, SDL_FRect* b, float epsilon) =>
+            a != null
+            && b != null
+            && ((a == b)
+                || ((Math.Abs(a->x - b->x) <= epsilon)
+                    && (Math.Abs(a->y - b->y) <= epsilon)
+                    && (Math.Abs(a->w - b->w) <= epsilon)
+                    && (Math.Abs(a->h - b->h) <= epsilon)));
+
+        public static bool SDL_FRectEquals(SDL_FRect* a, SDL_FRect* b) => SDL_FRectEqualsEpsilon(a, b, 1.192092896e-07F);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_HasIntersectionF(SDL_FRect* a, SDL_FRect* b);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_IntersectFRect(SDL_FRect* a, SDL_FRect* b, SDL_FRect* result);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_UnionFRect(SDL_FRect* a, SDL_FRect* b, SDL_FRect* result);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_EncloseFPoints(SDL_FPoint* points, int count, SDL_FRect* clip, SDL_FRect* result);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_IntersectFRectAndLine(SDL_FRect* rect, float* x1, float* y1, float* x2, float* y2);
 
         #endregion
 

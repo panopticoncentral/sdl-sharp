@@ -8,26 +8,26 @@
         /// <summary>
         /// Unknown.
         /// </summary>
-        Unknown,
+        Unknown = Native.SDL_PowerState.SDL_POWERSTATE_UNKNOWN,
 
         /// <summary>
         /// Running on battery.
         /// </summary>
-        OnBattery,
+        OnBattery = Native.SDL_PowerState.SDL_POWERSTATE_ON_BATTERY,
 
         /// <summary>
         /// No battery.
         /// </summary>
-        NoBattery,
+        NoBattery = Native.SDL_PowerState.SDL_POWERSTATE_NO_BATTERY,
 
         /// <summary>
         /// Battery is charging.
         /// </summary>
-        Charging,
+        Charging = Native.SDL_PowerState.SDL_POWERSTATE_CHARGING,
 
         /// <summary>
         /// Battery is charged.
         /// </summary>
-        Charged
+        Charged = Native.SDL_PowerState.SDL_POWERSTATE_CHARGED
     }
 }

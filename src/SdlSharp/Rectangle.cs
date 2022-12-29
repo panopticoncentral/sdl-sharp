@@ -1,42 +1,20 @@
-﻿using System.Diagnostics;
-
-namespace SdlSharp
+﻿namespace SdlSharp
 {
     /// <summary>
     /// A rectangle.
     /// </summary>
-    [DebuggerDisplay("({Location.X}, {Location.Y}, {Size.Width}, {Size.Height})")]
-    public readonly struct Rectangle : IEquatable<Rectangle>
+    public readonly unsafe record struct Rectangle(Point Location, Size Size)
     {
-        /// <summary>
-        /// The location of the upper-left corner of the rectangle.
-        /// </summary>
-        public Point Location { get; }
-
-        /// <summary>
-        /// The size of the rectangle.
-        /// </summary>
-        public Size Size { get; }
-
-        /// <summary>
-        /// Constructs a new rectangle.
-        /// </summary>
-        /// <param name="location">The location of the upper-left corner of the rectangle.</param>
-        /// <param name="size">The size of the rectangle.</param>
-        public Rectangle(Point location, Size size)
-        {
-            Location = location;
-            Size = size;
-        }
-
         /// <summary>
         /// Constructs a new rectangle with an origin location.
         /// </summary>
         /// <param name="size">The size of the rectangle.</param>
-        public Rectangle(Size size)
+        public Rectangle(Size size) : this(Point.Origin, size)
         {
-            Location = Point.Origin;
-            Size = size;
+        }
+
+        private Rectangle(Native.SDL_Rect native) : this((native.x, native.y), (native.w, native.h))
+        {
         }
 
         /// <summary>
@@ -51,54 +29,77 @@ namespace SdlSharp
         public bool IsEmpty => Size.Width == 0 && Size.Height == 0;
 
         /// <summary>
-        /// Compares two rectangles.
-        /// </summary>
-        /// <param name="other">The other rectangle.</param>
-        /// <returns>Whether the two rectangles are equal.</returns>
-        public bool Equals(Rectangle other) =>
-            Location.X == other.Location.X && Location.Y == other.Location.Y
-            && Size.Width == other.Size.Width && Size.Height == other.Size.Height;
-
-        /// <inheritdoc/>
-        public override bool Equals(object? obj) => obj is Rectangle rectangle && Equals(rectangle);
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => HashCode.Combine(Location, Size);
-
-        /// <summary>
         /// Whether there is an intersection between the two rectangles.
         /// </summary>
         /// <param name="other">The other rectangle.</param>
         /// <returns>true if there is, false otherwise.</returns>
-        public bool HasIntersection(Rectangle other) =>
-            Native.SDL_HasIntersection(in this, in other);
+        public bool HasIntersection(Rectangle other)
+        {
+            var rect = ToNative();
+            var otherRect = other.ToNative();
+            return Native.SDL_HasIntersection(&rect, &otherRect);
+        }
 
         /// <summary>
         /// Returns the intersection of two rectangles.
         /// </summary>
         /// <param name="other">The other rectangle.</param>
-        /// <param name="intersection">The intersection of the two rectangles.</param>
-        /// <returns>true if there was an intersection, false otherwise.</returns>
-        public bool Intersect(Rectangle other, out Rectangle intersection) =>
-            Native.SDL_IntersectRect(in this, in other, out intersection);
+        /// <returns>The intersection of the two rectangles if there was an intersection, null otherwise.</returns>
+        public Rectangle? Intersect(Rectangle other)
+        {
+            var rect = ToNative();
+            var otherRect = other.ToNative();
+            Native.SDL_Rect resultRect;
+            var result = Native.SDL_IntersectRect(&rect, &otherRect, &resultRect);
+            return result ? new(resultRect) : null;
+        }
 
         /// <summary>
         /// Returns the union of two rectangles.
         /// </summary>
         /// <param name="other">The other rectangle.</param>
-        /// <param name="union">The union of the two rectangles.</param>
-        public void Union(Rectangle other, out Rectangle union) =>
-            Native.SDL_UnionRect(in this, in other, out union);
+        /// <returns>The union of the two rectangles.</returns>
+        public Rectangle Union(Rectangle other)
+        {
+            var rect = ToNative();
+            var otherRect = other.ToNative();
+            Native.SDL_Rect resultRect;
+            Native.SDL_UnionRect(&rect, &otherRect, &resultRect);
+            return new(resultRect);
+        }
 
         /// <summary>
         /// Calculates the minumum recangle that encloses a set of points.
         /// </summary>
         /// <param name="points">The points.</param>
         /// <param name="clip">A clipping rectangle.</param>
-        /// <param name="result">The enclosing rectangle.</param>
-        /// <returns>true of all the points were enclosed, false otherwise.</returns>
-        public static bool EnclosePoints(Point[] points, Rectangle clip, out Rectangle result) =>
-            Native.SDL_EnclosePoints(points, points.Length, in clip, out result);
+        /// <returns>The enclosing rectangle if all the points were enclosed, null otherwise.</returns>
+        public static Rectangle? EnclosePoints(Point[] points, Rectangle clip)
+        {
+            fixed (Point* pointsPtr = points)
+            {
+                var clipRect = clip.ToNative();
+                Native.SDL_Rect resultRect;
+                var result = Native.SDL_EnclosePoints((Native.SDL_Point*)pointsPtr, points.Length, &clipRect, &resultRect);
+                return result ? new(resultRect) : null;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the intersection of the rectangle and a line segment.
+        /// </summary>
+        /// <param name="line">The line segment.</param>
+        /// <returns>The intersecting line segment if there is one, null otherwise.</returns>
+        public (Point Start, Point End)? IntersectLine((Point Start, Point End) line)
+        {
+            var x1 = line.Start.X;
+            var y1 = line.Start.Y;
+            var x2 = line.End.X;
+            var y2 = line.End.Y;
+            var rect = ToNative();
+            var result = Native.SDL_IntersectRectAndLine(&rect, &x1, &y1, &x2, &y2);
+            return result ? ((x1, y1), (x2, y2)) : null;
+        }
 
         /// <summary>
         /// Returns whether the rectangle contains the point.
@@ -137,23 +138,10 @@ namespace SdlSharp
             var y1 = start.Y;
             var x2 = end.X;
             var y2 = end.Y;
-            return Native.SDL_IntersectRectAndLine(in this, in x1, in y1, in x2, in y2);
+            var rect = ToNative();
+            return Native.SDL_IntersectRectAndLine(&rect, &x1, &y1, &x2, &y2);
         }
 
-        /// <summary>
-        /// Compares two rectangles for equality.
-        /// </summary>
-        /// <param name="left">The left rectangle.</param>
-        /// <param name="right">The right rectangle.</param>
-        /// <returns>Whether they are equal.</returns>
-        public static bool operator ==(Rectangle left, Rectangle right) => left.Equals(right);
-
-        /// <summary>
-        /// Compares two rectangles for inequality.
-        /// </summary>
-        /// <param name="left">The left rectangle.</param>
-        /// <param name="right">The right rectangle.</param>
-        /// <returns>Whether they are not equal.</returns>
-        public static bool operator !=(Rectangle left, Rectangle right) => !(left == right);
+        private Native.SDL_Rect ToNative() => new(Location.X, Location.Y, Size.Width, Size.Height);
     }
 }

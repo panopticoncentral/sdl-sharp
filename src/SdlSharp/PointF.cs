@@ -1,38 +1,14 @@
-﻿using System.Diagnostics;
-
-namespace SdlSharp
+﻿namespace SdlSharp
 {
     /// <summary>
     /// A point.
     /// </summary>
-    [DebuggerDisplay("({X}, {Y})")]
-    public readonly struct PointF : IEquatable<PointF>
+    public readonly record struct PointF(float X, float Y)
     {
         /// <summary>
         /// A point representing the origin (0, 0).
         /// </summary>
         public static readonly PointF Origin = (PointF)(0.0f, 0.0f);
-
-        /// <summary>
-        /// The X value of the point.
-        /// </summary>
-        public float X { get; }
-
-        /// <summary>
-        /// The Y value of the point.
-        /// </summary>
-        public float Y { get; }
-
-        /// <summary>
-        /// Constructs a new point.
-        /// </summary>
-        /// <param name="x">The x value.</param>
-        /// <param name="y">The y value.</param>
-        public PointF(float x, float y)
-        {
-            X = x;
-            Y = y;
-        }
 
         /// <summary>
         /// Converts a tuple to a point.
@@ -118,34 +94,5 @@ namespace SdlSharp
 
             return (PointF)(newX, newY);
         }
-
-        /// <summary>
-        /// Determines if two points are equal.
-        /// </summary>
-        /// <param name="other">The other point.</param>
-        /// <returns>Whether they are equal.</returns>
-        public bool Equals(PointF other) => other.X == X && other.Y == Y;
-
-        /// <inheritdoc/>
-        public override bool Equals(object? obj) => obj is PointF other && Equals(other);
-
-        /// <inheritdoc/>
-        public override int GetHashCode() => HashCode.Combine(X, Y);
-
-        /// <summary>
-        /// Determines if two points are equal.
-        /// </summary>
-        /// <param name="left">One size.</param>
-        /// <param name="right">The other size.</param>
-        /// <returns>Whether they are equal.</returns>
-        public static bool operator ==(PointF left, PointF right) => left.Equals(right);
-
-        /// <summary>
-        /// Determines if two points are not equal.
-        /// </summary>
-        /// <param name="left">One size.</param>
-        /// <param name="right">The other size.</param>
-        /// <returns>Whether they are not equal.</returns>
-        public static bool operator !=(PointF left, PointF right) => !(left == right);
     }
 }
