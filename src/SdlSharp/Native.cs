@@ -3017,129 +3017,256 @@ namespace SdlSharp
 
         public enum SDL_PixelType : uint
         {
-            Unknown,
-            Index1,
-            Index4,
-            Index8,
-            Packed8,
-            Packed16,
-            Packed32,
-            ArrayU8,
-            ArrayU16,
-            ArrayU32,
-            ArrayF16,
-            ArrayF32
+            SDL_PIXELTYPE_UNKNOWN,
+            SDL_PIXELTYPE_INDEX1,
+            SDL_PIXELTYPE_INDEX4,
+            SDL_PIXELTYPE_INDEX8,
+            SDL_PIXELTYPE_PACKED8,
+            SDL_PIXELTYPE_PACKED16,
+            SDL_PIXELTYPE_PACKED32,
+            SDL_PIXELTYPE_ARRAYU8,
+            SDL_PIXELTYPE_ARRAYU16,
+            SDL_PIXELTYPE_ARRAYU32,
+            SDL_PIXELTYPE_ARRAYF16,
+            SDL_PIXELTYPE_ARRAYF32
         };
 
         public enum SDL_BitmapOrder
         {
-            None,
-            Order4321,
-            Order1234
+            SDL_BITMAPORDER_NONE,
+            SDL_BITMAPORDER_4321,
+            SDL_BITMAPORDER_1234
         };
 
         public enum SDL_PackedOrder
         {
-            None,
-            Xrgb,
-            Rgbx,
-            Argb,
-            Rgba,
-            Xbgr,
-            Bgrx,
-            Abgr,
-            Bgra
+            SDL_PACKEDORDER_NONE,
+            SDL_PACKEDORDER_XRGB,
+            SDL_PACKEDORDER_RGBX,
+            SDL_PACKEDORDER_ARGB,
+            SDL_PACKEDORDER_RGBA,
+            SDL_PACKEDORDER_XBGR,
+            SDL_PACKEDORDER_BGRX,
+            SDL_PACKEDORDER_ABGR,
+            SDL_PACKEDORDER_BGRA
         };
 
         public enum SDL_ArrayOrder
         {
-            None,
-            Rgb,
-            Rgba,
-            Argb,
-            Bgr,
-            Bgra,
-            Abgr
+            SDL_ARRAYORDER_NONE,
+            SDL_ARRAYORDER_RGB,
+            SDL_ARRAYORDER_RGBA,
+            SDL_ARRAYORDER_ARGB,
+            SDL_ARRAYORDER_BGR,
+            SDL_ARRAYORDER_BGRA,
+            SDL_ARRAYORDER_ABGR
         };
 
         public enum SDL_PackedLayout
         {
-            None,
-            Layout332,
-            Layout4444,
-            Layout1555,
-            Layout5551,
-            Layout565,
-            Layout8888,
-            Layout2101010,
-            Layout1010102
+            SDL_PACKEDLAYOUT_NONE,
+            SDL_PACKEDLAYOUT_332,
+            SDL_PACKEDLAYOUT_4444,
+            SDL_PACKEDLAYOUT_1555,
+            SDL_PACKEDLAYOUT_5551,
+            SDL_PACKEDLAYOUT_565,
+            SDL_PACKEDLAYOUT_8888,
+            SDL_PACKEDLAYOUT_2101010,
+            SDL_PACKEDLAYOUT_1010102
         };
 
-        public static uint SDL_DefinePixelFormatCharacters(char a, char b, char c, char d) =>
+        public static uint SDL_DEFINE_PIXELFOURCC(char a, char b, char c, char d) =>
             ((uint)(((byte)a) << 0))
             | ((uint)(((byte)b) << 8))
             | ((uint)(((byte)c) << 16))
             | ((uint)(((byte)d) << 24));
 
-        public static uint SDL_DefinePixelFormat(uint type, uint order, uint layout, uint bits, uint bytes) =>
+        public static uint SDL_DEFINE_PIXELFORMAT(uint type, uint order, uint layout, uint bits, uint bytes) =>
                 (1 << 28) | (type << 24) | (order << 20) | (layout << 16)
                 | (bits << 8) | (bytes << 0);
 
-        public static uint SDL_GetPixelFlag(uint x) => (x >> 28) & 0x0F;
-        public static SDL_PixelType SDL_GetPixelType(uint x) => (SDL_PixelType)((x >> 24) & 0x0F);
-        public static uint SDL_GetPixelOrder(uint x) => (x >> 20) & 0x0F;
-        public static uint SDL_GetPixelLayout(uint x) => (x >> 16) & 0x0F;
-        public static uint SDL_GetBitsPerPixel(uint x) => (x >> 8) & 0xFF;
+        public static uint SDL_PIXELFLAG(uint x) => (x >> 28) & 0x0F;
+        public static SDL_PixelType SDL_MAKEPIXELTYPE(uint x) => (SDL_PixelType)((x >> 24) & 0x0F);
+        public static uint SDL_PIXELORDER(uint x) => (x >> 20) & 0x0F;
+        public static uint SDL_PIXELLAYOUT(uint x) => (x >> 16) & 0x0F;
+        public static uint SDL_BITSPERPIXEL(uint x) => (x >> 8) & 0xFF;
 
-        public static uint SDL_GetBytesPerPixel(uint x) => SDL_IsPixelFormatCharacters(x) ? (((x == EnumeratedPixelFormat.Yuy2.Format) || (x == EnumeratedPixelFormat.Uyvy.Format) || (x == EnumeratedPixelFormat.Yvyu.Format)) ? 2u : 1u) : ((x >> 0) & 0xFF);
+        public static uint SDL_BYTESPERPIXEL(uint x) => SDL_ISPIXELFORMAT_FOURCC(x) ? (((x == EnumeratedPixelFormat.Yuy2.Value) || (x == EnumeratedPixelFormat.Uyvy.Value) || (x == EnumeratedPixelFormat.Yvyu.Value)) ? 2u : 1u) : ((x >> 0) & 0xFF);
 
-        public static bool SDL_IsPixelFormatIndexed(uint format) => !SDL_IsPixelFormatCharacters(format) && ((SDL_GetPixelType(format) == SDL_PixelType.Index1) || (SDL_GetPixelType(format) == SDL_PixelType.Index4) || (SDL_GetPixelType(format) == SDL_PixelType.Index8));
+        public static bool SDL_ISPIXELFORMAT_INDEXED(uint format) => !SDL_ISPIXELFORMAT_FOURCC(format) && ((SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_INDEX1) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_INDEX4) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_INDEX8));
 
-        public static bool SDL_IsPixelFormatPacked(uint format) => !SDL_IsPixelFormatCharacters(format) && ((SDL_GetPixelType(format) == SDL_PixelType.Packed8) || (SDL_GetPixelType(format) == SDL_PixelType.Packed16) || (SDL_GetPixelType(format) == SDL_PixelType.Packed32));
+        public static bool SDL_ISPIXELFORMAT_PACKED(uint format) => !SDL_ISPIXELFORMAT_FOURCC(format) && ((SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_PACKED8) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_PACKED16) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_PACKED32));
 
-        public static bool SDL_IsPixelFormatArray(uint format) => !SDL_IsPixelFormatCharacters(format) && ((SDL_GetPixelType(format) == SDL_PixelType.ArrayU8) || (SDL_GetPixelType(format) == SDL_PixelType.ArrayU16) || (SDL_GetPixelType(format) == SDL_PixelType.ArrayU32) || (SDL_GetPixelType(format) == SDL_PixelType.ArrayF16) || (SDL_GetPixelType(format) == SDL_PixelType.ArrayF32));
+        public static bool SDL_ISPIXELFORMAT_ARRAY(uint format) => !SDL_ISPIXELFORMAT_FOURCC(format) && ((SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_ARRAYU8) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_ARRAYU16) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_ARRAYU32) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_ARRAYF16) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_ARRAYF32));
 
-        public static bool SDL_IsPixelFormatAlpha(uint format) => (SDL_IsPixelFormatPacked(format) && ((SDL_GetPixelOrder(format) == (uint)SDL_PackedOrder.Argb) || (SDL_GetPixelOrder(format) == (uint)SDL_PackedOrder.Rgba) || (SDL_GetPixelOrder(format) == (uint)SDL_PackedOrder.Abgr) || (SDL_GetPixelOrder(format) == (uint)SDL_PackedOrder.Bgra))) || (SDL_IsPixelFormatArray(format) && ((SDL_GetPixelOrder(format) == (uint)SDL_ArrayOrder.Argb) || (SDL_GetPixelOrder(format) == (uint)SDL_ArrayOrder.Rgba) || (SDL_GetPixelOrder(format) == (uint)SDL_ArrayOrder.Abgr) || (SDL_GetPixelOrder(format) == (uint)SDL_ArrayOrder.Bgra)));
+        public static bool SDL_ISPIXELFORMAT_ALPHA(uint format) => (SDL_ISPIXELFORMAT_PACKED(format) && ((SDL_PIXELORDER(format) == (uint)SDL_PackedOrder.SDL_PACKEDORDER_ARGB) || (SDL_PIXELORDER(format) == (uint)SDL_PackedOrder.SDL_PACKEDORDER_RGBA) || (SDL_PIXELORDER(format) == (uint)SDL_PackedOrder.SDL_PACKEDORDER_ABGR) || (SDL_PIXELORDER(format) == (uint)SDL_PackedOrder.SDL_PACKEDORDER_BGRA))) || (SDL_ISPIXELFORMAT_ARRAY(format) && ((SDL_PIXELORDER(format) == (uint)SDL_ArrayOrder.SDL_ARRAYORDER_ARGB) || (SDL_PIXELORDER(format) == (uint)SDL_ArrayOrder.SDL_ARRAYORDER_RGBA) || (SDL_PIXELORDER(format) == (uint)SDL_ArrayOrder.SDL_ARRAYORDER_ABGR) || (SDL_PIXELORDER(format) == (uint)SDL_ArrayOrder.SDL_ARRAYORDER_BGRA)));
 
-        public static bool SDL_IsPixelFormatCharacters(uint format) => (format != 0) && (SDL_GetPixelFlag(format) != 1);
+        public static bool SDL_ISPIXELFORMAT_FOURCC(uint format) => (format != 0) && (SDL_PIXELFLAG(format) != 1);
 
-        // Enumerated pixel formats are in EnumeratedPixelFormat.cs
-
-        // SDL_Color is covered by Color.cs
-
-        public readonly struct SDL_Palette
+        public readonly record struct SDL_PixelFormatEnum(uint Value)
         {
+            public static readonly uint SDL_PIXELFORMAT_UNKNOWN;
+            public static readonly uint SDL_PIXELFORMAT_INDEX1LSB =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_INDEX1, (uint)SDL_BitmapOrder.SDL_BITMAPORDER_4321, 0,
+                                       1, 0);
+            public static readonly uint SDL_PIXELFORMAT_INDEX1MSB =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_INDEX1, (uint)SDL_BitmapOrder.SDL_BITMAPORDER_1234, 0,
+                                       1, 0);
+            public static readonly uint SDL_PIXELFORMAT_INDEX4LSB =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_INDEX4, (uint)SDL_BitmapOrder.SDL_BITMAPORDER_4321, 0,
+                                       4, 0);
+            public static readonly uint SDL_PIXELFORMAT_INDEX4MSB =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_INDEX4, (uint)SDL_BitmapOrder.SDL_BITMAPORDER_1234, 0,
+                                       4, 0);
+            public static readonly uint SDL_PIXELFORMAT_INDEX8 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_INDEX8, 0, 0, 8, 1);
+            public static readonly uint SDL_PIXELFORMAT_RGB332 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED8, (uint)SDL_PackedOrder.SDL_PACKEDORDER_XRGB,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_332, 8, 1);
+            public static readonly uint SDL_PIXELFORMAT_XRGB4444 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_XRGB,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_4444, 12, 2);
+            public static readonly uint SDL_PIXELFORMAT_RGB444 = SDL_PIXELFORMAT_XRGB4444;
+            public static readonly uint SDL_PIXELFORMAT_XBGR4444 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_XBGR,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_4444, 12, 2);
+            public static readonly uint SDL_PIXELFORMAT_BGR444 = SDL_PIXELFORMAT_XBGR4444;
+            public static readonly uint SDL_PIXELFORMAT_XRGB1555 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_XRGB,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_1555, 15, 2);
+            public static readonly uint SDL_PIXELFORMAT_RGB555 = SDL_PIXELFORMAT_XRGB1555;
+            public static readonly uint SDL_PIXELFORMAT_XBGR1555 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_XBGR,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_1555, 15, 2);
+            public static readonly uint SDL_PIXELFORMAT_BGR555 = SDL_PIXELFORMAT_XBGR1555;
+            public static readonly uint SDL_PIXELFORMAT_ARGB4444 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_ARGB,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_4444, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_RGBA4444 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_RGBA,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_4444, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_ABGR4444 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_ABGR,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_4444, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_BGRA4444 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_BGRA,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_4444, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_ARGB1555 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_ARGB,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_1555, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_RGBA5551 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_RGBA,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_5551, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_ABGR1555 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_ABGR,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_1555, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_BGRA5551 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_BGRA,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_5551, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_RGB565 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_XRGB,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_565, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_BGR565 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED16, (uint)SDL_PackedOrder.SDL_PACKEDORDER_XBGR,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_565, 16, 2);
+            public static readonly uint SDL_PIXELFORMAT_RGB24 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_ARRAYU8, (uint)SDL_ArrayOrder.SDL_ARRAYORDER_RGB, 0,
+                                       24, 3);
+            public static readonly uint SDL_PIXELFORMAT_BGR24 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_ARRAYU8, (uint)SDL_ArrayOrder.SDL_ARRAYORDER_BGR, 0,
+                                       24, 3);
+            public static readonly uint SDL_PIXELFORMAT_XRGB8888 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_XRGB,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_8888, 24, 4);
+            public static readonly uint SDL_PIXELFORMAT_RGB888 = SDL_PIXELFORMAT_XRGB8888;
+            public static readonly uint SDL_PIXELFORMAT_RGBX8888 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_RGBX,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_8888, 24, 4);
+            public static readonly uint SDL_PIXELFORMAT_XBGR8888 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_XBGR,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_8888, 24, 4);
+            public static readonly uint SDL_PIXELFORMAT_BGR888 = SDL_PIXELFORMAT_XBGR8888;
+            public static readonly uint SDL_PIXELFORMAT_BGRX8888 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_BGRX,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_8888, 24, 4);
+            public static readonly uint SDL_PIXELFORMAT_ARGB8888 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_ARGB,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_8888, 32, 4);
+            public static readonly uint SDL_PIXELFORMAT_RGBA8888 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_RGBA,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_8888, 32, 4);
+            public static readonly uint SDL_PIXELFORMAT_ABGR8888 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_ABGR,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_8888, 32, 4);
+            public static readonly uint SDL_PIXELFORMAT_BGRA8888 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_BGRA,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_8888, 32, 4);
+            public static readonly uint SDL_PIXELFORMAT_ARGB2101010 =
+                SDL_DEFINE_PIXELFORMAT((uint)SDL_PixelType.SDL_PIXELTYPE_PACKED32, (uint)SDL_PackedOrder.SDL_PACKEDORDER_ARGB,
+                                       (uint)SDL_PackedLayout.SDL_PACKEDLAYOUT_2101010, 32, 4);
+
+            public static readonly uint SDL_PIXELFORMAT_RGBA32 = BitConverter.IsLittleEndian ? SDL_PIXELFORMAT_ABGR8888 : SDL_PIXELFORMAT_RGBA8888;
+            public static readonly uint SDL_PIXELFORMAT_ARGB32 = BitConverter.IsLittleEndian ? SDL_PIXELFORMAT_BGRA8888 : SDL_PIXELFORMAT_ARGB8888;
+            public static readonly uint SDL_PIXELFORMAT_BGRA32 = BitConverter.IsLittleEndian ? SDL_PIXELFORMAT_ARGB8888 : SDL_PIXELFORMAT_BGRA8888;
+            public static readonly uint SDL_PIXELFORMAT_ABGR32 = BitConverter.IsLittleEndian ? SDL_PIXELFORMAT_RGBA8888 : SDL_PIXELFORMAT_ABGR8888;
+
+            public static readonly uint SDL_PIXELFORMAT_YV12 =
+                SDL_DEFINE_PIXELFOURCC('Y', 'V', '1', '2');
+            public static readonly uint SDL_PIXELFORMAT_IYUV =
+                SDL_DEFINE_PIXELFOURCC('I', 'Y', 'U', 'V');
+            public static readonly uint SDL_PIXELFORMAT_YUY2 =
+                SDL_DEFINE_PIXELFOURCC('Y', 'U', 'Y', '2');
+            public static readonly uint SDL_PIXELFORMAT_UYVY =
+                SDL_DEFINE_PIXELFOURCC('U', 'Y', 'V', 'Y');
+            public static readonly uint SDL_PIXELFORMAT_YVYU =
+                SDL_DEFINE_PIXELFOURCC('Y', 'V', 'Y', 'U');
+            public static readonly uint SDL_PIXELFORMAT_NV12 =
+                SDL_DEFINE_PIXELFOURCC('N', 'V', '1', '2');
+            public static readonly uint SDL_PIXELFORMAT_NV21 =
+                SDL_DEFINE_PIXELFOURCC('N', 'V', '2', '1');
+            public static readonly uint SDL_PIXELFORMAT_EXTERNAL_OES =
+                SDL_DEFINE_PIXELFOURCC('O', 'E', 'S', ' ');
         }
 
-        public readonly struct SDL_PixelFormat
+        public readonly record struct SDL_Color(byte r, byte g, byte b, byte a);
+
+        public struct SDL_Palette
         {
-            public readonly uint Format;
-            public readonly SDL_Palette* Palette;
-            public readonly byte BitsPerPixel;
-            public readonly byte BytesPerPixel;
+            public int ncolors;
+            public SDL_Color* colors;
+            public uint version;
+            public int refcount;
+        }
+
+        public struct SDL_PixelFormat
+        {
+            public uint format;
+            public SDL_Palette* palette;
+            public byte BitsPerPixel;
+            public byte BytesPerPixel;
             private readonly byte _padding1;
             private readonly byte _padding2;
-            public readonly uint Rmask;
-            public readonly uint Gmask;
-            public readonly uint Bmask;
-            public readonly uint Amask;
-            public readonly byte Rloss;
-            public readonly byte Gloss;
-            public readonly byte Bloss;
-            public readonly byte Aloss;
-            public readonly byte Rshift;
-            public readonly byte Gshift;
-            public readonly byte Bshift;
-            public readonly byte Ashift;
-            public readonly int Refcount;
-            public readonly SDL_PixelFormat* Next;
+            public uint Rmask;
+            public uint Gmask;
+            public uint Bmask;
+            public uint Amask;
+            public byte Rloss;
+            public byte Gloss;
+            public byte Bloss;
+            public byte Aloss;
+            public byte Rshift;
+            public byte Gshift;
+            public byte Bshift;
+            public byte Ashift;
+            public int refcount;
+            public SDL_PixelFormat* next;
         }
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string? SDL_GetPixelFormatName(uint format);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetPixelFormatName(uint format);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_PixelFormatEnumToMasks(uint format, out int bpp, out uint rmask, out uint gmask, out uint bmask, out uint amask);
+        public static extern bool SDL_PixelFormatEnumToMasks(uint format, int* bpp, uint* rmask, uint* gmask, uint* bmask, uint* amask);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_MasksToPixelFormatEnum(int bpp, uint rmask, uint gmask, uint bmask, uint amask);
@@ -3157,7 +3284,7 @@ namespace SdlSharp
         public static extern int SDL_SetPixelFormatPalette(SDL_PixelFormat* format, SDL_Palette* palette);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetPaletteColors(SDL_Palette* palette, Color[] colors, int firstcolor, int ncolors);
+        public static extern int SDL_SetPaletteColors(SDL_Palette* palette, SDL_Color* colors, int firstcolor, int ncolors);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_FreePalette(SDL_Palette* palette);
@@ -3169,13 +3296,13 @@ namespace SdlSharp
         public static extern PixelColor SDL_MapRGBA(SDL_PixelFormat* format, byte r, byte g, byte b, byte a);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetRGB(PixelColor pixel, SDL_PixelFormat* format, out byte r, out byte g, out byte b);
+        public static extern void SDL_GetRGB(PixelColor pixel, SDL_PixelFormat* format, byte* r, byte* g, byte* b);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetRGBA(PixelColor pixel, SDL_PixelFormat* format, out byte r, out byte g, out byte b, out byte a);
+        public static extern void SDL_GetRGBA(PixelColor pixel, SDL_PixelFormat* format, byte* r, byte* g, byte* b, byte* a);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_CalculateGammaRamp(float gamma, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 256)] out ushort[] ramp);
+        public static extern void SDL_CalculateGammaRamp(float gamma, ushort* ramp);
 
         #endregion
 

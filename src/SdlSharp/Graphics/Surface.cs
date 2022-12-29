@@ -86,7 +86,7 @@
         /// The pixel format.
         /// </summary>
         public PixelFormat PixelFormat =>
-            PixelFormat.PointerToInstanceNotNull(Native->Format);
+            new(Native->Format);
 
         /// <summary>
         /// Creates a surface.
@@ -106,7 +106,7 @@
         /// <param name="format">The pixel format.</param>
         /// <returns>The surface.</returns>
         public static Surface Create(Size size, int depth, EnumeratedPixelFormat format) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateRGBSurfaceWithFormat(0, size.Width, size.Height, depth, format.Format));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateRGBSurfaceWithFormat(0, size.Width, size.Height, depth, format.Value));
 
         /// <summary>
         /// Creates a surface from a set of pixels.
@@ -138,7 +138,7 @@
         {
             fixed (byte* pixelsPointer = pixels)
             {
-                return PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateRGBSurfaceWithFormatFrom(pixelsPointer, size.Width, size.Height, depth, pitch, format.Format));
+                return PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateRGBSurfaceWithFormatFrom(pixelsPointer, size.Width, size.Height, depth, pitch, format.Value));
             }
         }
 
@@ -191,7 +191,7 @@
         /// </summary>
         /// <param name="palette">The palette.</param>
         public void SetPalette(Palette palette) =>
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetSurfacePalette(Native, palette.Native));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetSurfacePalette(Native, palette.GetPointer()));
 
         /// <summary>
         /// Locks the surface.
@@ -276,7 +276,7 @@
         /// <param name="format">The pixel format.</param>
         /// <returns>The converted surface.</returns>
         public Surface Convert(PixelFormat format) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_ConvertSurface(Native, format.Native));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_ConvertSurface(Native, format.GetPointer()));
 
         /// <summary>
         /// Converts the surface to a new pixel format.
