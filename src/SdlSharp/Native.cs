@@ -2838,60 +2838,58 @@ namespace SdlSharp
 
         #region SDL_messagebox.h
 
-        // SDL_MessageBoxFlags is covered by MessageBoxType.cs
-        // SDL_MessageBoxButtonFlags is covered by MessageBoxButtonFlags.cs
-
-        public readonly struct SDL_MessageBoxButtonData
+        public enum SDL_MessageBoxFlags
         {
-            public MessageBoxButtonOptions Flags { get; }
-            public int ButtonId { get; }
-            public Utf8String Text { get; }
-
-            public SDL_MessageBoxButtonData(MessageBoxButtonOptions flags, int buttonId, Utf8String text)
-            {
-                Flags = flags;
-                ButtonId = buttonId;
-                Text = text;
-            }
+            SDL_MESSAGEBOX_ERROR = 0x00000010,
+            SDL_MESSAGEBOX_WARNING = 0x00000020,
+            SDL_MESSAGEBOX_INFORMATION = 0x00000040,
+            SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT = 0x00000080,
+            SDL_MESSAGEBOX_BUTTONS_RIGHT_TO_LEFT = 0x00000100
         }
 
-        // SDL_MessageBoxColor is covered by MessageBoxColor.cs
-        // SDL_MessageBoxColorType is not used
-        // SDL_MessageBoxColorScheme is covered by MessageBoxColorScheme.cs
-
-        public readonly struct SDL_MessageBoxData
+        public enum SDL_MessageBoxButtonFlags
         {
-            public readonly MessageBoxType Flags { get; }
+            SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT = 0x00000001,
+            SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT = 0x00000002
+        }
 
-            public readonly SDL_Window* Window { get; }
+        public struct SDL_MessageBoxButtonData
+        {
+            public uint flags;
+            public int buttonid;
+            public byte* text;
+        }
 
-            public readonly Utf8String Title { get; }
+        public struct SDL_MessageBoxColor
+        {
+            public byte r, g, b;
+        }
 
-            public readonly Utf8String Message { get; }
+        public struct SDL_MessageBoxColorScheme
+        {
+            public SDL_MessageBoxColor background;
+            public SDL_MessageBoxColor text;
+            public SDL_MessageBoxColor button_border;
+            public SDL_MessageBoxColor button_background;
+            public SDL_MessageBoxColor button_selected;
+        }
 
-            public readonly int Numbuttons { get; }
-
-            public readonly SDL_MessageBoxButtonData* Buttons { get; }
-
-            public readonly MessageBoxColorScheme* ColorScheme { get; }
-
-            public SDL_MessageBoxData(MessageBoxType flags, SDL_Window* window, Utf8String title, Utf8String message, int numbuttons, SDL_MessageBoxButtonData* buttons, MessageBoxColorScheme* colorScheme)
-            {
-                Flags = flags;
-                Window = window;
-                Title = title;
-                Message = message;
-                Numbuttons = numbuttons;
-                Buttons = buttons;
-                ColorScheme = colorScheme;
-            }
+        public struct SDL_MessageBoxData
+        {
+            public uint flags;
+            public SDL_Window* window;
+            public byte* title;
+            public byte* message;
+            public int numbuttons;
+            public SDL_MessageBoxButtonData* buttons;
+            public SDL_MessageBoxColorScheme* colorScheme;
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_ShowMessageBox(in SDL_MessageBoxData messageboxdata, out int buttonid);
+        public static extern int SDL_ShowMessageBox(SDL_MessageBoxData* messageboxdata, int* buttonid);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_ShowSimpleMessageBox(MessageBoxType flags, Utf8String title, Utf8String message, SDL_Window* window);
+        public static extern int SDL_ShowSimpleMessageBox(uint flags, byte* title, byte* message, SDL_Window* window);
 
         #endregion
 

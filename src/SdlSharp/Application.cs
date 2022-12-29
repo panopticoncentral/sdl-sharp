@@ -258,25 +258,41 @@ namespace SdlSharp
 
             for (var index = 0; index < buttons.Length; index++)
             {
-                nativeButtons[index] = new Native.SDL_MessageBoxButtonData(buttons[index].Flags, buttons[index].ButtonId, Utf8String.ToUtf8String(buttons[index].Text));
+                var name = Native.StringToUtf8(buttons[index].Text);
+                var nameBuffer = (byte*)Native.SDL_malloc((nuint)name.Length);
+                name.CopyTo(new Span<byte>(nameBuffer, name.Length));
+
+                nativeButtons[index] = new Native.SDL_MessageBoxButtonData
+                {
+                    flags = (uint)buttons[index].Flags,
+                    buttonid = buttons[index].ButtonId,
+                    text = nameBuffer
+                };
             }
 
-            using var utf8Title = Utf8String.ToUtf8String(title);
-            using var utf8Message = Utf8String.ToUtf8String(message);
-
-            var colorSchemeValue = colorScheme.GetValueOrDefault();
+            var nativeColorScheme = colorScheme.GetValueOrDefault().ToNative();
             int buttonId;
 
+            fixed (byte* titlePtr = Native.StringToUtf8(title))
+            fixed (byte* messagePtr = Native.StringToUtf8(message))
             fixed (Native.SDL_MessageBoxButtonData* buttonBuffer = nativeButtons)
             {
-                _ = Native.CheckError(Native.SDL_ShowMessageBox(
-                    new Native.SDL_MessageBoxData(flags, window == null ? null : window.Native, utf8Title, utf8Message, buttons.Length, buttonBuffer, colorScheme == null ? null : &colorSchemeValue),
-                    out buttonId));
+                var messageBoxData = new Native.SDL_MessageBoxData
+                {
+                    flags = (uint)flags,
+                    window = window == null ? null : window.Native,
+                    title = titlePtr,
+                    message = messagePtr,
+                    numbuttons = buttons.Length,
+                    buttons = buttonBuffer,
+                    colorScheme = colorScheme == null ? null : &nativeColorScheme
+                };
+                _ = Native.CheckError(Native.SDL_ShowMessageBox(&messageBoxData, &buttonId));
             }
 
             foreach (var nativeButton in nativeButtons)
             {
-                nativeButton.Text.Dispose();
+                Native.SDL_free(nativeButton.text);
             }
 
             return buttonId;
@@ -294,7 +310,11 @@ namespace SdlSharp
             using var utf8Title = Utf8String.ToUtf8String(title);
             using var utf8Message = Utf8String.ToUtf8String(message);
 
-            _ = Native.CheckError(Native.SDL_ShowSimpleMessageBox(flags, utf8Title, utf8Message, window == null ? null : window.Native));
+            fixed (byte* titlePtr = Native.StringToUtf8(title))
+            fixed (byte* messagePtr = Native.StringToUtf8(message))
+            {
+                _ = Native.CheckError(Native.SDL_ShowSimpleMessageBox((uint)flags, titlePtr, messagePtr, window == null ? null : window.Native));
+            }
         }
 
         /// <summary>

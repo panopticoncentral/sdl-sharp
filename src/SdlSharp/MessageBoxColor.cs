@@ -32,5 +32,15 @@
             Green = green;
             Blue = blue;
         }
+
+        internal Native.SDL_MessageBoxColor ToNative()
+        {
+            return new Native.SDL_MessageBoxColor
+            {
+                r = Red,
+                g = Green,
+                b = Blue
+            };
+        }
     }
 }

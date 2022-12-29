@@ -8,16 +8,16 @@
         /// <summary>
         /// None.
         /// </summary>
-        None = 0x00000000,
+        None = 0,
 
         /// <summary>
         /// This button is the return key button.
         /// </summary>
-        ReturnKeyDefault = 0x00000001,
+        ReturnKeyDefault = Native.SDL_MessageBoxButtonFlags.SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
 
         /// <summary>
         /// This button is the escape key button.
         /// </summary>
-        EscapeKeyDefault = 0x00000002
+        EscapeKeyDefault = Native.SDL_MessageBoxButtonFlags.SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT
     }
 }

@@ -8,26 +8,26 @@
         /// <summary>
         /// Error message box.
         /// </summary>
-        Error = 0x00000010,
+        Error = Native.SDL_MessageBoxFlags.SDL_MESSAGEBOX_ERROR,
 
         /// <summary>
         /// Warning message box.
         /// </summary>
-        Warning = 0x00000020,
+        Warning = Native.SDL_MessageBoxFlags.SDL_MESSAGEBOX_WARNING,
 
         /// <summary>
         /// Information message box.
         /// </summary>
-        Information = 0x00000040,
+        Information = Native.SDL_MessageBoxFlags.SDL_MESSAGEBOX_INFORMATION,
 
         /// <summary>
         /// Buttons placed left to right.
         /// </summary>
-        ButtonsLeftToRight = 0x00000080,
+        ButtonsLeftToRight = Native.SDL_MessageBoxFlags.SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT,
 
         /// <summary>
         /// Buttons placed right to left.
         /// </summary>
-        ButtonsRightToLeft = 0x00000100,
+        ButtonsRightToLeft = Native.SDL_MessageBoxFlags.SDL_MESSAGEBOX_BUTTONS_RIGHT_TO_LEFT,
     }
 }

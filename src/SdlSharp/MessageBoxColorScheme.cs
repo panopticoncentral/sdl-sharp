@@ -46,5 +46,17 @@
             ButtonBackgroundColor = buttonBackgroundColor;
             ButtonSelectedColor = buttonSelectedColor;
         }
+
+        internal Native.SDL_MessageBoxColorScheme ToNative()
+        {
+            return new Native.SDL_MessageBoxColorScheme
+            {
+                background = BackgroundColor.ToNative(),
+                text = TextColor.ToNative(),
+                button_border = BorderColor.ToNative(),
+                button_background = ButtonBackgroundColor.ToNative(),
+                button_selected = ButtonSelectedColor.ToNative()
+            };
+        }
     }
 }
