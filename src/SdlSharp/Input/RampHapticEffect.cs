@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace SdlSharp.Input
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A ramp haptic effect.

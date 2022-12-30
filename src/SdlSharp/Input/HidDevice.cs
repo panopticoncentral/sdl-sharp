@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace SdlSharp.Input
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A HID device.

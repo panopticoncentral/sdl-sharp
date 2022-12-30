@@ -8,16 +8,16 @@
         /// <summary>
         /// Nearest pixel sampling.
         /// </summary>
-        Nearest,
+        Nearest = Native.SDL_ScaleMode.SDL_ScaleModeNearest,
 
         /// <summary>
         /// Linear filtering.
         /// </summary>
-        Linear,
+        Linear = Native.SDL_ScaleMode.SDL_ScaleModeLinear,
 
         /// <summary>
         /// Anisotropic filtering.
         /// </summary>
-        Best
+        Best = Native.SDL_ScaleMode.SDL_ScaleModeBest
     }
 }

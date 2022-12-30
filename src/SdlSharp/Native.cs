@@ -5,8 +5,6 @@ using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
 
-using static SdlSharp.Native;
-
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible
 
@@ -206,14 +204,7 @@ namespace SdlSharp
         /// <returns>The int value.</returns>
         public static int BoolToInt(bool value) => value ? 1 : 0;
 
-        /// <summary>
-        /// Converts a getter/counter pair into a read-only collection.
-        /// </summary>
-        /// <typeparam name="T">The return type of the collection.</typeparam>
-        /// <param name="getter">The function that gets an element.</param>
-        /// <param name="counter">The function that returns the count of the element.</param>
-        /// <returns>A read-only collection.</returns>
-        public static IReadOnlyList<T> GetIndexedCollection<T>(Func<int, T> getter, Func<int> counter)
+        internal static IReadOnlyList<T> GetIndexedCollection<T>(Func<int, T> getter, Func<int> counter)
         {
             var count = counter();
             var array = new T[count];
@@ -223,7 +214,6 @@ namespace SdlSharp
             }
             return array;
         }
-
 
         //
         // SDL2
@@ -3403,32 +3393,74 @@ namespace SdlSharp
 
         #region SDL_render.h
 
-        // SDL_RendererFlags is covered by RendererOptions.cs
-        // SDL_RendererInfo is covered by RendererInfo.cs
-        // SDL_ScaleMode is covered by ScaleMode.cs
-        // SDL_TextureAccess is covered by TextureAccess.cs
-        // SDL_TextureModulate is not used anywhere
-        // SDL_RendererFlip is covered by RendererFlip.cs
-
-        public readonly struct SDL_Renderer
+        public enum SDL_RendererFlags
         {
+            SDL_RENDERER_SOFTWARE = 0x00000001,
+            SDL_RENDERER_ACCELERATED = 0x00000002,
+            SDL_RENDERER_PRESENTVSYNC = 0x00000004,
+            SDL_RENDERER_TARGETTEXTURE = 0x00000008
         }
 
-        public readonly struct SDL_Texture
+        public struct SDL_RendererInfo
         {
+            public byte* name;
+            public uint flags;
+            public uint num_texture_formats;
+            public fixed uint texture_formats[16];
+            public int max_texture_width;
+            public int max_texture_height;
         }
+
+        public struct SDL_Vertex
+        {
+            public SDL_FPoint position;
+            public SDL_Color color;
+            public SDL_FPoint tex_coord;
+        }
+
+        public enum SDL_ScaleMode
+        {
+            SDL_ScaleModeNearest,
+            SDL_ScaleModeLinear,
+            SDL_ScaleModeBest
+        }
+
+        public enum SDL_TextureAccess
+        {
+            SDL_TEXTUREACCESS_STATIC,
+            SDL_TEXTUREACCESS_STREAMING,
+            SDL_TEXTUREACCESS_TARGET
+        }
+
+        public enum SDL_TextureModulate
+        {
+            SDL_TEXTUREMODULATE_NONE = 0x00000000,
+            SDL_TEXTUREMODULATE_COLOR = 0x00000001,
+            SDL_TEXTUREMODULATE_ALPHA = 0x00000002
+        }
+
+        public enum SDL_RendererFlip
+        {
+            SDL_FLIP_NONE = 0x00000000,
+            SDL_FLIP_HORIZONTAL = 0x00000001,
+            SDL_FLIP_VERTICAL = 0x00000002
+        }
+
+        public readonly struct SDL_Renderer { }
+
+        public readonly struct SDL_Texture { }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumRenderDrivers();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetRenderDriverInfo(int index, out RendererInfo info);
+        public static extern int SDL_GetRenderDriverInfo(int index, SDL_RendererInfo* info);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_CreateWindowAndRenderer(int width, int height, WindowOptions window_flags, out SDL_Window* window, out SDL_Renderer* renderer);
+        public static extern int SDL_CreateWindowAndRenderer(int width, int height, uint window_flags, SDL_Window** window, SDL_Renderer** renderer);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Renderer* SDL_CreateRenderer(SDL_Window* window, int index, RendererOptions flags);
+        public static extern SDL_Renderer* SDL_CreateRenderer(SDL_Window* window, int index, uint flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Renderer* SDL_CreateSoftwareRenderer(SDL_Surface* surface);
@@ -3437,55 +3469,67 @@ namespace SdlSharp
         public static extern SDL_Renderer* SDL_GetRenderer(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetRendererInfo(SDL_Renderer* renderer, [Out] out RendererInfo info);
+        public static extern SDL_Window* SDL_GetRenderGetWindow(SDL_Renderer* renderer);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetRendererOutputSize(SDL_Renderer* renderer, out int w, out int h);
+        public static extern int SDL_GetRendererInfo(SDL_Renderer* renderer, SDL_RendererInfo* info);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Texture* SDL_CreateTexture(SDL_Renderer* renderer, EnumeratedPixelFormat format, TextureAccess access, int w, int h);
+        public static extern int SDL_GetRendererOutputSize(SDL_Renderer* renderer, int* w, int* h);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Texture* SDL_CreateTexture(SDL_Renderer* renderer, uint format, int access, int w, int h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Texture* SDL_CreateTextureFromSurface(SDL_Renderer* renderer, SDL_Surface* surface);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_QueryTexture(SDL_Texture* texture, out EnumeratedPixelFormat format, out TextureAccess access, out int w, out int h);
+        public static extern int SDL_QueryTexture(SDL_Texture* texture, uint* format, int* access, int* w, int* h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SetTextureColorMod(SDL_Texture* texture, byte r, byte g, byte b);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetTextureColorMod(SDL_Texture* texture, out byte r, out byte g, out byte b);
+        public static extern int SDL_GetTextureColorMod(SDL_Texture* texture, byte* r, byte* g, byte* b);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SetTextureAlphaMod(SDL_Texture* texture, byte alpha);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetTextureAlphaMod(SDL_Texture* texture, out byte alpha);
+        public static extern int SDL_GetTextureAlphaMod(SDL_Texture* texture, byte* alpha);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetTextureBlendMode(SDL_Texture* texture, BlendMode blendMode);
+        public static extern int SDL_SetTextureBlendMode(SDL_Texture* texture, SDL_BlendMode blendMode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetTextureBlendMode(SDL_Texture* texture, out BlendMode blendMode);
+        public static extern int SDL_GetTextureBlendMode(SDL_Texture* texture, SDL_BlendMode* blendMode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetTextureScaleMode(SDL_Texture* texture, ScaleMode scaleMode);
+        public static extern int SDL_SetTextureScaleMode(SDL_Texture* texture, SDL_ScaleMode scaleMode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetTextureScaleMode(SDL_Texture* texture, out ScaleMode scaleMode);
+        public static extern int SDL_GetTextureScaleMode(SDL_Texture* texture, SDL_ScaleMode* scaleMode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_UpdateTexture(SDL_Texture* texture, Rectangle* rect, byte* pixels, int pitch);
+        public static extern int SDL_SetTextureUserData(SDL_Texture* texture, nint userdata);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_UpdateYUVTexture(SDL_Texture* texture, Rectangle* rect, byte* yplane, int ypitch, byte* uplane, int upitch, byte* vplane, int vpitch);
+        public static extern nint SDL_GetTextureUserData(SDL_Texture* texture);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_LockTexture(SDL_Texture* texture, Rectangle* rect, out byte* pixels, out int pitch);
+        public static extern int SDL_UpdateTexture(SDL_Texture* texture, SDL_Rect* rect, byte* pixels, int pitch);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_LockTextureToSurface(SDL_Texture* texture, Rectangle* rect, out SDL_Surface* surface);
+        public static extern int SDL_UpdateYUVTexture(SDL_Texture* texture, SDL_Rect* rect, byte* yplane, int ypitch, byte* uplane, int upitch, byte* vplane, int vpitch);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_UpdateNVTexture(SDL_Texture* texture, SDL_Rect* rect, byte* yplane, int ypitch, byte* uvplane, int uvpitch);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_LockTexture(SDL_Texture* texture, SDL_Rect* rect, byte** pixels, int* pitch);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_LockTextureToSurface(SDL_Texture* texture, SDL_Rect* rect, SDL_Surface** surface);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_UnlockTexture(SDL_Texture* texture);
@@ -3503,7 +3547,7 @@ namespace SdlSharp
         public static extern int SDL_RenderSetLogicalSize(SDL_Renderer* renderer, int w, int h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_RenderGetLogicalSize(SDL_Renderer* renderer, out int w, out int h);
+        public static extern void SDL_RenderGetLogicalSize(SDL_Renderer* renderer, int* w, int* h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RenderSetIntegerScale(SDL_Renderer* renderer, bool enable);
@@ -3512,16 +3556,16 @@ namespace SdlSharp
         public static extern bool SDL_RenderGetIntegerScale(SDL_Renderer* renderer);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderSetViewport(SDL_Renderer* renderer, Rectangle* rect);
+        public static extern int SDL_RenderSetViewport(SDL_Renderer* renderer, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_RenderGetViewport(SDL_Renderer* renderer, out Rectangle rect);
+        public static extern void SDL_RenderGetViewport(SDL_Renderer* renderer, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderSetClipRect(SDL_Renderer* renderer, Rectangle* rect);
+        public static extern int SDL_RenderSetClipRect(SDL_Renderer* renderer, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_RenderGetClipRect(SDL_Renderer* renderer, out Rectangle rect);
+        public static extern void SDL_RenderGetClipRect(SDL_Renderer* renderer, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_RenderIsClipEnabled(SDL_Renderer* renderer);
@@ -3530,19 +3574,25 @@ namespace SdlSharp
         public static extern int SDL_RenderSetScale(SDL_Renderer* renderer, float scaleX, float scaleY);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_RenderGetScale(SDL_Renderer* renderer, out float scaleX, out float scaleY);
+        public static extern void SDL_RenderGetScale(SDL_Renderer* renderer, float* scaleX, float* scaleY);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_RenderWindowToLogical(SDL_Renderer* renderer, int windowX, int windowY, float* logicalX, float* logicalY);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_RenderLogicalToWindow(SDL_Renderer* renderer, float logicalX, float logicalY, int* windowX, int* windowY);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SetRenderDrawColor(SDL_Renderer* renderer, byte r, byte g, byte b, byte a);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetRenderDrawColor(SDL_Renderer* renderer, out byte r, out byte g, out byte b, out byte a);
+        public static extern int SDL_GetRenderDrawColor(SDL_Renderer* renderer, byte* r, byte* g, byte* b, byte* a);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetRenderDrawBlendMode(SDL_Renderer* renderer, BlendMode blendMode);
+        public static extern int SDL_SetRenderDrawBlendMode(SDL_Renderer* renderer, SDL_BlendMode blendMode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetRenderDrawBlendMode(SDL_Renderer* renderer, out BlendMode blendMode);
+        public static extern int SDL_GetRenderDrawBlendMode(SDL_Renderer* renderer, SDL_BlendMode* blendMode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RenderClear(SDL_Renderer* renderer);
@@ -3551,64 +3601,70 @@ namespace SdlSharp
         public static extern int SDL_RenderDrawPoint(SDL_Renderer* renderer, int x, int y);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderDrawPoints(SDL_Renderer* renderer, Point[] points, int count);
+        public static extern int SDL_RenderDrawPoints(SDL_Renderer* renderer, SDL_Point* points, int count);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RenderDrawLine(SDL_Renderer* renderer, int x1, int y1, int x2, int y2);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderDrawLines(SDL_Renderer* renderer, Point[] points, int count);
+        public static extern int SDL_RenderDrawLines(SDL_Renderer* renderer, SDL_Point* points, int count);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderDrawRect(SDL_Renderer* renderer, Rectangle* rect);
+        public static extern int SDL_RenderDrawRect(SDL_Renderer* renderer, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderDrawRects(SDL_Renderer* renderer, Rectangle[] rects, int count);
+        public static extern int SDL_RenderDrawRects(SDL_Renderer* renderer, SDL_Rect* rects, int count);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderFillRect(SDL_Renderer* renderer, Rectangle* rect);
+        public static extern int SDL_RenderFillRect(SDL_Renderer* renderer, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderFillRects(SDL_Renderer* renderer, Rectangle[] rects, int count);
+        public static extern int SDL_RenderFillRects(SDL_Renderer* renderer, SDL_Rect* rects, int count);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderCopy(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, Rectangle* dstrect);
+        public static extern int SDL_RenderCopy(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Rect* srcrect, SDL_Rect* dstrect);
 
-        [DllImport(Sdl2, EntryPoint = "SDL_RenderCopyEx", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderCopy(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, Rectangle* dstrect, double angle, Point* center, RendererFlip flip);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderCopyEx(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Rect* srcrect, SDL_Rect* dstrect, double angle, SDL_Point* center, SDL_RendererFlip flip);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RenderDrawPointF(SDL_Renderer* renderer, float x, float y);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderDrawPointsF(SDL_Renderer* renderer, PointF[] points, int count);
+        public static extern int SDL_RenderDrawPointsF(SDL_Renderer* renderer, SDL_FPoint* points, int count);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_RenderDrawLineF(SDL_Renderer* renderer, float x1, float y1, float x2, float y2);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderDrawLinesF(SDL_Renderer* renderer, PointF[] points, int count);
+        public static extern int SDL_RenderDrawLinesF(SDL_Renderer* renderer, SDL_FPoint* points, int count);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderDrawRectF(SDL_Renderer* renderer, RectangleF* rect);
+        public static extern int SDL_RenderDrawRectF(SDL_Renderer* renderer, SDL_FRect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderDrawRectsF(SDL_Renderer* renderer, RectangleF[] rects, int count);
+        public static extern int SDL_RenderDrawRectsF(SDL_Renderer* renderer, SDL_FRect* rects, int count);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderFillRectF(SDL_Renderer* renderer, RectangleF* rect);
+        public static extern int SDL_RenderFillRectF(SDL_Renderer* renderer, SDL_FRect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderFillRectsF(SDL_Renderer* renderer, RectangleF[] rects, int count);
+        public static extern int SDL_RenderFillRectsF(SDL_Renderer* renderer, SDL_FRect* rects, int count);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderCopyF(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, RectangleF* dstrect);
+        public static extern int SDL_RenderCopyF(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Rect* srcrect, SDL_FRect* dstrect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderCopyExF(SDL_Renderer* renderer, SDL_Texture* texture, Rectangle* srcrect, RectangleF* dstrect, double angle, PointF* center, RendererFlip flip);
+        public static extern int SDL_RenderCopyExF(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Rect* srcrect, SDL_FRect* dstrect, double angle, SDL_FPoint* center, SDL_RendererFlip flip);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RenderReadPixels(SDL_Renderer* renderer, Rectangle* rect, EnumeratedPixelFormat format, byte* pixels, int pitch);
+        public static extern int SDL_RenderGeometry(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Vertex* vertices, int num_verticies, int* indices, int num_indices);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderGeometryRaw(SDL_Renderer* renderer, SDL_Texture* texture, float* xy, int xy_stride, SDL_Color* color, int color_stride, float* uv, int uv_stride, int num_vertices, byte* indices, int num_indices, int size_indices);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderReadPixels(SDL_Renderer* renderer, SDL_Rect* rect, uint format, byte* pixels, int pitch);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_RenderPresent(SDL_Renderer* renderer);
@@ -3623,7 +3679,7 @@ namespace SdlSharp
         public static extern int SDL_RenderFlush(SDL_Renderer* renderer);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GL_BindTexture(SDL_Texture* texture, out float texw, out float texh);
+        public static extern int SDL_GL_BindTexture(SDL_Texture* texture, float* texw, float* texh);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GL_UnbindTexture(SDL_Texture* texture);
@@ -3633,6 +3689,9 @@ namespace SdlSharp
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern nint SDL_RenderGetMetalCommandEncoder(SDL_Renderer* renderer);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RenderSetVSync(SDL_Renderer* renderer, int vsync);
 
         #endregion
 

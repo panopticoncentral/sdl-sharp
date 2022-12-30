@@ -87,7 +87,7 @@
         /// <param name="filename">The filename.</param>
         /// <returns>The texture.</returns>
         public static Texture LoadTexture(Renderer renderer, string filename) =>
-            Texture.PointerToInstanceNotNull(Native.IMG_LoadTexture(renderer.Native, filename));
+            new(Native.IMG_LoadTexture(renderer.ToNative(), filename));
 
         /// <summary>
         /// Loads an image as a texture from a storage.
@@ -98,7 +98,7 @@
         /// <param name="type">The type of the image.</param>
         /// <returns>The texture.</returns>
         public static Texture LoadTexture(Renderer renderer, RWOps rwops, bool shouldDispose, string type) =>
-            Texture.PointerToInstanceNotNull(Native.IMG_LoadTextureTyped_RW(renderer.Native, rwops.Native, shouldDispose, type));
+            new(Native.IMG_LoadTextureTyped_RW(renderer.ToNative(), rwops.Native, shouldDispose, type));
 
         /// <summary>
         /// Loads an image as a texture from a storage.
@@ -108,7 +108,7 @@
         /// <param name="shouldDispose">Whether the storage should be disposed when loading is finished.</param>
         /// <returns>The texture.</returns>
         public static Texture LoadTexture(Renderer renderer, RWOps rwops, bool shouldDispose) =>
-            Texture.PointerToInstanceNotNull(Native.IMG_LoadTexture_RW(renderer.Native, rwops.Native, shouldDispose));
+            new(Native.IMG_LoadTexture_RW(renderer.ToNative(), rwops.Native, shouldDispose));
 
         /// <summary>
         /// Whether the storage is an ICO image.

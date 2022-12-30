@@ -8,16 +8,16 @@
         /// <summary>
         /// None
         /// </summary>
-        None = 0x0,
+        None = Native.SDL_RendererFlip.SDL_FLIP_NONE,
 
         /// <summary>
         /// Horizontal
         /// </summary>
-        Horizontal = 0x1,
+        Horizontal = Native.SDL_RendererFlip.SDL_FLIP_HORIZONTAL,
 
         /// <summary>
         /// Vertical
         /// </summary>
-        Vertical = 0x2
+        Vertical = Native.SDL_RendererFlip.SDL_FLIP_VERTICAL
     }
 }

@@ -3,7 +3,7 @@
     /// <summary>
     /// A point.
     /// </summary>
-    public readonly record struct PointF(float X, float Y)
+    public readonly unsafe record struct PointF(float X, float Y)
     {
         /// <summary>
         /// A point representing the origin (0, 0).
@@ -94,5 +94,14 @@
 
             return (PointF)(newX, newY);
         }
+
+        internal static Native.SDL_FPoint* ToNative(PointF point, Native.SDL_FPoint* nativePoint)
+        {
+            *nativePoint = new(point.X, point.Y);
+            return nativePoint;
+        }
+
+        internal static Native.SDL_FPoint* ToNative(PointF? point, Native.SDL_FPoint* nativePoint) =>
+            point == null ? (Native.SDL_FPoint*)null : ToNative(point.Value, nativePoint);
     }
 }

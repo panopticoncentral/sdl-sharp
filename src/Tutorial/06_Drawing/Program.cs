@@ -34,7 +34,7 @@ while (app.DispatchEvent())
     renderer.DrawRectangle(((size.Width / 6, size.Height / 6), (size.Width * 2 / 3, size.Height * 2 / 3)));
 
     renderer.DrawColor = Colors.Blue;
-    renderer.DrawLine((0, size.Height / 2), (size.Width, size.Height / 2));
+    renderer.DrawLine(((0, size.Height / 2), (size.Width, size.Height / 2)));
 
     renderer.DrawColor = Colors.Yellow;
     for (var i = 0; i < size.Height; i += 4)

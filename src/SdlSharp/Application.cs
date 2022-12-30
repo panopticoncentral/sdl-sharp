@@ -82,7 +82,7 @@ namespace SdlSharp
         /// The platform the application is running on.
         /// </summary>
         public static string Platform =>
-            Native.Utf8ToString(Native.SDL_GetPlatform());
+            Native.Utf8ToString(Native.SDL_GetPlatform())!;
 
         /// <summary>
         /// The base path of the application.

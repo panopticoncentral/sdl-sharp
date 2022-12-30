@@ -8,16 +8,16 @@
         /// <summary>
         /// Changes rarely, not lockable.
         /// </summary>
-        Static,
+        Static = Native.SDL_TextureAccess.SDL_TEXTUREACCESS_STATIC,
 
         /// <summary>
         /// Changes frequently, lockable.
         /// </summary>
-        Streaming,
+        Streaming = Native.SDL_TextureAccess.SDL_TEXTUREACCESS_STREAMING,
 
         /// <summary>
         /// Texture can be used as a render target.
         /// </summary>
-        Target
+        Target = Native.SDL_TextureAccess.SDL_TEXTUREACCESS_TARGET
     }
 }

@@ -40,7 +40,7 @@ namespace SdlSharp.Graphics
 
         private readonly Native.SDL_BlendMode _mode;
 
-        private BlendMode(Native.SDL_BlendMode mode)
+        internal BlendMode(Native.SDL_BlendMode mode)
         {
             _mode = mode;
         }
@@ -57,5 +57,7 @@ namespace SdlSharp.Graphics
         /// <returns>The custom blend mode.</returns>
         public static BlendMode Custom(BlendFactor sourceColorFactor, BlendFactor destinationColorFactor, BlendOperation colorOperation, BlendFactor sourceAlphaFactor, BlendFactor destinationAlphaFactor, BlendOperation alphaOperation) =>
             new(Native.SDL_ComposeCustomBlendMode((Native.SDL_BlendFactor)sourceColorFactor, (Native.SDL_BlendFactor)destinationColorFactor, (Native.SDL_BlendOperation)colorOperation, (Native.SDL_BlendFactor)sourceAlphaFactor, (Native.SDL_BlendFactor)destinationAlphaFactor, (Native.SDL_BlendOperation)alphaOperation));
+
+        internal Native.SDL_BlendMode ToNative() => _mode;
     }
 }

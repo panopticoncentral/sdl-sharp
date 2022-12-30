@@ -3,8 +3,10 @@
     /// <summary>
     /// A texture.
     /// </summary>
-    public sealed unsafe class Texture : NativePointerBase<Native.SDL_Texture, Texture>
+    public sealed unsafe class Texture : IDisposable
     {
+        private readonly Native.SDL_Texture* _texture;
+
         /// <summary>
         /// The pixel format.
         /// </summary>
@@ -12,8 +14,9 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_QueryTexture(Native, out var format, out _, out _, out _));
-                return format;
+                uint format;
+                _ = Native.CheckError(Native.SDL_QueryTexture(_texture, &format, null, null, null));
+                return new(format);
             }
         }
 
@@ -24,8 +27,9 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_QueryTexture(Native, out _, out var access, out _, out _));
-                return access;
+                int access;
+                _ = Native.CheckError(Native.SDL_QueryTexture(_texture, null, &access, null, null));
+                return (TextureAccess)access;
             }
         }
 
@@ -36,7 +40,8 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_QueryTexture(Native, out _, out _, out var width, out var height));
+                int width, height;
+                _ = Native.CheckError(Native.SDL_QueryTexture(_texture, null, null, &width, &height));
                 return (width, height);
             }
         }
@@ -48,10 +53,11 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetTextureColorMod(Native, out var red, out var green, out var blue));
+                byte red, green, blue;
+                _ = Native.CheckError(Native.SDL_GetTextureColorMod(_texture, &red, &green, &blue));
                 return (red, green, blue);
             }
-            set => _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetTextureColorMod(Native, value.Red, value.Green, value.Blue));
+            set => _ = Native.CheckError(Native.SDL_SetTextureColorMod(_texture, value.Red, value.Green, value.Blue));
         }
 
         /// <summary>
@@ -61,10 +67,11 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetTextureAlphaMod(Native, out var alpha));
+                byte alpha;
+                _ = Native.CheckError(Native.SDL_GetTextureAlphaMod(_texture, &alpha));
                 return alpha;
             }
-            set => _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetTextureAlphaMod(Native, value));
+            set => _ = Native.CheckError(Native.SDL_SetTextureAlphaMod(_texture, value));
         }
 
         /// <summary>
@@ -74,11 +81,12 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetTextureBlendMode(Native, out var mode));
-                return mode;
+                Native.SDL_BlendMode mode;
+                _ = Native.CheckError(Native.SDL_GetTextureBlendMode(_texture, &mode));
+                return new(mode);
             }
 
-            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetTextureBlendMode(Native, value));
+            set => Native.CheckError(Native.SDL_SetTextureBlendMode(_texture, value.ToNative()));
         }
 
         /// <summary>
@@ -88,19 +96,30 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetTextureScaleMode(Native, out var mode));
-                return mode;
+                Native.SDL_ScaleMode mode;
+                _ = Native.CheckError(Native.SDL_GetTextureScaleMode(_texture, &mode));
+                return (ScaleMode)mode;
             }
 
-            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetTextureScaleMode(Native, value));
+            set => Native.CheckError(Native.SDL_SetTextureScaleMode(_texture, (Native.SDL_ScaleMode)value));
+        }
+
+        /// <summary>
+        /// User data.
+        /// </summary>
+        public nint UserData
+        {
+            get => Native.SDL_GetTextureUserData(_texture);
+            set => Native.CheckError(Native.SDL_SetTextureUserData(_texture, value));
+        }
+
+        internal Texture(Native.SDL_Texture* texture)
+        {
+            _texture = texture;
         }
 
         /// <inheritdoc/>
-        public override void Dispose()
-        {
-            SdlSharp.Native.SDL_DestroyTexture(Native);
-            base.Dispose();
-        }
+        public void Dispose() => Native.SDL_DestroyTexture(_texture);
 
         /// <summary>
         /// Updates the texture with RGB values.
@@ -110,18 +129,10 @@
         /// <param name="pitch">The pitch.</param>
         public void Update(Rectangle? rectangle, Span<byte> pixels, int pitch)
         {
-            var rectPointer = (Rectangle*)null;
-            Rectangle rect;
-
-            if (rectangle.HasValue)
-            {
-                rect = rectangle.Value;
-                rectPointer = &rect;
-            }
-
+            Native.SDL_Rect rect;
             fixed (byte* pixelsPointer = pixels)
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_UpdateTexture(Native, rectPointer, pixelsPointer, pitch));
+                _ = Native.CheckError(Native.SDL_UpdateTexture(_texture, Rectangle.ToNative(rectangle, &rect), pixelsPointer, pitch));
             }
         }
 
@@ -137,24 +148,30 @@
         /// <param name="vPitch">The V plane pitch.</param>
         public void Update(Rectangle? rectangle, Span<byte> yPixels, int yPitch, Span<byte> uPixels, int uPitch, Span<byte> vPixels, int vPitch)
         {
-            var rectPointer = (Rectangle*)null;
-            Rectangle rect;
-
-            if (rectangle.HasValue)
-            {
-                rect = rectangle.Value;
-                rectPointer = &rect;
-            }
-
+            Native.SDL_Rect rect;
             fixed (byte* yPixelsPointer = yPixels)
+            fixed (byte* uPixelsPointer = uPixels)
+            fixed (byte* vPixelsPointer = vPixels)
             {
-                fixed (byte* uPixelsPointer = uPixels)
-                {
-                    fixed (byte* vPixelsPointer = vPixels)
-                    {
-                        _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_UpdateYUVTexture(Native, rectPointer, yPixelsPointer, yPitch, uPixelsPointer, uPitch, vPixelsPointer, vPitch));
-                    }
-                }
+                _ = Native.CheckError(Native.SDL_UpdateYUVTexture(_texture, Rectangle.ToNative(rectangle, &rect), yPixelsPointer, yPitch, uPixelsPointer, uPitch, vPixelsPointer, vPitch));
+            }
+        }
+
+        /// <summary>
+        /// Updates the texture with NV values.
+        /// </summary>
+        /// <param name="rectangle">The area to update.</param>
+        /// <param name="yPixels">The Y plane pixels.</param>
+        /// <param name="yPitch">The Y plane pitch.</param>
+        /// <param name="uvPixels">The UV plane pixels.</param>
+        /// <param name="uvPitch">The UV plane pitch.</param>
+        public void Update(Rectangle? rectangle, Span<byte> yPixels, int yPitch, Span<byte> uvPixels, int uvPitch)
+        {
+            Native.SDL_Rect rect;
+            fixed (byte* yPixelsPointer = yPixels)
+            fixed (byte* uvPixelsPointer = uvPixels)
+            {
+                _ = Native.CheckError(Native.SDL_UpdateNVTexture(_texture, Rectangle.ToNative(rectangle, &rect), yPixelsPointer, yPitch, uvPixelsPointer, uvPitch));
             }
         }
 
@@ -166,23 +183,13 @@
         /// <returns>The pixels.</returns>
         public Span<T> Lock<T>(Rectangle? rectangle)
         {
-            var rectPointer = (Rectangle*)null;
-            Rectangle rect;
-            int height;
+            Native.SDL_Rect rect;
+            var height = rectangle?.Size.Height ?? Size.Height;
+            byte* pixels;
+            int pitch;
 
-            if (rectangle.HasValue)
-            {
-                rect = rectangle.Value;
-                rectPointer = &rect;
-                height = rect.Size.Height;
-            }
-            else
-            {
-                height = Size.Height;
-            }
-
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_LockTexture(Native, rectPointer, out var pixelsPointer, out var pitch));
-            return SdlSharp.Native.PixelsToSpan<T>(pixelsPointer, pitch, height);
+            _ = Native.CheckError(Native.SDL_LockTexture(_texture, Rectangle.ToNative(rectangle, &rect), &pixels, &pitch));
+            return Native.PixelsToSpan<T>(pixels, pitch, height);
         }
 
         /// <summary>
@@ -190,25 +197,23 @@
         /// </summary>
         /// <param name="rectangle">The area to lock.</param>
         /// <returns>A surface representing the pixels.</returns>
-        public Surface Lock(Rectangle? rectangle)
+        public Surface LockAsSurface(Rectangle? rectangle)
         {
-            var rectPointer = (Rectangle*)null;
-            Rectangle rect;
-
-            if (rectangle.HasValue)
-            {
-                rect = rectangle.Value;
-                rectPointer = &rect;
-            }
-
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_LockTextureToSurface(Native, rectPointer, out var surfacePointer));
-            return Surface.PointerToInstanceNotNull(surfacePointer);
+            Native.SDL_Rect rect;
+            Native.SDL_Surface* surface;
+            _ = Native.CheckError(Native.SDL_LockTextureToSurface(_texture, Rectangle.ToNative(rectangle, &rect), &surface));
+            return Surface.PointerToInstanceNotNull(surface);
         }
 
         /// <summary>
         /// Unlocks the texture.
         /// </summary>
         public void Unlock() =>
-            SdlSharp.Native.SDL_UnlockTexture(Native);
+            Native.SDL_UnlockTexture(_texture);
+
+        internal Native.SDL_Texture* ToNative() => _texture;
+
+        internal static Native.SDL_Texture* ToNative(Texture? texture) =>
+            texture == null ? (Native.SDL_Texture*)null : texture._texture;
     }
 }

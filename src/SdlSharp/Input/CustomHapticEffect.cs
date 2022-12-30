@@ -1,6 +1,4 @@
-﻿using System.Reflection.Emit;
-
-namespace SdlSharp.Input
+﻿namespace SdlSharp.Input
 {
     /// <summary>
     /// A custom haptic effect.

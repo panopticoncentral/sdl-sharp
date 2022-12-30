@@ -9,26 +9,26 @@
         /// <summary>
         /// None.
         /// </summary>
-        None = 0x0,
+        None = 0,
 
         /// <summary>
         /// Renders in software.
         /// </summary>
-        Software = 0x1,
+        Software = Native.SDL_RendererFlags.SDL_RENDERER_SOFTWARE,
 
         /// <summary>
         /// Renders in hardware.
         /// </summary>
-        Accelerated = 0x2,
+        Accelerated = Native.SDL_RendererFlags.SDL_RENDERER_ACCELERATED,
 
         /// <summary>
         /// Present is synchronized with the vertical sync
         /// </summary>
-        PresentVSync = 0x4,
+        PresentVSync = Native.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC,
 
         /// <summary>
         /// Supports rendering to a texture.
         /// </summary>
-        TargetTexture = 0x8
+        TargetTexture = Native.SDL_RendererFlags.SDL_RENDERER_TARGETTEXTURE
     }
 }

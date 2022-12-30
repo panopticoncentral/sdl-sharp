@@ -13,7 +13,7 @@
         {
         }
 
-        private Rectangle(Native.SDL_Rect native) : this((native.x, native.y), (native.w, native.h))
+        internal Rectangle(Native.SDL_Rect native) : this((native.x, native.y), (native.w, native.h))
         {
         }
 
@@ -35,9 +35,8 @@
         /// <returns>true if there is, false otherwise.</returns>
         public bool HasIntersection(Rectangle other)
         {
-            var rect = ToNative();
-            var otherRect = other.ToNative();
-            return Native.SDL_HasIntersection(&rect, &otherRect);
+            Native.SDL_Rect rect, otherRect;
+            return Native.SDL_HasIntersection(ToNative(this, &rect), ToNative(other, &otherRect));
         }
 
         /// <summary>
@@ -47,10 +46,8 @@
         /// <returns>The intersection of the two rectangles if there was an intersection, null otherwise.</returns>
         public Rectangle? Intersect(Rectangle other)
         {
-            var rect = ToNative();
-            var otherRect = other.ToNative();
-            Native.SDL_Rect resultRect;
-            var result = Native.SDL_IntersectRect(&rect, &otherRect, &resultRect);
+            Native.SDL_Rect rect, otherRect, resultRect;
+            var result = Native.SDL_IntersectRect(ToNative(this, &rect), ToNative(other, &otherRect), &resultRect);
             return result ? new(resultRect) : null;
         }
 
@@ -61,10 +58,8 @@
         /// <returns>The union of the two rectangles.</returns>
         public Rectangle Union(Rectangle other)
         {
-            var rect = ToNative();
-            var otherRect = other.ToNative();
-            Native.SDL_Rect resultRect;
-            Native.SDL_UnionRect(&rect, &otherRect, &resultRect);
+            Native.SDL_Rect rect, otherRect, resultRect;
+            Native.SDL_UnionRect(ToNative(this, &rect), ToNative(other, &otherRect), &resultRect);
             return new(resultRect);
         }
 
@@ -78,9 +73,8 @@
         {
             fixed (Point* pointsPtr = points)
             {
-                var clipRect = clip.ToNative();
-                Native.SDL_Rect resultRect;
-                var result = Native.SDL_EnclosePoints((Native.SDL_Point*)pointsPtr, points.Length, &clipRect, &resultRect);
+                Native.SDL_Rect clipRect, resultRect;
+                var result = Native.SDL_EnclosePoints((Native.SDL_Point*)pointsPtr, points.Length, ToNative(clip, &clipRect), &resultRect);
                 return result ? new(resultRect) : null;
             }
         }
@@ -90,14 +84,14 @@
         /// </summary>
         /// <param name="line">The line segment.</param>
         /// <returns>The intersecting line segment if there is one, null otherwise.</returns>
-        public (Point Start, Point End)? IntersectLine((Point Start, Point End) line)
+        public Line? IntersectLine(Line line)
         {
             var x1 = line.Start.X;
             var y1 = line.Start.Y;
             var x2 = line.End.X;
             var y2 = line.End.Y;
-            var rect = ToNative();
-            var result = Native.SDL_IntersectRectAndLine(&rect, &x1, &y1, &x2, &y2);
+            Native.SDL_Rect rect;
+            var result = Native.SDL_IntersectRectAndLine(ToNative(this, &rect), &x1, &y1, &x2, &y2);
             return result ? ((x1, y1), (x2, y2)) : null;
         }
 
@@ -126,22 +120,13 @@
         public Point Center() =>
             (Location.X + (Size.Width / 2), Location.Y + (Size.Height / 2));
 
-        /// <summary>
-        /// Determines if there is an intersection between a line and the rectangle.
-        /// </summary>
-        /// <param name="start">The start of the line.</param>
-        /// <param name="end">The end of the line.</param>
-        /// <returns>true if they intersect, false otherwise.</returns>
-        public bool IntersectLine(Point start, Point end)
+        internal static Native.SDL_Rect* ToNative(Rectangle rect, Native.SDL_Rect* nativeRect)
         {
-            var x1 = start.X;
-            var y1 = start.Y;
-            var x2 = end.X;
-            var y2 = end.Y;
-            var rect = ToNative();
-            return Native.SDL_IntersectRectAndLine(&rect, &x1, &y1, &x2, &y2);
+            *nativeRect = new(rect.Location.X, rect.Location.Y, rect.Size.Width, rect.Size.Height);
+            return nativeRect;
         }
 
-        private Native.SDL_Rect ToNative() => new(Location.X, Location.Y, Size.Width, Size.Height);
+        internal static Native.SDL_Rect* ToNative(Rectangle? rect, Native.SDL_Rect* nativeRect) =>
+            rect == null ? (Native.SDL_Rect*)null : ToNative(rect.Value, nativeRect);
     }
 }

@@ -1,49 +1,45 @@
-﻿using System.Runtime.InteropServices;
-
-namespace SdlSharp.Graphics
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// Information about a renderer.
     /// </summary>
-    public unsafe struct RendererInfo
+    public sealed unsafe class RendererInfo
     {
-        private readonly nint _name;
-
         /// <summary>
         /// The name of the renderer.
         /// </summary>
-        public string? Name => _name == 0 ? null : Marshal.PtrToStringAnsi(_name);
+        public required string? Name { get; init; }
 
         /// <summary>
         /// The flags of the renderer.
         /// </summary>
-        public RendererOptions Flags { get; }
-
-        private readonly uint _textureFormatCount;
-        private fixed uint _formats[16];
+        public required RendererOptions Flags { get; init; }
 
         /// <summary>
         /// The texture formats supported.
         /// </summary>
-        public EnumeratedPixelFormat[] TextureFormats
-        {
-            get
-            {
-                var formats = new EnumeratedPixelFormat[(int)_textureFormatCount];
-                for (var i = 0; i < (int)_textureFormatCount; i++)
-                {
-                    formats[i] = new EnumeratedPixelFormat(_formats[i]);
-                }
-                return formats;
-            }
-        }
-
-        private readonly int _maxTextureWidth;
-        private readonly int _maxTextureHeight;
+        public required IReadOnlyList<EnumeratedPixelFormat> TextureFormats { get; init; }
 
         /// <summary>
         /// The maximum texture size.
         /// </summary>
-        public Size MaxTextureSize => (_maxTextureWidth, _maxTextureHeight);
+        public required Size MaxTextureSize { get; init; }
+
+        internal static RendererInfo FromNative(Native.SDL_RendererInfo* info)
+        {
+            var formats = new EnumeratedPixelFormat[(int)info->num_texture_formats];
+            for (var index = 0; index < (int)info->num_texture_formats; index++)
+            {
+                formats[index] = new EnumeratedPixelFormat(info->texture_formats[index]);
+            }
+
+            return new RendererInfo
+            {
+                Name = Native.Utf8ToString(info->name),
+                Flags = (RendererOptions)info->flags,
+                TextureFormats = formats,
+                MaxTextureSize = (info->max_texture_width, info->max_texture_height)
+            };
+        }
     }
 }

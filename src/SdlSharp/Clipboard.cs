@@ -1,6 +1,4 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-
-namespace SdlSharp
+﻿namespace SdlSharp
 {
     /// <summary>
     /// The system clipboard.

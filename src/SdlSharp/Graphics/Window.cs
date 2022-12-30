@@ -232,7 +232,7 @@
         /// Gets the renderer for this window, if any.
         /// </summary>
         public Renderer? Renderer =>
-            Renderer.PointerToInstance(SdlSharp.Native.SDL_GetRenderer(Native));
+            new(SdlSharp.Native.SDL_GetRenderer(Native));
 
         /// <summary>
         /// Whether the window is shaped.
@@ -367,8 +367,10 @@
         /// <returns></returns>
         public static Window Create(Size size, WindowOptions flags, out Renderer renderer)
         {
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_CreateWindowAndRenderer(size.Width, size.Height, flags, out var windowPointer, out var rendererPointer));
-            renderer = Renderer.PointerToInstanceNotNull(rendererPointer);
+            Native.SDL_Window* windowPointer;
+            Native.SDL_Renderer* rendererPointer;
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_CreateWindowAndRenderer(size.Width, size.Height, (uint)flags, &windowPointer, &rendererPointer));
+            renderer = new(rendererPointer);
             return PointerToInstanceNotNull(windowPointer);
         }
 
