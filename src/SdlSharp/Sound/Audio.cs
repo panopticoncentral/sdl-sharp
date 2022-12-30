@@ -133,7 +133,7 @@
             byte* buffer;
             uint bufferSize;
 
-            _ = Native.CheckPointer(Native.SDL_LoadWAV_RW(rwops.Native, Native.BoolToInt(shouldFree), &specNative, &buffer, &bufferSize));
+            _ = Native.CheckPointer(Native.SDL_LoadWAV_RW(rwops.ToNative(), Native.BoolToInt(shouldFree), &specNative, &buffer, &bufferSize));
             spec = new AudioSpecification(specNative);
             return new WavData(buffer, bufferSize);
         }
@@ -150,7 +150,10 @@
             byte* buffer;
             uint bufferSize;
 
-            _ = Native.CheckPointer(Native.SDL_LoadWAV(filename, &specNative, &buffer, &bufferSize));
+            fixed (byte* ptr = Native.StringToUtf8(filename))
+            {
+                _ = Native.CheckPointer(Native.SDL_LoadWAV(ptr, &specNative, &buffer, &bufferSize));
+            }
             spec = new AudioSpecification(specNative);
             return new WavData(buffer, bufferSize);
         }

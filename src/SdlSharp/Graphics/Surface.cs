@@ -172,7 +172,7 @@
         /// <param name="shouldDispose">Whether the storage should be disposed after loading the surface.</param>
         /// <returns>The surface.</returns>
         public static Surface LoadBmp(RWOps rwops, bool shouldDispose) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_LoadBMP_RW(rwops.Native, shouldDispose));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_LoadBMP_RW(rwops.ToNative(), shouldDispose));
 
         /// <summary>
         /// Loads a BMP into a surface compatible with a target surface.
@@ -225,7 +225,7 @@
         /// <param name="rwops">The storage.</param>
         /// <param name="shouldDispose">Whether the storage should be disposed after saving the surface.</param>
         public void SaveBmp(RWOps rwops, bool shouldDispose) =>
-            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SaveBMP_RW(Native, rwops.Native, shouldDispose));
+            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SaveBMP_RW(Native, rwops.ToNative(), shouldDispose));
 
         /// <summary>
         /// Sets RLE acceleration hint for the surface.

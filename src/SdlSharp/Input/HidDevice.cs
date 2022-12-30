@@ -21,7 +21,7 @@
         {
             fixed (byte* ptr = data)
             {
-                return Native.CheckError(Native.SDL_hid_write(_device, ptr, data.Length));
+                return Native.CheckError(Native.SDL_hid_write(_device, ptr, (nuint)data.Length));
             }
         }
 
@@ -35,7 +35,7 @@
         {
             fixed (byte* ptr = data)
             {
-                return Native.CheckError(Native.SDL_hid_read_timeout(_device, ptr, data.Length, timeout));
+                return Native.CheckError(Native.SDL_hid_read_timeout(_device, ptr, (nuint)data.Length, timeout));
             }
         }
 
@@ -48,7 +48,7 @@
         {
             fixed (byte* ptr = data)
             {
-                return Native.CheckError(Native.SDL_hid_read(_device, ptr, data.Length));
+                return Native.CheckError(Native.SDL_hid_read(_device, ptr, (nuint)data.Length));
             }
         }
 
@@ -75,7 +75,7 @@
         {
             fixed (byte* ptr = data)
             {
-                return Native.CheckError(Native.SDL_hid_send_feature_report(_device, ptr, data.Length));
+                return Native.CheckError(Native.SDL_hid_send_feature_report(_device, ptr, (nuint)data.Length));
             }
         }
 
@@ -88,7 +88,7 @@
         {
             fixed (byte* ptr = data)
             {
-                return Native.CheckError(Native.SDL_hid_get_feature_report(_device, ptr, data.Length));
+                return Native.CheckError(Native.SDL_hid_get_feature_report(_device, ptr, (nuint)data.Length));
             }
         }
 
@@ -105,7 +105,7 @@
         {
             fixed (char* ptr = chars)
             {
-                _ = Native.CheckError(Native.SDL_hid_get_manufacturer_string(_device, ptr, chars.Length));
+                _ = Native.CheckError(Native.SDL_hid_get_manufacturer_string(_device, ptr, (nuint)chars.Length));
             }
         }
 
@@ -117,7 +117,7 @@
         {
             fixed (char* ptr = chars)
             {
-                _ = Native.CheckError(Native.SDL_hid_get_product_string(_device, ptr, chars.Length));
+                _ = Native.CheckError(Native.SDL_hid_get_product_string(_device, ptr, (nuint)chars.Length));
             }
         }
 
@@ -129,7 +129,7 @@
         {
             fixed (char* ptr = chars)
             {
-                _ = Native.CheckError(Native.SDL_hid_get_serial_number_string(_device, ptr, chars.Length));
+                _ = Native.CheckError(Native.SDL_hid_get_serial_number_string(_device, ptr, (nuint)chars.Length));
             }
         }
 
@@ -142,7 +142,7 @@
         {
             fixed (char* ptr = chars)
             {
-                _ = Native.CheckError(Native.SDL_hid_get_indexed_string(_device, index, ptr, chars.Length));
+                _ = Native.CheckError(Native.SDL_hid_get_indexed_string(_device, index, ptr, (nuint)chars.Length));
             }
         }
     }

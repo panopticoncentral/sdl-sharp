@@ -199,15 +199,20 @@
         /// <param name="shouldDispose">Whether the data source should be disposed after use.</param>
         /// <returns>The number of mappings added.</returns>
         public static int AddMappings(RWOps rwops, bool shouldDispose) =>
-            Native.CheckError(Native.SDL_GameControllerAddMappingsFromRW(rwops.Native, Native.BoolToInt(shouldDispose)));
+            Native.CheckError(Native.SDL_GameControllerAddMappingsFromRW(rwops.ToNative(), Native.BoolToInt(shouldDispose)));
 
         /// <summary>
         /// Adds game controller mappings from a file.
         /// </summary>
         /// <param name="filename">The filename that holds the mappings.</param>
         /// <returns>The number of mappings added.</returns>
-        public static int AddMappings(string filename) =>
-            Native.CheckError(Native.SDL_GameControllerAddMappingsFromFile(filename));
+        public static int AddMappings(string filename)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(filename))
+            {
+                return Native.CheckError(Native.SDL_GameControllerAddMappingsFromFile(ptr));
+            }
+        }
 
         /// <summary>
         /// Adds a game controller mapping.

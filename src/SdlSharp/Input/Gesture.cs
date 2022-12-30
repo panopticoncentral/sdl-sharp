@@ -36,21 +36,21 @@
         /// <param name="device">The touch device.</param>
         /// <param name="rwops">The storage.</param>
         public static void LoadDollarTemplates(TouchDevice device, RWOps rwops) =>
-            Native.CheckError(Native.SDL_LoadDollarTemplates(device.Index, rwops.Native));
+            Native.CheckError(Native.SDL_LoadDollarTemplates(device.Index, rwops.ToNative()));
 
         /// <summary>
         /// Save all the dollar templates.
         /// </summary>
         /// <param name="rwops">The storage.</param>
         public static void SaveAllDollarTemplates(RWOps rwops) =>
-            Native.CheckError(Native.SDL_SaveAllDollarTemplates(rwops.Native));
+            Native.CheckError(Native.SDL_SaveAllDollarTemplates(rwops.ToNative()));
 
         /// <summary>
         /// Save a dollar template.
         /// </summary>
         /// <param name="rwops">The storage.</param>
         public void SaveDollarTemplate(RWOps rwops) =>
-            Native.CheckError(Native.SDL_SaveDollarTemplate(_gestureId, rwops.Native));
+            Native.CheckError(Native.SDL_SaveDollarTemplate(_gestureId, rwops.ToNative()));
 
         internal Gesture(Native.SDL_GestureID gestureId)
         {

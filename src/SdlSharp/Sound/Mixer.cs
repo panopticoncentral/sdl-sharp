@@ -146,15 +146,20 @@
         /// <param name="shouldDispose">Whether the storage should be disposed when done.</param>
         /// <returns>The sample.</returns>
         public static MixChunk LoadWav(RWOps rwops, bool shouldDispose) =>
-            MixChunk.PointerToInstanceNotNull(Native.Mix_LoadWAV_RW(rwops.Native, shouldDispose));
+            MixChunk.PointerToInstanceNotNull(Native.Mix_LoadWAV_RW(rwops.ToNative(), shouldDispose));
 
         /// <summary>
         /// Loads a music sample from a file.
         /// </summary>
         /// <param name="file">The file to load.</param>
         /// <returns>The sample.</returns>
-        public static MixChunk LoadWav(string file) =>
-            MixChunk.PointerToInstanceNotNull(Native.Mix_LoadWAV(file));
+        public static MixChunk LoadWav(string file)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(file))
+            {
+                return MixChunk.PointerToInstanceNotNull(Native.Mix_LoadWAV(ptr));
+            }
+        }
 
         /// <summary>
         /// Quickly loads a music sample, which must be in the correct format.
@@ -184,7 +189,7 @@
         /// <param name="shouldDispose">Whether the storage should be disposed after loading.</param>
         /// <returns>The music.</returns>
         public static MixMusic LoadMusic(RWOps rwops, bool shouldDispose) =>
-            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUS_RW(rwops.Native, shouldDispose));
+            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUS_RW(rwops.ToNative(), shouldDispose));
 
         /// <summary>
         /// Loads a music file from storage.
@@ -194,7 +199,7 @@
         /// <param name="shouldDispose">Whether the storage should be disposed after loading.</param>
         /// <returns>The music.</returns>
         public static MixMusic LoadMusic(RWOps rwops, MusicType type, bool shouldDispose) =>
-            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUSType_RW(rwops.Native, type, shouldDispose));
+            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUSType_RW(rwops.ToNative(), type, shouldDispose));
 
         /// <summary>
         /// Quickly loads a raw sample, must be in correct format.

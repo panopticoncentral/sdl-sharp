@@ -118,7 +118,7 @@
         /// <param name="pointSize">The point size.</param>
         /// <returns>The font.</returns>
         public static Font Create(RWOps rwops, bool shouldDispose, int pointSize) =>
-            PointerToInstanceNotNull(SdlSharp.Native.TTF_OpenFontRW(rwops.Native, shouldDispose, pointSize));
+            PointerToInstanceNotNull(SdlSharp.Native.TTF_OpenFontRW(rwops.ToNative(), shouldDispose, pointSize));
 
         /// <summary>
         /// Creates a specific font face from a storage.
@@ -129,7 +129,7 @@
         /// <param name="index">The font face index.</param>
         /// <returns>The font.</returns>
         public static Font Create(RWOps rwops, bool shouldDispose, int pointSize, int index) =>
-            PointerToInstanceNotNull(SdlSharp.Native.TTF_OpenFontIndexRW(rwops.Native, shouldDispose, pointSize, index));
+            PointerToInstanceNotNull(SdlSharp.Native.TTF_OpenFontIndexRW(rwops.ToNative(), shouldDispose, pointSize, index));
 
         /// <summary>
         /// Sets whether the bytes are swapped relative to the system's endedness.

@@ -3,52 +3,48 @@
     /// <summary>
     /// A sensor device.
     /// </summary>
-    public sealed unsafe class SensorDevice : NativeStaticIndexBase<int, SensorDevice>
+    public sealed unsafe class SensorDevice
     {
-        private static ItemCollection<SensorDevice>? s_devices;
+        private readonly int _index;
 
         /// <summary>
         /// Standard gravity constant.
         /// </summary>
-        public const float StandardGravity = 9.80665f;
+        public const float StandardGravity = Native.SDL_STANDARD_GRAVITY;
 
         /// <summary>
         /// The devices in the system.
         /// </summary>
-        public static IReadOnlyList<SensorDevice> Devices => s_devices ??= new ItemCollection<SensorDevice>(Get, Native.SDL_NumSensors);
+        public static IReadOnlyList<SensorDevice> Devices => Native.GetIndexedCollection(i => new SensorDevice(i), Native.SDL_NumSensors);
 
         /// <summary>
         /// The name of the device, if any.
         /// </summary>
         public string? Name =>
-            Native.SDL_SensorGetDeviceName(Index);
+            Native.Utf8ToString(Native.SDL_SensorGetDeviceName(_index));
 
         /// <summary>
         /// The sensor type.
         /// </summary>
         public SensorType Type =>
-            Native.SDL_SensorGetDeviceType(Index);
+            (SensorType)Native.SDL_SensorGetDeviceType(_index);
 
         /// <summary>
         /// The non-portable sensor type.
         /// </summary>
         public int NonPortableType =>
-            Native.SDL_SensorGetDeviceNonPortableType(Index);
+            Native.SDL_SensorGetDeviceNonPortableType(_index);
 
-        internal static SensorDevice Get(int index) =>
-            IndexToInstance(index);
+        internal SensorDevice(int index)
+        {
+            _index = index;
+        }
 
         /// <summary>
         /// Opens the device.
         /// </summary>
         /// <returns>The sensor.</returns>
         public Sensor Open() =>
-            Sensor.PointerToInstanceNotNull(Native.SDL_SensorOpen(Index));
-
-        /// <summary>
-        /// Updates sensor events.
-        /// </summary>
-        public static void Update() =>
-            Native.SDL_SensorUpdate();
+            new(Native.SDL_SensorOpen(_index));
     }
 }

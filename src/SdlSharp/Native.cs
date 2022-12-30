@@ -421,8 +421,13 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_AudioSpec* SDL_LoadWAV_RW(SDL_RWops* src, int freesrc, SDL_AudioSpec* spec, byte** audio_buf, uint* audio_len);
 
-        public static SDL_AudioSpec* SDL_LoadWAV(string file, SDL_AudioSpec* spec, byte** audio_buf, uint* audio_len) =>
-                SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"), BoolToInt(true), spec, audio_buf, audio_len);
+        public static SDL_AudioSpec* SDL_LoadWAV(byte* file, SDL_AudioSpec* spec, byte** audio_buf, uint* audio_len)
+        {
+            fixed (byte* ptr = StringToUtf8("rb"))
+            {
+                return SDL_LoadWAV_RW(SDL_RWFromFile(file, ptr), BoolToInt(true), spec, audio_buf, audio_len);
+            }
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_FreeWAV(byte* audio_buf);
@@ -1298,8 +1303,13 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GameControllerAddMappingsFromRW(SDL_RWops* rw, int freerw);
 
-        public static int SDL_GameControllerAddMappingsFromFile(string file) =>
-            SDL_GameControllerAddMappingsFromRW(SDL_RWFromFile(file, "rb"), BoolToInt(true));
+        public static int SDL_GameControllerAddMappingsFromFile(byte* file)
+        {
+            fixed (byte* ptr = StringToUtf8("rb"))
+            {
+                return SDL_GameControllerAddMappingsFromRW(SDL_RWFromFile(file, ptr), BoolToInt(true));
+            }
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GameControllerAddMapping(byte* mappingString);
@@ -4088,9 +4098,9 @@ namespace SdlSharp
 
         #region SDL_sensor.h
 
-        public readonly struct SDL_Sensor
-        {
-        }
+        public readonly struct SDL_Sensor { }
+
+        public readonly record struct SDL_SensorID(int Value);
 
         public enum SDL_SensorType
         {
@@ -4104,16 +4114,22 @@ namespace SdlSharp
             SDL_SENSOR_GYRO_R
         }
 
-        public readonly record struct SDL_SensorID(int Id);
+        public const float SDL_STANDARD_GRAVITY = 9.80665f;
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_LockSensors();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_UnlockSensors();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_NumSensors();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string? SDL_SensorGetDeviceName(int device_index);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_SensorGetDeviceName(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SensorType SDL_SensorGetDeviceType(int device_index);
+        public static extern SDL_SensorType SDL_SensorGetDeviceType(int device_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SensorGetDeviceNonPortableType(int device_index);
@@ -4127,11 +4143,11 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Sensor* SDL_SensorFromInstanceID(SDL_SensorID instance_id);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_SensorGetName(SDL_Sensor* sensor);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_SensorGetName(SDL_Sensor* sensor);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SensorType SDL_SensorGetType(SDL_Sensor* sensor);
+        public static extern SDL_SensorType SDL_SensorGetType(SDL_Sensor* sensor);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SensorGetNonPortableType(SDL_Sensor* sensor);
@@ -4140,7 +4156,10 @@ namespace SdlSharp
         public static extern SDL_SensorID SDL_SensorGetInstanceID(SDL_Sensor* sensor);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SensorGetData(SDL_Sensor* sensor, [MarshalAs(UnmanagedType.LPArray)] float[] data, int num_values);
+        public static extern int SDL_SensorGetData(SDL_Sensor* sensor, float* data, int num_values);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_SensorGetDataWithTimestamp(SDL_Sensor* sensor, ulong* timestamp, float* data, int num_values);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SensorClose(SDL_Sensor* sensor);
@@ -5110,8 +5129,13 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern Mix_Chunk* Mix_LoadWAV_RW(SDL_RWops* src, bool freesrc);
 
-        public static Mix_Chunk* Mix_LoadWAV(string file) =>
-            Mix_LoadWAV_RW(SDL_RWFromFile(file, "rb"), true);
+        public static Mix_Chunk* Mix_LoadWAV(byte* file)
+        {
+            fixed (byte* ptr = StringToUtf8("rb"))
+            {
+                return Mix_LoadWAV_RW(SDL_RWFromFile(file, ptr), true);
+            }
+        }
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern Mix_Music* Mix_LoadMUS(string file);
