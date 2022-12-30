@@ -243,11 +243,28 @@
         public static void ConvertPixels(Size size, EnumeratedPixelFormat sourceFormat, Span<byte> source, int sourcePitch, EnumeratedPixelFormat destinationFormat, Span<byte> destination, int destinationPitch)
         {
             fixed (byte* sourceBuffer = source)
+            fixed (byte* destinationBuffer = destination)
             {
-                fixed (byte* destinationBuffer = destination)
-                {
-                    _ = Native.CheckError(Native.SDL_ConvertPixels(size.Width, size.Height, sourceFormat, sourceBuffer, sourcePitch, destinationFormat, destinationBuffer, destinationPitch));
-                }
+                _ = Native.CheckError(Native.SDL_ConvertPixels(size.Width, size.Height, sourceFormat.Value, sourceBuffer, sourcePitch, destinationFormat.Value, destinationBuffer, destinationPitch));
+            }
+        }
+
+        /// <summary>
+        /// Premultiply the alpha on a block of pixels.
+        /// </summary>
+        /// <param name="size">The size of the buffers.</param>
+        /// <param name="sourceFormat">The source pixel format.</param>
+        /// <param name="source">The source pixels.</param>
+        /// <param name="sourcePitch">The source pitch.</param>
+        /// <param name="destinationFormat">The destination pixel format.</param>
+        /// <param name="destination">The destination buffer.</param>
+        /// <param name="destinationPitch">The destination pitch.</param>
+        public static void PremultiplyAlpha(Size size, EnumeratedPixelFormat sourceFormat, Span<byte> source, int sourcePitch, EnumeratedPixelFormat destinationFormat, Span<byte> destination, int destinationPitch)
+        {
+            fixed (byte* sourceBuffer = source)
+            fixed (byte* destinationBuffer = destination)
+            {
+                _ = Native.CheckError(Native.SDL_PremultiplyAlpha(size.Width, size.Height, sourceFormat.Value, sourceBuffer, sourcePitch, destinationFormat.Value, destinationBuffer, destinationPitch));
             }
         }
 

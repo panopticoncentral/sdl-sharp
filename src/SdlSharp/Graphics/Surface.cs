@@ -3,26 +3,28 @@
     /// <summary>
     /// A surface.
     /// </summary>
-    public sealed unsafe class Surface : NativePointerBase<Native.SDL_Surface, Surface>
+    public sealed unsafe class Surface : IDisposable
     {
+        private readonly Native.SDL_Surface* _surface;
+
         /// <summary>
         /// The YUV conversion mode.
         /// </summary>
         public static YuvConversionMode YuvConversionMode
         {
-            get => SdlSharp.Native.SDL_GetYUVConversionMode();
-            set => SdlSharp.Native.SDL_SetYUVConversionMode(value);
+            get => (YuvConversionMode)Native.SDL_GetYUVConversionMode();
+            set => Native.SDL_SetYUVConversionMode((Native.SDL_YUV_CONVERSION_MODE)value);
         }
 
         /// <summary>
         /// The size of the surface.
         /// </summary>
-        public Size Size => (Native->Width, Native->Height);
+        public Size Size => (_surface->w, _surface->h);
 
         /// <summary>
         /// The pitch of the surface.
         /// </summary>
-        public int Pitch => Native->Pitch;
+        public int Pitch => _surface->Pitch;
 
         /// <summary>
         /// The color modulator.
@@ -31,10 +33,11 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetSurfaceColorMod(Native, out var red, out var green, out var blue));
+                byte red, green, blue;
+                _ = Native.CheckError(Native.SDL_GetSurfaceColorMod(_surface, &red, &green, &blue));
                 return (red, green, blue);
             }
-            set => _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetSurfaceColorMod(Native, value.Red, value.Green, value.Blue));
+            set => _ = Native.CheckError(Native.SDL_SetSurfaceColorMod(_surface, value.Red, value.Green, value.Blue));
         }
 
         /// <summary>
@@ -44,10 +47,11 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetSurfaceAlphaMod(Native, out var alpha));
+                byte alpha;
+                _ = Native.CheckError(Native.SDL_GetSurfaceAlphaMod(_surface, &alpha));
                 return alpha;
             }
-            set => _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetSurfaceAlphaMod(Native, value));
+            set => _ = Native.CheckError(Native.SDL_SetSurfaceAlphaMod(_surface, value));
         }
 
         /// <summary>
@@ -57,11 +61,12 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetSurfaceBlendMode(Native, out var mode));
-                return mode;
+                Native.SDL_BlendMode mode;
+                _ = Native.CheckError(Native.SDL_GetSurfaceBlendMode(_surface, &mode));
+                return new(mode);
             }
 
-            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetSurfaceBlendMode(Native, value));
+            set => Native.CheckError(Native.SDL_SetSurfaceBlendMode(_surface, value.ToNative()));
         }
 
         /// <summary>
@@ -71,22 +76,33 @@
         {
             get
             {
-                if (!SdlSharp.Native.SDL_HasColorKey(Native))
+                if (!Native.SDL_HasColorKey(_surface))
                 {
                     return null;
                 }
 
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetColorKey(Native, out var key));
-                return key;
+                uint key;
+                _ = Native.CheckError(Native.SDL_GetColorKey(_surface, &key));
+                return new(key);
             }
-            set => _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetColorKey(Native, value != null, value ?? (default)));
+            set => _ = Native.CheckError(Native.SDL_SetColorKey(_surface, value != null ? 1 : 0, (value ?? (default)).Value));
         }
 
         /// <summary>
         /// The pixel format.
         /// </summary>
         public PixelFormat PixelFormat =>
-            new(Native->Format);
+            new(_surface->format);
+
+        /// <summary>
+        /// Whether RLE is enabled for this surface.
+        /// </summary>
+        public bool HasRle => Native.SDL_HasSurfaceRLE(_surface);
+
+        internal Surface(Native.SDL_Surface* surface)
+        {
+            _surface = surface;
+        }
 
         /// <summary>
         /// Creates a surface.
@@ -96,7 +112,7 @@
         /// <param name="mask">The color mask.</param>
         /// <returns>The surface.</returns>
         public static Surface Create(Size size, int depth, Color mask) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateRGBSurface(0, size.Width, size.Height, depth, mask.Red, mask.Green, mask.Blue, mask.Alpha));
+            new(Native.SDL_CreateRGBSurface(0, size.Width, size.Height, depth, mask.Red, mask.Green, mask.Blue, mask.Alpha));
 
         /// <summary>
         /// Creates a surface.
@@ -106,7 +122,7 @@
         /// <param name="format">The pixel format.</param>
         /// <returns>The surface.</returns>
         public static Surface Create(Size size, int depth, EnumeratedPixelFormat format) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateRGBSurfaceWithFormat(0, size.Width, size.Height, depth, format.Value));
+            new(Native.SDL_CreateRGBSurfaceWithFormat(0, size.Width, size.Height, depth, format.Value));
 
         /// <summary>
         /// Creates a surface from a set of pixels.
@@ -121,7 +137,7 @@
         {
             fixed (byte* pixelsPointer = pixels)
             {
-                return PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateRGBSurfaceFrom(pixelsPointer, size.Width, size.Height, depth, pitch, mask.Red, mask.Green, mask.Blue, mask.Alpha));
+                return new(Native.SDL_CreateRGBSurfaceFrom(pixelsPointer, size.Width, size.Height, depth, pitch, mask.Red, mask.Green, mask.Blue, mask.Alpha));
             }
         }
 
@@ -138,7 +154,7 @@
         {
             fixed (byte* pixelsPointer = pixels)
             {
-                return PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateRGBSurfaceWithFormatFrom(pixelsPointer, size.Width, size.Height, depth, pitch, format.Value));
+                return new(Native.SDL_CreateRGBSurfaceWithFormatFrom(pixelsPointer, size.Width, size.Height, depth, pitch, format.Value));
             }
         }
 
@@ -148,14 +164,10 @@
         /// <param name="size">The resolution.</param>
         /// <returns>The conversion mode.</returns>
         public static YuvConversionMode GetYuvConversionModeForResolution(Size size) =>
-            SdlSharp.Native.SDL_GetYUVConversionModeForResolution(size.Width, size.Height);
+            (YuvConversionMode)Native.SDL_GetYUVConversionModeForResolution(size.Width, size.Height);
 
         /// <inheritdoc/>
-        public override void Dispose()
-        {
-            SdlSharp.Native.SDL_FreeSurface(Native);
-            base.Dispose();
-        }
+        public void Dispose() => Native.SDL_FreeSurface(_surface);
 
         /// <summary>
         /// Loads a BMP into a surface.
@@ -172,7 +184,7 @@
         /// <param name="shouldDispose">Whether the storage should be disposed after loading the surface.</param>
         /// <returns>The surface.</returns>
         public static Surface LoadBmp(RWOps rwops, bool shouldDispose) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_LoadBMP_RW(rwops.ToNative(), shouldDispose));
+            new(Native.SDL_LoadBMP_RW(rwops.ToNative(), Native.BoolToInt(shouldDispose)));
 
         /// <summary>
         /// Loads a BMP into a surface compatible with a target surface.
@@ -191,26 +203,26 @@
         /// </summary>
         /// <param name="palette">The palette.</param>
         public void SetPalette(Palette palette) =>
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetSurfacePalette(Native, palette.GetPointer()));
+            _ = Native.CheckError(Native.SDL_SetSurfacePalette(_surface, palette.GetPointer()));
 
         /// <summary>
         /// Locks the surface.
         /// </summary>
         public void Lock() =>
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_LockSurface(Native));
+            _ = Native.CheckError(Native.SDL_LockSurface(_surface));
 
         /// <summary>
         /// Unlocks the surface.
         /// </summary>
         public void Unlock() =>
-            SdlSharp.Native.SDL_UnlockSurface(Native);
+            Native.SDL_UnlockSurface(_surface);
 
         /// <summary>
         /// The pixels of the surface.
         /// </summary>
         /// <typeparam name="T">The type of the pixel.</typeparam>
         /// <returns>The pixels.</returns>
-        public Span<T> GetPixels<T>() => SdlSharp.Native.PixelsToSpan<T>(Native->Pixels, Native->Pitch, Native->Height);
+        public Span<T> GetPixels<T>() => Native.PixelsToSpan<T>(_surface->Pixels, _surface->Pitch, _surface->Height);
 
         /// <summary>
         /// Saves the surface to a BMP.
@@ -225,14 +237,14 @@
         /// <param name="rwops">The storage.</param>
         /// <param name="shouldDispose">Whether the storage should be disposed after saving the surface.</param>
         public void SaveBmp(RWOps rwops, bool shouldDispose) =>
-            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SaveBMP_RW(Native, rwops.ToNative(), shouldDispose));
+            Native.CheckError(Native.SDL_SaveBMP_RW(_surface, rwops.ToNative(), Native.BoolToInt(shouldDispose)));
 
         /// <summary>
         /// Sets RLE acceleration hint for the surface.
         /// </summary>
         /// <param name="flag">The flag.</param>
         public void SetRle(bool flag) =>
-            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetSurfaceRLE(Native, flag));
+            Native.CheckError(Native.SDL_SetSurfaceRLE(_surface, Native.BoolToInt(flag)));
 
         /// <summary>
         /// Gets the clipping rectangle.
@@ -240,8 +252,9 @@
         /// <returns></returns>
         public Rectangle GetClippingRectangle()
         {
-            SdlSharp.Native.SDL_GetClipRect(Native, out var rect);
-            return rect;
+            Native.SDL_Rect rect;
+            Native.SDL_GetClipRect(_surface, &rect);
+            return new(rect);
         }
 
         /// <summary>
@@ -251,16 +264,8 @@
         /// <returns><c>true</c> if the rectangle intersects the surface, otherwise <c>false</c> and blits will be completely clipped.</returns>
         public bool SetClippingRectangle(Rectangle? clipRect)
         {
-            var rectPointer = (Rectangle*)null;
-            Rectangle rect;
-
-            if (clipRect.HasValue)
-            {
-                rect = clipRect.Value;
-                rectPointer = &rect;
-            }
-
-            return SdlSharp.Native.SDL_SetClipRect(Native, rectPointer);
+            Native.SDL_Rect rect;
+            return Native.SDL_SetClipRect(_surface, Rectangle.ToNative(clipRect, &rect));
         }
 
         /// <summary>
@@ -268,7 +273,7 @@
         /// </summary>
         /// <returns>The duplicate surface.</returns>
         public Surface Duplicate() =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_DuplicateSurface(Native));
+            new(Native.SDL_DuplicateSurface(_surface));
 
         /// <summary>
         /// Converts the surface to a new pixel format.
@@ -276,7 +281,7 @@
         /// <param name="format">The pixel format.</param>
         /// <returns>The converted surface.</returns>
         public Surface Convert(PixelFormat format) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_ConvertSurface(Native, format.GetPointer()));
+            new(Native.SDL_ConvertSurface(_surface, format.GetPointer()));
 
         /// <summary>
         /// Converts the surface to a new pixel format.
@@ -284,7 +289,7 @@
         /// <param name="format">The pixel format.</param>
         /// <returns>The converted surface.</returns>
         public Surface Convert(EnumeratedPixelFormat format) =>
-           PointerToInstanceNotNull(SdlSharp.Native.SDL_ConvertSurfaceFormat(Native, format));
+           new(Native.SDL_ConvertSurfaceFormat(_surface, format.Value));
 
         /// <summary>
         /// Fills a rectangle.
@@ -293,16 +298,8 @@
         /// <param name="color">The pixel color.</param>
         public void FillRectangle(Rectangle? rectangle, PixelColor color)
         {
-            var rectPointer = (Rectangle*)null;
-            Rectangle rect;
-
-            if (rectangle.HasValue)
-            {
-                rect = rectangle.Value;
-                rectPointer = &rect;
-            }
-
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_FillRect(Native, rectPointer, color));
+            Native.SDL_Rect rect;
+            _ = Native.CheckError(Native.SDL_FillRect(_surface, Rectangle.ToNative(rectangle, &rect), color.Value));
         }
 
         /// <summary>
@@ -310,8 +307,13 @@
         /// </summary>
         /// <param name="rectangles">The rectangles.</param>
         /// <param name="color">The pixel color.</param>
-        public void FillRectangles(Rectangle[] rectangles, PixelColor color) =>
-            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_FillRects(Native, rectangles, rectangles.Length, color));
+        public void FillRectangles(Rectangle[] rectangles, PixelColor color)
+        {
+            fixed (Rectangle* ptr = rectangles)
+            {
+                _ = Native.CheckError(Native.SDL_FillRects(_surface, (Native.SDL_Rect*)ptr, rectangles.Length, color.Value));
+            }
+        }
 
         /// <summary>
         /// Blits from the surface to another surface.
@@ -321,24 +323,8 @@
         /// <param name="destinationRectangle">The destination area.</param>
         public void Blit(Surface destination, Rectangle? sourceRectangle = null, Rectangle? destinationRectangle = null)
         {
-            var sourcePointer = (Rectangle*)null;
-            var destinationPointer = (Rectangle*)null;
-            Rectangle sourceRect;
-            Rectangle destinationRect;
-
-            if (sourceRectangle.HasValue)
-            {
-                sourceRect = sourceRectangle.Value;
-                sourcePointer = &sourceRect;
-            }
-
-            if (destinationRectangle.HasValue)
-            {
-                destinationRect = destinationRectangle.Value;
-                destinationPointer = &destinationRect;
-            }
-
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_UpperBlit(Native, sourcePointer, destination.Native, destinationPointer));
+            Native.SDL_Rect sourceRect, destRect;
+            _ = Native.CheckError(Native.SDL_BlitSurface(_surface, Rectangle.ToNative(sourceRectangle, &sourceRect), destination._surface, Rectangle.ToNative(destinationRectangle, &destRect)));
         }
 
         /// <summary>
@@ -349,24 +335,8 @@
         /// <param name="destinationRectangle">The destination area.</param>
         public void BlitScaled(Surface destination, Rectangle? sourceRectangle = null, Rectangle? destinationRectangle = null)
         {
-            var sourcePointer = (Rectangle*)null;
-            var destinationPointer = (Rectangle*)null;
-            Rectangle sourceRect;
-            Rectangle destinationRect;
-
-            if (sourceRectangle.HasValue)
-            {
-                sourceRect = sourceRectangle.Value;
-                sourcePointer = &sourceRect;
-            }
-
-            if (destinationRectangle.HasValue)
-            {
-                destinationRect = destinationRectangle.Value;
-                destinationPointer = &destinationRect;
-            }
-
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_UpperBlitScaled(Native, sourcePointer, destination.Native, destinationPointer));
+            Native.SDL_Rect sourceRect, destRect;
+            _ = Native.CheckError(Native.SDL_BlitScaled(_surface, Rectangle.ToNative(sourceRectangle, &sourceRect), destination._surface, Rectangle.ToNative(destinationRectangle, &destRect)));
         }
     }
 }

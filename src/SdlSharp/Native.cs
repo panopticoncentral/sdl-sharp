@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using SdlSharp.Graphics;
@@ -4234,36 +4235,38 @@ namespace SdlSharp
 
         #region SDL_surface.h
 
-        [Flags]
-        public enum SDL_SurfaceOptions
-        {
-            None = 0,
-            Prealloc = 0x00000001,
-            RleAccel = 0x00000002,
-            DontFree = 0x00000004,
-            SimdAligned = 0x00000008
-        }
+        public const uint SDL_SWSURFACE = 0;
+        public const uint SDL_PREALLOC = 0x00000001;
+        public const uint SDL_RLEACCEL = 0x00000002;
+        public const uint SDL_DONTFREE = 0x00000004;
+        public const uint SDL_SIMD_ALIGNED = 0x00000008;
 
-        [StructLayout(LayoutKind.Sequential)]
+        public static bool SDL_MUSTLOCK(SDL_Surface* surface) => (surface->flags & SDL_RLEACCEL) != 0;
+
+        public struct SDL_BlitMap { }
+
         public readonly struct SDL_Surface
         {
-            private readonly SDL_SurfaceOptions _flags;
-            public readonly SDL_PixelFormat* Format { get; }
-            public readonly int Width { get; }
-            public readonly int Height { get; }
-            public readonly int Pitch { get; }
-            public readonly void* Pixels { get; }
-            private readonly nint _userdata; // void*
-            private readonly int _locked;
-            private readonly nint _lock_data; // void*
-            private readonly Rectangle _clip_rect;
-            private readonly nint _map; // SDL_BlitMap*
-            private readonly int _refcount;
-
-            public bool MustLock => (_flags & SDL_SurfaceOptions.RleAccel) != 0;
+            public readonly uint flags;
+            public readonly SDL_PixelFormat* format;
+            public readonly int w, h;
+            public readonly int pitch;
+            public readonly byte* pixels;
+            public readonly nint userdata;
+            public readonly int locked;
+            public readonly byte* list_blitmap;
+            public readonly SDL_Rect clip_rect;
+            public readonly SDL_BlitMap* map; // SDL_BlitMap*
+            public readonly int refcount;
         }
 
-        // SDL_YUV_CONVERSION_MODE is covered by YuvConversionMode.cs
+        public enum SDL_YUV_CONVERSION_MODE
+        {
+            SDL_YUV_CONVERSION_JPEG,
+            SDL_YUV_CONVERSION_BT601,
+            SDL_YUV_CONVERSION_BT709,
+            SDL_YUV_CONVERSION_AUTOMATIC
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* SDL_CreateRGBSurface(uint flags, int width, int height, int depth, uint rmask, uint gmask, uint bmask, uint amask);
@@ -4290,50 +4293,65 @@ namespace SdlSharp
         public static extern void SDL_UnlockSurface(SDL_Surface* surface);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* SDL_LoadBMP_RW(SDL_RWops* src, bool freesrc);
+        public static extern SDL_Surface* SDL_LoadBMP_RW(SDL_RWops* src, int freesrc);
 
-        // SDL_LoadBMP
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SaveBMP_RW(SDL_Surface* surface, SDL_RWops* dst, bool freedst);
-
-        // SDL_SaveBMP
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetSurfaceRLE(SDL_Surface* surface, bool flag);
+        public static SDL_Surface* SDL_LoadBMP(byte* file)
+        {
+            fixed (byte* ptr = StringToUtf8("rb"))
+            {
+                return SDL_LoadBMP_RW(SDL_RWFromFile(file, ptr), BoolToInt(true));
+            }
+        }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetColorKey(SDL_Surface* surface, bool flag, PixelColor key);
+        public static extern int SDL_SaveBMP_RW(SDL_Surface* surface, SDL_RWops* dst, int freedst);
+
+        public static int SDL_SaveBMP(SDL_Surface* surface, byte* file)
+        {
+            fixed (byte* ptr = StringToUtf8("wb"))
+            {
+                return SDL_SaveBMP_RW(surface, SDL_RWFromFile(file, ptr), BoolToInt(true));
+            }
+        }
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_SetSurfaceRLE(SDL_Surface* surface, int flag);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_HasSurfaceRLE(SDL_Surface* surface);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_SetColorKey(SDL_Surface* surface, int flag, uint key);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_HasColorKey(SDL_Surface* surface);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetColorKey(SDL_Surface* surface, out PixelColor key);
+        public static extern int SDL_GetColorKey(SDL_Surface* surface, uint* key);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SetSurfaceColorMod(SDL_Surface* surface, byte r, byte g, byte b);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetSurfaceColorMod(SDL_Surface* surface, out byte r, out byte g, out byte b);
+        public static extern int SDL_GetSurfaceColorMod(SDL_Surface* surface, byte* r, byte* g, byte* b);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SetSurfaceAlphaMod(SDL_Surface* surface, byte alpha);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetSurfaceAlphaMod(SDL_Surface* surface, out byte alpha);
+        public static extern int SDL_GetSurfaceAlphaMod(SDL_Surface* surface, byte* alpha);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetSurfaceBlendMode(SDL_Surface* surface, BlendMode blendMode);
+        public static extern int SDL_SetSurfaceBlendMode(SDL_Surface* surface, SDL_BlendMode blendMode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetSurfaceBlendMode(SDL_Surface* surface, out BlendMode blendMode);
+        public static extern int SDL_GetSurfaceBlendMode(SDL_Surface* surface, SDL_BlendMode* blendMode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_SetClipRect(SDL_Surface* surface, Rectangle* rect);
+        public static extern bool SDL_SetClipRect(SDL_Surface* surface, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetClipRect(SDL_Surface* surface, out Rectangle rect);
+        public static extern void SDL_GetClipRect(SDL_Surface* surface, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* SDL_DuplicateSurface(SDL_Surface* surface);
@@ -4342,44 +4360,46 @@ namespace SdlSharp
         public static extern SDL_Surface* SDL_ConvertSurface(SDL_Surface* src, SDL_PixelFormat* fmt, uint flags = 0);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* SDL_ConvertSurfaceFormat(SDL_Surface* src, EnumeratedPixelFormat pixel_format, uint flags = 0);
+        public static extern SDL_Surface* SDL_ConvertSurfaceFormat(SDL_Surface* src, uint pixel_format, uint flags = 0);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_ConvertPixels(int width, int height, EnumeratedPixelFormat src_format, byte* src, int src_pitch, EnumeratedPixelFormat dst_format, byte* dst, int dst_pitch);
+        public static extern int SDL_ConvertPixels(int width, int height, uint src_format, byte* src, int src_pitch, uint dst_format, byte* dst, int dst_pitch);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_FillRect(SDL_Surface* dst, Rectangle* rect, PixelColor color);
+        public static extern int SDL_PremultiplyAlpha(int width, int height, uint src_format, byte* src, int src_pitch, uint dst_format, byte* dst, int dst_pitch);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_FillRects(SDL_Surface* dst, Rectangle[] rects, int count, PixelColor color);
-
-        //#define SDL_BlitSurface SDL_UpperBlit
+        public static extern int SDL_FillRect(SDL_Surface* dst, SDL_Rect* rect, uint color);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_UpperBlit(SDL_Surface* src, Rectangle* srcrect, SDL_Surface* dst, Rectangle* dstrect);
+        public static extern int SDL_FillRects(SDL_Surface* dst, SDL_Rect* rects, int count, uint color);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_LowerBlit(SDL_Surface* src, Rectangle* srcrect, SDL_Surface* dst, Rectangle* dstrect);
+        public static extern int SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SoftStretch(SDL_Surface* src, Rectangle* srcrect, SDL_Surface* dst, Rectangle* dstrect);
-
-        //#define SDL_BlitScaled SDL_UpperBlitScaled
+        public static extern int SDL_LowerBlit(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_UpperBlitScaled(SDL_Surface* src, Rectangle* srcrect, SDL_Surface* dst, Rectangle* dstrect);
+        public static extern int SDL_SoftStretch(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_LowerBlitScaled(SDL_Surface* src, Rectangle* srcrect, SDL_Surface* dst, Rectangle* dstrect);
+        public static extern int SDL_SoftStretchLinear(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetYUVConversionMode(YuvConversionMode mode);
+        public static extern int SDL_BlitScaled(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern YuvConversionMode SDL_GetYUVConversionMode();
+        public static extern int SDL_LowerBlitScaled(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern YuvConversionMode SDL_GetYUVConversionModeForResolution(int width, int height);
+        public static extern void SDL_SetYUVConversionMode(SDL_YUV_CONVERSION_MODE mode);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_YUV_CONVERSION_MODE SDL_GetYUVConversionMode();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_YUV_CONVERSION_MODE SDL_GetYUVConversionModeForResolution(int width, int height);
 
         #endregion
 
