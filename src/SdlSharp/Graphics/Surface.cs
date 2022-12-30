@@ -24,7 +24,7 @@
         /// <summary>
         /// The pitch of the surface.
         /// </summary>
-        public int Pitch => _surface->Pitch;
+        public int Pitch => _surface->pitch;
 
         /// <summary>
         /// The color modulator.
@@ -338,5 +338,7 @@
             Native.SDL_Rect sourceRect, destRect;
             _ = Native.CheckError(Native.SDL_BlitScaled(_surface, Rectangle.ToNative(sourceRectangle, &sourceRect), destination._surface, Rectangle.ToNative(destinationRectangle, &destRect)));
         }
+
+        internal Native.SDL_Surface* ToNative() => _surface;
     }
 }

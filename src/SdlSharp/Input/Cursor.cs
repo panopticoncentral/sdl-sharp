@@ -47,7 +47,7 @@ namespace SdlSharp.Input
         /// <param name="hotspot">The location of the hotspot.</param>
         /// <returns>The cursor.</returns>
         public static Cursor Create(Surface surface, Point hotspot) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateColorCursor(surface.Native, hotspot.X, hotspot.Y));
+            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateColorCursor(surface.ToNative(), hotspot.X, hotspot.Y));
 
         /// <summary>
         /// Creates a new cursor.

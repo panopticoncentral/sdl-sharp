@@ -202,7 +202,7 @@
             Native.SDL_Rect rect;
             Native.SDL_Surface* surface;
             _ = Native.CheckError(Native.SDL_LockTextureToSurface(_texture, Rectangle.ToNative(rectangle, &rect), &surface));
-            return Surface.PointerToInstanceNotNull(surface);
+            return new(surface);
         }
 
         /// <summary>

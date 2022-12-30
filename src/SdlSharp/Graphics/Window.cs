@@ -173,7 +173,7 @@
         /// <summary>
         /// The window's surface.
         /// </summary>
-        public Surface Surface => Surface.PointerToInstanceNotNull(SdlSharp.Native.SDL_GetWindowSurface(Native));
+        public Surface Surface => new(SdlSharp.Native.SDL_GetWindowSurface(Native));
 
         /// <summary>
         /// Whether the window has been grabbed.
@@ -416,7 +416,7 @@
         /// </summary>
         /// <param name="icon">The icon.</param>
         public void SetIcon(Surface icon) =>
-            SdlSharp.Native.SDL_SetWindowIcon(Native, icon.Native);
+            SdlSharp.Native.SDL_SetWindowIcon(Native, icon.ToNative());
 
         /// <summary>
         /// Sets whether the window has  border.
@@ -526,7 +526,7 @@
         public void SetShape(Surface surface, WindowShapeMode shapeMode)
         {
             var nativeShapeMode = shapeMode.ToNative();
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowShape(Native, surface.Native, &nativeShapeMode));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowShape(Native, surface.ToNative(), &nativeShapeMode));
         }
 
         internal static void DispatchEvent(Native.SDL_Event e)

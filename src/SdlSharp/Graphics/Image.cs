@@ -11,7 +11,7 @@
         /// <param name="filename">The filename.</param>
         /// <returns>The image.</returns>
         public static Surface Load(string filename) =>
-            Surface.PointerToInstanceNotNull(Native.IMG_Load(filename));
+            new(Native.IMG_Load(filename));
 
         /// <summary>
         /// Loads an image from a file compatible with a target surface.
@@ -50,7 +50,7 @@
         /// <param name="type">The type of the image.</param>
         /// <returns>The image.</returns>
         public static Surface Load(RWOps rwops, bool shouldDispose, string type) =>
-            Surface.PointerToInstanceNotNull(Native.IMG_LoadTyped_RW(rwops.ToNative(), shouldDispose, type));
+            new(Native.IMG_LoadTyped_RW(rwops.ToNative(), shouldDispose, type));
 
         /// <summary>
         /// Loads an image from a storage into a texture.
@@ -78,7 +78,7 @@
         /// <param name="shouldDispose">Whether the storage should be disposed when loading is finished.</param>
         /// <returns>The image.</returns>
         public static Surface Load(RWOps rwops, bool shouldDispose) =>
-            Surface.PointerToInstanceNotNull(Native.IMG_Load_RW(rwops.ToNative(), shouldDispose));
+            new(Native.IMG_Load_RW(rwops.ToNative(), shouldDispose));
 
         /// <summary>
         /// Loads an image as a texture from a file.
@@ -236,7 +236,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadIco(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadICO_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadICO_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Cur image from a storage.
@@ -244,7 +244,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadCur(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadCUR_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadCUR_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Bmp image from a storage.
@@ -252,7 +252,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadBmp(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadBMP_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadBMP_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Gif image from a storage.
@@ -260,7 +260,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadGif(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadGIF_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadGIF_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Jpg image from a storage.
@@ -268,7 +268,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadJpg(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadJPG_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadJPG_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Lbm image from a storage.
@@ -276,7 +276,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadLbm(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadLBM_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadLBM_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Pcx image from a storage.
@@ -284,7 +284,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadPcx(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadPCX_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadPCX_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Png image from a storage.
@@ -292,7 +292,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadPng(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadPNG_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadPNG_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Pnm image from a storage.
@@ -300,7 +300,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadPnm(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadPNM_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadPNM_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Svg image from a storage.
@@ -308,7 +308,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadSvg(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadSVG_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadSVG_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Tga image from a storage.
@@ -316,7 +316,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadTga(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadTGA_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadTGA_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Tif image from a storage.
@@ -324,7 +324,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadTif(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadTIF_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadTIF_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Xcf image from a storage.
@@ -332,7 +332,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadXcf(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadXCF_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadXCF_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Xpm image from a storage.
@@ -340,7 +340,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadXpm(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadXPM_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadXPM_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Xv image from a storage.
@@ -348,7 +348,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadXv(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadXV_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadXV_RW(rwops.ToNative()));
 
         /// <summary>
         /// Load a Webp image from a storage.
@@ -356,7 +356,7 @@
         /// <param name="rwops">The storage.</param>
         /// <returns>The image.</returns>
         public static Surface LoadWebp(RWOps rwops) =>
-                    Surface.PointerToInstanceNotNull(Native.IMG_LoadWEBP_RW(rwops.ToNative()));
+                    new(Native.IMG_LoadWEBP_RW(rwops.ToNative()));
 
         /// <summary>
         /// Saves a surface as a PNG image.
@@ -364,7 +364,7 @@
         /// <param name="surface">The surface.</param>
         /// <param name="filename">The filename.</param>
         public static void SavePng(Surface surface, string filename) =>
-            Native.CheckError(Native.IMG_SavePNG(surface.Native, filename));
+            Native.CheckError(Native.IMG_SavePNG(surface.ToNative(), filename));
 
         /// <summary>
         /// Saves a surface as a PNG image.
@@ -373,7 +373,7 @@
         /// <param name="rwops">The storage.</param>
         /// <param name="shouldDispose">Whether the storage should be disposed when loading is finished.</param>
         public static void SavePng(Surface surface, RWOps rwops, bool shouldDispose) =>
-            Native.CheckError(Native.IMG_SavePNG_RW(surface.Native, rwops.ToNative(), shouldDispose));
+            Native.CheckError(Native.IMG_SavePNG_RW(surface.ToNative(), rwops.ToNative(), shouldDispose));
 
         /// <summary>
         /// Saves a surface as a JPG image.
@@ -382,7 +382,7 @@
         /// <param name="filename">The filename.</param>
         /// <param name="quality">The quality to save as.</param>
         public static void SaveJpg(Surface surface, string filename, int quality) =>
-            Native.CheckError(Native.IMG_SaveJPG(surface.Native, filename, quality));
+            Native.CheckError(Native.IMG_SaveJPG(surface.ToNative(), filename, quality));
 
         /// <summary>
         /// Saves a surface as a JPG image.
@@ -392,6 +392,6 @@
         /// <param name="shouldDispose">Whether the storage should be disposed when loading is finished.</param>
         /// <param name="quality">The quality to save as.</param>
         public static void SaveJpg(Surface surface, RWOps rwops, bool shouldDispose, int quality) =>
-            Native.CheckError(Native.IMG_SaveJPG_RW(surface.Native, rwops.ToNative(), shouldDispose, quality));
+            Native.CheckError(Native.IMG_SaveJPG_RW(surface.ToNative(), rwops.ToNative(), shouldDispose, quality));
     }
 }

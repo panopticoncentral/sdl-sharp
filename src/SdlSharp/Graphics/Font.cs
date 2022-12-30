@@ -185,7 +185,7 @@
         /// <param name="foreground">The foreground color.</param>
         /// <returns>The rendered surface.</returns>
         public Surface RenderSolid(string s, Color foreground) =>
-            Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderUNICODE_Solid(Native, s, foreground));
+            new(SdlSharp.Native.TTF_RenderUNICODE_Solid(Native, s, foreground));
 
         /// <summary>
         /// Renders a string in solid text.
@@ -196,7 +196,7 @@
         /// <returns>The rendered texture.</returns>
         public Texture RenderSolid(string s, Color foreground, Renderer renderer)
         {
-            using var surface = Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderUNICODE_Solid(Native, s, foreground));
+            using Surface surface = new(SdlSharp.Native.TTF_RenderUNICODE_Solid(Native, s, foreground));
             return renderer.CreateTexture(surface);
         }
 
@@ -207,7 +207,7 @@
         /// <param name="foreground">The foreground color.</param>
         /// <returns>The rendered surface.</returns>
         public Surface RenderSolid(char ch, Color foreground) =>
-            Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderGlyph_Solid(Native, ch, foreground));
+            new(SdlSharp.Native.TTF_RenderGlyph_Solid(Native, ch, foreground));
 
         /// <summary>
         /// Renders a character in solid text.
@@ -218,7 +218,7 @@
         /// <returns>The rendered texture.</returns>
         public Texture RenderSolid(char ch, Color foreground, Renderer renderer)
         {
-            using var surface = Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderGlyph_Solid(Native, ch, foreground));
+            using Surface surface = new(SdlSharp.Native.TTF_RenderGlyph_Solid(Native, ch, foreground));
             return renderer.CreateTexture(surface);
         }
 
@@ -230,7 +230,7 @@
         /// <param name="background">The background color.</param>
         /// <returns>The rendered surface.</returns>
         public Surface RenderShaded(string s, Color foreground, Color background) =>
-            Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderUNICODE_Shaded(Native, s, foreground, background));
+            new(SdlSharp.Native.TTF_RenderUNICODE_Shaded(Native, s, foreground, background));
 
         /// <summary>
         /// Renders a string in shaded text.
@@ -242,7 +242,7 @@
         /// <returns>The rendered texture.</returns>
         public Texture RenderShaded(string s, Color foreground, Color background, Renderer renderer)
         {
-            using var surface = Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderUNICODE_Shaded(Native, s, foreground, background));
+            using Surface surface = new(SdlSharp.Native.TTF_RenderUNICODE_Shaded(Native, s, foreground, background));
             return renderer.CreateTexture(surface);
         }
 
@@ -254,7 +254,7 @@
         /// <param name="background">The background color.</param>
         /// <returns>The rendered surface.</returns>
         public Surface RenderShaded(char ch, Color foreground, Color background) =>
-            Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderGlyph_Shaded(Native, ch, foreground, background));
+            new(SdlSharp.Native.TTF_RenderGlyph_Shaded(Native, ch, foreground, background));
 
         /// <summary>
         /// Renders a character in shaded text.
@@ -266,7 +266,7 @@
         /// <returns>The rendered texture.</returns>
         public Texture RenderShaded(char ch, Color foreground, Color background, Renderer renderer)
         {
-            using var surface = Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderGlyph_Shaded(Native, ch, foreground, background));
+            using Surface surface = new(SdlSharp.Native.TTF_RenderGlyph_Shaded(Native, ch, foreground, background));
             return renderer.CreateTexture(surface);
         }
 
@@ -277,7 +277,7 @@
         /// <param name="foreground">The foreground color.</param>
         /// <returns>The rendered surface.</returns>
         public Surface RenderBlended(string s, Color foreground) =>
-            Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderUNICODE_Blended(Native, s, foreground));
+            new(SdlSharp.Native.TTF_RenderUNICODE_Blended(Native, s, foreground));
 
         /// <summary>
         /// Renders a string in blended text.
@@ -288,7 +288,7 @@
         /// <returns>The rendered texture.</returns>
         public Texture RenderBlended(string s, Color foreground, Renderer renderer)
         {
-            using var surface = Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderUNICODE_Blended(Native, s, foreground));
+            using Surface surface = new(SdlSharp.Native.TTF_RenderUNICODE_Blended(Native, s, foreground));
             return renderer.CreateTexture(surface);
         }
 
@@ -300,7 +300,7 @@
         /// <param name="wrapLength">The wrap length.</param>
         /// <returns>The rendered surface.</returns>
         public Surface RenderBlended(string s, Color foreground, uint wrapLength) =>
-            Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderUNICODE_Blended_Wrapped(Native, s, foreground, wrapLength));
+            new(SdlSharp.Native.TTF_RenderUNICODE_Blended_Wrapped(Native, s, foreground, wrapLength));
 
         /// <summary>
         /// Renders a string in blended text with wrap.
@@ -312,7 +312,7 @@
         /// <returns>The rendered texture.</returns>
         public Texture RenderBlended(string s, Color foreground, uint wrapLength, Renderer renderer)
         {
-            using var surface = Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderUNICODE_Blended_Wrapped(Native, s, foreground, wrapLength));
+            using Surface surface = new(SdlSharp.Native.TTF_RenderUNICODE_Blended_Wrapped(Native, s, foreground, wrapLength));
             return renderer.CreateTexture(surface);
         }
 
@@ -323,7 +323,7 @@
         /// <param name="foreground">The foreground color.</param>
         /// <returns>The rendered surface.</returns>
         public Surface RenderBlended(char ch, Color foreground) =>
-            Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderGlyph_Blended(Native, ch, foreground));
+            new(SdlSharp.Native.TTF_RenderGlyph_Blended(Native, ch, foreground));
 
         /// <summary>
         /// Renders a character in blended text.
@@ -334,7 +334,7 @@
         /// <returns>The rendered texture.</returns>
         public Texture RenderBlended(char ch, Color foreground, Renderer renderer)
         {
-            using var surface = Surface.PointerToInstanceNotNull(SdlSharp.Native.TTF_RenderGlyph_Blended(Native, ch, foreground));
+            using Surface surface = new(SdlSharp.Native.TTF_RenderGlyph_Blended(Native, ch, foreground));
             return renderer.CreateTexture(surface);
         }
 

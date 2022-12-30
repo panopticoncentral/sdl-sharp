@@ -200,7 +200,7 @@
         /// <param name="surface">The surface.</param>
         /// <returns>The renderer.</returns>
         public static Renderer Create(Surface surface) =>
-            new(Native.SDL_CreateSoftwareRenderer(surface.Native));
+            new(Native.SDL_CreateSoftwareRenderer(surface.ToNative()));
 
         /// <summary>
         /// Clears the renderer.
@@ -509,7 +509,7 @@
         /// <param name="surface">The surface.</param>
         /// <returns>The texture.</returns>
         public Texture CreateTexture(Surface surface) =>
-            new(Native.SDL_CreateTextureFromSurface(_renderer, surface.Native));
+            new(Native.SDL_CreateTextureFromSurface(_renderer, surface.ToNative()));
 
         /// <summary>
         /// Flushes all pending draws in the renderer.
