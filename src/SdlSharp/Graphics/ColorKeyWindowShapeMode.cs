@@ -20,6 +20,10 @@
         }
 
         internal override Native.SDL_WindowShapeMode ToNative() =>
-            new(Native.WindowShapeMode.ColorKey, new Native.SDL_WindowShapeParams() { _colorKey = Key });
+            new()
+            {
+                mode = Native.WindowShapeMode.ShapeModeColorKey,
+                parameters = new Native.SDL_WindowShapeParams() { colorKey = Key.ToNative() }
+            };
     }
 }

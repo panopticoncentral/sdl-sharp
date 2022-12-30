@@ -27,6 +27,10 @@
         }
 
         internal override Native.SDL_WindowShapeMode ToNative() =>
-            new(IsReverse ? Native.WindowShapeMode.ReverseBinarizeAlpha : Native.WindowShapeMode.BinarizeAlpha, new Native.SDL_WindowShapeParams() { _binarizationCutoff = BinarizationCutoff });
+            new()
+            {
+                mode = IsReverse ? Native.WindowShapeMode.ShapeModeReverseBinarizeAlpha : Native.WindowShapeMode.ShapeModeBinarizeAlpha,
+                parameters = new Native.SDL_WindowShapeParams() { binarizationCutoff = BinarizationCutoff }
+            };
     }
 }

@@ -248,9 +248,10 @@
         {
             get
             {
-                var result = SdlSharp.Native.SDL_GetShapedWindowMode(Native, out var mode);
+                Native.SDL_WindowShapeMode mode;
+                var result = SdlSharp.Native.SDL_GetShapedWindowMode(Native, &mode);
 
-                if (result is SdlSharp.Native.SDL_NonShapeableWindow or SdlSharp.Native.SDL_WindowLacksShape)
+                if (result is SdlSharp.Native.SDL_NONSHAPEABLE_WINDOW or SdlSharp.Native.SDL_WINDOW_LACKS_SHAPE)
                 {
                     return null;
                 }
@@ -383,8 +384,10 @@
         /// <returns></returns>
         public static Window CreateShaped(string title, Rectangle rectangle, WindowOptions flags)
         {
-            using var utf8Title = Utf8String.ToUtf8String(title);
-            return SdlSharp.Native.CheckNotNull(PointerToInstance(SdlSharp.Native.SDL_CreateShapedWindow(utf8Title, (uint)rectangle.Location.X, (uint)rectangle.Location.Y, (uint)rectangle.Size.Width, (uint)rectangle.Size.Height, flags)));
+            fixed (byte* ptr = SdlSharp.Native.StringToUtf8(title))
+            {
+                return SdlSharp.Native.CheckNotNull(PointerToInstance(SdlSharp.Native.SDL_CreateShapedWindow(ptr, (uint)rectangle.Location.X, (uint)rectangle.Location.Y, (uint)rectangle.Size.Width, (uint)rectangle.Size.Height, (uint)flags)));
+            }
         }
 
         /// <summary>
@@ -523,7 +526,7 @@
         public void SetShape(Surface surface, WindowShapeMode shapeMode)
         {
             var nativeShapeMode = shapeMode.ToNative();
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowShape(Native, surface.Native, ref nativeShapeMode));
+            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowShape(Native, surface.Native, &nativeShapeMode));
         }
 
         internal static void DispatchEvent(Native.SDL_Event e)

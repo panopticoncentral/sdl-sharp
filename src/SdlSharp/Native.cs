@@ -4171,51 +4171,50 @@ namespace SdlSharp
 
         #region SDL_shape.h
 
-        public const int SDL_NonShapeableWindow = -1;
-        public const int SDL_InvalidShapeArgument = -2;
-        public const int SDL_WindowLacksShape = -3;
+        public const int SDL_NONSHAPEABLE_WINDOW = -1;
+        public const int SDL_INVALID_SHAPE_ARGUMENT = -2;
+        public const int SDL_WINDOW_LACKS_SHAPE = -3;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Window* SDL_CreateShapedWindow(Utf8String title, uint x, uint y, uint w, uint h, WindowOptions flags);
+        public static extern SDL_Window* SDL_CreateShapedWindow(byte* title, uint x, uint y, uint w, uint h, uint flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_IsShapedWindow(SDL_Window* window);
 
         public enum WindowShapeMode
         {
-            Default,
-            BinarizeAlpha,
-            ReverseBinarizeAlpha,
-            ColorKey
+            ShapeModeDefault,
+            ShapeModeBinarizeAlpha,
+            ShapeModeReverseBinarizeAlpha,
+            ShapeModeColorKey
         }
+
+        public static bool SDL_SHAPEMODEALPHA(WindowShapeMode mode) =>
+            mode is WindowShapeMode.ShapeModeDefault
+            or WindowShapeMode.ShapeModeBinarizeAlpha
+            or WindowShapeMode.ShapeModeReverseBinarizeAlpha;
 
         [StructLayout(LayoutKind.Explicit)]
         public struct SDL_WindowShapeParams
         {
             [FieldOffset(0)]
-            public byte _binarizationCutoff;
+            public byte binarizationCutoff;
 
             [FieldOffset(0)]
-            public Color _colorKey;
+            public SDL_Color colorKey;
         }
 
-        public readonly struct SDL_WindowShapeMode
+        public struct SDL_WindowShapeMode
         {
-            public WindowShapeMode Mode { get; }
-            public SDL_WindowShapeParams Parameters { get; }
-
-            public SDL_WindowShapeMode(WindowShapeMode mode, SDL_WindowShapeParams parameters = default)
-            {
-                Mode = mode;
-                Parameters = parameters;
-            }
+            public WindowShapeMode mode;
+            public SDL_WindowShapeParams parameters;
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetWindowShape(SDL_Window* window, SDL_Surface* shape, ref SDL_WindowShapeMode shape_mode);
+        public static extern int SDL_SetWindowShape(SDL_Window* window, SDL_Surface* shape, SDL_WindowShapeMode* shape_mode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetShapedWindowMode(SDL_Window* window, out SDL_WindowShapeMode shape_mode);
+        public static extern int SDL_GetShapedWindowMode(SDL_Window* window, SDL_WindowShapeMode* shape_mode);
 
         #endregion
 

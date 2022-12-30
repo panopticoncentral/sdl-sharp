@@ -9,15 +9,15 @@
 
         internal static WindowShapeMode FromNative(Native.SDL_WindowShapeMode mode)
         {
-            return mode.Mode switch
+            return mode.mode switch
             {
-                Native.WindowShapeMode.Default => new DefaultWindowShapeMode(),
+                Native.WindowShapeMode.ShapeModeDefault => new DefaultWindowShapeMode(),
 
-                Native.WindowShapeMode.BinarizeAlpha => new BinarizeAlphaWindowShapeMode(false, mode.Parameters._binarizationCutoff),
+                Native.WindowShapeMode.ShapeModeBinarizeAlpha => new BinarizeAlphaWindowShapeMode(false, mode.parameters.binarizationCutoff),
 
-                Native.WindowShapeMode.ReverseBinarizeAlpha => new BinarizeAlphaWindowShapeMode(true, mode.Parameters._binarizationCutoff),
+                Native.WindowShapeMode.ShapeModeReverseBinarizeAlpha => new BinarizeAlphaWindowShapeMode(true, mode.parameters.binarizationCutoff),
 
-                Native.WindowShapeMode.ColorKey => new ColorKeyWindowShapeMode(mode.Parameters._colorKey),
+                Native.WindowShapeMode.ShapeModeColorKey => new ColorKeyWindowShapeMode(new(mode.parameters.colorKey)),
 
                 _ => throw new InvalidOperationException(),
             };

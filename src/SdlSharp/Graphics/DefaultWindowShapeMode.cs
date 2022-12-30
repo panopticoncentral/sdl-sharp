@@ -6,6 +6,9 @@
     public sealed class DefaultWindowShapeMode : WindowShapeMode
     {
         internal override Native.SDL_WindowShapeMode ToNative() =>
-            new(Native.WindowShapeMode.Default);
+            new()
+            {
+                mode = Native.WindowShapeMode.ShapeModeDefault
+            };
     }
 }
