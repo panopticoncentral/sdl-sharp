@@ -5,13 +5,10 @@
     /// </summary>
     public sealed unsafe class NativeMemoryBlock : IDisposable
     {
-        /// <summary>
-        /// The block pointer.
-        /// </summary>
-        public void* Block { get; private set; }
+        private byte* _block;
 
         /// <summary>
-        /// The size of the block of memory.
+        /// The size of the block.
         /// </summary>
         public uint Size { get; private set; }
 
@@ -21,10 +18,10 @@
         /// <param name="size">The size of the block of memory to allocate.</param>
         public NativeMemoryBlock(uint size)
         {
-            Block = Native.SDL_malloc(size);
+            _block = (byte*)Native.SDL_malloc(size);
             Size = size;
 
-            if (Block == null)
+            if (_block == null)
             {
                 throw new SdlException();
             }
@@ -36,8 +33,12 @@
         /// <param name="filename">The file name.</param>
         public NativeMemoryBlock(string filename)
         {
-            Block = Native.SDL_LoadFile(filename, out var size);
-            Size = (uint)size;
+            fixed (byte* namePtr = Native.StringToUtf8(filename))
+            {
+                nuint size;
+                _block = Native.SDL_LoadFile(namePtr, &size);
+                Size = (uint)size;
+            }
         }
 
         /// <summary>
@@ -47,24 +48,25 @@
         /// <param name="shouldDispose">Whether the storage should be disposed when finished with.</param>
         public NativeMemoryBlock(RWOps rwops, bool shouldDispose)
         {
-            Block = Native.SDL_LoadFile_RW(rwops.Native, out var size, shouldDispose);
+            nuint size;
+            _block = Native.SDL_LoadFile_RW(rwops.ToNative(), &size, Native.BoolToInt(shouldDispose));
             Size = (uint)size;
         }
 
         /// <summary>
         /// The block of memory as a span.
         /// </summary>
-        public Span<byte> AsSpan() => new(Block, (int)Size);
+        public Span<byte> AsSpan() => new(_block, (int)Size);
 
         /// <summary>
         /// Frees the block of memory.
         /// </summary>
         public void Dispose()
         {
-            if (Block != null)
+            if (_block != null)
             {
-                Native.SDL_free(Block);
-                Block = null;
+                Native.SDL_free(_block);
+                _block = null;
                 Size = 0;
             }
         }
@@ -74,5 +76,7 @@
         /// </summary>
         /// <param name="block">The memory block.</param>
         public static implicit operator Span<byte>(NativeMemoryBlock block) => block.AsSpan();
+
+        internal byte* ToNative() => _block;
     }
 }

@@ -1,16 +1,26 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+using SdlSharp.Sound;
 
 namespace SdlSharp
 {
     /// <summary>
     /// A class that represents storage.
     /// </summary>
-    public sealed unsafe class RWOps : NativePointerBase<Native.SDL_RWops, RWOps>
+    public sealed unsafe class RWOps : IDisposable
     {
+        private readonly Native.SDL_RWops* _rwops;
+
         /// <summary>
         /// Returns the size of the storage.
         /// </summary>
-        public long Size => SdlSharp.Native.SDL_RWsize(Native);
+        public long Size => Native.SDL_RWsize(_rwops);
+
+        internal RWOps(Native.SDL_RWops* rwops)
+        {
+            _rwops = rwops;
+        }
 
         /// <summary>
         /// Creates a storage from a filename.
@@ -18,8 +28,14 @@ namespace SdlSharp
         /// <param name="filename">The filename.</param>
         /// <param name="mode">The file mode.</param>
         /// <returns>The storage.</returns>
-        public static RWOps Create(string filename, string mode) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_RWFromFile(filename, mode));
+        public static RWOps Create(string filename, string mode)
+        {
+            fixed (byte* namePtr = Native.StringToUtf8(filename))
+            fixed (byte* modePtr = Native.StringToUtf8(mode))
+            {
+                return new(Native.SDL_RWFromFile(namePtr, modePtr));
+            }
+        }
 
         /// <summary>
         /// Creates a storage over a block of memory.
@@ -27,7 +43,7 @@ namespace SdlSharp
         /// <param name="memory">The memory.</param>
         /// <returns>The storage.</returns>
         public static RWOps Create(NativeMemoryBlock memory) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_RWFromMem(memory.Block, (int)memory.Size));
+            new(Native.SDL_RWFromMem(memory.ToNative(), (int)memory.Size));
 
         /// <summary>
         /// Creates a storage over a read-only block of memory.
@@ -35,7 +51,7 @@ namespace SdlSharp
         /// <param name="memory">The memory.</param>
         /// <returns>The storage.</returns>
         public static RWOps CreateReadOnly(NativeMemoryBlock memory) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_RWFromConstMem(memory.Block, (int)memory.Size));
+            new(Native.SDL_RWFromConstMem(memory.ToNative(), (int)memory.Size));
 
         /// <summary>
         /// Creates a storage over a read-only byte array.
@@ -44,14 +60,14 @@ namespace SdlSharp
         /// <returns>The storage.</returns>
         public static RWOps CreateReadOnly(byte[] array)
         {
-            var instance = PointerToInstanceNotNull(SdlSharp.Native.SDL_AllocRW());
-            var wrapper = new ReadOnlyByteArrayWrapper(array);
-            instance.Native->Type = SdlSharp.Native.SDL_RWOpsType.Unknown;
-            instance.Native->Size = Marshal.GetFunctionPointerForDelegate<Native.SizeRWOps>(wrapper.Size);
-            instance.Native->Seek = Marshal.GetFunctionPointerForDelegate<Native.SeekRWOps>(wrapper.Seek);
-            instance.Native->Read = Marshal.GetFunctionPointerForDelegate<Native.ReadRWOps>(wrapper.Read);
-            instance.Native->Write = Marshal.GetFunctionPointerForDelegate<Native.WriteRWOps>(ReadOnlyByteArrayWrapper.Write);
-            instance.Native->Close = Marshal.GetFunctionPointerForDelegate<Native.CloseRWOps>(wrapper.Close);
+            RWOps instance = new(Native.SDL_AllocRW());
+            var wrapper = new ReadOnlyByteArrayWrapper(array, instance._rwops);
+            instance._rwops->type = Native.SDL_RWOPS_UNKNOWN;
+            instance._rwops->size = &ReadOnlyByteArrayWrapper.Size;
+            instance._rwops->seek = &ReadOnlyByteArrayWrapper.Seek;
+            instance._rwops->read = &ReadOnlyByteArrayWrapper.Read;
+            instance._rwops->write = &ReadOnlyByteArrayWrapper.Write;
+            instance._rwops->close = &ReadOnlyByteArrayWrapper.Close;
             return instance;
         }
 
@@ -62,7 +78,13 @@ namespace SdlSharp
         /// <param name="type">The type of seek to perform.</param>
         /// <returns>The new location.</returns>
         public long Seek(long offset, SeekType type) =>
-            SdlSharp.Native.SDL_RWseek(Native, offset, type);
+            Native.SDL_RWseek(_rwops, offset, (int)type);
+
+        /// <summary>
+        /// Gives the location in the storage.
+        /// </summary>
+        /// <returns>The location in the storage.</returns>
+        public long Tell() => Native.SDL_RWtell(_rwops);
 
         /// <summary>
         /// Reads a value from the storage.
@@ -72,7 +94,7 @@ namespace SdlSharp
         public T? Read<T>() where T : unmanaged
         {
             T value = default;
-            return SdlSharp.Native.SDL_RWread(Native, &value, (uint)sizeof(T), 1) == 0 ? null : value;
+            return Native.SDL_RWread(_rwops, (byte*)&value, (uint)sizeof(T), 1) == 0 ? null : value;
         }
 
         /// <summary>
@@ -81,180 +103,204 @@ namespace SdlSharp
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns><c>true</c> if the value was written, <c>false</c> otherwise.</returns>
-        public bool Write<T>(T value) where T : unmanaged => SdlSharp.Native.SDL_RWwrite(Native, &value, (uint)sizeof(T), 1) != 0;
+        public bool Write<T>(T value) where T : unmanaged => Native.SDL_RWwrite(_rwops, (byte*)&value, (uint)sizeof(T), 1) != 0;
 
         /// <inheritdoc/>
-        public override void Dispose()
-        {
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_RWclose(Native));
-            base.Dispose();
-        }
+        public void Dispose() => _ = Native.CheckError(Native.SDL_RWclose(_rwops));
 
         /// <summary>
         /// Reads an unsigned byte.
         /// </summary>
         /// <returns>The value.</returns>
-        public byte ReadU8() => SdlSharp.Native.SDL_ReadU8(Native);
+        public byte ReadU8() => Native.SDL_ReadU8(_rwops);
 
         /// <summary>
         /// Reads a little-endian unsigned short.
         /// </summary>
         /// <returns>The value.</returns>
-        public ushort ReadLE16() => SdlSharp.Native.SDL_ReadLE16(Native);
+        public ushort ReadLE16() => Native.SDL_ReadLE16(_rwops);
 
         /// <summary>
         /// Reads a big-endian unsigned short.
         /// </summary>
         /// <returns>The value.</returns>
-        public ushort ReadBE16() => SdlSharp.Native.SDL_ReadBE16(Native);
+        public ushort ReadBE16() => Native.SDL_ReadBE16(_rwops);
 
         /// <summary>
         /// Reads a little-endian unsigned int.
         /// </summary>
         /// <returns>The value.</returns>
-        public uint ReadLE32() => SdlSharp.Native.SDL_ReadLE32(Native);
+        public uint ReadLE32() => Native.SDL_ReadLE32(_rwops);
 
         /// <summary>
         /// Reads a big-endian unsigned int.
         /// </summary>
         /// <returns>The value.</returns>
-        public uint ReadBE32() => SdlSharp.Native.SDL_ReadBE32(Native);
+        public uint ReadBE32() => Native.SDL_ReadBE32(_rwops);
 
         /// <summary>
         /// Reads a little-endian unsigned long.
         /// </summary>
         /// <returns>The value.</returns>
-        public ulong ReadLE64() => SdlSharp.Native.SDL_ReadLE64(Native);
+        public ulong ReadLE64() => Native.SDL_ReadLE64(_rwops);
 
         /// <summary>
         /// Reads a big-endian unsigned long.
         /// </summary>
         /// <returns>The value.</returns>
-        public ulong ReadBE64() => SdlSharp.Native.SDL_ReadBE64(Native);
+        public ulong ReadBE64() => Native.SDL_ReadBE64(_rwops);
 
         /// <summary>
         /// Writes an unsigned byte.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteU8(byte value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteU8(Native, value));
+        public void WriteU8(byte value) => Native.CheckErrorZero(Native.SDL_WriteU8(_rwops, value));
 
         /// <summary>
         /// Writes a little-endian unsigned short.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteLE16(ushort value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteLE16(Native, value));
+        public void WriteLE16(ushort value) => Native.CheckErrorZero(Native.SDL_WriteLE16(_rwops, value));
 
         /// <summary>
         /// Writes a big-endian unsigned short.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteBE16(ushort value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteBE16(Native, value));
+        public void WriteBE16(ushort value) => Native.CheckErrorZero(Native.SDL_WriteBE16(_rwops, value));
 
         /// <summary>
         /// Writes a little-endian unsigned int.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteLE32(uint value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteLE32(Native, value));
+        public void WriteLE32(uint value) => Native.CheckErrorZero(Native.SDL_WriteLE32(_rwops, value));
 
         /// <summary>
         /// Writes a big-endian unsigned int.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteBE32(uint value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteBE32(Native, value));
+        public void WriteBE32(uint value) => Native.CheckErrorZero(Native.SDL_WriteBE32(_rwops, value));
 
         /// <summary>
         /// Writes a little-endian unsigned long.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteLE64(ulong value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteLE64(Native, value));
+        public void WriteLE64(ulong value) => Native.CheckErrorZero(Native.SDL_WriteLE64(_rwops, value));
 
         /// <summary>
         /// Writes a big-endian unsigned long.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void WriteBE64(ulong value) => SdlSharp.Native.CheckErrorZero(SdlSharp.Native.SDL_WriteBE64(Native, value));
+        public void WriteBE64(ulong value) => Native.CheckErrorZero(Native.SDL_WriteBE64(_rwops, value));
 
-        private sealed class ReadOnlyByteArrayWrapper
+        internal Native.SDL_RWops* ToNative() => _rwops;
+
+        private sealed unsafe class ReadOnlyByteArrayWrapper
         {
+            private static Dictionary<nint, ReadOnlyByteArrayWrapper>? s_wrappers;
+
+            private static Dictionary<nint, ReadOnlyByteArrayWrapper> Wrappers => s_wrappers ??= new();
+
             private readonly byte[] _array;
             private int _index;
             private bool _isClosed;
 
-            public ReadOnlyByteArrayWrapper(byte[] array)
+            public ReadOnlyByteArrayWrapper(byte[] array, Native.SDL_RWops* context)
             {
                 _array = array;
+                Wrappers[(nint)context] = this;
             }
 
-            public long Size(Native.SDL_RWops* _) => _isClosed ? -1 : _array.Length;
+            [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+            public static long Size(Native.SDL_RWops* context) =>
+                Wrappers.TryGetValue((nint)context, out var instance) ? instance._isClosed ? -1 : instance._array.Length : -1;
 
-            internal int Close(Native.SDL_RWops* _)
+            [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+            public static int Close(Native.SDL_RWops* context)
             {
-                if (_isClosed)
+                if (Wrappers.TryGetValue((nint)context, out var instance))
                 {
-                    return -1;
-                }
-                _isClosed = true;
-                return 0;
-            }
-
-            internal long Seek(Native.SDL_RWops* _, long offset, SeekType whence)
-            {
-                var newIndex = _index;
-
-                switch (whence)
-                {
-                    case SeekType.Set:
-                        newIndex = (int)offset;
-                        break;
-
-                    case SeekType.Current:
-                        newIndex += (int)offset;
-                        break;
-
-                    case SeekType.End:
-                        newIndex = _array.Length + (int)offset;
-                        break;
-                }
-
-                if (newIndex < 0 || newIndex >= _array.Length)
-                {
-                    return -1;
-                }
-
-                _index = newIndex;
-                return _index;
-            }
-
-            internal nuint Read(Native.SDL_RWops* _, void* ptr, nuint size, nuint maxnum)
-            {
-                uint numberRead = 0;
-                var sizeNumber = (uint)size;
-                var maxNumNumber = (uint)maxnum;
-                var bytePointer = (byte*)ptr;
-                var byteIndex = 0;
-
-                bool InBounds() => _index + sizeNumber < _array.Length;
-
-                if (_isClosed || !InBounds())
-                {
+                    if (instance._isClosed)
+                    {
+                        return -1;
+                    }
+                    instance._isClosed = true;
+                    _ = Wrappers.Remove((nint)context);
                     return 0;
                 }
 
-                while (maxNumNumber > 0 && InBounds())
-                {
-                    maxNumNumber--;
-                    numberRead++;
-
-                    for (var index = 0; index < sizeNumber; index++)
-                    {
-                        bytePointer[byteIndex++] = _array[_index++];
-                    }
-                }
-
-                return numberRead;
+                return -1;
             }
 
-            internal static nuint Write(Native.SDL_RWops* _1, void* _2, nuint _3, nuint _4) => 0;
+            [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+            public static long Seek(Native.SDL_RWops* context, long offset, int whence)
+            {
+                if (Wrappers.TryGetValue((nint)context, out var instance))
+                {
+                    var newIndex = instance._index;
+
+                    switch ((SeekType)whence)
+                    {
+                        case SeekType.Set:
+                            newIndex = (int)offset;
+                            break;
+
+                        case SeekType.Current:
+                            newIndex += (int)offset;
+                            break;
+
+                        case SeekType.End:
+                            newIndex = instance._array.Length + (int)offset;
+                            break;
+                    }
+
+                    if (newIndex < 0 || newIndex >= instance._array.Length)
+                    {
+                        return -1;
+                    }
+
+                    instance._index = newIndex;
+                    return instance._index;
+                }
+
+                return -1;
+            }
+
+            [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+            public static nuint Read(Native.SDL_RWops* context, byte* ptr, nuint size, nuint maxnum)
+            {
+                if (Wrappers.TryGetValue((nint)context, out var instance))
+                {
+                    uint numberRead = 0;
+                    var sizeNumber = (uint)size;
+                    var maxNumNumber = (uint)maxnum;
+                    var byteIndex = 0;
+
+                    bool InBounds() => instance._index + sizeNumber < instance._array.Length;
+
+                    if (instance._isClosed || !InBounds())
+                    {
+                        return 0;
+                    }
+
+                    while (maxNumNumber > 0 && InBounds())
+                    {
+                        maxNumNumber--;
+                        numberRead++;
+
+                        for (var index = 0; index < sizeNumber; index++)
+                        {
+                            ptr[byteIndex++] = instance._array[instance._index++];
+                        }
+                    }
+
+                    return numberRead;
+                }
+
+                return 0;
+            }
+
+            [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+            internal static nuint Write(Native.SDL_RWops* _1, byte* _2, nuint _3, nuint _4) => 0;
         }
     }
 }

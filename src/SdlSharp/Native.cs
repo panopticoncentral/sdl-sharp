@@ -1850,37 +1850,37 @@ namespace SdlSharp
         public static extern SDL_hid_device* SDL_hid_open_path(byte* path, int bExclusive);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_hid_write(SDL_hid_device* dev, byte* data, nint length);
+        public static extern int SDL_hid_write(SDL_hid_device* dev, byte* data, nuint length);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_hid_read_timeout(SDL_hid_device* dev, byte* data, nint length, int milliseconds);
+        public static extern int SDL_hid_read_timeout(SDL_hid_device* dev, byte* data, nuint length, int milliseconds);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_hid_read(SDL_hid_device* dev, byte* data, nint length);
+        public static extern int SDL_hid_read(SDL_hid_device* dev, byte* data, nuint length);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_hid_set_nonblocking(SDL_hid_device* dev, int nonblock);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_hid_send_feature_report(SDL_hid_device* dev, byte* data, nint length);
+        public static extern int SDL_hid_send_feature_report(SDL_hid_device* dev, byte* data, nuint length);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_hid_get_feature_report(SDL_hid_device* dev, byte* data, nint length);
+        public static extern int SDL_hid_get_feature_report(SDL_hid_device* dev, byte* data, nuint length);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_hid_close(SDL_hid_device* dev);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_hid_get_manufacturer_string(SDL_hid_device* dev, char* s, nint maxlen);
+        public static extern int SDL_hid_get_manufacturer_string(SDL_hid_device* dev, char* s, nuint maxlen);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_hid_get_product_string(SDL_hid_device* dev, char* s, nint maxlen);
+        public static extern int SDL_hid_get_product_string(SDL_hid_device* dev, char* s, nuint maxlen);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_hid_get_serial_number_string(SDL_hid_device* dev, char* s, nint maxlen);
+        public static extern int SDL_hid_get_serial_number_string(SDL_hid_device* dev, char* s, nuint maxlen);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_hid_get_indexed_string(SDL_hid_device* dev, int string_index, char* s, nint maxlen);
+        public static extern int SDL_hid_get_indexed_string(SDL_hid_device* dev, int string_index, char* s, nuint maxlen);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_hid_ble_scan(bool active);
@@ -3699,70 +3699,38 @@ namespace SdlSharp
 
         #region SDL_rwops.h
 
-        public enum SDL_RWOpsType
-        {
-            Unknown,
-            WinFile,
-            StdFile,
-            JniFile,
-            Memory,
-            MemoryReadOnly
-        }
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate long SizeRWOps(SDL_RWops* context);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate long SeekRWOps(SDL_RWops* context, long offset, SeekType whence);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate nuint ReadRWOps(SDL_RWops* context, void* ptr, nuint size, nuint maxnum);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate nuint WriteRWOps(SDL_RWops* context, void* ptr, nuint size, nuint num);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int CloseRWOps(SDL_RWops* context);
+        public const uint SDL_RWOPS_UNKNOWN = 0U;
+        public const uint SDL_RWOPS_WINFILE = 1U;
+        public const uint SDL_RWOPS_STDFILE = 2U;
+        public const uint SDL_RWOPS_JNIFILE = 3U;
+        public const uint SDL_RWOPS_MEMORY = 4U;
+        public const uint SDL_RWOPS_MEMORY_RO = 5U;
 
         public struct SDL_RWops
         {
-            public nint Size { get; set; }
-            public nint Seek { get; set; }
-            public nint Read { get; set; }
-            public nint Write { get; set; }
-            public nint Close { get; set; }
+            public delegate* unmanaged[Cdecl]<SDL_RWops*, long> size;
+            public delegate* unmanaged[Cdecl]<SDL_RWops*, long, int, long> seek;
+            public delegate* unmanaged[Cdecl]<SDL_RWops*, byte*, nuint, nuint, nuint> read;
+            public delegate* unmanaged[Cdecl]<SDL_RWops*, byte*, nuint, nuint, nuint> write;
+            public delegate* unmanaged[Cdecl]<SDL_RWops*, int> close;
 
-            public SDL_RWOpsType Type { get; set; }
+            public uint type;
 
-            public void* Data1 { get; set; }
-            public void* Data2 { get; set; }
+            public byte* data1;
+            public byte* data2;
         }
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern long SDL_RWsize(SDL_RWops* context);
+        public static extern SDL_RWops* SDL_RWFromFile(byte* file, byte* mode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern long SDL_RWseek(SDL_RWops* context, long offset, SeekType whence);
+        public static extern SDL_RWops* SDL_RWFromFP(void* fp, bool autoclose);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nuint SDL_RWread(SDL_RWops* context, void* buffer, nuint size, nuint maxnum);
+        public static extern SDL_RWops* SDL_RWFromMem(byte* mem, int size);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nuint SDL_RWwrite(SDL_RWops* context, void* buffer, nuint size, nuint num);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_RWclose(SDL_RWops* context);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern SDL_RWops* SDL_RWFromFile(string file, string mode);
-
-        // SDL_RWFromFP
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_RWops* SDL_RWFromMem(void* mem, int size);
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_RWops* SDL_RWFromConstMem(void* mem, int size);
+        public static extern SDL_RWops* SDL_RWFromConstMem(byte* mem, int size);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_RWops* SDL_AllocRW();
@@ -3770,14 +3738,33 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_FreeRW(SDL_RWops* area);
 
-        // Seek macros covered by SeekType.cs
-        // Macros in RWOps structure
+        public const int RW_SEEK_SET = 0;
+        public const int RW_SEEK_CUR = 1;
+        public const int RW_SEEK_END = 2;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void* SDL_LoadFile_RW(SDL_RWops* src, out nuint datasize, bool freesrc);
+        public static extern long SDL_RWsize(SDL_RWops* context);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void* SDL_LoadFile(string file, out nuint datasize);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern long SDL_RWseek(SDL_RWops* context, long offset, int whence);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern long SDL_RWtell(SDL_RWops* context);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern nuint SDL_RWread(SDL_RWops* context, byte* buffer, nuint size, nuint maxnum);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern nuint SDL_RWwrite(SDL_RWops* context, byte* buffer, nuint size, nuint num);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_RWclose(SDL_RWops* context);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_LoadFile_RW(SDL_RWops* src, nuint* datasize, int freesrc);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_LoadFile(byte* file, nuint* datasize);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern byte SDL_ReadU8(SDL_RWops* src);
