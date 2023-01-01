@@ -5,21 +5,28 @@ namespace SdlSharp.Input
     /// <summary>
     /// A mouse cursor.
     /// </summary>
-    public sealed unsafe class Cursor : NativePointerBase<Native.SDL_Cursor, Cursor>
+    public sealed unsafe class Cursor : IDisposable
     {
+        private readonly Native.SDL_Cursor* _cursor;
+
         /// <summary>
         /// The current cursor.
         /// </summary>
         public static Cursor Current
         {
-            get => PointerToInstanceNotNull(SdlSharp.Native.SDL_GetCursor());
-            set => SdlSharp.Native.SDL_SetCursor(value.Native);
+            get => new(Native.SDL_GetCursor());
+            set => Native.SDL_SetCursor(value.ToNative());
         }
 
         /// <summary>
         /// The default cursor.
         /// </summary>
-        public static Cursor Default => PointerToInstanceNotNull(SdlSharp.Native.SDL_GetDefaultCursor());
+        public static Cursor Default => new(Native.SDL_GetDefaultCursor());
+
+        internal Cursor(Native.SDL_Cursor* cursor)
+        {
+            _cursor = cursor;
+        }
 
         /// <summary>
         /// Creates a new cursor.
@@ -32,11 +39,9 @@ namespace SdlSharp.Input
         public static Cursor Create(Span<byte> data, Span<byte> mask, Size size, Point hotspot)
         {
             fixed (byte* dataPointer = data)
+            fixed (byte* maskPointer = mask)
             {
-                fixed (byte* maskPointer = mask)
-                {
-                    return PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateCursor(dataPointer, maskPointer, size.Width, size.Height, hotspot.X, hotspot.Y));
-                }
+                return new(Native.SDL_CreateCursor(dataPointer, maskPointer, size.Width, size.Height, hotspot.X, hotspot.Y));
             }
         }
 
@@ -47,7 +52,7 @@ namespace SdlSharp.Input
         /// <param name="hotspot">The location of the hotspot.</param>
         /// <returns>The cursor.</returns>
         public static Cursor Create(Surface surface, Point hotspot) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateColorCursor(surface.ToNative(), hotspot.X, hotspot.Y));
+            new(Native.SDL_CreateColorCursor(surface.ToNative(), hotspot.X, hotspot.Y));
 
         /// <summary>
         /// Creates a new cursor.
@@ -55,14 +60,10 @@ namespace SdlSharp.Input
         /// <param name="systemCursor">The system cursor.</param>
         /// <returns>The cursor.</returns>
         public static Cursor Create(SystemCursor systemCursor) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateSystemCursor((Native.SDL_SystemCursor)systemCursor));
+            new(Native.SDL_CreateSystemCursor((Native.SDL_SystemCursor)systemCursor));
 
         /// <inheritdoc/>
-        public override void Dispose()
-        {
-            SdlSharp.Native.SDL_FreeCursor(Native);
-            base.Dispose();
-        }
+        public void Dispose() => Native.SDL_FreeCursor(_cursor);
 
         /// <summary>
         /// Shows or hides the cursor.
@@ -70,6 +71,8 @@ namespace SdlSharp.Input
         /// <param name="state">The state.</param>
         /// <returns>The old state.</returns>
         public static State Show(State state) =>
-            (State)SdlSharp.Native.CheckError(SdlSharp.Native.SDL_ShowCursor(state));
+            (State)Native.CheckError(Native.SDL_ShowCursor((int)state));
+
+        internal Native.SDL_Cursor* ToNative() => _cursor;
     }
 }

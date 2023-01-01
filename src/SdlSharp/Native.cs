@@ -2428,7 +2428,7 @@ namespace SdlSharp
         public static extern bool SDL_IsTextInputShown();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetTextInputRect(ref Rectangle rect);
+        public static extern void SDL_SetTextInputRect(SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_HasScreenKeyboardSupport();
@@ -2991,7 +2991,7 @@ namespace SdlSharp
         public static extern void SDL_FreeCursor(SDL_Cursor* cursor);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_ShowCursor(State toggle);
+        public static extern int SDL_ShowCursor(int toggle);
 
         public const int SDL_BUTTON_LEFT = 1;
         public const int SDL_BUTTON_MIDDLE = 2;
@@ -3104,7 +3104,7 @@ namespace SdlSharp
         public static uint SDL_PIXELLAYOUT(uint x) => (x >> 16) & 0x0F;
         public static uint SDL_BITSPERPIXEL(uint x) => (x >> 8) & 0xFF;
 
-        public static uint SDL_BYTESPERPIXEL(uint x) => SDL_ISPIXELFORMAT_FOURCC(x) ? (((x == EnumeratedPixelFormat.Yuy2.Value) || (x == EnumeratedPixelFormat.Uyvy.Value) || (x == EnumeratedPixelFormat.Yvyu.Value)) ? 2u : 1u) : ((x >> 0) & 0xFF);
+        public static uint SDL_BYTESPERPIXEL(uint x) => SDL_ISPIXELFORMAT_FOURCC(x) ? (((x == SDL_PixelFormatEnum.SDL_PIXELFORMAT_YUY2) || (x == SDL_PixelFormatEnum.SDL_PIXELFORMAT_UYVY) || (x == SDL_PixelFormatEnum.SDL_PIXELFORMAT_YVYU)) ? 2u : 1u) : ((x >> 0) & 0xFF);
 
         public static bool SDL_ISPIXELFORMAT_INDEXED(uint format) => !SDL_ISPIXELFORMAT_FOURCC(format) && ((SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_INDEX1) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_INDEX4) || (SDL_MAKEPIXELTYPE(format) == SDL_PixelType.SDL_PIXELTYPE_INDEX8));
 
@@ -3303,16 +3303,16 @@ namespace SdlSharp
         public static extern void SDL_FreePalette(SDL_Palette* palette);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern PixelColor SDL_MapRGB(SDL_PixelFormat* format, byte r, byte g, byte b);
+        public static extern uint SDL_MapRGB(SDL_PixelFormat* format, byte r, byte g, byte b);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern PixelColor SDL_MapRGBA(SDL_PixelFormat* format, byte r, byte g, byte b, byte a);
+        public static extern uint SDL_MapRGBA(SDL_PixelFormat* format, byte r, byte g, byte b, byte a);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetRGB(PixelColor pixel, SDL_PixelFormat* format, byte* r, byte* g, byte* b);
+        public static extern void SDL_GetRGB(uint pixel, SDL_PixelFormat* format, byte* r, byte* g, byte* b);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetRGBA(PixelColor pixel, SDL_PixelFormat* format, byte* r, byte* g, byte* b, byte* a);
+        public static extern void SDL_GetRGBA(uint pixel, SDL_PixelFormat* format, byte* r, byte* g, byte* b, byte* a);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_CalculateGammaRamp(float gamma, ushort* ramp);
@@ -4824,9 +4824,6 @@ namespace SdlSharp
             SDL_HITTEST_RESIZE_LEFT
         }
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate HitTestResult HitTestCallback(SDL_Window* win, ref Point area, nint data);
-
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SetWindowHitTest(SDL_Window* window, delegate* unmanaged[Cdecl]<SDL_Window*, SDL_Point*, nint, SDL_HitTestResult> callback, nint callback_data);
 
@@ -4868,7 +4865,7 @@ namespace SdlSharp
 
         #region SDL_image.h
 
-        public static readonly Version IntegratedSdl2ImageVersion = new(2, 0, 5);
+        public static readonly Version IntegratedSdl2ImageVersion = new(2, 6, 2);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern Version* IMG_Linked_Version();

@@ -154,8 +154,11 @@ namespace SdlSharp.Input
         /// Sets the rectangle for text input.
         /// </summary>
         /// <param name="rectangle">The rectangle.</param>
-        public static void SetTextInputRectangle(Rectangle rectangle) =>
-            Native.SDL_SetTextInputRect(ref rectangle);
+        public static void SetTextInputRectangle(Rectangle rectangle)
+        {
+            var localRect = rectangle;
+            Native.SDL_SetTextInputRect((Native.SDL_Rect*)&localRect);
+        }
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
