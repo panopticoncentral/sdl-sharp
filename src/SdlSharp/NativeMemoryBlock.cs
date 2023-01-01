@@ -53,6 +53,12 @@
             Size = (uint)size;
         }
 
+        internal NativeMemoryBlock(byte* buffer, uint size)
+        {
+            _block = buffer;
+            Size = size;
+        }
+
         /// <summary>
         /// The block of memory as a span.
         /// </summary>

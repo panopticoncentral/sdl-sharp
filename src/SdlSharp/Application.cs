@@ -281,7 +281,7 @@ namespace SdlSharp
                 var messageBoxData = new Native.SDL_MessageBoxData
                 {
                     flags = (uint)flags,
-                    window = window == null ? null : window.Native,
+                    window = window == null ? null : window.ToNative(),
                     title = titlePtr,
                     message = messagePtr,
                     numbuttons = buttons.Length,
@@ -314,7 +314,7 @@ namespace SdlSharp
             fixed (byte* titlePtr = Native.StringToUtf8(title))
             fixed (byte* messagePtr = Native.StringToUtf8(message))
             {
-                _ = Native.CheckError(Native.SDL_ShowSimpleMessageBox((uint)flags, titlePtr, messagePtr, window == null ? null : window.Native));
+                _ = Native.CheckError(Native.SDL_ShowSimpleMessageBox((uint)flags, titlePtr, messagePtr, window == null ? null : window.ToNative()));
             }
         }
 

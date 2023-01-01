@@ -1,9 +1,7 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
 using SdlSharp.Graphics;
-using SdlSharp.Input;
 using SdlSharp.Sound;
 
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
@@ -214,6 +212,18 @@ namespace SdlSharp
                 array[index] = getter(index);
             }
             return array;
+        }
+
+        internal static IReadOnlyDictionary<TKey, TValue> GetIndexedDictionary<TKey, TValue>(Func<int, TKey> keyGetter, Func<int, TValue> valueGetter, Func<int> counter)
+            where TKey : notnull
+        {
+            var count = counter();
+            var dictionary = new Dictionary<TKey, TValue>();
+            for (var index = 0; index < count; index++)
+            {
+                dictionary[keyGetter(index)] = valueGetter(index);
+            }
+            return dictionary;
         }
 
         //
@@ -1065,7 +1075,7 @@ namespace SdlSharp
         {
             public readonly uint type;
             public readonly uint timestamp;
-            public readonly SDL_SysWMmsg* msg;
+            public readonly /*SDL_SysWMmsg*/byte* msg;
         }
 
         [StructLayout(LayoutKind.Explicit)]
@@ -4405,63 +4415,7 @@ namespace SdlSharp
 
         // SDL_system.h -- Not supporting low level Windows functions.
 
-        #region SDL_syswm.h
-
-        public enum SDL_SysWmType
-        {
-            Unknown,
-            Windows,
-            X11,
-            DirectFB,
-            Cocoa,
-            UIKit,
-            Wayland,
-            MIR,
-            WinRT,
-            Android,
-            Vivante,
-            OS2,
-            Haiku
-        }
-
-        // SDL_SysWMmsg for Windows is covered by SystemWindowMessage.cs
-
-        public readonly struct SDL_SysWMmsg
-        {
-            public readonly Version Version;
-            public readonly SDL_SysWmType Subsystem;
-            public readonly SystemWindowMessage Win;
-        }
-
-        public readonly struct SDL_SysWMinfo_Windows
-        {
-            public readonly nint Window;
-            public readonly nint Hdc;
-            public readonly nint Hinstance;
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        public readonly struct SDL_SysWMinfo_Union
-        {
-            [FieldOffset(0)]
-            public readonly SDL_SysWMinfo_Windows Win;
-
-            [FieldOffset(0)]
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
-            public readonly byte[] Buffer;
-        }
-
-        public readonly struct SDL_SysWMinfo
-        {
-            public readonly Version Version;
-            public readonly SDL_SysWmType Subsystem;
-            public readonly SDL_SysWMinfo_Union Union;
-        }
-
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SDL_GetWindowWMInfo(SDL_Window* window, ref SDL_SysWMinfo info);
-
-        #endregion
+        // SDL_syswm -- Platform specific windows stuff.
 
         // SDL_thread.h -- Should use Framework threading primitives
 
@@ -4469,32 +4423,29 @@ namespace SdlSharp
 
         #region SDL_touch.h
 
-        public readonly struct SDL_TouchID
-        {
-            public long Id { get; }
+        public readonly record struct SDL_TouchID(long Value);
 
-            public SDL_TouchID(long id)
-            {
-                Id = id;
-            }
+        public readonly record struct SDL_FingerID(long Value);
+
+        public enum SDL_TouchDeviceType
+        {
+            SDL_TOUCH_DEVICE_INVALID = -1,
+            SDL_TOUCH_DEVICE_DIRECT,
+            SDL_TOUCH_DEVICE_INDIRECT_ABSOLUTE,
+            SDL_TOUCH_DEVICE_INDIRECT_RELATIVE
         }
 
-        public readonly struct SDL_FingerID
+        public struct SDL_Finger
         {
-            public long Id { get; }
+            public SDL_FingerID id;
+            public float x;
+            public float y;
+            public float pressure;
         }
 
-        // SDL_TouchDeviceType is covered by TouchDeviceType.cs
+        public const uint SDL_TOUCH_MOUSEID = uint.MaxValue;
 
-        public readonly struct SDL_Finger
-        {
-            public readonly SDL_FingerID Id;
-            public readonly float X;
-            public readonly float Y;
-            public readonly float Pressure;
-        }
-
-        public const uint TouchMouseId = uint.MaxValue;
+        public const long SDL_MOUSE_TOUCHID = -1;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumTouchDevices();
@@ -4503,7 +4454,10 @@ namespace SdlSharp
         public static extern SDL_TouchID SDL_GetTouchDevice(int index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern TouchDeviceType SDL_GetTouchDeviceType(SDL_TouchID touchID);
+        public static extern byte* SDL_GetTouchName(int index);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_TouchDeviceType SDL_GetTouchDeviceType(SDL_TouchID touchID);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumTouchFingers(SDL_TouchID touchID);
@@ -4515,7 +4469,7 @@ namespace SdlSharp
 
         #region SDL_version.h
 
-        public static readonly Version IntegratedSdl2Version = new(2, 0, 12);
+        public static readonly Version IntegratedSdl2Version = new(2, 26, 0);
 
         public static int SDL_VersionNumber(Version version) =>
             (version.Major * 1000) + (version.Minor * 100) + version.Patch;
@@ -4533,42 +4487,102 @@ namespace SdlSharp
 
         #region SDL_video.h
 
-        // SDL_DisplayMode is covered by DisplayMode.cs
-
-        public readonly struct SDL_Window
+        public struct SDL_DisplayMode
         {
+            public uint format;
+            public int w;
+            public int h;
+            public int refresh_rate;
+            public byte* driverdata;
         }
 
-        // SDL_WindowFlags is covered by WindowOptions.cs
+        public readonly struct SDL_Window { }
 
-        public enum SDL_WindowEventID : byte
+        public enum SDL_WindowFlags
         {
-            None,
-            Shown,
-            Hidden,
-            Exposed,
-            Moved,
-            Resized,
-            SizeChanged,
-            Minimized,
-            Maximized,
-            Restored,
-            Enter,
-            Leave,
-            FocusGained,
-            FocusLost,
-            Close,
-            TakeFocus,
-            HitTest
+            SDL_WINDOW_FULLSCREEN = 0x00000001,
+            SDL_WINDOW_OPENGL = 0x00000002,
+            SDL_WINDOW_SHOWN = 0x00000004,
+            SDL_WINDOW_HIDDEN = 0x00000008,
+            SDL_WINDOW_BORDERLESS = 0x00000010,
+            SDL_WINDOW_RESIZABLE = 0x00000020,
+            SDL_WINDOW_MINIMIZED = 0x00000040,
+            SDL_WINDOW_MAXIMIZED = 0x00000080,
+            SDL_WINDOW_MOUSE_GRABBED = 0x00000100,
+            SDL_WINDOW_INPUT_FOCUS = 0x00000200,
+            SDL_WINDOW_MOUSE_FOCUS = 0x00000400,
+            SDL_WINDOW_FULLSCREEN_DESKTOP = SDL_WINDOW_FULLSCREEN | 0x00001000,
+            SDL_WINDOW_FOREIGN = 0x00000800,
+            SDL_WINDOW_ALLOW_HIGHDPI = 0x00002000,
+            SDL_WINDOW_MOUSE_CAPTURE = 0x00004000,
+            SDL_WINDOW_ALWAYS_ON_TOP = 0x00008000,
+            SDL_WINDOW_SKIP_TASKBAR = 0x00010000,
+            SDL_WINDOW_UTILITY = 0x00020000,
+            SDL_WINDOW_TOOLTIP = 0x00040000,
+            SDL_WINDOW_POPUP_MENU = 0x00080000,
+            SDL_WINDOW_KEYBOARD_GRABBED = 0x00100000,
+            SDL_WINDOW_VULKAN = 0x10000000,
+            SDL_WINDOW_METAL = 0x20000000,
+
+            SDL_WINDOW_INPUT_GRABBED = SDL_WINDOW_MOUSE_GRABBED
         }
 
-        public enum SDL_DisplayEventID : byte
+        public const uint SDL_WINDOWPOS_UNDEFINED_MASK = 0x1FFF0000u;
+        public static uint SDL_WINDOWPOS_UNDEFINED_DISPLAY(uint X) => SDL_WINDOWPOS_UNDEFINED_MASK | (X);
+        public static readonly uint SDL_WINDOWPOS_UNDEFINED = SDL_WINDOWPOS_UNDEFINED_DISPLAY(0);
+        public static bool SDL_WINDOWPOS_ISUNDEFINED(uint X) => ((X) & 0xFFFF0000) == SDL_WINDOWPOS_UNDEFINED_MASK;
+
+        public const uint SDL_WINDOWPOS_CENTERED_MASK = 0x2FFF0000u;
+        public static uint SDL_WINDOWPOS_CENTERED_DISPLAY(uint X) => SDL_WINDOWPOS_CENTERED_MASK | (X);
+        public static readonly uint SDL_WINDOWPOS_CENTERED = SDL_WINDOWPOS_CENTERED_DISPLAY(0);
+        public static bool SDL_WINDOWPOS_ISCENTERED(uint X) => ((X) & 0xFFFF0000) == SDL_WINDOWPOS_CENTERED_MASK;
+
+        public enum SDL_WindowEventID
         {
-            None,
-            Orientation
+            SDL_WINDOWEVENT_NONE,
+            SDL_WINDOWEVENT_SHOWN,
+            SDL_WINDOWEVENT_HIDDEN,
+            SDL_WINDOWEVENT_EXPOSED,
+            SDL_WINDOWEVENT_MOVED,
+            SDL_WINDOWEVENT_RESIZED,
+            SDL_WINDOWEVENT_SIZE_CHANGED,
+            SDL_WINDOWEVENT_MINIMIZED,
+            SDL_WINDOWEVENT_MAXIMIZED,
+            SDL_WINDOWEVENT_RESTORED,
+            SDL_WINDOWEVENT_ENTER,
+            SDL_WINDOWEVENT_LEAVE,
+            SDL_WINDOWEVENT_FOCUS_GAINED,
+            SDL_WINDOWEVENT_FOCUS_LOST,
+            SDL_WINDOWEVENT_CLOSE,
+            SDL_WINDOWEVENT_TAKE_FOCUS,
+            SDL_WINDOWEVENT_HIT_TEST,
+            SDL_WINDOWEVENT_ICCPROF_CHANGED,
+            SDL_WINDOWEVENT_DISPLAY_CHANGED
         }
 
-        // SDL_DisplayOrientation is covered by DisplayOrientation.cs
+        public enum SDL_DisplayEventID
+        {
+            SDL_DISPLAYEVENT_NONE,
+            SDL_DISPLAYEVENT_ORIENTATION,
+            SDL_DISPLAYEVENT_CONNECTED,
+            SDL_DISPLAYEVENT_DISCONNECTED
+        }
+
+        public enum SDL_DisplayOrientation
+        {
+            SDL_ORIENTATION_UNKNOWN,
+            SDL_ORIENTATION_LANDSCAPE,
+            SDL_ORIENTATION_LANDSCAPE_FLIPPED,
+            SDL_ORIENTATION_PORTRAIT,
+            SDL_ORIENTATION_PORTRAIT_FLIPPED
+        }
+
+        public enum SDL_FlashOperation
+        {
+            SDL_FLASH_CANCEL,
+            SDL_FLASH_BRIEFLY,
+            SDL_FLASH_UNTIL_FOCUSED
+        }
 
         // SDL_GlContext
         // SDL_GLattr
@@ -4580,68 +4594,77 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumVideoDrivers();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GetVideoDriver(int index);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetVideoDriver(int index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int SDL_VideoInit(string driver_name);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_VideoInit(byte* driver_name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_VideoQuit();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GetCurrentVideoDriver();
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetCurrentVideoDriver();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumVideoDisplays();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Utf8String SDL_GetDisplayName(int displayIndex);
+        public static extern byte* SDL_GetDisplayName(int displayIndex);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetDisplayBounds(int displayIndex, out Rectangle rect);
+        public static extern int SDL_GetDisplayBounds(int displayIndex, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetDisplayUsableBounds(int displayIndex, out Rectangle rect);
+        public static extern int SDL_GetDisplayUsableBounds(int displayIndex, SDL_Rect* rect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetDisplayDPI(int displayIndex, out float ddpi, out float hdpi, out float vdpi);
+        public static extern int SDL_GetDisplayDPI(int displayIndex, float* ddpi, float* hdpi, float* vdpi);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern DisplayOrientation SDL_GetDisplayOrientation(int displayIndex);
+        public static extern SDL_DisplayOrientation SDL_GetDisplayOrientation(int displayIndex);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumDisplayModes(int displayIndex);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetDisplayMode(int displayIndex, int modeIndex, out DisplayMode mode);
+        public static extern int SDL_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetDesktopDisplayMode(int displayIndex, out DisplayMode mode);
+        public static extern int SDL_GetDesktopDisplayMode(int displayIndex, SDL_DisplayMode* mode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetCurrentDisplayMode(int displayIndex, out DisplayMode mode);
+        public static extern int SDL_GetCurrentDisplayMode(int displayIndex, SDL_DisplayMode* mode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern DisplayMode* SDL_GetClosestDisplayMode(int displayIndex, ref DisplayMode mode, out DisplayMode closest);
+        public static extern SDL_DisplayMode* SDL_GetClosestDisplayMode(int displayIndex, SDL_DisplayMode* mode, SDL_DisplayMode* closest);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GetPointDisplayIndex(SDL_Point* point);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_GetRectDisplayIndex(SDL_Rect* point);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetWindowDisplayIndex(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetWindowDisplayMode(SDL_Window* window, ref DisplayMode mode);
+        public static extern int SDL_SetWindowDisplayMode(SDL_Window* window, SDL_DisplayMode* mode);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetWindowDisplayMode(SDL_Window* window, out DisplayMode mode);
+        public static extern int SDL_GetWindowDisplayMode(SDL_Window* window, SDL_DisplayMode* mode);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetWindowICCProfile(SDL_Window* window, nuint* size);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_GetWindowPixelFormat(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Window* SDL_CreateWindow(Utf8String title, int x, int y, int w, int h, WindowOptions flags);
+        public static extern SDL_Window* SDL_CreateWindow(byte* title, int x, int y, int w, int h, uint flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Window* SDL_CreateWindowFrom(nint data);
+        public static extern SDL_Window* SDL_CreateWindowFrom(void* data);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_GetWindowID(SDL_Window* window);
@@ -4650,55 +4673,61 @@ namespace SdlSharp
         public static extern SDL_Window* SDL_GetWindowFromID(uint id);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern WindowOptions SDL_GetWindowFlags(SDL_Window* window);
+        public static extern uint SDL_GetWindowFlags(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_SetWindowTitle(SDL_Window* window, Utf8String title);
+        public static extern void SDL_SetWindowTitle(SDL_Window* window, byte* title);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Utf8String SDL_GetWindowTitle(SDL_Window* window);
+        public static extern byte* SDL_GetWindowTitle(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowIcon(SDL_Window* window, SDL_Surface* icon);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern nint SDL_SetWindowData(SDL_Window* window, string name, nint userdata);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern nint SDL_SetWindowData(SDL_Window* window, byte* name, nint userdata);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern nint SDL_GetWindowData(SDL_Window* window, string name);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern nint SDL_GetWindowData(SDL_Window* window, byte* name);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowPosition(SDL_Window* window, int x, int y);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetWindowPosition(SDL_Window* window, out int x, out int y);
+        public static extern void SDL_GetWindowPosition(SDL_Window* window, int* x, int* y);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowSize(SDL_Window* window, int w, int h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetWindowSize(SDL_Window* window, out int w, out int h);
+        public static extern void SDL_GetWindowSize(SDL_Window* window, int* w, int* h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetWindowBordersSize(SDL_Window* window, out int top, out int left, out int bottom, out int right);
+        public static extern int SDL_GetWindowBordersSize(SDL_Window* window, int* top, int* left, int* bottom, int* right);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_GetWindowSizeInPixels(SDL_Window* window, int* w, int* h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowMinimumSize(SDL_Window* window, int min_w, int min_h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetWindowMinimumSize(SDL_Window* window, out int w, out int h);
+        public static extern void SDL_GetWindowMinimumSize(SDL_Window* window, int* w, int* h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowMaximumSize(SDL_Window* window, int max_w, int max_h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetWindowMaximumSize(SDL_Window* window, out int w, out int h);
+        public static extern void SDL_GetWindowMaximumSize(SDL_Window* window, int* w, int* h);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowBordered(SDL_Window* window, bool bordered);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowResizable(SDL_Window* window, bool resizable);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_SetWindowAlwaysOnTop(SDL_Window* window, bool on_top);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_ShowWindow(SDL_Window* window);
@@ -4719,7 +4748,7 @@ namespace SdlSharp
         public static extern void SDL_RestoreWindow(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetWindowFullscreen(SDL_Window* window, WindowOptions flags);
+        public static extern int SDL_SetWindowFullscreen(SDL_Window* window, uint flags);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* SDL_GetWindowSurface(SDL_Window* window);
@@ -4728,16 +4757,34 @@ namespace SdlSharp
         public static extern int SDL_UpdateWindowSurface(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_UpdateWindowSurfaceRects(SDL_Window* window, Rectangle[] rects, int numrects);
+        public static extern int SDL_UpdateWindowSurfaceRects(SDL_Window* window, SDL_Rect* rects, int numrects);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_SetWindowGrab(SDL_Window* window, bool grabbed);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_SetWindowKeyboardGrab(SDL_Window* window, bool grabbed);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_SetWindowMouseGrab(SDL_Window* window, bool grabbed);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_GetWindowGrab(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GetWindowKeyboardGrab(SDL_Window* window);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GetWindowMouseGrab(SDL_Window* window);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Window* SDL_GetGrabbedWindow();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SDL_SetWindowMouseRect(SDL_Window* window, SDL_Rect* rect);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Rect* SDL_GetWindowMouseRect(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SetWindowBrightness(SDL_Window* window, float brightness);
@@ -4749,7 +4796,7 @@ namespace SdlSharp
         public static extern int SDL_SetWindowOpacity(SDL_Window* window, float opacity);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetWindowOpacity(SDL_Window* window, out float out_opacity);
+        public static extern int SDL_GetWindowOpacity(SDL_Window* window, float* out_opacity);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SetWindowModalFor(SDL_Window* modal_window, SDL_Window* parent_window);
@@ -4758,18 +4805,33 @@ namespace SdlSharp
         public static extern int SDL_SetWindowInputFocus(SDL_Window* window);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetWindowGammaRamp(SDL_Window* window, [In, MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] red, [In, MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] green, [In, MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] blue);
+        public static extern int SDL_SetWindowGammaRamp(SDL_Window* window, ushort* red, ushort* green, ushort* blue);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_GetWindowGammaRamp(SDL_Window* window, [MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] red, [MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] green, [MarshalAs(UnmanagedType.LPArray, SizeConst = 256)] ushort[] blue);
+        public static extern int SDL_GetWindowGammaRamp(SDL_Window* window, ushort* red, ushort* green, ushort* blue);
 
-        // SDL_HitTestResult is covered by HitTestResult.cs
+        public enum SDL_HitTestResult
+        {
+            SDL_HITTEST_NORMAL,
+            SDL_HITTEST_DRAGGABLE,
+            SDL_HITTEST_RESIZE_TOPLEFT,
+            SDL_HITTEST_RESIZE_TOP,
+            SDL_HITTEST_RESIZE_TOPRIGHT,
+            SDL_HITTEST_RESIZE_RIGHT,
+            SDL_HITTEST_RESIZE_BOTTOMRIGHT,
+            SDL_HITTEST_RESIZE_BOTTOM,
+            SDL_HITTEST_RESIZE_BOTTOMLEFT,
+            SDL_HITTEST_RESIZE_LEFT
+        }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate HitTestResult HitTestCallback(SDL_Window* win, ref Point area, nint data);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int SDL_SetWindowHitTest(SDL_Window* window, HitTestCallback? callback, nint callback_data);
+        public static extern int SDL_SetWindowHitTest(SDL_Window* window, delegate* unmanaged[Cdecl]<SDL_Window*, SDL_Point*, nint, SDL_HitTestResult> callback, nint callback_data);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_FlashWindow(SDL_Window* window, SDL_FlashOperation operation);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_DestroyWindow(SDL_Window* window);
@@ -4789,12 +4851,12 @@ namespace SdlSharp
         //public extern static bool SDL_GL_ExtensionSupported(string extension);
         //public extern static void SDL_GL_ResetAttributes();
         //public extern static int SDL_GL_SetAttribute(SDL_GLattr attr, int value);
-        //public extern static int SDL_GL_GetAttribute(SDL_GLattr attr, out int value);
+        //public extern static int SDL_GL_GetAttribute(SDL_GLattr attr, int* value);
         //public extern static SDL_GLContext SDL_GL_CreateContext(SDL_Window* window);
         //public extern static int SDL_GL_MakeCurrent(SDL_Window* window, SDL_GLContext context);
         //public extern static nint SDL_GL_GetCurrentWindow();
         //public extern static SDL_GLContext SDL_GL_GetCurrentContext();
-        //public extern static void SDL_GL_GetDrawableSize(SDL_Window* window, out int w, out int h);
+        //public extern static void SDL_GL_GetDrawableSize(SDL_Window* window, int* w, int* h);
         //public extern static int SDL_GL_SetSwapInterval(int interval);
         //public extern static int SDL_GL_GetSwapInterval();
         //public extern static void SDL_GL_SwapWindow(SDL_Window* window);

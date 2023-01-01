@@ -222,7 +222,7 @@
         /// </summary>
         /// <typeparam name="T">The type of the pixel.</typeparam>
         /// <returns>The pixels.</returns>
-        public Span<T> GetPixels<T>() => Native.PixelsToSpan<T>(_surface->Pixels, _surface->Pitch, _surface->Height);
+        public Span<T> GetPixels<T>() => Native.PixelsToSpan<T>(_surface->pixels, _surface->pitch, _surface->h);
 
         /// <summary>
         /// Saves the surface to a BMP.

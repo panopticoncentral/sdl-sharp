@@ -12,7 +12,7 @@ namespace SdlSharp
         /// <summary>
         /// The window being dropped on, if any. 
         /// </summary>
-        public Window? Window => _windowId == 0 ? null : Window.Get(_windowId);
+        public Window? Window => _windowId == 0 ? null : new(_windowId);
 
         internal DropEventArgs(Native.SDL_DropEvent drop) : base(drop.timestamp)
         {

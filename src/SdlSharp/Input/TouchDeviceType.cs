@@ -8,21 +8,21 @@
         /// <summary>
         /// Not a valid touch device.
         /// </summary>
-        Invalid = -1,
+        Invalid = Native.SDL_TouchDeviceType.SDL_TOUCH_DEVICE_INVALID,
 
         /// <summary>
         /// Touch screen with window-relative coordinates,
         /// </summary>
-        Direct,
+        Direct = Native.SDL_TouchDeviceType.SDL_TOUCH_DEVICE_DIRECT,
 
         /// <summary>
         /// Trackpad with absolute device coordinates.
         /// </summary>
-        IndirectAbsolute,
+        IndirectAbsolute = Native.SDL_TouchDeviceType.SDL_TOUCH_DEVICE_INDIRECT_ABSOLUTE,
 
         /// <summary>
         /// Trackpad with screen cursor-relative coordinates.
         /// </summary>
-        IndirectRelative
+        IndirectRelative = Native.SDL_TouchDeviceType.SDL_TOUCH_DEVICE_INDIRECT_RELATIVE
     }
 }

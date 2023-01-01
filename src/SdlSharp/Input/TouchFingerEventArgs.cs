@@ -42,7 +42,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// The window that had focus, if any.
         /// </summary>
-        public Window Window => Window.Get(_windowId);
+        public Window Window => new(_windowId);
 
         internal TouchFingerEventArgs(Native.SDL_TouchFingerEvent touchFinger, Finger finger) : base(touchFinger.timestamp)
         {

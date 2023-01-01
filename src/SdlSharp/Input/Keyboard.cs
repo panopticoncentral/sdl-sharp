@@ -64,7 +64,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// The window that has keyboard focus, if any.
         /// </summary>
-        public static Window? Focus => Window.PointerToInstance(Native.SDL_GetKeyboardFocus());
+        public static Window? Focus => new(Native.SDL_GetKeyboardFocus());
 
         /// <summary>
         /// The state of the keyboard.

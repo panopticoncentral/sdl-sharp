@@ -3,36 +3,8 @@
     /// <summary>
     /// A version number for a component.
     /// </summary>
-    public readonly struct Version
+    public readonly record struct Version(byte Major, byte Minor, byte Patch)
     {
-        /// <summary>
-        /// The major version number.
-        /// </summary>
-        public byte Major { get; }
-
-        /// <summary>
-        /// The minor version number.
-        /// </summary>
-        public byte Minor { get; }
-
-        /// <summary>
-        /// The patch number.
-        /// </summary>
-        public byte Patch { get; }
-
-        /// <summary>
-        /// Constructs a version.
-        /// </summary>
-        /// <param name="major">The major version number.</param>
-        /// <param name="minor">The minor version number.</param>
-        /// <param name="patch">The patch number.</param>
-        public Version(byte major, byte minor, byte patch)
-        {
-            Major = major;
-            Minor = minor;
-            Patch = patch;
-        }
-
         /// <summary>
         /// Tests to see if a version is at least a particular version.
         /// </summary>

@@ -10,7 +10,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// The window that has mouse focus, if any.
         /// </summary>
-        public static Window? Focus => Window.PointerToInstance(Native.SDL_GetMouseFocus());
+        public static Window? Focus => new(Native.SDL_GetMouseFocus());
 
         /// <summary>
         /// The state of the mouse.
@@ -78,7 +78,7 @@ namespace SdlSharp.Input
         /// <param name="window">The window to warp within.</param>
         /// <param name="position">The position to warp to.</param>
         public static void Warp(Window? window, Point position) =>
-            Native.SDL_WarpMouseInWindow(window == null ? null : window.Native, position.X, position.Y);
+            Native.SDL_WarpMouseInWindow(window == null ? null : window.ToNative(), position.X, position.Y);
 
         /// <summary>
         /// Warps the mouse to a location on the screen.

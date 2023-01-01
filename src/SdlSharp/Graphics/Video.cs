@@ -3,27 +3,29 @@
     /// <summary>
     /// The video subsystem.
     /// </summary>
-    public static class Video
+    public static unsafe class Video
     {
-        private static ItemCollection<string>? s_drivers;
-
         /// <summary>
         /// The video drivers in the system.
         /// </summary>
-        public static IReadOnlyList<string> Drivers => s_drivers ??= new ItemCollection<string>(
-            Native.SDL_GetVideoDriver,
-            Native.SDL_GetNumVideoDrivers);
+        public static IReadOnlyList<string> Drivers => Native.GetIndexedCollection(i => Native.Utf8ToString(Native.SDL_GetVideoDriver(i))!, Native.SDL_GetNumVideoDrivers);
 
         /// <summary>
         /// The current driver.
         /// </summary>
-        public static string CurrentDriver => Native.SDL_GetCurrentVideoDriver();
+        public static string? CurrentDriver => Native.Utf8ToString(Native.SDL_GetCurrentVideoDriver());
 
         /// <summary>
         /// Initializes the video subsystem.
         /// </summary>
         /// <param name="driver">The video driver to use.</param>
-        public static void Init(string driver) => _ = Native.CheckError(Native.SDL_VideoInit(driver));
+        public static void Init(string driver)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(driver))
+            {
+                _ = Native.CheckError(Native.SDL_VideoInit(ptr));
+            }
+        }
 
         /// <summary>
         /// Quits the video subsystem.

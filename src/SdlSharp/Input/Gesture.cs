@@ -28,7 +28,7 @@
         /// <param name="device">The device. If <c>null</c>, then records on all devices.</param>
         /// <returns><c>true</c> if the recording started, <c>false</c> otherwise.</returns>
         public static bool RecordGesture(TouchDevice? device) =>
-            Native.SDL_RecordGesture(device == null ? new Native.SDL_TouchID(-1) : device.Index);
+            Native.SDL_RecordGesture(device == null ? new Native.SDL_TouchID(-1) : device.ToNative());
 
         /// <summary>
         /// Loads a dollar template.
@@ -36,7 +36,7 @@
         /// <param name="device">The touch device.</param>
         /// <param name="rwops">The storage.</param>
         public static void LoadDollarTemplates(TouchDevice device, RWOps rwops) =>
-            Native.CheckError(Native.SDL_LoadDollarTemplates(device.Index, rwops.ToNative()));
+            Native.CheckError(Native.SDL_LoadDollarTemplates(device.ToNative(), rwops.ToNative()));
 
         /// <summary>
         /// Save all the dollar templates.

@@ -34,7 +34,7 @@
         /// Gets the window associated with this renderer.
         /// </summary>
         public Window? Window =>
-            Window.PointerToInstance(Native.SDL_GetRenderGetWindow(_renderer));
+            new(Native.SDL_GetRenderGetWindow(_renderer));
 
         /// <summary>
         /// The output size of this renderer.
@@ -192,7 +192,7 @@
         /// <param name="flags">Flags for the renderer.</param>
         /// <returns>The renderer.</returns>
         public static Renderer Create(Window window, int index, RendererOptions flags) =>
-            new(Native.SDL_CreateRenderer(window.Native, index, (uint)flags));
+            new(Native.SDL_CreateRenderer(window.ToNative(), index, (uint)flags));
 
         /// <summary>
         /// Creates a software renderer for the surface.

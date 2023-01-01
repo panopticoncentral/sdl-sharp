@@ -3,23 +3,25 @@
     /// <summary>
     /// A finger on a touch device.
     /// </summary>
-    public sealed unsafe class Finger : NativePointerBase<Native.SDL_Finger, Finger>
+    public readonly unsafe struct Finger
     {
-        internal Native.SDL_FingerID Id => Native->Id;
+        private readonly Native.SDL_Finger* _finger;
+
+        internal Native.SDL_FingerID Id => _finger->id;
 
         /// <summary>
-        /// The X location of the finger.
+        /// The location of the finger.
         /// </summary>
-        public float X => Native->X;
-
-        /// <summary>
-        /// The Y location of the finger.
-        /// </summary>
-        public float Y => Native->Y;
+        public PointF Location => (PointF)(_finger->x, _finger->y);
 
         /// <summary>
         /// The amount of pressure.
         /// </summary>
-        public float Pressure => Native->Pressure;
+        public float Pressure => _finger->pressure;
+
+        internal Finger(Native.SDL_Finger* finger)
+        {
+            _finger = finger;
+        }
     }
 }

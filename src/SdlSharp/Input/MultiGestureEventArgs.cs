@@ -10,7 +10,7 @@
         /// <summary>
         /// The touch device that had the gesture.
         /// </summary>
-        public TouchDevice Device => TouchDevice.IndexToInstance(_deviceIndex);
+        public TouchDevice Device => new(_deviceIndex);
 
         /// <summary>
         /// The amount the fingers rotated during this motion.

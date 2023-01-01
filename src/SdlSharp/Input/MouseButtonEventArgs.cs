@@ -12,7 +12,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// The window that had focus, if any.
         /// </summary>
-        public Window Window => Window.Get(_windowId);
+        public Window Window => new(_windowId);
 
         /// <summary>
         /// The event comes from touch rather than a mouse.

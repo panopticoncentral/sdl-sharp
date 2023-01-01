@@ -9,116 +9,121 @@
         /// <summary>
         /// None.
         /// </summary>
-        None = 0x00000000,
+        None = 0,
 
         /// <summary>
         /// Fullscreen window.
         /// </summary>
-        Fullscreen = 0x00000001,
+        Fullscreen = Native.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN,
 
         /// <summary>
         /// Window usable with OpenGL context.
         /// </summary>
-        OpenGl = 0x00000002,
+        OpenGl = Native.SDL_WindowFlags.SDL_WINDOW_OPENGL,
 
         /// <summary>
         /// Window is visible.
         /// </summary>
-        Shown = 0x00000004,
+        Shown = Native.SDL_WindowFlags.SDL_WINDOW_SHOWN,
 
         /// <summary>
         /// Window is not visible.
         /// </summary>
-        Hidden = 0x00000008,
+        Hidden = Native.SDL_WindowFlags.SDL_WINDOW_HIDDEN,
 
         /// <summary>
         /// Window has no border.
         /// </summary>
-        Borderless = 0x00000010,
+        Borderless = Native.SDL_WindowFlags.SDL_WINDOW_BORDERLESS,
 
         /// <summary>
         /// The window is resizable.
         /// </summary>
-        Resizable = 0x00000020,
+        Resizable = Native.SDL_WindowFlags.SDL_WINDOW_RESIZABLE,
 
         /// <summary>
         /// The window is minimized.
         /// </summary>
-        Minimized = 0x00000040,
+        Minimized = Native.SDL_WindowFlags.SDL_WINDOW_MINIMIZED,
 
         /// <summary>
         /// The window is maximized.
         /// </summary>
-        Maximized = 0x00000080,
+        Maximized = Native.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED,
 
         /// <summary>
-        /// The window has grabbed input focus.
+        /// The window has grabbed mouse focus.
         /// </summary>
-        InputGrabbed = 0x00000100,
+        MouseGrabbed = Native.SDL_WindowFlags.SDL_WINDOW_MOUSE_GRABBED,
 
         /// <summary>
         /// The window has input focus.
         /// </summary>
-        InputFocus = 0x00000200,
+        InputFocus = Native.SDL_WindowFlags.SDL_WINDOW_INPUT_FOCUS,
 
         /// <summary>
         /// The window has mouse focus.
         /// </summary>
-        MouseFocus = 0x00000400,
-
-        /// <summary>
-        /// The window was not created by SDL.
-        /// </summary>
-        Foreign = 0x00000800,
+        MouseFocus = Native.SDL_WindowFlags.SDL_WINDOW_MOUSE_FOCUS,
 
         /// <summary>
         /// The window is relative to the desktop.
         /// </summary>
-        Desktop = 0x00001000,
+        FullScreenDesktop = Native.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP,
 
         /// <summary>
-        /// The window is fullscreen desktop.
+        /// The window was not created by SDL.
         /// </summary>
-        FullscreenDesktop = Fullscreen | Desktop,
+        Foreign = Native.SDL_WindowFlags.SDL_WINDOW_FOREIGN,
 
         /// <summary>
         /// High DPI is allowed on this window.
         /// </summary>
-        AllowHighDpi = 0x00002000,
+        AllowHighDpi = Native.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI,
 
         /// <summary>
         /// Window has captured the mouse.
         /// </summary>
-        MouseCapture = 0x00004000,
+        MouseCapture = Native.SDL_WindowFlags.SDL_WINDOW_MOUSE_CAPTURE,
 
         /// <summary>
         /// The window is always on top.
         /// </summary>
-        AlwaysOnTop = 0x00008000,
+        AlwaysOnTop = Native.SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP,
 
         /// <summary>
         /// The window should not be added to the taskbar.
         /// </summary>
-        SkipTaskbar = 0x00010000,
+        SkipTaskbar = Native.SDL_WindowFlags.SDL_WINDOW_SKIP_TASKBAR,
 
         /// <summary>
         /// This is a utility window.
         /// </summary>
-        Utility = 0x00020000,
+        Utility = Native.SDL_WindowFlags.SDL_WINDOW_UTILITY,
 
         /// <summary>
         /// This is a tooltip window.
         /// </summary>
-        Tooltip = 0x00040000,
+        Tooltip = Native.SDL_WindowFlags.SDL_WINDOW_TOOLTIP,
 
         /// <summary>
         /// This is a popup menu window.
         /// </summary>
-        PopupMenu = 0x00080000,
+        PopupMenu = Native.SDL_WindowFlags.SDL_WINDOW_POPUP_MENU,
+
+        /// <summary>
+        /// Window has captured the keyboard.
+        /// </summary>
+        KeyboardGrabbed = Native.SDL_WindowFlags.SDL_WINDOW_KEYBOARD_GRABBED,
 
         /// <summary>
         /// The window is usable as a Vulkan surface.
         /// </summary>
-        Vulkan = 0x10000000
+        Vulkan = Native.SDL_WindowFlags.SDL_WINDOW_VULKAN,
+
+        /// <summary>
+        /// The window is usable as a Metal surface.
+        /// </summary>
+        Metal = Native.SDL_WindowFlags.SDL_WINDOW_METAL
     }
 }

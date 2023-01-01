@@ -3,46 +3,49 @@
     /// <summary>
     /// A device that supports touch input.
     /// </summary>
-    public sealed unsafe class TouchDevice : NativeStaticIndexBase<Native.SDL_TouchID, TouchDevice>
+    public sealed unsafe class TouchDevice
     {
-        private static ItemCollection<TouchDevice>? s_devices;
-
-        private ItemCollection<Finger>? _fingers;
+        private readonly Native.SDL_TouchID _touch;
 
         /// <summary>
         /// The touch devices in the system.
         /// </summary>
-        public static IReadOnlyList<TouchDevice> Devices => s_devices ??= new ItemCollection<TouchDevice>(
-            index => IndexToInstance(Native.SDL_GetTouchDevice(index)),
-            Native.SDL_GetNumTouchDevices);
+        public static IReadOnlyList<(string? Name, TouchDevice Device)> Devices => Native.GetIndexedCollection(i =>
+            (Native.Utf8ToString(Native.SDL_GetTouchName(i)),
+            new TouchDevice(Native.SDL_GetTouchDevice(i))), Native.SDL_GetNumTouchDevices);
 
         /// <summary>
         /// The active fingers on the device.
         /// </summary>
-        public IReadOnlyList<Finger> Fingers => _fingers ??= new ItemCollection<Finger>(
-            index => Finger.PointerToInstanceNotNull(Native.SDL_GetTouchFinger(Index, index)),
-            () => Native.SDL_GetNumTouchFingers(Index));
-
+        public IReadOnlyList<Finger> Fingers => Native.GetIndexedCollection(i =>
+            new Finger(Native.SDL_GetTouchFinger(_touch, i)), () => Native.SDL_GetNumTouchFingers(_touch));
 
         /// <summary>
         /// The device type.
         /// </summary>
-        public TouchDeviceType DeviceType => Native.SDL_GetTouchDeviceType(Index);
+        public TouchDeviceType DeviceType => (TouchDeviceType)Native.SDL_GetTouchDeviceType(_touch);
 
         /// <summary>
         /// An event fired when a finger is put down.
         /// </summary>
-        public event EventHandler<TouchFingerEventArgs>? FingerDown;
+        public static event EventHandler<TouchFingerEventArgs>? FingerDown;
 
         /// <summary>
         /// An event fired when a finger is pulled up.
         /// </summary>
-        public event EventHandler<TouchFingerEventArgs>? FingerUp;
+        public static event EventHandler<TouchFingerEventArgs>? FingerUp;
 
         /// <summary>
         /// An event fired when a finger is moved.
         /// </summary>
-        public event EventHandler<TouchFingerEventArgs>? FingerMotion;
+        public static event EventHandler<TouchFingerEventArgs>? FingerMotion;
+
+        internal TouchDevice(Native.SDL_TouchID touch)
+        {
+            _touch = touch;
+        }
+
+        internal Native.SDL_TouchID ToNative() => _touch;
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
@@ -52,11 +55,11 @@
                 case Native.SDL_EventType.SDL_FINGERUP:
                 case Native.SDL_EventType.SDL_FINGERMOTION:
                     {
-                        var touch = IndexToInstance(e.tfinger.touchId);
+                        var touch = new TouchDevice(e.tfinger.touchId);
                         Finger? finger = null;
                         foreach (var indexedFinger in touch.Fingers)
                         {
-                            if (indexedFinger.Id.Id == e.tfinger.fingerId.Id)
+                            if (indexedFinger.Id == e.tfinger.fingerId)
                             {
                                 finger = indexedFinger;
                                 break;
@@ -71,15 +74,15 @@
                         switch ((Native.SDL_EventType)e.type)
                         {
                             case Native.SDL_EventType.SDL_FINGERDOWN:
-                                touch.FingerDown?.Invoke(touch, new TouchFingerEventArgs(e.tfinger, finger));
+                                FingerDown?.Invoke(touch, new TouchFingerEventArgs(e.tfinger, finger.Value));
                                 break;
 
                             case Native.SDL_EventType.SDL_FINGERUP:
-                                touch.FingerUp?.Invoke(touch, new TouchFingerEventArgs(e.tfinger, finger));
+                                FingerUp?.Invoke(touch, new TouchFingerEventArgs(e.tfinger, finger.Value));
                                 break;
 
                             case Native.SDL_EventType.SDL_FINGERMOTION:
-                                touch.FingerMotion?.Invoke(touch, new TouchFingerEventArgs(e.tfinger, finger));
+                                FingerMotion?.Invoke(touch, new TouchFingerEventArgs(e.tfinger, finger.Value));
                                 break;
                         }
                         break;

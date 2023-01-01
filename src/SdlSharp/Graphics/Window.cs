@@ -1,14 +1,21 @@
-﻿namespace SdlSharp.Graphics
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A SDL window.
     /// </summary>
-    public sealed unsafe class Window : NativePointerBase<Native.SDL_Window, Window>
+    public sealed unsafe class Window : IDisposable
     {
+        private static Dictionary<nint, Func<Window, Point, HitTestResult>>? s_hitTestCallbacks;
+
+        private readonly Native.SDL_Window* _window;
+
         /// <summary>
         /// A window position that is undefined.
         /// </summary>
-        public const int UndefinedWindowPosition = 0x1FFF0000;
+        public const int UndefinedWindowPosition = (int)Native.SDL_WINDOWPOS_UNDEFINED_MASK;
 
         /// <summary>
         /// An undefined window location.
@@ -18,26 +25,25 @@
         /// <summary>
         /// A window position that is centered.
         /// </summary>
-        public const int CenteredWindowPosition = 0x2FFF0000;
+        public const int CenteredWindowPosition = (int)Native.SDL_WINDOWPOS_CENTERED_MASK;
 
-        private WindowData? _data;
-        private Native.HitTestCallback? _hitTestDelegate;
+        private static Dictionary<nint, Func<Window, Point, HitTestResult>> HitTestCallbacks => s_hitTestCallbacks ??= new();
 
         /// <summary>
         /// Whether a screen saver is enabled.
         /// </summary>
         public static bool ScreensaverEnabled
         {
-            get => SdlSharp.Native.SDL_IsScreenSaverEnabled();
+            get => Native.SDL_IsScreenSaverEnabled();
             set
             {
                 if (value)
                 {
-                    SdlSharp.Native.SDL_EnableScreenSaver();
+                    Native.SDL_EnableScreenSaver();
                 }
                 else
                 {
-                    SdlSharp.Native.SDL_DisableScreenSaver();
+                    Native.SDL_DisableScreenSaver();
                 }
             }
         }
@@ -49,20 +55,20 @@
         {
             get
             {
-                var windowPointer = SdlSharp.Native.SDL_GetGrabbedWindow();
-                return windowPointer == null ? null : PointerToInstanceNotNull(windowPointer);
+                var windowPointer = Native.SDL_GetGrabbedWindow();
+                return windowPointer == null ? null : new(windowPointer);
             }
         }
 
         /// <summary>
         /// User defined window data.
         /// </summary>
-        public WindowData Data => _data ??= new WindowData(this);
+        public WindowData Data => new(this);
 
         /// <summary>
         /// The display this window is on.
         /// </summary>
-        public Display Display => Display.IndexToInstance(SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetWindowDisplayIndex(Native)));
+        public Display Display => new(Native.CheckError(Native.SDL_GetWindowDisplayIndex(_window)));
 
         /// <summary>
         /// The display mode of the display the window is on.
@@ -71,38 +77,40 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetWindowDisplayMode(Native, out var mode));
-                return mode;
+                Native.SDL_DisplayMode mode;
+                _ = Native.CheckError(Native.SDL_GetWindowDisplayMode(_window, &mode));
+                return new(mode);
             }
 
-            set => _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowDisplayMode(Native, ref value));
+            set
+            {
+                var mode = value.ToNative();
+                _ = Native.CheckError(Native.SDL_SetWindowDisplayMode(_window, &mode));
+            }
         }
 
         /// <summary>
         /// The pixel format of the window.
         /// </summary>
-        public EnumeratedPixelFormat PixelFormat => new(SdlSharp.Native.SDL_GetWindowPixelFormat(Native));
-
-        /// <summary>
-        /// A window ID.
-        /// </summary>
-        public uint Id => SdlSharp.Native.SDL_GetWindowID(Native);
+        public EnumeratedPixelFormat PixelFormat => new(Native.SDL_GetWindowPixelFormat(_window));
 
         /// <summary>
         /// The window flags.
         /// </summary>
-        public WindowOptions Flags => SdlSharp.Native.SDL_GetWindowFlags(Native);
+        public WindowOptions Flags => (WindowOptions)Native.SDL_GetWindowFlags(_window);
 
         /// <summary>
         /// The title of the window.
         /// </summary>
         public string? Title
         {
-            get => SdlSharp.Native.SDL_GetWindowTitle(Native).ToString();
+            get => Native.Utf8ToString(Native.SDL_GetWindowTitle(_window));
             set
             {
-                using var utf8Title = Utf8String.ToUtf8String(value);
-                SdlSharp.Native.SDL_SetWindowTitle(Native, utf8Title);
+                fixed (byte* ptr = Native.StringToUtf8(value))
+                {
+                    Native.SDL_SetWindowTitle(_window, ptr);
+                }
             }
         }
 
@@ -113,10 +121,11 @@
         {
             get
             {
-                SdlSharp.Native.SDL_GetWindowPosition(Native, out var x, out var y);
+                int x, y;
+                Native.SDL_GetWindowPosition(_window, &x, &y);
                 return (x, y);
             }
-            set => SdlSharp.Native.SDL_SetWindowPosition(Native, value.X, value.Y);
+            set => Native.SDL_SetWindowPosition(_window, value.X, value.Y);
         }
 
         /// <summary>
@@ -126,10 +135,24 @@
         {
             get
             {
-                SdlSharp.Native.SDL_GetWindowSize(Native, out var width, out var height);
+                int width, height;
+                Native.SDL_GetWindowSize(_window, &width, &height);
                 return (width, height);
             }
-            set => SdlSharp.Native.SDL_SetWindowSize(Native, value.Width, value.Height);
+            set => Native.SDL_SetWindowSize(_window, value.Width, value.Height);
+        }
+
+        /// <summary>
+        /// The size of the window in pixels.
+        /// </summary>
+        public Size PixelSize
+        {
+            get
+            {
+                int width, height;
+                Native.SDL_GetWindowSizeInPixels(_window, &width, &height);
+                return (width, height);
+            }
         }
 
         /// <summary>
@@ -139,7 +162,8 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetWindowBordersSize(Native, out var top, out var left, out var bottom, out var right));
+                int top, left, bottom, right;
+                _ = Native.CheckError(Native.SDL_GetWindowBordersSize(_window, &top, &left, &bottom, &right));
                 return (top, left, bottom, right);
             }
         }
@@ -151,10 +175,11 @@
         {
             get
             {
-                SdlSharp.Native.SDL_GetWindowMinimumSize(Native, out var width, out var height);
+                int width, height;
+                Native.SDL_GetWindowMinimumSize(_window, &width, &height);
                 return (width, height);
             }
-            set => SdlSharp.Native.SDL_SetWindowMinimumSize(Native, value.Width, value.Height);
+            set => Native.SDL_SetWindowMinimumSize(_window, value.Width, value.Height);
         }
 
         /// <summary>
@@ -164,24 +189,60 @@
         {
             get
             {
-                SdlSharp.Native.SDL_GetWindowMaximumSize(Native, out var width, out var height);
+                int width, height;
+                Native.SDL_GetWindowMaximumSize(_window, &width, &height);
                 return (width, height);
             }
-            set => SdlSharp.Native.SDL_SetWindowMaximumSize(Native, value.Width, value.Height);
+            set => Native.SDL_SetWindowMaximumSize(_window, value.Width, value.Height);
         }
 
         /// <summary>
         /// The window's surface.
         /// </summary>
-        public Surface Surface => new(SdlSharp.Native.SDL_GetWindowSurface(Native));
+        public Surface Surface => new(Native.SDL_GetWindowSurface(_window));
 
         /// <summary>
         /// Whether the window has been grabbed.
         /// </summary>
         public bool Grabbed
         {
-            get => SdlSharp.Native.SDL_GetWindowGrab(Native);
-            set => SdlSharp.Native.SDL_SetWindowGrab(Native, value);
+            get => Native.SDL_GetWindowGrab(_window);
+            set => Native.SDL_SetWindowGrab(_window, value);
+        }
+
+        /// <summary>
+        /// Whether the window has grabbed the keyboard.
+        /// </summary>
+        public bool KeyboardGrabbed
+        {
+            get => Native.SDL_GetWindowKeyboardGrab(_window);
+            set => Native.SDL_SetWindowKeyboardGrab(_window, value);
+        }
+
+        /// <summary>
+        /// Whether the window has grabbed the mouse.
+        /// </summary>
+        public bool MouseGrabbed
+        {
+            get => Native.SDL_GetWindowMouseGrab(_window);
+            set => Native.SDL_SetWindowMouseGrab(_window, value);
+        }
+
+        /// <summary>
+        /// The mouse confinement rectangle.
+        /// </summary>
+        public Rectangle? MouseRectangle
+        {
+            get
+            {
+                var rect = Native.SDL_GetWindowMouseRect(_window);
+                return rect == null ? null : new Rectangle(*rect);
+            }
+            set
+            {
+                var rect = value;
+                _ = Native.CheckError(Native.SDL_SetWindowMouseRect(_window, (Native.SDL_Rect*)&rect));
+            }
         }
 
         /// <summary>
@@ -189,8 +250,8 @@
         /// </summary>
         public float Brightness
         {
-            get => SdlSharp.Native.SDL_GetWindowBrightness(Native);
-            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowBrightness(Native, value));
+            get => Native.SDL_GetWindowBrightness(_window);
+            set => Native.CheckError(Native.SDL_SetWindowBrightness(_window, value));
         }
 
         /// <summary>
@@ -200,10 +261,11 @@
         {
             get
             {
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetWindowOpacity(Native, out var value));
+                float value;
+                _ = Native.CheckError(Native.SDL_GetWindowOpacity(_window, &value));
                 return value;
             }
-            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowOpacity(Native, value));
+            set => Native.CheckError(Native.SDL_SetWindowOpacity(_window, value));
         }
 
         /// <summary>
@@ -216,29 +278,43 @@
                 var red = new ushort[256];
                 var green = new ushort[256];
                 var blue = new ushort[256];
-                _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_GetWindowGammaRamp(Native, red, green, blue));
-                return (red, green, blue);
+
+                fixed (ushort* redPtr = red)
+                fixed (ushort* greenPtr = green)
+                fixed (ushort* bluePtr = blue)
+                {
+                    _ = Native.CheckError(Native.SDL_GetWindowGammaRamp(_window, redPtr, greenPtr, bluePtr));
+                    return (red, green, blue);
+                }
             }
-            set => SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowGammaRamp(Native, value.Red, value.Green, value.Blue));
+            set
+            {
+                fixed (ushort* redPtr = value.Red)
+                fixed (ushort* greenPtr = value.Green)
+                fixed (ushort* bluePtr = value.Blue)
+                {
+                    _ = Native.CheckError(Native.SDL_SetWindowGammaRamp(_window, redPtr, greenPtr, bluePtr));
+                }
+            }
         }
 
         /// <summary>
         /// Whether the screen keyboard is being shown for this window.
         /// </summary>
         public bool ScreenKeyboardShown =>
-            SdlSharp.Native.SDL_IsScreenKeyboardShown(Native);
+            Native.SDL_IsScreenKeyboardShown(_window);
 
         /// <summary>
         /// Gets the renderer for this window, if any.
         /// </summary>
         public Renderer? Renderer =>
-            new(SdlSharp.Native.SDL_GetRenderer(Native));
+            new(Native.SDL_GetRenderer(_window));
 
         /// <summary>
         /// Whether the window is shaped.
         /// </summary>
         public bool IsShaped =>
-            SdlSharp.Native.SDL_IsShapedWindow(Native);
+            Native.SDL_IsShapedWindow(_window);
 
         /// <summary>
         /// Gets the window's shape mode.
@@ -249,102 +325,116 @@
             get
             {
                 Native.SDL_WindowShapeMode mode;
-                var result = SdlSharp.Native.SDL_GetShapedWindowMode(Native, &mode);
+                var result = Native.SDL_GetShapedWindowMode(_window, &mode);
 
-                if (result is SdlSharp.Native.SDL_NONSHAPEABLE_WINDOW or SdlSharp.Native.SDL_WINDOW_LACKS_SHAPE)
+                if (result is Native.SDL_NONSHAPEABLE_WINDOW or Native.SDL_WINDOW_LACKS_SHAPE)
                 {
                     return null;
                 }
 
-                _ = SdlSharp.Native.CheckError(result);
+                _ = Native.CheckError(result);
                 return WindowShapeMode.FromNative(mode);
             }
         }
 
         /// <summary>
-        /// An event that's fired when a system window message comes in.
-        /// </summary>
-        public static event EventHandler<SystemWindowMessageEventArgs>? SystemWindowMessage;
-
-        /// <summary>
         /// An event that's fired when the window is shown.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Shown;
+        public static event EventHandler<SdlEventArgs>? Shown;
 
         /// <summary>
         /// An event that's fired when the window is hidden.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Hidden;
+        public static event EventHandler<SdlEventArgs>? Hidden;
 
         /// <summary>
         /// An event that's fired when the window is exposed.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Exposed;
+        public static event EventHandler<SdlEventArgs>? Exposed;
 
         /// <summary>
         /// An event that's fired when the window is minimized.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Minimized;
+        public static event EventHandler<SdlEventArgs>? Minimized;
 
         /// <summary>
         /// An event that's fired when the window is maximized.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Maximized;
+        public static event EventHandler<SdlEventArgs>? Maximized;
 
         /// <summary>
         /// An event that's fired when the window is restored.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Restored;
+        public static event EventHandler<SdlEventArgs>? Restored;
 
         /// <summary>
         /// An event that's fired when the window is entered.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Entered;
+        public static event EventHandler<SdlEventArgs>? Entered;
 
         /// <summary>
         /// An event that's fired when the window is left.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Left;
+        public static event EventHandler<SdlEventArgs>? Left;
 
         /// <summary>
         /// An event that's fired when the window gains focus.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? FocusGained;
+        public static event EventHandler<SdlEventArgs>? FocusGained;
 
         /// <summary>
         /// An event that's fired when the window loses focus.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? FocusLost;
+        public static event EventHandler<SdlEventArgs>? FocusLost;
 
         /// <summary>
         /// An event that's fired when the window is closed.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Closed;
+        public static event EventHandler<SdlEventArgs>? Closed;
 
         /// <summary>
         /// An event that's fired when the window takes focus.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? TookFocus;
+        public static event EventHandler<SdlEventArgs>? TookFocus;
 
         /// <summary>
         /// An event that's fired when the window has a hit test.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? HitTest;
+        public static event EventHandler<SdlEventArgs>? HitTest;
 
         /// <summary>
         /// An event that's fired when the window is moved.
         /// </summary>
-        public event EventHandler<LocationEventArgs>? Moved;
+        public static event EventHandler<LocationEventArgs>? Moved;
 
         /// <summary>
         /// An event that's fired when the window is resized.
         /// </summary>
-        public event EventHandler<SizeEventArgs>? Resized;
+        public static event EventHandler<SizeEventArgs>? Resized;
 
         /// <summary>
         /// An event that's fired when the window's size changes.
         /// </summary>
-        public event EventHandler<SizeEventArgs>? SizeChanged;
+        public static event EventHandler<SizeEventArgs>? SizeChanged;
+
+        /// <summary>
+        /// An event that's fired when the window's ICC profile changes.
+        /// </summary>
+        public static event EventHandler<SdlEventArgs>? IccProfileChanged;
+
+        /// <summary>
+        /// An event that's fired when the window's display changes.
+        /// </summary>
+        public static event EventHandler<DisplayEventArgs>? DisplayChanged;
+
+        internal Window(Native.SDL_Window* window)
+        {
+            _window = window;
+        }
+
+        internal Window(uint windowId) : this(Native.CheckPointer(Native.SDL_GetWindowFromID(windowId)))
+        {
+        }
 
         /// <summary>
         /// Creates a new window.
@@ -355,8 +445,10 @@
         /// <returns></returns>
         public static Window Create(string title, Rectangle rectangle, WindowOptions flags)
         {
-            using var utf8Title = Utf8String.ToUtf8String(title);
-            return PointerToInstanceNotNull(SdlSharp.Native.SDL_CreateWindow(utf8Title, rectangle.Location.X, rectangle.Location.Y, rectangle.Size.Width, rectangle.Size.Height, flags));
+            fixed (byte* ptr = Native.StringToUtf8(title))
+            {
+                return new(Native.SDL_CreateWindow(ptr, rectangle.Location.X, rectangle.Location.Y, rectangle.Size.Width, rectangle.Size.Height, (uint)flags));
+            }
         }
 
         /// <summary>
@@ -370,9 +462,9 @@
         {
             Native.SDL_Window* windowPointer;
             Native.SDL_Renderer* rendererPointer;
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_CreateWindowAndRenderer(size.Width, size.Height, (uint)flags, &windowPointer, &rendererPointer));
+            _ = Native.CheckError(Native.SDL_CreateWindowAndRenderer(size.Width, size.Height, (uint)flags, &windowPointer, &rendererPointer));
             renderer = new(rendererPointer);
-            return PointerToInstanceNotNull(windowPointer);
+            return new(windowPointer);
         }
 
         /// <summary>
@@ -384,31 +476,21 @@
         /// <returns></returns>
         public static Window CreateShaped(string title, Rectangle rectangle, WindowOptions flags)
         {
-            fixed (byte* ptr = SdlSharp.Native.StringToUtf8(title))
+            fixed (byte* ptr = Native.StringToUtf8(title))
             {
-                return SdlSharp.Native.CheckNotNull(PointerToInstance(SdlSharp.Native.SDL_CreateShapedWindow(ptr, (uint)rectangle.Location.X, (uint)rectangle.Location.Y, (uint)rectangle.Size.Width, (uint)rectangle.Size.Height, (uint)flags)));
+                return Native.CheckNotNull(new Window(Native.SDL_CreateShapedWindow(ptr, (uint)rectangle.Location.X, (uint)rectangle.Location.Y, (uint)rectangle.Size.Width, (uint)rectangle.Size.Height, (uint)flags)));
             }
         }
 
-        /// <summary>
-        /// Gets the window with the specified ID.
-        /// </summary>
-        /// <param name="id">The ID.</param>
-        /// <returns>The window.</returns>
-        public static Window Get(uint id) =>
-            PointerToInstanceNotNull(SdlSharp.Native.SDL_GetWindowFromID(id));
-
         /// <inheritdoc/>
-        public override void Dispose()
+        public void Dispose()
         {
-            if (_hitTestDelegate != null)
+            if (HitTestCallbacks.TryGetValue((nint)_window, out var _))
             {
-                _ = SdlSharp.Native.SDL_SetWindowHitTest(Native, null, 0);
-                _hitTestDelegate = null;
+                _ = Native.SDL_SetWindowHitTest(_window, null, 0);
+                _ = HitTestCallbacks.Remove((nint)_window);
             }
-            SdlSharp.Native.SDL_DestroyWindow(Native);
-
-            base.Dispose();
+            Native.SDL_DestroyWindow(_window);
         }
 
         /// <summary>
@@ -416,21 +498,28 @@
         /// </summary>
         /// <param name="icon">The icon.</param>
         public void SetIcon(Surface icon) =>
-            SdlSharp.Native.SDL_SetWindowIcon(Native, icon.ToNative());
+            Native.SDL_SetWindowIcon(_window, icon.ToNative());
 
         /// <summary>
         /// Sets whether the window has  border.
         /// </summary>
         /// <param name="bordered">Whether the window has a border or not.</param>
         public void SetBordered(bool bordered) =>
-            SdlSharp.Native.SDL_SetWindowBordered(Native, bordered);
+            Native.SDL_SetWindowBordered(_window, bordered);
 
         /// <summary>
         /// Sets whether the window is resizable.
         /// </summary>
         /// <param name="resizable">Whether the window is resizable.</param>
         public void SetResizable(bool resizable) =>
-            SdlSharp.Native.SDL_SetWindowResizable(Native, resizable);
+            Native.SDL_SetWindowResizable(_window, resizable);
+
+        /// <summary>
+        /// Sets whether the window is always on top.
+        /// </summary>
+        /// <param name="onTop">Whether the window is always on top.</param>
+        public void SetAlwaysOnTop(bool onTop) =>
+            Native.SDL_SetWindowResizable(_window, onTop);
 
         /// <summary>
         /// Sets whether the window is visible.
@@ -440,11 +529,11 @@
         {
             if (visible)
             {
-                SdlSharp.Native.SDL_ShowWindow(Native);
+                Native.SDL_ShowWindow(_window);
             }
             else
             {
-                SdlSharp.Native.SDL_HideWindow(Native);
+                Native.SDL_HideWindow(_window);
             }
         }
 
@@ -452,25 +541,31 @@
         /// Raises the window.
         /// </summary>
         public void Raise() =>
-            SdlSharp.Native.SDL_RaiseWindow(Native);
+            Native.SDL_RaiseWindow(_window);
 
         /// <summary>
         /// Minimizes the window.
         /// </summary>
         public void Minimize() =>
-            SdlSharp.Native.SDL_MinimizeWindow(Native);
+            Native.SDL_MinimizeWindow(_window);
 
         /// <summary>
         /// Maximizes the window.
         /// </summary>
         public void Maximize() =>
-            SdlSharp.Native.SDL_MaximizeWindow(Native);
+            Native.SDL_MaximizeWindow(_window);
 
         /// <summary>
         /// Restores the window.
         /// </summary>
         public void Restore() =>
-            SdlSharp.Native.SDL_RestoreWindow(Native);
+            Native.SDL_RestoreWindow(_window);
+
+        /// <summary>
+        /// Flashes the window.
+        /// </summary>
+        /// <param name="operation">The operation to perform.</param>
+        public void Flash(FlashOperation operation) => Native.SDL_FlashWindow(_window, (Native.SDL_FlashOperation)operation);
 
         /// <summary>
         /// Sets whether the window is fullscreen.
@@ -478,44 +573,63 @@
         /// <param name="fullscreen">Whether the window is fullscreen.</param>
         /// <param name="desktop">Whether fullscreen is full screen or full desktop.</param>
         public void SetFullscreen(bool fullscreen, bool desktop = false) =>
-            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowFullscreen(Native, fullscreen ? (desktop ? WindowOptions.FullscreenDesktop : WindowOptions.Fullscreen) : WindowOptions.None));
+            Native.CheckError(Native.SDL_SetWindowFullscreen(_window, (uint)(fullscreen ? (desktop ? WindowOptions.FullScreenDesktop : WindowOptions.Fullscreen) : WindowOptions.None)));
 
         /// <summary>
         /// Updates the window's surface.
         /// </summary>
         public void UpdateSurface() =>
-            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_UpdateWindowSurface(Native));
+            Native.CheckError(Native.SDL_UpdateWindowSurface(_window));
 
         /// <summary>
         /// Updates portions of the window's surface.
         /// </summary>
         /// <param name="rectangles">The areas to update.</param>
-        public void UpdateSurface(Rectangle[] rectangles) =>
-            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_UpdateWindowSurfaceRects(Native, rectangles, rectangles.Length));
+        public void UpdateSurface(Rectangle[] rectangles)
+        {
+            fixed (Rectangle* ptr = rectangles)
+            {
+                _ = Native.CheckError(Native.SDL_UpdateWindowSurfaceRects(_window, (Native.SDL_Rect*)ptr, rectangles.Length));
+            }
+        }
 
         /// <summary>
         /// Sets the window to modal for another window.
         /// </summary>
         /// <param name="otherWindow">The other window.</param>
         public void SetModalFor(Window otherWindow) =>
-            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowModalFor(Native, otherWindow.Native));
+            Native.CheckError(Native.SDL_SetWindowModalFor(_window, otherWindow._window));
 
         /// <summary>
         /// Sets the input focus to the window.
         /// </summary>
         public void SetInputFocus() =>
-            SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowInputFocus(Native));
+            Native.CheckError(Native.SDL_SetWindowInputFocus(_window));
 
         /// <summary>
         /// Sets a hit test callback function.
         /// </summary>
         /// <param name="callback">The callback function.</param>
-        /// <param name="data">User data.</param>
-        public void SetHitTest(Func<Window, Point, nint, HitTestResult> callback, nint data)
+        public void SetHitTest(Func<Window, Point, HitTestResult>? callback)
         {
-            HitTestResult Callback(Native.SDL_Window* w, ref Point a, nint d) => callback(PointerToInstanceNotNull(w), a, d);
-            _hitTestDelegate = callback == null ? null : new Native.HitTestCallback(Callback);
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowHitTest(Native, _hitTestDelegate, data));
+            if (callback == null)
+            {
+                _ = Native.SDL_SetWindowHitTest(_window, null, 0);
+                _ = HitTestCallbacks.Remove((nint)_window);
+            }
+            else
+            {
+                _ = Native.CheckError(Native.SDL_SetWindowHitTest(_window, &HitTestCallback, 0));
+                HitTestCallbacks[(nint)_window] = callback;
+            }
+        }
+
+        [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+        internal static unsafe Native.SDL_HitTestResult HitTestCallback(Native.SDL_Window* window, Native.SDL_Point* point, nint userdata)
+        {
+            return HitTestCallbacks.TryGetValue((nint)window, out var callback)
+                ? (Native.SDL_HitTestResult)callback(new(window), new Point(point->x, point->y))
+                : Native.SDL_HitTestResult.SDL_HITTEST_NORMAL;
         }
 
         /// <summary>
@@ -526,83 +640,102 @@
         public void SetShape(Surface surface, WindowShapeMode shapeMode)
         {
             var nativeShapeMode = shapeMode.ToNative();
-            _ = SdlSharp.Native.CheckError(SdlSharp.Native.SDL_SetWindowShape(Native, surface.ToNative(), &nativeShapeMode));
+            _ = Native.CheckError(Native.SDL_SetWindowShape(_window, surface.ToNative(), &nativeShapeMode));
+        }
+
+        /// <summary>
+        /// Gets the ICC profile for the window.
+        /// </summary>
+        /// <returns>The ICC profile.</returns>
+        public NativeMemoryBlock GetIccProfile()
+        {
+            nuint size;
+            var buffer = Native.CheckPointer(Native.SDL_GetWindowICCProfile(_window, &size));
+            return new NativeMemoryBlock(buffer, (uint)size);
         }
 
         internal static void DispatchEvent(Native.SDL_Event e)
         {
-            if ((Native.SDL_EventType)e.type == SdlSharp.Native.SDL_EventType.SDL_SYSWMEVENT)
+            if ((Native.SDL_EventType)e.type == Native.SDL_EventType.SDL_SYSWMEVENT)
             {
-                SystemWindowMessage?.Invoke(null, new SystemWindowMessageEventArgs(e.syswm));
+                // Not surfacing system specific events.
                 return;
             }
 
-            var window = Get(e.window.windowID);
+            var window = new Window(e.window.windowID);
 
             switch ((Native.SDL_WindowEventID)e.window.@event)
             {
-                case SdlSharp.Native.SDL_WindowEventID.Shown:
-                    window.Shown?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_SHOWN:
+                    Shown?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Hidden:
-                    window.Hidden?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_HIDDEN:
+                    Hidden?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Exposed:
-                    window.Exposed?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_EXPOSED:
+                    Exposed?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Minimized:
-                    window.Minimized?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_MINIMIZED:
+                    Minimized?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Maximized:
-                    window.Maximized?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_MAXIMIZED:
+                    Maximized?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Restored:
-                    window.Restored?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_RESTORED:
+                    Restored?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Enter:
-                    window.Entered?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_ENTER:
+                    Entered?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Leave:
-                    window.Left?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_LEAVE:
+                    Left?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.FocusGained:
-                    window.FocusGained?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED:
+                    FocusGained?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.FocusLost:
-                    window.FocusLost?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST:
+                    FocusLost?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Close:
-                    window.Closed?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE:
+                    Closed?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.TakeFocus:
-                    window.TookFocus?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_TAKE_FOCUS:
+                    TookFocus?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.HitTest:
-                    window.HitTest?.Invoke(window, new SdlEventArgs(e.common));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_HIT_TEST:
+                    HitTest?.Invoke(window, new SdlEventArgs(e.common));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Moved:
-                    window.Moved?.Invoke(window, new LocationEventArgs(e.window));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_MOVED:
+                    Moved?.Invoke(window, new LocationEventArgs(e.window));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.Resized:
-                    window.Resized?.Invoke(window, new SizeEventArgs(e.window));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED:
+                    Resized?.Invoke(window, new SizeEventArgs(e.window));
                     break;
 
-                case SdlSharp.Native.SDL_WindowEventID.SizeChanged:
-                    window.SizeChanged?.Invoke(window, new SizeEventArgs(e.window));
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_SIZE_CHANGED:
+                    SizeChanged?.Invoke(window, new SizeEventArgs(e.window));
+                    break;
+
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_ICCPROF_CHANGED:
+                    IccProfileChanged?.Invoke(window, new SdlEventArgs(e.common));
+                    break;
+
+                case Native.SDL_WindowEventID.SDL_WINDOWEVENT_DISPLAY_CHANGED:
+                    DisplayChanged?.Invoke(window, new DisplayEventArgs(e.window));
                     break;
 
                 default:
@@ -610,10 +743,12 @@
             }
         }
 
+        internal Native.SDL_Window* ToNative() => _window;
+
         /// <summary>
         /// User data attached to the window.
         /// </summary>
-        public sealed class WindowData
+        public readonly struct WindowData
         {
             private readonly Window _window;
 
@@ -629,8 +764,20 @@
             /// <returns>The value of the data.</returns>
             public nint this[string name]
             {
-                get => SdlSharp.Native.SDL_GetWindowData(_window.Native, name);
-                set => SdlSharp.Native.SDL_SetWindowData(_window.Native, name, value);
+                get
+                {
+                    fixed (byte* ptr = Native.StringToUtf8(name))
+                    {
+                        return Native.SDL_GetWindowData(_window._window, ptr);
+                    }
+                }
+                set
+                {
+                    fixed (byte* ptr = Native.StringToUtf8(name))
+                    {
+                        Native.SDL_SetWindowData(_window._window, ptr, value);
+                    }
+                }
             }
         }
     }

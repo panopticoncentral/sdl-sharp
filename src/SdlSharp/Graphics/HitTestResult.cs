@@ -8,51 +8,51 @@
         /// <summary>
         /// Normal
         /// </summary>
-        Normal,
+        Normal = Native.SDL_HitTestResult.SDL_HITTEST_NORMAL,
 
         /// <summary>
         /// Draggable margin
         /// </summary>
-        Draggable,
+        Draggable = Native.SDL_HitTestResult.SDL_HITTEST_DRAGGABLE,
 
         /// <summary>
         /// Resize margin top left
         /// </summary>
-        ResizeTopLeft,
+        ResizeTopLeft = Native.SDL_HitTestResult.SDL_HITTEST_RESIZE_TOPLEFT,
 
         /// <summary>
         /// Resize margin top
         /// </summary>
-        ResizeTop,
+        ResizeTop = Native.SDL_HitTestResult.SDL_HITTEST_RESIZE_TOP,
 
         /// <summary>
         /// Resize margin top right
         /// </summary>
-        ResizeTopRight,
+        ResizeTopRight = Native.SDL_HitTestResult.SDL_HITTEST_RESIZE_TOPRIGHT,
 
         /// <summary>
         /// Resize margin right
         /// </summary>
-        ResizeRight,
+        ResizeRight = Native.SDL_HitTestResult.SDL_HITTEST_RESIZE_RIGHT,
 
         /// <summary>
         /// Resize margin bottom right
         /// </summary>
-        ResizeBottomRight,
+        ResizeBottomRight = Native.SDL_HitTestResult.SDL_HITTEST_RESIZE_BOTTOMRIGHT,
 
         /// <summary>
         /// Resize margin bottom
         /// </summary>
-        ResizeBottom,
+        ResizeBottom = Native.SDL_HitTestResult.SDL_HITTEST_RESIZE_BOTTOM,
 
         /// <summary>
         /// Resize margin bottom left
         /// </summary>
-        ResizeBottomLeft,
+        ResizeBottomLeft = Native.SDL_HitTestResult.SDL_HITTEST_RESIZE_BOTTOMLEFT,
 
         /// <summary>
         /// Resize margin left
         /// </summary>
-        ResizeLeft
+        ResizeLeft = Native.SDL_HitTestResult.SDL_HITTEST_RESIZE_LEFT
     }
 }
