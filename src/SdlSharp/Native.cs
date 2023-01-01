@@ -4469,16 +4469,18 @@ namespace SdlSharp
 
         #region SDL_version.h
 
-        public static readonly Version IntegratedSdl2Version = new(2, 26, 0);
+        public readonly record struct SDL_version(byte major, byte minor, byte patch);
 
-        public static int SDL_VersionNumber(Version version) =>
-            (version.Major * 1000) + (version.Minor * 100) + version.Patch;
+        public static readonly SDL_version IntegratedSdl2Version = new(2, 26, 0);
+
+        public static int SDL_VersionNumber(SDL_version version) =>
+            (version.major * 1000) + (version.minor * 100) + version.patch;
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SDL_GetVersion(out Version ver);
+        public static extern void SDL_GetVersion(SDL_version* ver);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string SDL_GetRevision();
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* SDL_GetRevision();
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetRevisionNumber();

@@ -12,6 +12,8 @@
         /// <param name="version">The version to test.</param>
         /// <returns><c>true</c> if the version is at least the target, <c>false</c> otherwise.</returns>
         public static bool VersionAtLeast(Version targetVersion, Version version) =>
-            Native.SDL_VersionNumber(targetVersion) >= Native.SDL_VersionNumber(version);
+            Native.SDL_VersionNumber(targetVersion.ToNative()) >= Native.SDL_VersionNumber(version.ToNative());
+
+        internal Native.SDL_version ToNative() => new(Major, Minor, Patch);
     }
 }

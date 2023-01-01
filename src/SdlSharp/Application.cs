@@ -22,8 +22,9 @@ namespace SdlSharp
         {
             get
             {
-                Native.SDL_GetVersion(out var version);
-                return version;
+                Native.SDL_version version;
+                Native.SDL_GetVersion(&version);
+                return new Version(version.major, version.minor, version.patch);
             }
         }
 
@@ -31,7 +32,7 @@ namespace SdlSharp
         /// The revision string of the version of SDL that's being used.
         /// </summary>
         public static string Revision =>
-            Native.SDL_GetRevision();
+            Native.Utf8ToString(Native.SDL_GetRevision());
 
         /// <summary>
         /// The revision number of the version of SDL that's being used.
