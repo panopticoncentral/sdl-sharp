@@ -3,51 +3,51 @@
     /// <summary>
     /// The types of music files.
     /// </summary>
-    public enum MusicType
+    public enum MixMusicType
     {
         /// <summary>
         /// None
         /// </summary>
-        None,
+        None = Native.Mix_MusicType.MUS_NONE,
 
         /// <summary>
         /// CMD
         /// </summary>
-        Cmd,
+        Cmd = Native.Mix_MusicType.MUS_CMD,
 
         /// <summary>
         /// WAV
         /// </summary>
-        Wav,
+        Wav = Native.Mix_MusicType.MUS_WAV,
 
         /// <summary>
         /// MOD
         /// </summary>
-        Mod,
+        Mod = Native.Mix_MusicType.MUS_MOD,
 
         /// <summary>
         /// MID
         /// </summary>
-        Mid,
+        Mid = Native.Mix_MusicType.MUS_MID,
 
         /// <summary>
         /// OGG
         /// </summary>
-        Ogg,
+        Ogg = Native.Mix_MusicType.MUS_OGG,
 
         /// <summary>
         /// MP3
         /// </summary>
-        Mp3,
+        Mp3 = Native.Mix_MusicType.MUS_MP3,
 
         /// <summary>
         /// FLAC
         /// </summary>
-        Flac = Mp3 + 2,
+        Flac = Native.Mix_MusicType.MUS_FLAC,
 
         /// <summary>
         /// OPUS
         /// </summary>
-        Opus = Flac + 2
+        Opus = Native.Mix_MusicType.MUS_OPUS
     }
 }

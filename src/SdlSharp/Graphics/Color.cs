@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace SdlSharp.Graphics
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A color.

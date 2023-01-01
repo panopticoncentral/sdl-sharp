@@ -8,36 +8,36 @@
         /// <summary>
         /// None.
         /// </summary>
-        None = 0x0,
+        None = 0,
 
         /// <summary>
         /// FLAC
         /// </summary>
-        Flac = 0x1,
+        Flac = Native.MIX_InitFlags.MIX_INIT_FLAC,
 
         /// <summary>
         /// MOD
         /// </summary>
-        Mod = 0x2,
+        Mod = Native.MIX_InitFlags.MIX_INIT_MOD,
 
         /// <summary>
         /// MP3
         /// </summary>
-        Mp3 = 0x8,
+        Mp3 = Native.MIX_InitFlags.MIX_INIT_MP3,
 
         /// <summary>
         /// OGG
         /// </summary>
-        Ogg = 0x10,
+        Ogg = Native.MIX_InitFlags.MIX_INIT_OGG,
 
         /// <summary>
         /// MID
         /// </summary>
-        Mid = 0x20,
+        Mid = Native.MIX_InitFlags.MIX_INIT_MID,
 
         /// <summary>
         /// OPUS
         /// </summary>
-        Opus = 0x40
+        Opus = Native.MIX_InitFlags.MIX_INIT_OPUS
     }
 }

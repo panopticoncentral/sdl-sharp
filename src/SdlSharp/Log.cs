@@ -58,48 +58,78 @@ namespace SdlSharp
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="category">The category.</param>
-        public static void Verbose(string message, LogCategory category = LogCategory.Application) =>
-            Native.SDL_LogVerbose((int)category, message);
+        public static void Verbose(string message, LogCategory category = LogCategory.Application)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(message))
+            {
+                Native.SDL_LogVerbose((int)category, ptr);
+            }
+        }
 
         /// <summary>
         /// Logs a debug priority message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="category">The category.</param>
-        public static void Debug(string message, LogCategory category = LogCategory.Application) =>
-            Native.SDL_LogDebug((int)category, message);
+        public static void Debug(string message, LogCategory category = LogCategory.Application)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(message))
+            {
+                Native.SDL_LogDebug((int)category, ptr);
+            }
+        }
 
         /// <summary>
         /// Logs a info priority message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="category">The category.</param>
-        public static void Info(string message, LogCategory category = LogCategory.Application) =>
-            Native.SDL_LogInfo((int)category, message);
+        public static void Info(string message, LogCategory category = LogCategory.Application)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(message))
+            {
+                Native.SDL_LogInfo((int)category, ptr);
+            }
+        }
 
         /// <summary>
         /// Logs a warn priority message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="category">The category.</param>
-        public static void Warn(string message, LogCategory category = LogCategory.Application) =>
-            Native.SDL_LogWarn((int)category, message);
+        public static void Warn(string message, LogCategory category = LogCategory.Application)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(message))
+            {
+                Native.SDL_LogWarn((int)category, ptr);
+            }
+        }
 
         /// <summary>
         /// Logs a error priority message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="category">The category.</param>
-        public static void Error(string message, LogCategory category = LogCategory.Application) =>
-            Native.SDL_LogError((int)category, message);
+        public static void Error(string message, LogCategory category = LogCategory.Application)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(message))
+            {
+                Native.SDL_LogError((int)category, ptr);
+            }
+        }
 
         /// <summary>
         /// Logs a critical priority message.
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="category">The category.</param>
-        public static void Critical(string message, LogCategory category = LogCategory.Application) =>
-            Native.SDL_LogCritical((int)category, message);
+        public static void Critical(string message, LogCategory category = LogCategory.Application)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(message))
+            {
+                Native.SDL_LogCritical((int)category, ptr);
+            }
+        }
 
         /// <summary>
         /// Logs a message.
@@ -107,7 +137,12 @@ namespace SdlSharp
         /// <param name="message">The message.</param>
         /// <param name="category">The category.</param>
         /// <param name="priority">The priority.</param>
-        public static void Message(string message, LogCategory category = LogCategory.Application, LogPriority priority = LogPriority.Info) =>
-            Native.SDL_LogMessage((int)category, (Native.SDL_LogPriority)priority, message);
+        public static void Message(string message, LogCategory category = LogCategory.Application, LogPriority priority = LogPriority.Info)
+        {
+            fixed (byte* ptr = Native.StringToUtf8(message))
+            {
+                Native.SDL_LogMessage((int)category, (Native.SDL_LogPriority)priority, ptr);
+            }
+        }
     }
 }

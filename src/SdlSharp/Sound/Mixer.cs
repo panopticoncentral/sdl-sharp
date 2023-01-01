@@ -1,4 +1,7 @@
-﻿namespace SdlSharp.Sound
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+namespace SdlSharp.Sound
 {
     /// <summary>
     /// An audio mixer.
@@ -8,17 +11,17 @@
         /// <summary>
         /// The default frequency.
         /// </summary>
-        public const int DefaultFrequency = 22050;
+        public const int DefaultFrequency = Native.MIX_DEFAULT_FREQUENCY;
 
         /// <summary>
         /// The default format.
         /// </summary>
-        public static AudioFormat DefaultAudioFormat { get; } = BitConverter.IsLittleEndian ? AudioFormat.Signed16BitLittleEndian : AudioFormat.Signed16BitBigEndian;
+        public static AudioFormat DefaultAudioFormat { get; } = new(Native.MIX_DEFAULT_FORMAT);
 
         /// <summary>
         /// The default number of channels;
         /// </summary>
-        public const int DefaultChannels = 2;
+        public const int DefaultChannels = Native.MIX_DEFAULT_CHANNELS;
 
         /// <summary>
         /// The maximum volume.
@@ -28,59 +31,44 @@
         /// <summary>
         /// The mix channel that represents post effects.
         /// </summary>
-        public const int MixChannelPost = -2;
+        public const int MixChannelPost = Native.MIX_CHANNEL_POST;
 
         /// <summary>
         /// The environment variable that controls the max speed of the built-in effects.
         /// </summary>
         public const string EffectsMaxSpeedEnvironmentVariable = "MIX_EFFECTSMAXSPEED";
 
-        private static Native.MixFunctionCallback? s_postMixHook;
-        private static Native.MixFunctionCallback? s_playMusicHook;
-        private static MusicFinishedCallback? s_musicFinishedHook;
-        private static Native.MusicChannelFinishedCallback? s_channelFinishedHook;
-
-        /// <summary>
-        /// The user data of the current music hook.
-        /// </summary>
-        public static nint PlayMusicHookData =>
-            Native.Mix_GetMusicHookData();
-
-        /// <summary>
-        /// Synchro value for the mix.
-        /// </summary>
-        public static int SynchroValue
-        {
-            get => Native.Mix_GetSynchroValue();
-            set => Native.CheckError(Native.Mix_SetSynchroValue(value));
-        }
+        private static MixHookCallback? s_postMixCallback;
 
         /// <summary>
         /// The sound fonts for supported MIDI backends.
         /// </summary>
-        public static string SoundFonts
+        public static string? SoundFonts
         {
-            get => Native.Mix_GetSoundFonts();
-            set => Native.CheckError(Native.Mix_SetSoundFonts(value));
+            get => Native.Utf8ToString(Native.Mix_GetSoundFonts());
+            set
+            {
+                fixed (byte* ptr = Native.StringToUtf8(value))
+                {
+                    _ = Native.CheckError(Native.Mix_SetSoundFonts(ptr));
+                }
+            }
         }
 
         /// <summary>
-        /// The fading status of the music.
+        /// The Timidity config file, if any.
         /// </summary>
-        public static Fading Fading =>
-            Native.Mix_FadingMusic();
-
-        /// <summary>
-        /// Whether the music is paused.
-        /// </summary>
-        public static bool Paused =>
-            Native.Mix_PausedMusic();
-
-        /// <summary>
-        /// Whether the music is playing.
-        /// </summary>
-        public static bool Playing =>
-            Native.Mix_PlayingMusic();
+        public static string? TimidityConfiguration
+        {
+            get => Native.Utf8ToString(Native.Mix_GetTimidityCfg());
+            set
+            {
+                fixed (byte* ptr = Native.StringToUtf8(value))
+                {
+                    _ = Native.CheckError(Native.Mix_SetTimidityCfg(ptr));
+                }
+            }
+        }
 
         /// <summary>
         /// Initializes the mixer.
@@ -90,7 +78,7 @@
         /// <param name="channels">The number of channels.</param>
         /// <param name="chunksize">The size of each output sample.</param>
         public static void OpenAudio(int frequency, AudioFormat format, int channels, int chunksize) =>
-            Native.CheckError(Native.Mix_OpenAudio(frequency, format, channels, chunksize));
+            Native.CheckError(Native.Mix_OpenAudio(frequency, format.Format.Value, channels, chunksize));
 
         /// <summary>
         /// Initializes the mixer.
@@ -103,8 +91,10 @@
         /// <param name="allowedChanges">Changes to the format that are allowed.</param>
         public static void OpenAudio(int frequency, AudioFormat format, int channels, int chunksize, string device, AudioAllowChange allowedChanges)
         {
-            using var utf8Device = Utf8String.ToUtf8String(device);
-            _ = Native.CheckError(Native.Mix_OpenAudioDevice(frequency, format, channels, chunksize, utf8Device, allowedChanges));
+            fixed (byte* ptr = Native.StringToUtf8(device))
+            {
+                _ = Native.CheckError(Native.Mix_OpenAudioDevice(frequency, format.Format.Value, channels, chunksize, ptr, (int)allowedChanges));
+            }
         }
 
         /// <summary>
@@ -114,249 +104,42 @@
             Native.Mix_CloseAudio();
 
         /// <summary>
-        /// Allocates a number of channels for mixing.
-        /// </summary>
-        /// <param name="channels">The number of channels.</param>
-        /// <returns>The number of channels allocated.</returns>
-        public static int AllocateChannels(int channels) =>
-            Native.Mix_AllocateChannels(channels);
-
-        /// <summary>
-        /// Reserves a number of channels for mixing.
-        /// </summary>
-        /// <param name="number">The number of channels.</param>
-        /// <returns>The number of channels reserved.</returns>
-        public static int ReserveChannels(int number) =>
-            Native.Mix_ReserveChannels(number);
-
-        /// <summary>
         /// Queries the current specification of the mixer.
         /// </summary>
         /// <param name="frequency">The frequency of the mixer.</param>
         /// <param name="format">The format of the mixer.</param>
         /// <param name="channels">The number of channels.</param>
         /// <returns>The number of times the mixer has been opened.</returns>
-        public static int QuerySpec(out int frequency, out AudioFormat format, out int channels) =>
-            Native.CheckErrorZero(Native.Mix_QuerySpec(out frequency, out format, out channels));
-
-        /// <summary>
-        /// Loads a music sample from storage.
-        /// </summary>
-        /// <param name="rwops">The storage.</param>
-        /// <param name="shouldDispose">Whether the storage should be disposed when done.</param>
-        /// <returns>The sample.</returns>
-        public static MixChunk LoadWav(RWOps rwops, bool shouldDispose) =>
-            MixChunk.PointerToInstanceNotNull(Native.Mix_LoadWAV_RW(rwops.ToNative(), shouldDispose));
-
-        /// <summary>
-        /// Loads a music sample from a file.
-        /// </summary>
-        /// <param name="file">The file to load.</param>
-        /// <returns>The sample.</returns>
-        public static MixChunk LoadWav(string file)
+        public static int QuerySpec(out int frequency, out AudioFormat format, out int channels)
         {
-            fixed (byte* ptr = Native.StringToUtf8(file))
-            {
-                return MixChunk.PointerToInstanceNotNull(Native.Mix_LoadWAV(ptr));
-            }
-        }
-
-        /// <summary>
-        /// Quickly loads a music sample, which must be in the correct format.
-        /// </summary>
-        /// <param name="mem">Pointer to the memory.</param>
-        /// <returns>The sample.</returns>
-        public static MixChunk QuickLoadWav(Span<byte> mem)
-        {
-            fixed (byte* memPointer = mem)
-            {
-                return MixChunk.PointerToInstanceNotNull(Native.Mix_QuickLoad_WAV(memPointer));
-            }
-        }
-
-        /// <summary>
-        /// Loads a music file.
-        /// </summary>
-        /// <param name="file">The file to load.</param>
-        /// <returns>The music.</returns>
-        public static MixMusic LoadMusic(string file) =>
-            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUS(file));
-
-        /// <summary>
-        /// Loads a music file from storage.
-        /// </summary>
-        /// <param name="rwops">The storage.</param>
-        /// <param name="shouldDispose">Whether the storage should be disposed after loading.</param>
-        /// <returns>The music.</returns>
-        public static MixMusic LoadMusic(RWOps rwops, bool shouldDispose) =>
-            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUS_RW(rwops.ToNative(), shouldDispose));
-
-        /// <summary>
-        /// Loads a music file from storage.
-        /// </summary>
-        /// <param name="rwops">The storage.</param>
-        /// <param name="type">The type of the music.</param>
-        /// <param name="shouldDispose">Whether the storage should be disposed after loading.</param>
-        /// <returns>The music.</returns>
-        public static MixMusic LoadMusic(RWOps rwops, MusicType type, bool shouldDispose) =>
-            MixMusic.PointerToInstanceNotNull(Native.Mix_LoadMUSType_RW(rwops.ToNative(), type, shouldDispose));
-
-        /// <summary>
-        /// Quickly loads a raw sample, must be in correct format.
-        /// </summary>
-        /// <param name="mem">The memory to load from.</param>
-        /// <returns>The music sample.</returns>
-        public static MixChunk QuickLoadRaw(Span<byte> mem)
-        {
-            fixed (byte* memPointer = mem)
-            {
-                return MixChunk.PointerToInstanceNotNull(Native.Mix_QuickLoad_RAW(memPointer, (uint)mem.Length));
-            }
+            int frequencyLocal;
+            ushort formatLocal;
+            int channelsLocal;
+            var result = Native.CheckErrorZero(Native.Mix_QuerySpec(&frequencyLocal, &formatLocal, &channelsLocal));
+            frequency = frequencyLocal;
+            format = new(new(formatLocal));
+            channels = channelsLocal;
+            return result;
         }
 
         /// <summary>
         /// Sets a function to be called after the mix.
         /// </summary>
         /// <param name="function">The function to call.</param>
-        /// <param name="userData">User data.</param>
-        public static void SetPostMixHook(MixFunctionCallback function, nint userData)
+        public static void SetPostMixHook(MixHookCallback? function)
         {
-            s_postMixHook = new MixFunctionWrapper(function).MixFunction;
-            Native.Mix_SetPostMix(s_postMixHook, userData);
+            s_postMixCallback = function;
+            Native.Mix_SetPostMix(s_postMixCallback == null ? null : &PostMixCallback, 0);
         }
 
         /// <summary>
-        /// Sets a function to be called to play music.
-        /// </summary>
-        /// <param name="function">The function to call.</param>
-        /// <param name="userData">User data.</param>
-        public static void SetPlayMusicHook(MixFunctionCallback function, nint userData)
-        {
-            s_playMusicHook = new MixFunctionWrapper(function).MixFunction;
-            Native.Mix_HookMusic(s_playMusicHook, userData);
-        }
-
-        /// <summary>
-        /// Sets a function to be called when the music is finished.
-        /// </summary>
-        /// <param name="function">The function to call.</param>
-        public static void SetMusicFinishedHook(MusicFinishedCallback function)
-        {
-            s_musicFinishedHook = function;
-            Native.Mix_HookMusicFinished(function);
-        }
-
-        /// <summary>
-        /// Sets a function to be called when a channel finishes.
-        /// </summary>
-        /// <param name="function">The function to call.</param>
-        public static void SetChannelFinishedHook(MusicChannelFinishedCallback function)
-        {
-            s_channelFinishedHook = new MusicChannelFinishedWrapper(function).MusicChannelFinished;
-            Native.Mix_ChannelFinished(s_channelFinishedHook);
-        }
-
-        /// <summary>
-        /// Sets the mixer volume.
+        /// Sets the master volume.
         /// </summary>
         /// <param name="volume">The volume.</param>
         /// <returns>The previous volume.</returns>
-        public static int Volume(int volume) =>
-            Native.Mix_VolumeMusic(volume);
+        public static int SetMasterVolume(int volume) => Native.Mix_MasterVolume(volume);
 
-        /// <summary>
-        /// Halts music.
-        /// </summary>
-        public static void Halt() =>
-            Native.CheckError(Native.Mix_HaltMusic());
-
-        /// <summary>
-        /// Fades out music.
-        /// </summary>
-        /// <param name="ms">The length of the fade.</param>
-        /// <returns>Whether the fade was successful.</returns>
-        public static bool FadeOut(int ms) =>
-            Native.Mix_FadeOutMusic(ms);
-
-        /// <summary>
-        /// Pauses the music.
-        /// </summary>
-        public static void Pause() =>
-            Native.Mix_PauseMusic();
-
-        /// <summary>
-        /// Resumes the music.
-        /// </summary>
-        public static void Resume() =>
-            Native.Mix_ResumeMusic();
-
-        /// <summary>
-        /// Rewinds the music to the beginning.
-        /// </summary>
-        public static void Rewind() =>
-            Native.Mix_RewindMusic();
-
-        /// <summary>
-        /// Sets the music to the specified position.
-        /// </summary>
-        /// <param name="position">The position.</param>
-        public static void SetPosition(double position) =>
-            Native.CheckError(Native.Mix_SetMusicPosition(position));
-
-        /// <summary>
-        /// Sets the command to use to play the music.
-        /// </summary>
-        /// <param name="command">The command string.</param>
-        public static void SetCommand(string command) =>
-            Native.CheckError(Native.Mix_SetMusicCMD(command));
-
-        /// <summary>
-        /// Calls a function for each sound font.
-        /// </summary>
-        /// <param name="callback">The callback.</param>
-        /// <param name="data">User data.</param>
-        /// <returns>Whether all the callbacks succeeded.</returns>
-        public static bool EachSoundFont(Func<string, nint, bool> callback, nint data)
-        {
-            var wrapper = new EachWrapper(callback);
-            return Native.Mix_EachSoundFont(wrapper.Callback, data);
-        }
-
-        private sealed class EachWrapper
-        {
-            private readonly Func<string, nint, bool> _callback;
-
-            public EachWrapper(Func<string, nint, bool> callback)
-            {
-                _callback = callback;
-            }
-
-            public bool Callback(string s, nint data) =>
-                _callback(s, data);
-        }
-
-        private sealed class MusicChannelFinishedWrapper
-        {
-            private readonly MusicChannelFinishedCallback _finishedDelegate;
-
-            public void MusicChannelFinished(int channel) => _finishedDelegate(MixChannel.Get(channel));
-
-            public MusicChannelFinishedWrapper(MusicChannelFinishedCallback finishedDelegate)
-            {
-                _finishedDelegate = finishedDelegate;
-            }
-        }
-
-        private sealed class MixFunctionWrapper
-        {
-            private readonly MixFunctionCallback _mixDelegate;
-
-            public void MixFunction(nint udata, nint stream, int len) => _mixDelegate(new Span<byte>((void*)stream, len), udata);
-
-            public MixFunctionWrapper(MixFunctionCallback mixDelegate)
-            {
-                _mixDelegate = mixDelegate;
-            }
-        }
+        [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
+        internal static unsafe void PostMixCallback(nuint _, byte* buffer, int len) => s_postMixCallback?.Invoke(new Span<byte>(buffer, len));
     }
 }

@@ -65,7 +65,7 @@ namespace SdlSharp
         /// The version of SDL_mixer that is being used.
         /// </summary>
         public static Version MixerVersion =>
-            *Native.Mix_Linked_Version();
+            new(Native.Mix_Linked_Version());
 
         /// <summary>
         /// The version of SDL_ttf in use.
@@ -177,7 +177,7 @@ namespace SdlSharp
 
             if (mixerFormats != MixerFormats.None)
             {
-                _ = Native.CheckError(Native.Mix_Init(mixerFormats));
+                _ = Native.CheckError(Native.Mix_Init((int)mixerFormats));
                 _initializedMixer = true;
             }
 

@@ -1,11 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-using SdlSharp.Graphics;
-using SdlSharp.Sound;
-
-using static SdlSharp.Native;
-
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible
 
@@ -1351,7 +1346,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_GameControllerType SDL_GameControllerTypeForIndex(int joystick_index);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern byte* SDL_GameControllerMappingForDeviceIndex(int joystick_index);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -2815,31 +2810,31 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_LogResetPriorities();
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_Log(string fmt /*, ...*/);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_Log(byte* fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogVerbose(int category, string fmt /*, ...*/);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_LogVerbose(int category, byte* fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogDebug(int category, string fmt /*, ...*/);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_LogDebug(int category, byte* fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogInfo(int category, string fmt /*, ...*/);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_LogInfo(int category, byte* fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogWarn(int category, string fmt /*, ...*/);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_LogWarn(int category, byte* fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogError(int category, string fmt /*, ...*/);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_LogError(int category, byte* fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogCritical(int category, string fmt /*, ...*/);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_LogCritical(int category, byte* fmt /*, ...*/);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern void SDL_LogMessage(int category, SDL_LogPriority priority, string fmt /*, ...*/);
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_LogMessage(int category, SDL_LogPriority priority, byte* fmt /*, ...*/);
 
-        // public static extern void SDL_LogMessageV(LogCategory category, LogPriority priority, string fmt, va_list ap);
+        // public static extern void SDL_LogMessageV(LogCategory category, LogPriority priority, byte* fmt, va_list ap);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SDL_LogGetOutputFunction(delegate* unmanaged[Cdecl]<nint, int, SDL_LogPriority, byte*, void>* callback, nint* userdata);
@@ -5354,67 +5349,90 @@ namespace SdlSharp
 
         #region SDL_mixer.h
 
-        public static readonly Version IntegratedSdl2MixerVersion = new(2, 0, 4);
+        public static readonly Version IntegratedSdl2MixerVersion = new(2, 6, 2);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Version* Mix_Linked_Version();
+        public static extern SDL_version* Mix_Linked_Version();
 
-        // MiX_InitFlags is covered by MixerFormats.cs
+        public enum MIX_InitFlags
+        {
+            MIX_INIT_FLAC = 0x00000001,
+            MIX_INIT_MOD = 0x00000002,
+            MIX_INIT_MP3 = 0x00000008,
+            MIX_INIT_OGG = 0x00000010,
+            MIX_INIT_MID = 0x00000020,
+            MIX_INIT_OPUS = 0x00000040
+        }
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Mix_Init(MixerFormats flags);
+        public static extern int Mix_Init(int flags);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern void Mix_Quit();
 
-        // MIX_* constants are in Mixer.cs
+        public const int MIX_CHANNELS = 8;
+        public const int MIX_DEFAULT_FREQUENCY = 44100;
+        public static readonly SDL_AudioFormat MIX_DEFAULT_FORMAT = BitConverter.IsLittleEndian ? AUDIO_U16LSB : AUDIO_U16MSB;
+        public const int MIX_DEFAULT_CHANNELS = 2;
 
-        public readonly struct Mix_Chunk
+        public struct Mix_Chunk
         {
-            private readonly int _allocated;
-            private readonly nint _abuf;
-            private readonly uint _alen;
-            private readonly byte _volume;
+            public int allocated;
+            public byte* abuf;
+            public uint alen;
+            public byte volume;
         }
 
-        // Mix_Fading is covered by Fading.cs
-        // Mix_MusicType is covered by MusicType.cs
-
-        public readonly struct Mix_Music
+        public enum Mix_Fading
         {
+            MIX_NO_FADING,
+            MIX_FADING_OUT,
+            MIX_FADING_IN
         }
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Mix_OpenAudio(int frequency, AudioFormat format, int channels, int chunksize);
+        public enum Mix_MusicType
+        {
+            MUS_NONE,
+            MUS_CMD,
+            MUS_WAV,
+            MUS_MOD,
+            MUS_MID,
+            MUS_OGG,
+            MUS_MP3,
+            MUS_MP3_MAD_UNUSED,
+            MUS_FLAC,
+            MUS_MODPLUG_UNUSED,
+            MUS_OPUS
+        }
+
+        public readonly struct Mix_Music { }
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Mix_OpenAudioDevice(int frequency, AudioFormat format, int channels, int chunksize, Utf8String device, AudioAllowChange allowed_changes);
+        public static extern int Mix_OpenAudio(int frequency, ushort format, int channels, int chunksize);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_OpenAudioDevice(int frequency, ushort format, int channels, int chunksize, byte* device, int allowed_changes);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_QuerySpec(int* frequency, ushort* format, int* channels);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_AllocateChannels(int numchans);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Mix_QuerySpec(out int frequency, out AudioFormat format, out int channels);
+        public static extern Mix_Chunk* Mix_LoadWAV_RW(SDL_RWops* src, int freesrc);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Mix_Chunk* Mix_LoadWAV_RW(SDL_RWops* src, bool freesrc);
-
-        public static Mix_Chunk* Mix_LoadWAV(byte* file)
-        {
-            fixed (byte* ptr = StringToUtf8("rb"))
-            {
-                return Mix_LoadWAV_RW(SDL_RWFromFile(file, ptr), true);
-            }
-        }
-
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern Mix_Music* Mix_LoadMUS(string file);
+        public static extern Mix_Chunk* Mix_LoadWAV(byte* file);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Mix_Music* Mix_LoadMUS_RW(SDL_RWops* src, bool freesrc);
+        public static extern Mix_Music* Mix_LoadMUS(byte* file);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Mix_Music* Mix_LoadMUSType_RW(SDL_RWops* src, MusicType type, bool freesrc);
+        public static extern Mix_Music* Mix_LoadMUS_RW(SDL_RWops* src, int freesrc);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern Mix_Music* Mix_LoadMUSType_RW(SDL_RWops* src, Mix_MusicType type, int freesrc);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern Mix_Chunk* Mix_QuickLoad_WAV(byte* mem);
@@ -5431,59 +5449,66 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_GetNumChunkDecoders();
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string Mix_GetChunkDecoder(int index);
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* Mix_GetChunkDecoder(int index);
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern bool Mix_HasChunkDecoder(string name);
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool Mix_HasChunkDecoder(byte* name);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_GetNumMusicDecoders();
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string Mix_GetMusicDecoder(int index);
-
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern bool Mix_HasMusicDecoder(string name);
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* Mix_GetMusicDecoder(int index);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern MusicType Mix_GetMusicType(Mix_Music* music);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MixFunctionCallback(nint udata, nint stream, int len);
+        public static extern bool Mix_HasMusicDecoder(byte* name);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_SetPostMix(MixFunctionCallback mix_func, nint arg);
+        public static extern Mix_MusicType Mix_GetMusicType(Mix_Music* music);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_HookMusic(MixFunctionCallback mix_func, nint arg);
+        public static extern byte* Mix_GetMusicTitle(Mix_Music* music);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_HookMusicFinished(MusicFinishedCallback music_finished);
+        public static extern byte* Mix_GetMusicTitleTag(Mix_Music* music);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nint Mix_GetMusicHookData();
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MusicChannelFinishedCallback(int channel);
+        public static extern byte* Mix_GetMusicArtistTag(Mix_Music* music);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Mix_ChannelFinished(MusicChannelFinishedCallback channel_finished);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MixEffectCallback(int channel, nint stream, int length, nint userData);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void MixEffectDoneCallback(int channel, nint userData);
+        public static extern byte* Mix_GetMusicAlbumTag(Mix_Music* music);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Mix_RegisterEffect(int chan, MixEffectCallback f, MixEffectDoneCallback d, nint arg);
+        public static extern byte* Mix_GetMusicCopyrightTag(Mix_Music* music);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Mix_UnregisterEffect(int channel, MixEffectCallback f);
+        public static extern void Mix_SetPostMix(delegate* unmanaged[Cdecl]<nuint, byte*, int, void> mix_func, nuint arg);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Mix_HookMusic(delegate* unmanaged[Cdecl]<nuint, byte*, int, void> mix_func, nuint arg);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Mix_HookMusicFinished(delegate* unmanaged[Cdecl]<void> music_finished);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern nuint Mix_GetMusicHookData();
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Mix_ChannelFinished(delegate* unmanaged[Cdecl]<int, void> channel_finished);
+
+        public const int MIX_CHANNEL_POST = -2;
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_RegisterEffect(int chan, delegate* unmanaged[Cdecl]<int, byte*, int, nuint, void> f, delegate* unmanaged[Cdecl]<int, nuint, void> d, nint arg);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_UnregisterEffect(int channel, delegate* unmanaged[Cdecl]<int, byte*, int, nuint, void> f);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_UnregisterAllEffects(int channel);
+
+        public const string MIX_EFFECTSMAXSPEED = "MIX_EFFECTSMAXSPEED";
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_SetPanning(int channel, byte left, byte right);
@@ -5501,10 +5526,10 @@ namespace SdlSharp
         public static extern int Mix_ReserveChannels(int num);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool Mix_GroupChannel(int which, int tag);
+        public static extern int Mix_GroupChannel(int which, int tag);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool Mix_GroupChannels(int from, int to, int tag);
+        public static extern int Mix_GroupChannels(int from, int to, int tag);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_GroupAvailable(int tag);
@@ -5518,8 +5543,8 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_GroupNewer(int tag);
 
-        public static int Mix_PlayChannel(int channel, Mix_Chunk* chunk, int loops) =>
-            Mix_PlayChannelTimed(channel, chunk, loops, -1);
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_PlayChannel(int channel, Mix_Chunk* chunk, int loops);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_PlayChannelTimed(int channel, Mix_Chunk* chunk, int loops, int ticks);
@@ -5533,8 +5558,8 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_FadeInMusicPos(Mix_Music* music, int loops, int ms, double position);
 
-        public static int Mix_FadeInChannel(int channel, Mix_Chunk* chunk, int loops, int ms) =>
-            Mix_FadeInChannelTimed(channel, chunk, loops, ms, -1);
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_FadeInChannel(int channel, Mix_Chunk* chunk, int loops, int ms);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_FadeInChannelTimed(int channel, Mix_Chunk* chunk, int loops, int ms, int ticks);
@@ -5547,6 +5572,12 @@ namespace SdlSharp
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_VolumeMusic(int volume);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_GetMusicVolume(Mix_Music* music);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_MasterVolume(int volume);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_HaltChannel(int channel);
@@ -5570,10 +5601,10 @@ namespace SdlSharp
         public static extern bool Mix_FadeOutMusic(int ms);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Fading Mix_FadingMusic();
+        public static extern Mix_Fading Mix_FadingMusic();
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Fading Mix_FadingChannel(int which);
+        public static extern Mix_Fading Mix_FadingChannel(int which);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern void Mix_Pause(int channel);
@@ -5582,7 +5613,7 @@ namespace SdlSharp
         public static extern void Mix_Resume(int channel);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool Mix_Paused(int channel);
+        public static extern int Mix_Paused(int channel);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern void Mix_PauseMusic();
@@ -5594,19 +5625,37 @@ namespace SdlSharp
         public static extern void Mix_RewindMusic();
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool Mix_PausedMusic();
+        public static extern int Mix_PausedMusic();
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_ModMusicJumpToOrder(int order);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_SetMusicPosition(double position);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool Mix_Playing(int channel);
+        public static extern double Mix_GetMusicPosition(Mix_Music* music);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool Mix_PlayingMusic();
+        public static extern double Mix_MusicDuration(Mix_Music* music);
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int Mix_SetMusicCMD(string command);
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern double Mix_GetMusicLoopStartTime(Mix_Music* music);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern double Mix_GetMusicLoopEndTime(Mix_Music* music);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern double Mix_GetMusicLoopLengthTime(Mix_Music* music);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_Playing(int channel);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_PlayingMusic();
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_SetMusicCMD(byte* command);
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_SetSynchroValue(int value);
@@ -5614,17 +5663,20 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Mix_GetSynchroValue();
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int Mix_SetSoundFonts(string paths);
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_SetSoundFonts(byte* paths);
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string Mix_GetSoundFonts();
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* Mix_GetSoundFonts();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public delegate bool SoundFontFunction(string s, nint data);
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_EachSoundFont(delegate* unmanaged[Cdecl]<byte*, nuint, int> function, nuint data);
 
-        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern bool Mix_EachSoundFont(SoundFontFunction function, nint data);
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int Mix_SetTimidityCfg(byte* path);
+
+        [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
+        public static extern byte* Mix_GetTimidityCfg();
 
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern Mix_Chunk* Mix_GetChunk(int channel);
