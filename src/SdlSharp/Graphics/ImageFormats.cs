@@ -9,26 +9,36 @@
         /// <summary>
         /// None
         /// </summary>
-        None = 0x00000000,
+        None = 0,
 
         /// <summary>
         /// JPG
         /// </summary>
-        Jpg = 0x00000001,
+        Jpg = Native.IMG_InitFlags.IMG_INIT_JPG,
 
         /// <summary>
         /// PNG
         /// </summary>
-        Png = 0x00000002,
+        Png = Native.IMG_InitFlags.IMG_INIT_PNG,
 
         /// <summary>
         /// TIFF
         /// </summary>
-        Tif = 0x00000004,
+        Tif = Native.IMG_InitFlags.IMG_INIT_TIF,
 
         /// <summary>
         /// WebP
         /// </summary>
-        Webp = 0x00000008
+        Webp = Native.IMG_InitFlags.IMG_INIT_WEBP,
+
+        /// <summary>
+        /// JXL
+        /// </summary>
+        Jxl = Native.IMG_InitFlags.IMG_INIT_JXL,
+
+        /// <summary>
+        /// AVIF
+        /// </summary>
+        Avif = Native.IMG_InitFlags.IMG_INIT_AVIF
     }
 }

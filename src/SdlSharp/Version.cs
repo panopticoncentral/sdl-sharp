@@ -3,8 +3,12 @@
     /// <summary>
     /// A version number for a component.
     /// </summary>
-    public readonly record struct Version(byte Major, byte Minor, byte Patch)
+    public readonly unsafe record struct Version(byte Major, byte Minor, byte Patch)
     {
+        internal Version(Native.SDL_version* version) : this(version->major, version->minor, version->patch)
+        {
+        }
+
         /// <summary>
         /// Tests to see if a version is at least a particular version.
         /// </summary>

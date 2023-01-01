@@ -4,6 +4,8 @@ using System.Text;
 using SdlSharp.Graphics;
 using SdlSharp.Sound;
 
+using static SdlSharp.Native;
+
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible
 
@@ -4870,33 +4872,44 @@ namespace SdlSharp
         public static readonly Version IntegratedSdl2ImageVersion = new(2, 6, 2);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Version* IMG_Linked_Version();
+        public static extern SDL_version* IMG_Linked_Version();
 
-        // IMG_INIT_* is covered by ImageFormats.cs
+        public enum IMG_InitFlags
+        {
+            IMG_INIT_JPG = 0x00000001,
+            IMG_INIT_PNG = 0x00000002,
+            IMG_INIT_TIF = 0x00000004,
+            IMG_INIT_WEBP = 0x00000008,
+            IMG_INIT_JXL = 0x00000010,
+            IMG_INIT_AVIF = 0x00000020
+        }
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int IMG_Init(ImageFormats flags);
+        public static extern int IMG_Init(int flags);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern void IMG_Quit();
 
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern SDL_Surface* IMG_LoadTyped_RW(SDL_RWops* src, bool freesrc, string type);
-
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern SDL_Surface* IMG_Load(string file);
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* IMG_LoadTyped_RW(SDL_RWops* src, int freesrc, byte* type);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* IMG_Load_RW(SDL_RWops* src, bool freesrc);
-
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern SDL_Texture* IMG_LoadTexture(SDL_Renderer* renderer, string file);
+        public static extern SDL_Surface* IMG_Load(byte* file);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Texture* IMG_LoadTexture_RW(SDL_Renderer* renderer, SDL_RWops* src, bool freesrc);
+        public static extern SDL_Surface* IMG_Load_RW(SDL_RWops* src, int freesrc);
 
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern SDL_Texture* IMG_LoadTextureTyped_RW(SDL_Renderer* renderer, SDL_RWops* src, bool freesrc, string type);
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Texture* IMG_LoadTexture(SDL_Renderer* renderer, byte* file);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Texture* IMG_LoadTexture_RW(SDL_Renderer* renderer, SDL_RWops* src, int freesrc);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Texture* IMG_LoadTextureTyped_RW(SDL_Renderer* renderer, SDL_RWops* src, int freesrc, byte* type);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool IMG_isAVIF(SDL_RWops* src);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool IMG_isICO(SDL_RWops* src);
@@ -4914,6 +4927,9 @@ namespace SdlSharp
         public static extern bool IMG_isJPG(SDL_RWops* src);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool IMG_isJXL(SDL_RWops* src);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool IMG_isLBM(SDL_RWops* src);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
@@ -4927,6 +4943,9 @@ namespace SdlSharp
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool IMG_isSVG(SDL_RWops* src);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool IMG_isQOI(SDL_RWops* src);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool IMG_isTIF(SDL_RWops* src);
@@ -4944,6 +4963,9 @@ namespace SdlSharp
         public static extern bool IMG_isWEBP(SDL_RWops* src);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* IMG_LoadAVIF_RW(SDL_RWops* src);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* IMG_LoadICO_RW(SDL_RWops* src);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
@@ -4959,6 +4981,9 @@ namespace SdlSharp
         public static extern SDL_Surface* IMG_LoadJPG_RW(SDL_RWops* src);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* IMG_LoadJXL_RW(SDL_RWops* src);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* IMG_LoadLBM_RW(SDL_RWops* src);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
@@ -4972,6 +4997,9 @@ namespace SdlSharp
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* IMG_LoadSVG_RW(SDL_RWops* src);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* IMG_LoadQOI_RW(SDL_RWops* src);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* IMG_LoadTGA_RW(SDL_RWops* src);
@@ -4991,19 +5019,49 @@ namespace SdlSharp
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Surface* IMG_LoadWEBP_RW(SDL_RWops* src);
 
-        // IMG_ReadXPMFromArray
-
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int IMG_SavePNG(SDL_Surface* surface, string file);
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* IMG_LoadSizedSVG_RW(SDL_RWops* src, int width, int height);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int IMG_SavePNG_RW(SDL_Surface* surface, SDL_RWops* dst, bool freedst);
-
-        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int IMG_SaveJPG(SDL_Surface* surface, string file, int quality);
+        public static extern SDL_Surface* IMG_ReadXPMFromArray(byte** xpm);
 
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int IMG_SaveJPG_RW(SDL_Surface* surface, SDL_RWops* dst, bool freedst, int quality);
+        public static extern SDL_Surface* IMG_ReadXPMFromArrayToRGB888(byte** xpm);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int IMG_SavePNG(SDL_Surface* surface, byte* file);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int IMG_SavePNG_RW(SDL_Surface* surface, SDL_RWops* dst, int freedst);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int IMG_SaveJPG(SDL_Surface* surface, byte* file, int quality);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int IMG_SaveJPG_RW(SDL_Surface* surface, SDL_RWops* dst, int freedst, int quality);
+
+        public struct IMG_Animation
+        {
+            public int w, h;
+            public int count;
+            public SDL_Surface** frames;
+            public int* delays;
+        }
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IMG_Animation* IMG_LoadAnimation(byte* file);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IMG_Animation* IMG_LoadAnimation_RW(SDL_RWops* src, int freesrc);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IMG_Animation* IMG_LoadAnimationTyped_RW(SDL_RWops* src, int freesrc, byte* type);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void IMG_FreeAnimation(IMG_Animation* anim);
+
+        [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IMG_Animation* IMG_LoadGIFAnimation_RW(SDL_RWops* src);
 
         #endregion
 

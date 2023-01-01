@@ -24,7 +24,7 @@ namespace SdlSharp
             {
                 Native.SDL_version version;
                 Native.SDL_GetVersion(&version);
-                return new Version(version.major, version.minor, version.patch);
+                return new Version(&version);
             }
         }
 
@@ -32,7 +32,7 @@ namespace SdlSharp
         /// The revision string of the version of SDL that's being used.
         /// </summary>
         public static string Revision =>
-            Native.Utf8ToString(Native.SDL_GetRevision());
+            Native.Utf8ToString(Native.SDL_GetRevision())!;
 
         /// <summary>
         /// The revision number of the version of SDL that's being used.
@@ -59,7 +59,7 @@ namespace SdlSharp
         /// The version of SDL_image being used.
         /// </summary>
         public static Version ImageVersion =>
-            *Native.IMG_Linked_Version();
+            new(Native.IMG_Linked_Version());
 
         /// <summary>
         /// The version of SDL_mixer that is being used.
@@ -145,7 +145,7 @@ namespace SdlSharp
 
             if (imageFormats != ImageFormats.None)
             {
-                _ = Native.CheckError(Native.IMG_Init(imageFormats));
+                _ = Native.CheckError(Native.IMG_Init((int)imageFormats));
                 _initializedImage = true;
             }
 
