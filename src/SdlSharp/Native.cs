@@ -5067,54 +5067,97 @@ namespace SdlSharp
 
         #region SDL_ttf.h
 
-        public static readonly Version IntegratedSdl2TtfVersion = new(2, 0, 15);
+        public static readonly SDL_version IntegratedSdl2TtfVersion = new(2, 20, 1);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern Version* TTF_Linked_Version();
+        public static extern SDL_version* TTF_Linked_Version();
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void TTF_GetFreeTypeVersion(int* major, int* minor, int* patch);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void TTF_GetHarfBuzzVersion(int* major, int* minor, int* patch);
+
+        public const char UNICODE_BOM_NATIVE = (char)0xFEFF;
+        public const char UNICODE_BOM_SWAPPED = (char)0xFFFE;
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern void TTF_ByteSwappedUNICODE(bool swapped);
 
-        public readonly struct TTF_Font
-        {
-        }
+        public readonly struct TTF_Font { }
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern int TTF_Init();
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern TTF_Font* TTF_OpenFont(string file, int ptsize);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern TTF_Font* TTF_OpenFontIndex(string file, int ptsize, long index);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern TTF_Font* TTF_OpenFontRW(SDL_RWops* src, bool freesrc, int ptsize);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern TTF_Font* TTF_OpenFontIndexRW(SDL_RWops* src, bool freesrc, int ptsize, long index);
-
-        // TTF_STYLE_* is covered by FontStyle.cs
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TTF_Font* TTF_OpenFont(byte* file, int ptsize);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern FontStyle TTF_GetFontStyle(TTF_Font* font);
+        public static extern TTF_Font* TTF_OpenFontIndex(byte* file, int ptsize, long index);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void TTF_SetFontStyle(TTF_Font* font, FontStyle style);
+        public static extern TTF_Font* TTF_OpenFontRW(SDL_RWops* src, int freesrc, int ptsize);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool TTF_GetFontOutline(TTF_Font* font);
+        public static extern TTF_Font* TTF_OpenFontIndexRW(SDL_RWops* src, int freesrc, int ptsize, long index);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void TTF_SetFontOutline(TTF_Font* font, bool outline);
-
-        // TTF_HINTING_* is covered by FontHinting.cs
+        public static extern TTF_Font* TTF_OpenFontDPI(byte* file, int ptsize, uint hdpi, uint vdpi);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern FontHinting TTF_GetFontHinting(TTF_Font* font);
+        public static extern TTF_Font* TTF_OpenFontIndexDPI(byte* file, int ptsize, long index, uint hdpi, uint vdpi);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void TTF_SetFontHinting(TTF_Font* font, FontHinting hinting);
+        public static extern TTF_Font* TTF_OpenFontDPIRW(SDL_RWops* src, int freesrc, int ptsize, uint hdpi, uint vdpi);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern TTF_Font* TTF_OpenFontIndexDPIRW(SDL_RWops* src, int freesrc, int ptsize, long index, uint hdpi, uint vdpi);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_SetFontSize(TTF_Font* font, int ptsize);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_SetFontSizeDPI(TTF_Font* font, int ptsize, uint hdpi, uint vdpi);
+
+        public const byte TTF_STYLE_NORMAL = 0x00;
+        public const byte TTF_STYLE_BOLD = 0x01;
+        public const byte TTF_STYLE_ITALIC = 0x02;
+        public const byte TTF_STYLE_UNDERLINE = 0x04;
+        public const byte TTF_STYLE_STRIKETHROUGH = 0x08;
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_GetFontStyle(TTF_Font* font);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void TTF_SetFontStyle(TTF_Font* font, uint style);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_GetFontOutline(TTF_Font* font);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void TTF_SetFontOutline(TTF_Font* font, int outline);
+
+        public const byte TTF_HINTING_NORMAL = 0;
+        public const byte TTF_HINTING_LIGHT = 1;
+        public const byte TTF_HINTING_MONO = 2;
+        public const byte TTF_HINTING_NONE = 3;
+        public const byte TTF_HINTING_LIGHT_SUBPIXEL = 4;
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_GetFontHinting(TTF_Font* font);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void TTF_SetFontHinting(TTF_Font* font, int hinting);
+
+        public const byte TTF_WRAPPED_ALIGN_LEFT = 0;
+        public const byte TTF_WRAPPED_ALIGN_CENTER = 1;
+        public const byte TTF_WRAPPED_ALIGN_RIGHT = 2;
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_GetFontWrappedAlign(TTF_Font* font);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void TTF_SetFontWrappedAlign(TTF_Font* font, int hinting);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern int TTF_FontHeight(TTF_Font* font);
@@ -5129,82 +5172,148 @@ namespace SdlSharp
         public static extern int TTF_FontLineSkip(TTF_Font* font);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool TTF_GetFontKerning(TTF_Font* font);
+        public static extern int TTF_GetFontKerning(TTF_Font* font);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void TTF_SetFontKerning(TTF_Font* font, bool allowed);
+        public static extern void TTF_SetFontKerning(TTF_Font* font, int allowed);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern long TTF_FontFaces(TTF_Font* font);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool TTF_FontFaceIsFixedWidth(TTF_Font* font);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string TTF_FontFaceFamilyName(TTF_Font* font);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern string TTF_FontFaceStyleName(TTF_Font* font);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern int TTF_GlyphIsProvided(TTF_Font* font, char ch);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern int TTF_GlyphMetrics(TTF_Font* font, char ch, out int minx, out int maxx, out int miny, out int maxy, out int advance);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int TTF_SizeText(TTF_Font* font, string text, out int w, out int h);
+        public static extern int TTF_FontFaceIsFixedWidth(TTF_Font* font);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int TTF_SizeUTF8(TTF_Font* font, nint text, out int w, out int h);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern int TTF_SizeUNICODE(TTF_Font* font, string text, out int w, out int h);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern SDL_Surface* TTF_RenderText_Solid(TTF_Font* font, string text, Color fg);
+        public static extern byte* TTF_FontFaceFamilyName(TTF_Font* font);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* TTF_RenderUTF8_Solid(TTF_Font* font, nint text, Color fg);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern SDL_Surface* TTF_RenderUNICODE_Solid(TTF_Font* font, string text, Color fg);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern SDL_Surface* TTF_RenderGlyph_Solid(TTF_Font* font, char ch, Color fg);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern SDL_Surface* TTF_RenderText_Shaded(TTF_Font* font, string text, Color fg, Color bg);
+        public static extern byte* TTF_FontFaceStyleName(TTF_Font* font);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* TTF_RenderUTF8_Shaded(TTF_Font* font, nint text, Color fg, Color bg);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern SDL_Surface* TTF_RenderUNICODE_Shaded(TTF_Font* font, string text, Color fg, Color bg);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern SDL_Surface* TTF_RenderGlyph_Shaded(TTF_Font* font, char ch, Color fg, Color bg);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern SDL_Surface* TTF_RenderText_Blended(TTF_Font* font, string text, Color fg);
+        public static extern int TTF_GlyphIsProvided(TTF_Font* font, ushort ch);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* TTF_RenderUTF8_Blended(TTF_Font* font, nint text, Color fg);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern SDL_Surface* TTF_RenderUNICODE_Blended(TTF_Font* font, string text, Color fg);
-
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern SDL_Surface* TTF_RenderText_Blended_Wrapped(TTF_Font* font, string text, Color fg, uint wrapLength);
+        public static extern int TTF_GlyphIsProvided32(TTF_Font* font, uint ch);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Surface* TTF_RenderUTF8_Blended_Wrapped(TTF_Font* font, nint text, Color fg, uint wrapLength);
+        public static extern int TTF_GlyphMetrics(TTF_Font* font, ushort ch, int* minx, int* maxx, int* miny, int* maxy, int* advance);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern SDL_Surface* TTF_RenderUNICODE_Blended_Wrapped(TTF_Font* font, string text, Color fg, uint wrapLength);
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_GlyphMetrics32(TTF_Font* font, uint ch, int* minx, int* maxx, int* miny, int* maxy, int* advance);
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern SDL_Surface* TTF_RenderGlyph_Blended(TTF_Font* font, char ch, Color fg);
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_SizeText(TTF_Font* font, byte* text, int* w, int* h);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_SizeUTF8(TTF_Font* font, byte* text, int* w, int* h);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_SizeUNICODE(TTF_Font* font, ushort* text, int* w, int* h);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_MeasureText(TTF_Font* font, byte* text, int measure_width, int* extent, int* count);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_MeasureUTF8(TTF_Font* font, byte* text, int measure_width, int* extent, int* count);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_MeasureUNICODE(TTF_Font* font, ushort* text, int measure_width, int* extent, int* count);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderText_Solid(TTF_Font* font, byte* text, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUTF8_Solid(TTF_Font* font, byte* text, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUNICODE_Solid(TTF_Font* font, ushort* text, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderText_Solid_Wrapped(TTF_Font* font, byte* text, SDL_Color fg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUTF8_Solid_Wrapped(TTF_Font* font, byte* text, SDL_Color fg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUNICODE_Solid_Wrapped(TTF_Font* font, ushort* text, SDL_Color fg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderGlyph_Solid(TTF_Font* font, ushort ch, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderGlyph32_Solid(TTF_Font* font, uint ch, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderText_Shaded(TTF_Font* font, byte* text, SDL_Color fg, SDL_Color bg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUTF8_Shaded(TTF_Font* font, byte* text, SDL_Color fg, SDL_Color bg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUNICODE_Shaded(TTF_Font* font, ushort* text, SDL_Color fg, SDL_Color bg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderText_Shaded_Wrapped(TTF_Font* font, byte* text, SDL_Color fg, SDL_Color bg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUTF8_Shaded_Wrapped(TTF_Font* font, byte* text, SDL_Color fg, SDL_Color bg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUNICODE_Shaded_Wrapped(TTF_Font* font, ushort* text, SDL_Color fg, SDL_Color bg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderGlyph_Shaded(TTF_Font* font, ushort ch, SDL_Color fg, SDL_Color bg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderGlyph32_Shaded(TTF_Font* font, uint ch, SDL_Color fg, SDL_Color bg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderText_Blended(TTF_Font* font, byte* text, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUTF8_Blended(TTF_Font* font, byte* text, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUNICODE_Blended(TTF_Font* font, ushort* text, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderText_Blended_Wrapped(TTF_Font* font, byte* text, SDL_Color fg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUTF8_Blended_Wrapped(TTF_Font* font, byte* text, SDL_Color fg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUNICODE_Blended_Wrapped(TTF_Font* font, ushort* text, SDL_Color fg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderGlyph_Blended(TTF_Font* font, ushort ch, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderGlyph32_Blended(TTF_Font* font, uint ch, SDL_Color fg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderText_LCD(TTF_Font* font, byte* text, SDL_Color fg, SDL_Color bg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUTF8_LCD(TTF_Font* font, byte* text, SDL_Color fg, SDL_Color bg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUNICODE_LCD(TTF_Font* font, ushort* text, SDL_Color fg, SDL_Color bg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderText_LCD_Wrapped(TTF_Font* font, byte* text, SDL_Color fg, SDL_Color bg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUTF8_LCD_Wrapped(TTF_Font* font, byte* text, SDL_Color fg, SDL_Color bg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderUNICODE_LCD_Wrapped(TTF_Font* font, ushort* text, SDL_Color fg, SDL_Color bg, uint wrapLength);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderGlyph_LCD(TTF_Font* font, ushort ch, SDL_Color fg, SDL_Color bg);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_Surface* TTF_RenderGlyph32_LCD(TTF_Font* font, uint ch, SDL_Color fg, SDL_Color bg);
 
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern void TTF_CloseFont(TTF_Font* font);
@@ -5215,8 +5324,31 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool TTF_WasInit();
 
-        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern int TTF_GetFontKerningSizeGlyphs(TTF_Font* font, char previous_ch, char ch);
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_GetFontKerningSizeGlyphs(TTF_Font* font, ushort previous_ch, ushort ch);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_GetFontKerningSizeGlyphs32(TTF_Font* font, uint previous_ch, uint ch);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_SetFontSDF(TTF_Font* font, bool on_off);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool TTF_GetFontSDF(TTF_Font* font);
+
+        public enum TTF_Direction
+        {
+            TTF_DIRECTION_LTR = 0,
+            TTF_DIRECTION_RTL,
+            TTF_DIRECTION_TTB,
+            TTF_DIRECTION_BTT
+        }
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_SetFontDirection(TTF_Font* font, TTF_Direction direction);
+
+        [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int TTF_SetFontScriptName(TTF_Font* font, byte* script);
 
         #endregion
 

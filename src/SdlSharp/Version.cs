@@ -3,7 +3,7 @@
     /// <summary>
     /// A version number for a component.
     /// </summary>
-    public readonly unsafe record struct Version(byte Major, byte Minor, byte Patch)
+    public readonly unsafe record struct Version(int Major, int Minor, int Patch)
     {
         internal Version(Native.SDL_version* version) : this(version->major, version->minor, version->patch)
         {
@@ -18,6 +18,6 @@
         public static bool VersionAtLeast(Version targetVersion, Version version) =>
             Native.SDL_VersionNumber(targetVersion.ToNative()) >= Native.SDL_VersionNumber(version.ToNative());
 
-        internal Native.SDL_version ToNative() => new(Major, Minor, Patch);
+        internal Native.SDL_version ToNative() => new((byte)Major, (byte)Minor, (byte)Patch);
     }
 }

@@ -71,7 +71,33 @@ namespace SdlSharp
         /// The version of SDL_ttf in use.
         /// </summary>
         public static Version FontVersion =>
-            *Native.TTF_Linked_Version();
+            new(Native.TTF_Linked_Version());
+
+        /// <summary>
+        /// The version of FreeType used by SDL_ttf.
+        /// </summary>
+        public static Version FreeTypeVersion
+        {
+            get
+            {
+                int major, minor, patch;
+                Native.TTF_GetFreeTypeVersion(&major, &minor, &patch);
+                return new(major, minor, patch);
+            }
+        }
+
+        /// <summary>
+        /// The version of HarfBuzz used by SDL_ttf.
+        /// </summary>
+        public static Version HarfBuzzVersion
+        {
+            get
+            {
+                int major, minor, patch;
+                Native.TTF_GetHarfBuzzVersion(&major, &minor, &patch);
+                return new(major, minor, patch);
+            }
+        }
 
         /// <summary>
         /// Whether the font subsystem is initialized.

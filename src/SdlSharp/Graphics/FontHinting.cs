@@ -8,21 +8,26 @@
         /// <summary>
         /// Normal
         /// </summary>
-        Normal,
+        Normal = Native.TTF_HINTING_NORMAL,
 
         /// <summary>
         /// Light
         /// </summary>
-        Light,
+        Light = Native.TTF_HINTING_LIGHT,
 
         /// <summary>
         /// Mono
         /// </summary>
-        Mono,
+        Mono = Native.TTF_HINTING_MONO,
 
         /// <summary>
         /// None
         /// </summary>
-        None
+        None = Native.TTF_HINTING_NONE,
+
+        /// <summary>
+        /// Light Subpixel
+        /// </summary>
+        LightSubPixel = Native.TTF_HINTING_LIGHT_SUBPIXEL
     }
 }

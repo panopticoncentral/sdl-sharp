@@ -34,7 +34,7 @@
         /// Index8 format
         /// </summary>
         public static readonly EnumeratedPixelFormat Index8 = new(Native.SDL_PixelFormatEnum.SDL_PIXELFORMAT_INDEX8);
- 
+
         /// <summary>
         /// Rgb332 format
         /// </summary>

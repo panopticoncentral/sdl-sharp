@@ -9,26 +9,26 @@
         /// <summary>
         /// Normal
         /// </summary>
-        Normal = 0x00,
+        Normal = Native.TTF_STYLE_NORMAL,
 
         /// <summary>
         /// Bold
         /// </summary>
-        Bold = 0x01,
+        Bold = Native.TTF_STYLE_BOLD,
 
         /// <summary>
         /// Italic
         /// </summary>
-        Italic = 0x02,
+        Italic = Native.TTF_STYLE_ITALIC,
 
         /// <summary>
         /// Underline
         /// </summary>
-        Underline = 0x04,
+        Underline = Native.TTF_STYLE_UNDERLINE,
 
         /// <summary>
         /// Strikethrough
         /// </summary>
-        Strikethrough = 0x08
+        Strikethrough = Native.TTF_STYLE_STRIKETHROUGH
     }
 }

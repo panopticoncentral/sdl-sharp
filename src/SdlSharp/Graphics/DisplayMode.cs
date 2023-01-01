@@ -8,7 +8,7 @@
         /// <summary>
         /// The pixel format.
         /// </summary>
-        public readonly EnumeratedPixelFormat PixelFormat { get;  }
+        public readonly EnumeratedPixelFormat PixelFormat { get; }
 
         /// <summary>
         /// The size of the display.
