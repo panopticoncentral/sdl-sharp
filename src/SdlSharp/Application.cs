@@ -335,9 +335,6 @@ namespace SdlSharp
         /// <param name="window">The parent window, if any.</param>
         public static void ShowMessageBox(MessageBoxType flags, string title, string message, Window? window)
         {
-            using var utf8Title = Utf8String.ToUtf8String(title);
-            using var utf8Message = Utf8String.ToUtf8String(message);
-
             fixed (byte* titlePtr = Native.StringToUtf8(title))
             fixed (byte* messagePtr = Native.StringToUtf8(message))
             {

@@ -18,6 +18,12 @@
         public static bool VersionAtLeast(Version targetVersion, Version version) =>
             Native.SDL_VersionNumber(targetVersion.ToNative()) >= Native.SDL_VersionNumber(version.ToNative());
 
+        /// <summary>
+        /// Converts the version to a string.
+        /// </summary>
+        /// <returns>The version as a string.</returns>
+        public override string ToString() => $"{Major}.{Minor}.{Patch}";
+
         internal Native.SDL_version ToNative() => new((byte)Major, (byte)Minor, (byte)Patch);
     }
 }
