@@ -186,7 +186,7 @@ namespace SdlSharp
                 var byteCount = Encoding.UTF8.GetByteCount(terminatedString);
                 var buffer = new byte[byteCount];
 
-                _ = Encoding.UTF8.GetBytes(terminatedString, 0, terminatedString.Length, buffer, byteCount);
+                _ = Encoding.UTF8.GetBytes(terminatedString, 0, terminatedString.Length, buffer, 0);
                 return new Span<byte>(buffer, 0, byteCount);
             }
 
@@ -4381,7 +4381,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_FillRects(SDL_Surface* dst, SDL_Rect* rects, int count, uint color);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(Sdl2, EntryPoint = "SDL_UpperBlit", CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
@@ -4393,7 +4393,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_SoftStretchLinear(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect);
 
-        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(Sdl2, EntryPoint = "SDL_UpperBlitScaled", CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_BlitScaled(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst, SDL_Rect* dstrect);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
