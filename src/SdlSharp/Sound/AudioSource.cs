@@ -6,39 +6,37 @@ namespace SdlSharp.Sound
     /// <summary>
     /// A source of audio data.
     /// </summary>
-    public abstract class AudioSource : IDisposable
+    public sealed class AudioSource : IDisposable
     {
         private static Dictionary<nint, AudioSource>? s_audioCallbacks;
 
         private static Dictionary<nint, AudioSource> AudioCallbacks => s_audioCallbacks ??= new();
 
+        private readonly AudioCallback _callback;
+
         /// <summary>
         /// Constructs a new audio source.
         /// </summary>
-        protected AudioSource()
+        /// <param name="callback">The callback for the audio data.</param>
+        public AudioSource(AudioCallback callback)
         {
             AudioCallbacks[GetHashCode()] = this;
+            _callback = callback;
         }
-
-        /// <summary>
-        /// Gets audio data.
-        /// </summary>
-        /// <param name="data">Storage for the data.</param>
-        protected abstract void GetData(Span<byte> data);
 
         [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
         internal static unsafe void AudioCallback(nint userData, byte* stream, int len)
         {
             if (AudioCallbacks.TryGetValue(userData, out var instance))
             {
-                instance.GetData(new Span<byte>(stream, len));
+                instance._callback(new Span<byte>(stream, len));
             }
         }
 
         /// <summary>
         /// Disposes the audio source.
         /// </summary>
-        public virtual void Dispose()
+        public void Dispose()
         {
             _ = AudioCallbacks.Remove(GetHashCode());
             GC.SuppressFinalize(this);
