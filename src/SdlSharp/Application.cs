@@ -1,4 +1,6 @@
-﻿using SdlSharp.Graphics;
+﻿using System.Diagnostics;
+
+using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
 
@@ -369,33 +371,8 @@ namespace SdlSharp
             }
         }
 
-        /// <summary>
-        /// Dispatches one event.
-        /// </summary>
-        /// <param name="timeout">How long to wait for an event.</param>
-        /// <returns><c>true</c> if the quit event has been received, <c>false</c> otherwise.</returns>
-        public bool DispatchEvent(int timeout = 0)
+        private void DispatchEvent(ref Native.SDL_Event e)
         {
-            Native.SDL_Event e;
-
-            switch (timeout)
-            {
-                case 0:
-                    if (!Native.SDL_PollEvent(&e))
-                    {
-                        return !_quitReceived;
-                    }
-                    break;
-
-                case Timeout.Infinite:
-                    _ = Native.CheckErrorZero(Native.SDL_WaitEvent(&e));
-                    break;
-
-                default:
-                    _ = Native.CheckErrorZero(Native.SDL_WaitEventTimeout(&e, timeout));
-                    break;
-            }
-
             switch ((Native.SDL_EventType)e.type)
             {
                 case Native.SDL_EventType.SDL_QUIT:
@@ -532,6 +509,37 @@ namespace SdlSharp
 
                 default:
                     throw new InvalidOperationException();
+            }
+        }
+
+        /// <summary>
+        /// Waits for an event and dispatches it..
+        /// </summary>
+        /// <param name="timeout">How long to wait for an event.</param>
+        /// <returns><c>false</c> if the quit event has been received, <c>true</c> otherwise.</returns>
+        public bool WaitEvent(int timeout = 0)
+        {
+            Native.SDL_Event e;
+
+            _ = timeout == Timeout.Infinite
+                ? Native.CheckErrorZero(Native.SDL_WaitEvent(&e))
+                : Native.CheckErrorZero(Native.SDL_WaitEventTimeout(&e, timeout));
+
+            DispatchEvent(ref e);
+            return !_quitReceived;
+        }
+
+        /// <summary>
+        /// Dispatches all events in the queue.
+        /// </summary>
+        /// <returns><c>false</c> if the quit event has been received, <c>true</c> otherwise.</returns>
+        public bool DispatchEvents()
+        {
+            Native.SDL_Event e;
+
+            while (Native.SDL_PollEvent(&e))
+            {
+                DispatchEvent(ref e);
             }
 
             return !_quitReceived;

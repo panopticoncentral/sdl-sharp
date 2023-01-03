@@ -36,10 +36,22 @@
         public readonly uint Size { get; }
 
         /// <summary>
-        /// Creates a new audio specification.
+        /// Creates an audio specification.
         /// </summary>
-        /// <param name="spec">The audio specification.</param>
-        public AudioSpecification(Native.SDL_AudioSpec spec)
+        /// <param name="frequency">The frequency.</param>
+        /// <param name="format">The audio format.</param>
+        /// <param name="channels">The number of channels.</param>
+        public AudioSpecification(int frequency, AudioFormat format, byte channels)
+        {
+            Frequency = frequency;
+            Format = format;
+            Channels = channels;
+            Silence = 0;
+            Samples = 0;
+            Size = 0;
+        }
+
+        internal AudioSpecification(Native.SDL_AudioSpec spec)
         {
             Frequency = spec.freq;
             Format = new(spec.format);

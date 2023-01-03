@@ -260,7 +260,7 @@
         /// Returns the haptic support for the joystick.
         /// </summary>
         public Haptic GetHaptic() =>
-            new(Native.SDL_HapticOpenFromJoystick(_joystick));
+            new(Native.CheckPointer(Native.SDL_HapticOpenFromJoystick(_joystick)));
 
         /// <summary>
         /// Gets the value of the axis.

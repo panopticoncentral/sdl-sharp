@@ -46,7 +46,7 @@ namespace SdlSharp.Input
         {
             private readonly byte* _buffer;
 
-            public bool this[int index] => _buffer[Count] != 0;
+            public bool this[int index] => _buffer[index] != 0;
 
             public int Count { get; }
 

@@ -31,7 +31,7 @@ namespace SdlSharp
             fixed (byte* namePtr = Native.StringToUtf8(filename))
             fixed (byte* modePtr = Native.StringToUtf8(mode))
             {
-                return new(Native.SDL_RWFromFile(namePtr, modePtr));
+                return new(Native.CheckPointer(Native.SDL_RWFromFile(namePtr, modePtr)));
             }
         }
 
