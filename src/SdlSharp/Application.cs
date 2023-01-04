@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-using SdlSharp.Graphics;
+﻿using SdlSharp.Graphics;
 using SdlSharp.Input;
 using SdlSharp.Sound;
 
