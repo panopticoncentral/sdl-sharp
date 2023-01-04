@@ -25,12 +25,7 @@
         /// <summary>
         /// The center of the value.
         /// </summary>
-        public float X { get; }
-
-        /// <summary>
-        /// The center of the value.
-        /// </summary>
-        public float Y { get; }
+        public PointF Center { get; }
 
         /// <summary>
         /// The number of fingers.
@@ -42,8 +37,7 @@
             _deviceIndex = multiGesture.touchId;
             DTheta = multiGesture.dTheta;
             DDist = multiGesture.dDist;
-            X = multiGesture.x;
-            Y = multiGesture.y;
+            Center = (PointF)(multiGesture.x, multiGesture.y);
             FingerCount = multiGesture.numFingers;
         }
     }

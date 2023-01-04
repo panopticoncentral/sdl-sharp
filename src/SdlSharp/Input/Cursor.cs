@@ -23,6 +23,11 @@ namespace SdlSharp.Input
         /// </summary>
         public static Cursor Default => new(Native.SDL_GetDefaultCursor());
 
+        /// <summary>
+        /// The cursor's ID.
+        /// </summary>
+        public nuint Id => (nuint)_cursor;
+
         internal Cursor(Native.SDL_Cursor* cursor)
         {
             _cursor = cursor;

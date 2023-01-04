@@ -21,7 +21,7 @@ Keyboard.KeyDown += (s, e) =>
     }
 };
 
-while (app.DispatchEvent())
+while (app.DispatchEvents())
 {
     renderer.DrawColor = Colors.White;
     renderer.Clear();

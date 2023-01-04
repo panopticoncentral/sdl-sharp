@@ -5,7 +5,10 @@
     /// </summary>
     public sealed unsafe class SensorDevice
     {
-        private readonly int _index;
+        /// <summary>
+        /// The index of the device.
+        /// </summary>
+        public int Index { get; }
 
         /// <summary>
         /// Standard gravity constant.
@@ -21,23 +24,23 @@
         /// The name of the device, if any.
         /// </summary>
         public string? Name =>
-            Native.Utf8ToString(Native.SDL_SensorGetDeviceName(_index));
+            Native.Utf8ToString(Native.SDL_SensorGetDeviceName(Index));
 
         /// <summary>
         /// The sensor type.
         /// </summary>
         public SensorType Type =>
-            (SensorType)Native.SDL_SensorGetDeviceType(_index);
+            (SensorType)Native.SDL_SensorGetDeviceType(Index);
 
         /// <summary>
         /// The non-portable sensor type.
         /// </summary>
         public int NonPortableType =>
-            Native.SDL_SensorGetDeviceNonPortableType(_index);
+            Native.SDL_SensorGetDeviceNonPortableType(Index);
 
         internal SensorDevice(int index)
         {
-            _index = index;
+            Index = index;
         }
 
         /// <summary>
@@ -45,6 +48,6 @@
         /// </summary>
         /// <returns>The sensor.</returns>
         public Sensor Open() =>
-            new(Native.SDL_SensorOpen(_index));
+            new(Native.SDL_SensorOpen(Index));
     }
 }

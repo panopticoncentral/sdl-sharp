@@ -7,6 +7,11 @@
     {
         private readonly Native.SDL_hid_device* _device;
 
+        /// <summary>
+        /// The ID of the device.
+        /// </summary>
+        public nuint Id => (nuint)_device;
+
         internal HidDevice(Native.SDL_hid_device* device)
         {
             _device = device;

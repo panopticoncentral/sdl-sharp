@@ -8,24 +8,24 @@
         /// <summary>
         /// The name of the renderer.
         /// </summary>
-        public required string? Name { get; init; }
+        public string? Name { get; }
 
         /// <summary>
         /// The flags of the renderer.
         /// </summary>
-        public required RendererOptions Flags { get; init; }
+        public RendererOptions Flags { get; }
 
         /// <summary>
         /// The texture formats supported.
         /// </summary>
-        public required IReadOnlyList<EnumeratedPixelFormat> TextureFormats { get; init; }
+        public IReadOnlyList<EnumeratedPixelFormat> TextureFormats { get; }
 
         /// <summary>
         /// The maximum texture size.
         /// </summary>
-        public required Size MaxTextureSize { get; init; }
+        public Size MaxTextureSize { get; }
 
-        internal static RendererInfo FromNative(Native.SDL_RendererInfo* info)
+        internal RendererInfo(Native.SDL_RendererInfo* info)
         {
             var formats = new EnumeratedPixelFormat[(int)info->num_texture_formats];
             for (var index = 0; index < (int)info->num_texture_formats; index++)
@@ -33,13 +33,10 @@
                 formats[index] = new EnumeratedPixelFormat(info->texture_formats[index]);
             }
 
-            return new RendererInfo
-            {
-                Name = Native.Utf8ToString(info->name),
-                Flags = (RendererOptions)info->flags,
-                TextureFormats = formats,
-                MaxTextureSize = (info->max_texture_width, info->max_texture_height)
-            };
+            Name = Native.Utf8ToString(info->name);
+            Flags = (RendererOptions)info->flags;
+            TextureFormats = formats;
+            MaxTextureSize = (info->max_texture_width, info->max_texture_height);
         }
     }
 }

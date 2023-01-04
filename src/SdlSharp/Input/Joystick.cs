@@ -14,6 +14,11 @@
             Native.GetIndexedCollection(i => new JoystickInfo(i), Native.SDL_NumJoysticks);
 
         /// <summary>
+        /// The ID of the joystick.
+        /// </summary>
+        public nuint Id => (nuint)_joystick;
+
+        /// <summary>
         /// The name of the joystick, if any.
         /// </summary>
         public string? Name => Native.Utf8ToString(Native.CheckPointer(Native.SDL_JoystickName(_joystick)));
@@ -35,7 +40,7 @@
         /// <summary>
         /// The GUID of this joystick.
         /// </summary>
-        public Guid Id => Native.SDL_JoystickGetGUID(_joystick);
+        public Guid JoystickId => Native.SDL_JoystickGetGUID(_joystick);
 
         /// <summary>
         /// The vendor code for this joystick.

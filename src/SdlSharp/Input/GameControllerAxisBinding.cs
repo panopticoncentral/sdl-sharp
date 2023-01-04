@@ -8,11 +8,11 @@
         /// <summary>
         /// The axis.
         /// </summary>
-        public int Axis { get; }
+        public GameControllerAxis Axis { get; }
 
         internal GameControllerAxisBinding(int axis)
         {
-            Axis = axis;
+            Axis = new((Native.SDL_GameControllerAxis)axis);
         }
     }
 }

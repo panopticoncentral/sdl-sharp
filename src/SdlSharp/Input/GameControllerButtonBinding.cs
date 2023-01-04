@@ -8,11 +8,11 @@
         /// <summary>
         /// The button.
         /// </summary>
-        public int Button { get; }
+        public GameControllerButton Button { get; }
 
         internal GameControllerButtonBinding(int button)
         {
-            Button = button;
+            Button = new((Native.SDL_GameControllerButton)button);
         }
     }
 }

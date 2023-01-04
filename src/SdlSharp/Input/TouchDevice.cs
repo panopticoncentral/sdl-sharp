@@ -8,6 +8,11 @@
         private readonly Native.SDL_TouchID _touch;
 
         /// <summary>
+        /// The ID of the touch device;
+        /// </summary>
+        public long Id => _touch.Value;
+
+        /// <summary>
         /// The touch devices in the system.
         /// </summary>
         public static IReadOnlyList<(string? Name, TouchDevice Device)> Devices => Native.GetIndexedCollection(i =>
@@ -59,7 +64,7 @@
                         Finger? finger = null;
                         foreach (var indexedFinger in touch.Fingers)
                         {
-                            if (indexedFinger.Id == e.tfinger.fingerId)
+                            if (indexedFinger.ToNative()->id == e.tfinger.fingerId)
                             {
                                 finger = indexedFinger;
                                 break;

@@ -5,7 +5,7 @@
     /// </summary>
     public readonly record struct GameControllerAxis
     {
-        internal readonly Native.SDL_GameControllerAxis Value;
+        private readonly Native.SDL_GameControllerAxis _axis;
 
         /// <summary>
         /// Invalid axis.
@@ -49,7 +49,7 @@
 
         internal GameControllerAxis(Native.SDL_GameControllerAxis value)
         {
-            Value = value;
+            _axis = value;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@
         {
             fixed (byte* ptr = Native.StringToUtf8(name))
             {
-                Value = Native.SDL_GameControllerGetAxisFromString(ptr);
+                _axis = Native.SDL_GameControllerGetAxisFromString(ptr);
             }
         }
 
@@ -68,19 +68,8 @@
         /// Maps an axis to a name.
         /// </summary>
         public override unsafe string? ToString() =>
-            Native.Utf8ToString(Native.SDL_GameControllerGetStringForAxis(Value));
+            Native.Utf8ToString(Native.SDL_GameControllerGetStringForAxis(_axis));
 
-
-        /// <summary>
-        /// Converts an axis value to an int.
-        /// </summary>
-        /// <param name="axis">The axis value.</param>
-        public static explicit operator int(GameControllerAxis axis) => (int)axis.Value;
-
-        /// <summary>
-        /// Converts an int value to an axis value.
-        /// </summary>
-        /// <param name="value">The int value.</param>
-        public static explicit operator GameControllerAxis(int value) => new((Native.SDL_GameControllerAxis)value);
+        internal Native.SDL_GameControllerAxis ToNative() => _axis;
     }
 }

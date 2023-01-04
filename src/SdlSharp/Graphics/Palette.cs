@@ -56,6 +56,6 @@
             return ramp;
         }
 
-        internal Native.SDL_Palette* GetPointer() => _palette;
+        internal Native.SDL_Palette* ToNative() => _palette;
     }
 }

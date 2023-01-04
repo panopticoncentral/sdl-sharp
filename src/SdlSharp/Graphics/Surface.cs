@@ -17,7 +17,7 @@
         }
 
         /// <summary>
-        /// The ID of the surface.
+        /// The surface's ID.
         /// </summary>
         public nuint Id => (nuint)_surface;
 
@@ -208,7 +208,7 @@
         /// </summary>
         /// <param name="palette">The palette.</param>
         public void SetPalette(Palette palette) =>
-            _ = Native.CheckError(Native.SDL_SetSurfacePalette(_surface, palette.GetPointer()));
+            _ = Native.CheckError(Native.SDL_SetSurfacePalette(_surface, palette.ToNative()));
 
         /// <summary>
         /// Locks the surface.
@@ -286,7 +286,7 @@
         /// <param name="format">The pixel format.</param>
         /// <returns>The converted surface.</returns>
         public Surface Convert(PixelFormat format) =>
-            new(Native.SDL_ConvertSurface(_surface, format.GetPointer()));
+            new(Native.SDL_ConvertSurface(_surface, format.ToNative()));
 
         /// <summary>
         /// Converts the surface to a new pixel format.

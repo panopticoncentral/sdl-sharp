@@ -14,7 +14,7 @@
         {
             Native.SDL_RendererInfo info;
             _ = Native.CheckError(Native.SDL_GetRenderDriverInfo(i, &info));
-            return RendererInfo.FromNative(&info);
+            return new RendererInfo(&info);
         }, Native.SDL_GetNumRenderDrivers);
 
         /// <summary>
@@ -25,13 +25,13 @@
         /// <summary>
         /// Information about this renderer.
         /// </summary>
-        public RendererInfo Driver
+        public RendererInfo Info
         {
             get
             {
                 Native.SDL_RendererInfo info;
                 _ = Native.CheckError(Native.SDL_GetRendererInfo(_renderer, &info));
-                return RendererInfo.FromNative(&info);
+                return new(&info);
             }
         }
 
@@ -470,7 +470,7 @@
             fixed (Vertex* verticiesPtr = vertices)
             fixed (int* indicesPtr = indices)
             {
-                _ = Native.CheckError(Native.SDL_RenderGeometry(_renderer, Texture.ToNative(texture), (Native.SDL_Vertex*)verticiesPtr, vertices.Length, indicesPtr, indices?.Length ?? 0));
+                _ = Native.CheckError(Native.SDL_RenderGeometry(_renderer, texture == null ? null : texture.ToNative(), (Native.SDL_Vertex*)verticiesPtr, vertices.Length, indicesPtr, indices?.Length ?? 0));
             }
         }
 

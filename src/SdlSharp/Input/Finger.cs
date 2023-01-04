@@ -7,7 +7,10 @@
     {
         private readonly Native.SDL_Finger* _finger;
 
-        internal Native.SDL_FingerID Id => _finger->id;
+        /// <summary>
+        /// The finger's ID.
+        /// </summary>
+        public long Id => _finger->id.Value;
 
         /// <summary>
         /// The location of the finger.
@@ -23,5 +26,7 @@
         {
             _finger = finger;
         }
+
+        internal Native.SDL_Finger* ToNative() => _finger;
     }
 }

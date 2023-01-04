@@ -217,8 +217,5 @@
             Native.SDL_UnlockTexture(_texture);
 
         internal Native.SDL_Texture* ToNative() => _texture;
-
-        internal static Native.SDL_Texture* ToNative(Texture? texture) =>
-            texture == null ? (Native.SDL_Texture*)null : texture._texture;
     }
 }

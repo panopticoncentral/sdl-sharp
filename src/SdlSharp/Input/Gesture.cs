@@ -8,6 +8,11 @@
         private readonly Native.SDL_GestureID _gestureId;
 
         /// <summary>
+        /// The ID of the gesture.
+        /// </summary>
+        public long Id => _gestureId.Value;
+
+        /// <summary>
         /// An event fired when a multi-finger gesture was made.
         /// </summary>
         public static event EventHandler<MultiGestureEventArgs>? MultiGesture;

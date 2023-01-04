@@ -15,6 +15,11 @@
             Native.SDL_GameControllerNumMappings);
 
         /// <summary>
+        /// The game controller's ID.
+        /// </summary>
+        public nuint Id => (nuint)_gameController;
+
+        /// <summary>
         /// The mapping for this game controller.
         /// </summary>
         public string? Mapping => Native.Utf8ToStringAndFree(Native.SDL_GameControllerMapping(_gameController));
@@ -247,7 +252,7 @@
         /// <param name="axis">The axis.</param>
         /// <returns>The binding.</returns>
         public GameControllerBinding? GetAxisBinding(GameControllerAxis axis) =>
-            GameControllerBinding.FromNative(Native.SDL_GameControllerGetBindForAxis(_gameController, axis.Value));
+            GameControllerBinding.FromNative(Native.SDL_GameControllerGetBindForAxis(_gameController, axis.ToNative()));
 
         /// <summary>
         /// Whether the game controller has the axis.
@@ -255,7 +260,7 @@
         /// <param name="axis">The axis.</param>
         /// <returns>Whether the controller has it.</returns>
         public bool HasAxis(GameControllerAxis axis) =>
-            Native.SDL_GameControllerHasAxis(_gameController, axis.Value);
+            Native.SDL_GameControllerHasAxis(_gameController, axis.ToNative());
 
         /// <summary>
         /// The axis value.
@@ -263,7 +268,7 @@
         /// <param name="axis">The axis.</param>
         /// <returns>The value.</returns>
         public short GetAxis(GameControllerAxis axis) =>
-            Native.SDL_GameControllerGetAxis(_gameController, axis.Value);
+            Native.SDL_GameControllerGetAxis(_gameController, axis.ToNative());
 
         /// <summary>
         /// Gets the Apple SFSymbols name for the axis, if any.
@@ -271,7 +276,7 @@
         /// <param name="axis">The axis.</param>
         /// <returns>The name.</returns>
         public string? GetAppleSfSymbolsNameForAxis(GameControllerAxis axis) =>
-            Native.Utf8ToString(Native.SDL_GameControllerGetAppleSFSymbolsNameForAxis(_gameController, axis.Value));
+            Native.Utf8ToString(Native.SDL_GameControllerGetAppleSFSymbolsNameForAxis(_gameController, axis.ToNative()));
 
         /// <summary>
         /// Gets the binding for the button.
@@ -279,7 +284,7 @@
         /// <param name="button">The button.</param>
         /// <returns>The binding.</returns>
         public GameControllerBinding? GetButtonBinding(GameControllerButton button) =>
-            GameControllerBinding.FromNative(Native.SDL_GameControllerGetBindForButton(_gameController, button.Value));
+            GameControllerBinding.FromNative(Native.SDL_GameControllerGetBindForButton(_gameController, button.ToNative()));
 
         /// <summary>
         /// Whether the game controller has the button.
@@ -287,7 +292,7 @@
         /// <param name="button">The button.</param>
         /// <returns>Whether the controller has it.</returns>
         public bool HasButton(GameControllerButton button) =>
-            Native.SDL_GameControllerHasButton(_gameController, button.Value);
+            Native.SDL_GameControllerHasButton(_gameController, button.ToNative());
 
         /// <summary>
         /// The button value.
@@ -295,7 +300,7 @@
         /// <param name="button">The button.</param>
         /// <returns>Whether the button is pressed.</returns>
         public bool GetButton(GameControllerButton button) =>
-            Native.SDL_GameControllerGetButton(_gameController, button.Value) == 1;
+            Native.SDL_GameControllerGetButton(_gameController, button.ToNative()) == 1;
 
         /// <summary>
         /// Gets the Apple SFSymbols name for the button, if any.
@@ -303,7 +308,7 @@
         /// <param name="button">The button.</param>
         /// <returns>The name.</returns>
         public string? GetAppleSfSymbolsNameForButton(GameControllerButton button) =>
-            Native.Utf8ToString(Native.SDL_GameControllerGetAppleSFSymbolsNameForButton(_gameController, button.Value));
+            Native.Utf8ToString(Native.SDL_GameControllerGetAppleSFSymbolsNameForButton(_gameController, button.ToNative()));
 
         /// <summary>
         /// Gets the state of a touchpad finger.

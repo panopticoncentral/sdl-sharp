@@ -780,7 +780,7 @@ namespace SdlSharp.Graphics
                 {
                     fixed (byte* ptr = Native.StringToUtf8(name))
                     {
-                        Native.SDL_SetWindowData(_window._window, ptr, value);
+                        _ = Native.SDL_SetWindowData(_window._window, ptr, value);
                     }
                 }
             }

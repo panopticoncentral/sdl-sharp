@@ -19,6 +19,11 @@
             Native.GetIndexedCollection(i => new HapticInfo(i), Native.SDL_NumHaptics);
 
         /// <summary>
+        /// The ID of the haptic effect.
+        /// </summary>
+        public nuint Id => (nuint)_haptic;
+
+        /// <summary>
         /// Information about this effect.
         /// </summary>
         public HapticInfo Info => new(Native.SDL_HapticIndex(_haptic));

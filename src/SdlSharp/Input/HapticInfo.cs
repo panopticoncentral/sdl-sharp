@@ -5,30 +5,33 @@
     /// </summary>
     public sealed unsafe class HapticInfo
     {
-        private readonly int _index;
+        /// <summary>
+        /// The index of the haptic information.
+        /// </summary>
+        public int Index { get; }
 
         /// <summary>
         /// The name of the effect.
         /// </summary>
         public string Name =>
-            Native.Utf8ToString(Native.SDL_HapticName(_index))!;
+            Native.Utf8ToString(Native.SDL_HapticName(Index))!;
 
         /// <summary>
         /// Whether the effect has been opened.
         /// </summary>
         public bool IsOpened =>
-            Native.SDL_HapticOpened(_index) != 0;
+            Native.SDL_HapticOpened(Index) != 0;
 
         /// <summary>
         /// Opens the effect.
         /// </summary>
         /// <returns>The effect instance.</returns>
         public Haptic Open() =>
-            new(Native.SDL_HapticOpen(_index));
+            new(Native.SDL_HapticOpen(Index));
 
         internal HapticInfo(int index)
         {
-            _index = index;
+            Index = index;
         }
     }
 }

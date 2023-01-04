@@ -7,11 +7,6 @@
     {
         private readonly Native.SDL_PixelFormat* _format;
 
-        /// <summary>
-        /// The ID of the format.
-        /// </summary>
-        public nuint Id => (nuint)_format;
-
         internal PixelFormat(Native.SDL_PixelFormat* format)
         {
             _format = format;
@@ -25,7 +20,7 @@
         /// </summary>
         /// <param name="palette">The palette.</param>
         public void SetPalette(Palette palette) =>
-            Native.CheckError(Native.SDL_SetPixelFormatPalette(_format, palette.GetPointer()));
+            Native.CheckError(Native.SDL_SetPixelFormatPalette(_format, palette.ToNative()));
 
         /// <summary>
         /// Maps an RGB value to a pixel color in this format.
@@ -80,6 +75,6 @@
             return (red, green, blue, alpha);
         }
 
-        internal Native.SDL_PixelFormat* GetPointer() => _format;
+        internal Native.SDL_PixelFormat* ToNative() => _format;
     }
 }

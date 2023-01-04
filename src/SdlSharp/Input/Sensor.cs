@@ -8,6 +8,11 @@
         private readonly Native.SDL_Sensor* _sensor;
 
         /// <summary>
+        /// The ID of the sensor.
+        /// </summary>
+        public nuint Id => (nuint)_sensor;
+
+        /// <summary>
         /// The sensor's name.
         /// </summary>
         public string? Name =>
@@ -30,8 +35,9 @@
         /// </summary>
         public static event EventHandler<SensorUpdatedEventArgs>? Updated;
 
-        internal static Sensor Get(Native.SDL_SensorID instanceId) =>
-            new(Native.SDL_SensorFromInstanceID(instanceId));
+        internal Sensor(Native.SDL_SensorID instanceId) : this(Native.SDL_SensorFromInstanceID(instanceId))
+        {
+        }
 
         internal Sensor(Native.SDL_Sensor* sensor)
         {
@@ -89,7 +95,7 @@
             switch ((Native.SDL_EventType)e.type)
             {
                 case Native.SDL_EventType.SDL_SENSORUPDATE:
-                    Updated?.Invoke(Get(new(e.sensor.which)), new SensorUpdatedEventArgs(e.sensor));
+                    Updated?.Invoke(new Sensor(new Native.SDL_SensorID(e.sensor.which)), new SensorUpdatedEventArgs(e.sensor));
                     break;
 
                 default:

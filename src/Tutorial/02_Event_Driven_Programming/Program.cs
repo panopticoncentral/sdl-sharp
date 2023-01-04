@@ -19,6 +19,6 @@ Keyboard.KeyDown += (s, e) => Application.ShowMessageBox(MessageBoxType.Informat
 Mouse.ButtonDown += (s, e) => Application.ShowMessageBox(MessageBoxType.Information, "Mouse Button", "Down!", window);
 Mouse.ButtonUp += (s, e) => Application.ShowMessageBox(MessageBoxType.Information, "Mouse Button", "Up!", window);
 
-while (app.DispatchEvent())
+while (app.DispatchEvents())
 {
 }

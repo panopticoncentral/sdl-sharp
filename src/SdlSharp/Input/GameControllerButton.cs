@@ -5,7 +5,7 @@
     /// </summary>
     public readonly record struct GameControllerButton
     {
-        internal readonly Native.SDL_GameControllerButton Value;
+        private readonly Native.SDL_GameControllerButton _button;
 
         /// <summary>
         /// Invalid button.
@@ -124,7 +124,7 @@
 
         internal GameControllerButton(Native.SDL_GameControllerButton value)
         {
-            Value = value;
+            _button = value;
         }
 
         /// <summary>
@@ -135,7 +135,7 @@
         {
             fixed (byte* ptr = Native.StringToUtf8(name))
             {
-                Value = Native.SDL_GameControllerGetButtonFromString(ptr);
+                _button = Native.SDL_GameControllerGetButtonFromString(ptr);
             }
         }
 
@@ -143,18 +143,8 @@
         /// Maps a button to a name.
         /// </summary>
         public override unsafe string? ToString() =>
-            Native.Utf8ToString(Native.SDL_GameControllerGetStringForButton(Value));
+            Native.Utf8ToString(Native.SDL_GameControllerGetStringForButton(_button));
 
-        /// <summary>
-        /// Converts a button value to an int.
-        /// </summary>
-        /// <param name="button">The button value.</param>
-        public static explicit operator int(GameControllerButton button) => (int)button.Value;
-
-        /// <summary>
-        /// Converts an int value to a button value.
-        /// </summary>
-        /// <param name="value">The int value.</param>
-        public static explicit operator GameControllerButton(int value) => new((Native.SDL_GameControllerButton)value);
+        internal Native.SDL_GameControllerButton ToNative() => _button;
     }
 }

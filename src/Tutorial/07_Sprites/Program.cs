@@ -21,7 +21,7 @@ var next = DateTime.Now.AddMilliseconds(500);
 var current = 0;
 var rotation = 0;
 
-while (app.DispatchEvent())
+while (app.DispatchEvents())
 {
     if (DateTime.Now > next)
     {
