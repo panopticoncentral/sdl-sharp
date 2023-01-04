@@ -17,6 +17,11 @@
         }
 
         /// <summary>
+        /// The ID of the surface.
+        /// </summary>
+        public nuint Id => (nuint)_surface;
+
+        /// <summary>
         /// The size of the surface.
         /// </summary>
         public Size Size => (_surface->w, _surface->h);

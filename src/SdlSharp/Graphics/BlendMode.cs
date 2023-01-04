@@ -1,7 +1,4 @@
-﻿// There are going to be unused fields in some of the interop structures
-#pragma warning disable CS0169, RCS1213, IDE0051, IDE0052
-
-namespace SdlSharp.Graphics
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A mode for blending textures.

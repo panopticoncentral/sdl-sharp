@@ -7,6 +7,11 @@
     {
         private readonly Native.SDL_Palette* _palette;
 
+        /// <summary>
+        /// The ID of the palette.
+        /// </summary>
+        public nuint Id => (nuint)_palette;
+
         internal Palette(Native.SDL_Palette* palette)
         {
             _palette = palette;

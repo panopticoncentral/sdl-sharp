@@ -8,6 +8,11 @@
         private readonly Native.SDL_Texture* _texture;
 
         /// <summary>
+        /// The ID of the texture.
+        /// </summary>
+        public nuint Id => (nuint)_texture;
+
+        /// <summary>
         /// The pixel format.
         /// </summary>
         public EnumeratedPixelFormat PixelFormat

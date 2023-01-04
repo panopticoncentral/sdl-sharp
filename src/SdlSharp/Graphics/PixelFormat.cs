@@ -7,6 +7,11 @@
     {
         private readonly Native.SDL_PixelFormat* _format;
 
+        /// <summary>
+        /// The ID of the format.
+        /// </summary>
+        public nuint Id => (nuint)_format;
+
         internal PixelFormat(Native.SDL_PixelFormat* format)
         {
             _format = format;

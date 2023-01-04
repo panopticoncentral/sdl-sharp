@@ -18,6 +18,11 @@
         public const int UnicodeBomSwapped = Native.UNICODE_BOM_SWAPPED;
 
         /// <summary>
+        /// The ID of the font.
+        /// </summary>
+        public nuint Id => (nuint)_font;
+
+        /// <summary>
         /// The style of the font.
         /// </summary>
         public FontStyle Style

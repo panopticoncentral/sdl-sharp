@@ -5,8 +5,6 @@
     /// </summary>
     public sealed unsafe class Display
     {
-        private readonly int _index;
-
         /// <summary>
         /// The displays in the system.
         /// </summary>
@@ -15,7 +13,12 @@
         /// <summary>
         /// The display name, if any.
         /// </summary>
-        public string? Name => Native.Utf8ToString(Native.SDL_GetDisplayName(_index));
+        public string? Name => Native.Utf8ToString(Native.SDL_GetDisplayName(Index));
+
+        /// <summary>
+        /// The index of the display.
+        /// </summary>
+        public int Index { get; }
 
         /// <summary>
         /// The display bounds.
@@ -25,7 +28,7 @@
             get
             {
                 Native.SDL_Rect rect;
-                _ = Native.CheckError(Native.SDL_GetDisplayBounds(_index, &rect));
+                _ = Native.CheckError(Native.SDL_GetDisplayBounds(Index, &rect));
                 return new(rect);
             }
         }
@@ -38,7 +41,7 @@
             get
             {
                 Native.SDL_Rect rect;
-                _ = Native.CheckError(Native.SDL_GetDisplayUsableBounds(_index, &rect));
+                _ = Native.CheckError(Native.SDL_GetDisplayUsableBounds(Index, &rect));
                 return new(rect);
             }
         }
@@ -51,7 +54,7 @@
             get
             {
                 float diagonal, horizontal, vertical;
-                _ = Native.CheckError(Native.SDL_GetDisplayDPI(_index, &diagonal, &horizontal, &vertical));
+                _ = Native.CheckError(Native.SDL_GetDisplayDPI(Index, &diagonal, &horizontal, &vertical));
                 return (diagonal, horizontal, vertical);
             }
         }
@@ -59,7 +62,7 @@
         /// <summary>
         /// The display's orientation.
         /// </summary>
-        public DisplayOrientation Orientation => (DisplayOrientation)Native.SDL_GetDisplayOrientation(_index);
+        public DisplayOrientation Orientation => (DisplayOrientation)Native.SDL_GetDisplayOrientation(Index);
 
         /// <summary>
         /// The display's supported modes.
@@ -67,10 +70,10 @@
         public IReadOnlyList<DisplayMode> DisplayModes => Native.GetIndexedCollection(i =>
             {
                 Native.SDL_DisplayMode mode;
-                _ = Native.CheckError(Native.SDL_GetDisplayMode(_index, i, &mode));
+                _ = Native.CheckError(Native.SDL_GetDisplayMode(Index, i, &mode));
                 return new DisplayMode(mode);
             },
-            () => Native.SDL_GetNumDisplayModes(_index));
+            () => Native.SDL_GetNumDisplayModes(Index));
 
         /// <summary>
         /// The display's desktop display mode.
@@ -80,7 +83,7 @@
             get
             {
                 Native.SDL_DisplayMode mode;
-                _ = Native.CheckError(Native.SDL_GetDesktopDisplayMode(_index, &mode));
+                _ = Native.CheckError(Native.SDL_GetDesktopDisplayMode(Index, &mode));
                 return new DisplayMode(mode);
             }
         }
@@ -93,7 +96,7 @@
             get
             {
                 Native.SDL_DisplayMode mode;
-                _ = Native.CheckError(Native.SDL_GetCurrentDisplayMode(_index, &mode));
+                _ = Native.CheckError(Native.SDL_GetCurrentDisplayMode(Index, &mode));
                 return new DisplayMode(mode);
             }
         }
@@ -125,7 +128,7 @@
 
         internal Display(int index)
         {
-            _index = index;
+            Index = index;
         }
 
         /// <summary>
@@ -158,7 +161,7 @@
         public DisplayMode? GetClosestMode(DisplayMode mode)
         {
             Native.SDL_DisplayMode desired = mode.ToNative(), closest;
-            var ret = Native.SDL_GetClosestDisplayMode(_index, &desired, &closest);
+            var ret = Native.SDL_GetClosestDisplayMode(Index, &desired, &closest);
             return ret == null ? null : new(closest);
         }
 

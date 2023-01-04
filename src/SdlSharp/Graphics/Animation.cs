@@ -8,6 +8,11 @@
         private readonly Native.IMG_Animation* _animation;
 
         /// <summary>
+        /// The animation's ID.
+        /// </summary>
+        public nuint Id => (nuint)_animation;
+
+        /// <summary>
         /// The size of the animation.
         /// </summary>
         public Size Size => new(_animation->w, _animation->h);

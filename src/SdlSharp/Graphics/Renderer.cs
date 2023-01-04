@@ -18,6 +18,11 @@
         }, Native.SDL_GetNumRenderDrivers);
 
         /// <summary>
+        /// The ID of the renderer.
+        /// </summary>
+        public nuint Id => (nuint)_renderer;
+
+        /// <summary>
         /// Information about this renderer.
         /// </summary>
         public RendererInfo Driver

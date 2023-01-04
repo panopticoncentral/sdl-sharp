@@ -8,26 +8,26 @@
         /// <summary>
         /// Unknown
         /// </summary>
-        Unknown,
+        Unknown = Native.SDL_DisplayOrientation.SDL_ORIENTATION_UNKNOWN,
 
         /// <summary>
         /// Landscape
         /// </summary>
-        Landscape,
+        Landscape = Native.SDL_DisplayOrientation.SDL_ORIENTATION_LANDSCAPE,
 
         /// <summary>
         /// Flipped landscape
         /// </summary>
-        LandscapeFlipped,
+        LandscapeFlipped = Native.SDL_DisplayOrientation.SDL_ORIENTATION_LANDSCAPE_FLIPPED,
 
         /// <summary>
         /// Portrait
         /// </summary>
-        Portrait,
+        Portrait = Native.SDL_DisplayOrientation.SDL_ORIENTATION_PORTRAIT,
 
         /// <summary>
         /// Flipped portrait
         /// </summary>
-        PortraitFlipped
+        PortraitFlipped = Native.SDL_DisplayOrientation.SDL_ORIENTATION_PORTRAIT_FLIPPED
     }
 }

@@ -61,6 +61,11 @@ namespace SdlSharp.Graphics
         }
 
         /// <summary>
+        /// The ID of the window.
+        /// </summary>
+        public nuint Id => (nuint)_window;
+
+        /// <summary>
         /// User defined window data.
         /// </summary>
         public WindowData Data => new(this);
