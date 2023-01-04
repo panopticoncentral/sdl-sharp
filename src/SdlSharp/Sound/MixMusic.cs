@@ -21,6 +21,11 @@ namespace SdlSharp.Sound
             Native.Mix_GetNumMusicDecoders);
 
         /// <summary>
+        /// The ID of the music;
+        /// </summary>
+        public nuint Id => (nuint)_music;
+
+        /// <summary>
         /// The type of the music.
         /// </summary>
         public MixMusicType Type => (MixMusicType)Native.Mix_GetMusicType(_music);

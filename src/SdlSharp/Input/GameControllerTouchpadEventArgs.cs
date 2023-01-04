@@ -1,4 +1,6 @@
-﻿namespace SdlSharp.Input
+﻿using SdlSharp.Graphics;
+
+namespace SdlSharp.Input
 {
     /// <summary>
     /// Event arguments for a game controller touchpad event.

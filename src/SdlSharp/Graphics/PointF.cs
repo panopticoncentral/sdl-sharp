@@ -1,4 +1,4 @@
-﻿namespace SdlSharp
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A point.

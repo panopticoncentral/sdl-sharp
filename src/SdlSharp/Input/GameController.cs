@@ -1,4 +1,6 @@
-﻿namespace SdlSharp.Input
+﻿using SdlSharp.Graphics;
+
+namespace SdlSharp.Input
 {
     /// <summary>
     /// A game controller.

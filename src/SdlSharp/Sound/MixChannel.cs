@@ -8,37 +8,40 @@ namespace SdlSharp.Sound
     /// </summary>
     public sealed unsafe class MixChannel
     {
-        private readonly int _index;
-
         private static MixChannelFinishedCallback? s_finishedCallback;
+
+        /// <summary>
+        /// The index of the channel.
+        /// </summary>
+        public int Index { get; }
 
         /// <summary>
         /// The fading status of the channel.
         /// </summary>
         public MixFading Fading =>
-            (MixFading)Native.Mix_FadingChannel(_index);
+            (MixFading)Native.Mix_FadingChannel(Index);
 
         /// <summary>
         /// Whether the channel is paused.
         /// </summary>
         public bool Paused =>
-            Native.Mix_Paused(_index) != 0;
+            Native.Mix_Paused(Index) != 0;
 
         /// <summary>
         /// Whether the channel is playing.
         /// </summary>
         public bool Playing =>
-            Native.Mix_Playing(_index) != 0;
+            Native.Mix_Playing(Index) != 0;
 
         /// <summary>
         /// The last sample played (or playing) in the channel.
         /// </summary>
         public MixChunk? Chunk =>
-            new(Native.Mix_GetChunk(_index));
+            new(Native.Mix_GetChunk(Index));
 
         internal MixChannel(int index)
         {
-            _index = index;
+            Index = index;
         }
 
         /// <summary>
@@ -80,20 +83,20 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <param name="effect">The effect.</param>
         public void RegisterEffect(MixEffect effect) =>
-            effect.Register(_index);
+            effect.Register(Index);
 
         /// <summary>
         /// Unregisters the effect on the channel.
         /// </summary>
         /// <param name="effect"></param>
         public void UnregisterEffect(MixEffect effect) =>
-            effect.Unregister(_index);
+            effect.Unregister(Index);
 
         /// <summary>
         /// Unregisters all effects from the channel.
         /// </summary>
         public void UnregisterAllEffects() =>
-            Native.CheckErrorZero(Native.Mix_UnregisterAllEffects(_index));
+            Native.CheckErrorZero(Native.Mix_UnregisterAllEffects(Index));
 
         /// <summary>
         /// Sets the panning on the channel.
@@ -101,7 +104,7 @@ namespace SdlSharp.Sound
         /// <param name="left">Left panning.</param>
         /// <param name="right">Right panning.</param>
         public void SetPanning(byte left, byte right) =>
-            Native.CheckErrorBool(Native.Mix_SetPanning(_index, left, right));
+            Native.CheckErrorBool(Native.Mix_SetPanning(Index, left, right));
 
         /// <summary>
         /// Sets the position of the channel.
@@ -109,21 +112,21 @@ namespace SdlSharp.Sound
         /// <param name="angle">The angle of the channel.</param>
         /// <param name="distance">The distance.</param>
         public void SetPosition(short angle, byte distance) =>
-            Native.CheckErrorBool(Native.Mix_SetPosition(_index, angle, distance));
+            Native.CheckErrorBool(Native.Mix_SetPosition(Index, angle, distance));
 
         /// <summary>
         /// Sets the distance of the channel.
         /// </summary>
         /// <param name="distance">The distance.</param>
         public void SetDistance(byte distance) =>
-            Native.CheckErrorBool(Native.Mix_SetDistance(_index, distance));
+            Native.CheckErrorBool(Native.Mix_SetDistance(Index, distance));
 
         /// <summary>
         /// Reverses the stereo of the channel.
         /// </summary>
         /// <param name="flip">Whether to flip.</param>
         public void SetReverseStereo(bool flip) =>
-            Native.CheckErrorBool(Native.Mix_SetReverseStereo(_index, Native.BoolToInt(flip)));
+            Native.CheckErrorBool(Native.Mix_SetReverseStereo(Index, Native.BoolToInt(flip)));
 
         /// <summary>
         /// Sets the volume of the channel.
@@ -131,13 +134,13 @@ namespace SdlSharp.Sound
         /// <param name="volume">The volume.</param>
         /// <returns>The old volume.</returns>
         public int Volume(int volume) =>
-            Native.Mix_Volume(_index, volume);
+            Native.Mix_Volume(Index, volume);
 
         /// <summary>
         /// Halts the channel.
         /// </summary>
         public void Halt() =>
-            Native.CheckError(Native.Mix_HaltChannel(_index));
+            Native.CheckError(Native.Mix_HaltChannel(Index));
 
         /// <summary>
         /// Expires the channel after an interval.
@@ -145,7 +148,7 @@ namespace SdlSharp.Sound
         /// <param name="ticks">The number of milliseconds until the channel expires.</param>
         /// <returns>The number of channels set to expire.</returns>
         public int Expire(int ticks) =>
-            Native.Mix_ExpireChannel(_index, ticks);
+            Native.Mix_ExpireChannel(Index, ticks);
 
         /// <summary>
         /// Fades the channel out.
@@ -153,19 +156,19 @@ namespace SdlSharp.Sound
         /// <param name="ms">The fade out interval.</param>
         /// <returns>The number of channels set to fade out.</returns>
         public int FadeOut(int ms) =>
-            Native.Mix_FadeOutChannel(_index, ms);
+            Native.Mix_FadeOutChannel(Index, ms);
 
         /// <summary>
         /// Pauses the channel.
         /// </summary>
         public void Pause() =>
-            Native.Mix_Pause(_index);
+            Native.Mix_Pause(Index);
 
         /// <summary>
         /// Resumes the channel.
         /// </summary>
         public void Resume() =>
-            Native.Mix_Resume(_index);
+            Native.Mix_Resume(Index);
 
         /// <summary>
         /// Plays a sample on the channel.
@@ -174,7 +177,7 @@ namespace SdlSharp.Sound
         /// <param name="loops">The number of times to play the sample.</param>
         /// <returns>The channel the sample is playing on.</returns>
         public MixChannel Play(MixChunk chunk, int loops) =>
-            Get(Native.CheckError(Native.Mix_PlayChannel(_index, chunk.ToNative(), loops)));
+            Get(Native.CheckError(Native.Mix_PlayChannel(Index, chunk.ToNative(), loops)));
 
         /// <summary>
         /// Plays a sample on the channel.
@@ -184,7 +187,7 @@ namespace SdlSharp.Sound
         /// <param name="ticks">The limit of time to play the sample.</param>
         /// <returns>The channel the sample is playing on.</returns>
         public MixChannel Play(MixChunk chunk, int loops, int ticks) =>
-            Get(Native.CheckError(Native.Mix_PlayChannelTimed(_index, chunk.ToNative(), loops, ticks)));
+            Get(Native.CheckError(Native.Mix_PlayChannelTimed(Index, chunk.ToNative(), loops, ticks)));
 
         /// <summary>
         /// Fades a sample into a channel.
@@ -194,7 +197,7 @@ namespace SdlSharp.Sound
         /// <param name="ms">The length of the fade in.</param>
         /// <returns>The channel the sample is playing on.</returns>
         public MixChannel FadeIn(MixChunk chunk, int loops, int ms) =>
-            Get(Native.CheckError(Native.Mix_FadeInChannel(_index, chunk.ToNative(), loops, ms)));
+            Get(Native.CheckError(Native.Mix_FadeInChannel(Index, chunk.ToNative(), loops, ms)));
 
         /// <summary>
         /// Fades a sample into a channel.
@@ -205,9 +208,7 @@ namespace SdlSharp.Sound
         /// <param name="ticks">The limit of time to play the sample.</param>
         /// <returns>The channel the sample is playing on.</returns>
         public MixChannel FadeIn(MixChunk chunk, int loops, int ms, int ticks) =>
-            Get(Native.CheckError(Native.Mix_FadeInChannelTimed(_index, chunk.ToNative(), loops, ms, ticks)));
-
-        internal int ToNative() => _index;
+            Get(Native.CheckError(Native.Mix_FadeInChannelTimed(Index, chunk.ToNative(), loops, ms, ticks)));
 
         [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
         internal static unsafe void FinishedCallback(int channel) => s_finishedCallback?.Invoke(new(channel));

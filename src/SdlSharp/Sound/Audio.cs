@@ -111,7 +111,7 @@
                     &desiredNativeSpec,
                     &obtainedNativeSpec,
                     (int)allowedChanges),
-                    d => d.Id != 0);
+                    d => d.Value != 0);
 
                 var audioDevice = new AudioDevice(audioDeviceId);
                 obtained = new AudioSpecification(obtainedNativeSpec);

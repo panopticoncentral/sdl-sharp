@@ -8,6 +8,11 @@
         private readonly Native.SDL_AudioDeviceID _deviceId;
 
         /// <summary>
+        /// 
+        /// </summary>
+        public uint Id => _deviceId.Value;
+
+        /// <summary>
         /// The status of the audio device.
         /// </summary>
         public AudioStatus Status =>

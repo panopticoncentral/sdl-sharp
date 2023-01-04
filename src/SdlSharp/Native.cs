@@ -390,7 +390,7 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_OpenAudio(SDL_AudioSpec* desired, SDL_AudioSpec* obtained);
 
-        public readonly record struct SDL_AudioDeviceID(uint Id);
+        public readonly record struct SDL_AudioDeviceID(uint Value);
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetNumAudioDevices(int iscapture);

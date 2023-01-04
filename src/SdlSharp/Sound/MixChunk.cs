@@ -14,6 +14,11 @@
             i => Native.Utf8ToString(Native.Mix_GetChunkDecoder(i))!,
             Native.Mix_GetNumChunkDecoders);
 
+        /// <summary>
+        /// The ID of the chunk.
+        /// </summary>
+        public nuint Id => (nuint)_chunk;
+
         internal MixChunk(Native.Mix_Chunk* chunk)
         {
             _chunk = chunk;

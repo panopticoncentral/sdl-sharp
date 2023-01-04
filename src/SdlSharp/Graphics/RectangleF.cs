@@ -1,4 +1,4 @@
-﻿namespace SdlSharp
+﻿namespace SdlSharp.Graphics
 {
     /// <summary>
     /// A rectangle.
@@ -35,10 +35,10 @@
         /// <param name="epsilon">The epsilon.</param>
         /// <returns>Whether the rectangles are equal.</returns>
         public bool EqualsEpsilon(RectangleF other, float epsilon) =>
-            (Math.Abs(Location.X - other.Location.X) <= epsilon)
-            && (Math.Abs(Location.Y - other.Location.Y) <= epsilon)
-            && (Math.Abs(Size.Width - other.Size.Width) <= epsilon)
-            && (Math.Abs(Size.Height - other.Size.Height) <= epsilon);
+            Math.Abs(Location.X - other.Location.X) <= epsilon
+            && Math.Abs(Location.Y - other.Location.Y) <= epsilon
+            && Math.Abs(Size.Width - other.Size.Width) <= epsilon
+            && Math.Abs(Size.Height - other.Size.Height) <= epsilon;
 
         /// <summary>
         /// Determines whether the rectangles are equal within a given default epsilon.
@@ -129,15 +129,15 @@
         /// <param name="other">The other rectangle.</param>
         /// <returns>true if it does, false otherwise.</returns>
         public bool Contains(RectangleF other) =>
-            other.Location.X >= Location.X && (other.Location.X + other.Size.Width) <= (Location.X + Size.Width)
-            && other.Location.Y >= Location.Y && (other.Location.Y + other.Size.Height) <= (Location.Y + Size.Height);
+            other.Location.X >= Location.X && other.Location.X + other.Size.Width <= Location.X + Size.Width
+            && other.Location.Y >= Location.Y && other.Location.Y + other.Size.Height <= Location.Y + Size.Height;
 
         /// <summary>
         /// Returns the center of the rectangle.
         /// </summary>
         /// <returns>The center point.</returns>
         public PointF Center() =>
-            (PointF)(Location.X + (Size.Width / 2), Location.Y + (Size.Height / 2));
+            (PointF)(Location.X + Size.Width / 2, Location.Y + Size.Height / 2);
 
         internal static Native.SDL_FRect* ToNative(RectangleF rect, Native.SDL_FRect* nativeRect)
         {

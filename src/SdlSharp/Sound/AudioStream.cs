@@ -12,6 +12,11 @@
         private Native.SDL_AudioStream* Stream => _audioStream == null ? throw new InvalidOperationException() : _audioStream;
 
         /// <summary>
+        /// The ID of the audio stream.
+        /// </summary>
+        public nuint Id => (nuint)_audioStream;
+
+        /// <summary>
         /// The number of bytes available in the stream.
         /// </summary>
         public int Available => Native.SDL_AudioStreamAvailable(Stream);
