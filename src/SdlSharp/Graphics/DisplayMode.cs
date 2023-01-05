@@ -23,7 +23,7 @@
         internal DisplayMode(Native.SDL_DisplayMode mode)
         {
             PixelFormat = new(mode.format);
-            Size = (mode.h, mode.w);
+            Size = new(mode.h, mode.w);
             RefreshRate = mode.refresh_rate;
         }
 

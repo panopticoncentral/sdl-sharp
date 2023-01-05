@@ -3,8 +3,8 @@ using SdlSharp.Graphics;
 using SdlSharp.Input;
 
 using Application app = new(Subsystems.Video, ImageFormats.Jpg, hints: new[] { (Hint.RenderScaleQuality, "1") });
-Size windowSize = (640, 480);
-Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
+Size windowSize = new(640, 480);
+Rectangle windowRectangle = new(Window.UndefinedWindowLocation, windowSize);
 using var window = Window.Create("Hardware Acceleration", windowRectangle, WindowOptions.Shown);
 using var renderer = Renderer.Create(window, -1, RendererOptions.Accelerated);
 using var sunflowers = Image.Load("Sunflowers.jpg", renderer);
@@ -25,6 +25,6 @@ while (app.DispatchEvents())
 {
     renderer.DrawColor = Colors.White;
     renderer.Clear();
-    renderer.Copy(sunflowers, null, (Point.Origin, stretch ? windowSize : sunflowers.Size));
+    renderer.Copy(sunflowers, null, new(Point.Origin, stretch ? windowSize : sunflowers.Size));
     renderer.Present();
 }

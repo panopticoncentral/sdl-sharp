@@ -24,7 +24,7 @@
         /// <summary>
         /// The size of the surface.
         /// </summary>
-        public Size Size => (_surface->w, _surface->h);
+        public Size Size => new(_surface->w, _surface->h);
 
         /// <summary>
         /// The pitch of the surface.

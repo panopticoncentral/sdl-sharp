@@ -50,7 +50,7 @@
             {
                 int w, h;
                 _ = Native.CheckError(Native.SDL_GetRendererOutputSize(_renderer, &w, &h));
-                return (w, h);
+                return new(w, h);
             }
         }
 
@@ -78,7 +78,7 @@
             {
                 int w, h;
                 Native.SDL_RenderGetLogicalSize(_renderer, &w, &h);
-                return (w, h);
+                return new(w, h);
             }
 
             set => Native.CheckError(Native.SDL_RenderSetLogicalSize(_renderer, value.Width, value.Height));
@@ -222,7 +222,7 @@
         {
             float logicalX, logicalY;
             Native.SDL_RenderWindowToLogical(_renderer, window.X, window.Y, &logicalX, &logicalY);
-            return (PointF)(logicalX, logicalY);
+            return new(logicalX, logicalY);
         }
 
         /// <summary>
@@ -234,7 +234,7 @@
         {
             int windowX, windowY;
             Native.SDL_RenderLogicalToWindow(_renderer, logical.X, logical.Y, &windowX, &windowY);
-            return (windowX, windowY);
+            return new(windowX, windowY);
         }
 
         /// <summary>
@@ -248,7 +248,7 @@
         /// Draws a point on the renderer.
         /// </summary>
         /// <param name="p">The point.</param>
-        public void DrawPoint(PointF p) =>
+        public void DrawPointF(PointF p) =>
             Native.CheckError(Native.SDL_RenderDrawPointF(_renderer, p.X, p.Y));
 
         /// <summary>
@@ -267,7 +267,7 @@
         /// Draws points on a renderer.
         /// </summary>
         /// <param name="points">The points.</param>
-        public void DrawPoints(PointF[] points)
+        public void DrawPointsF(PointF[] points)
         {
             fixed (PointF* ptr = points)
             {
@@ -286,7 +286,7 @@
         /// Draws a line on a renderer.
         /// </summary>
         /// <param name="line">The line.</param>
-        public void DrawLine(LineF line) =>
+        public void DrawLineF(LineF line) =>
             Native.CheckError(Native.SDL_RenderDrawLineF(_renderer, line.Start.X, line.Start.Y, line.End.X, line.End.Y));
 
         /// <summary>
@@ -305,7 +305,7 @@
         /// Draws multiple lines on a renderer.
         /// </summary>
         /// <param name="lines">The lines.</param>
-        public void DrawLines(LineF[] lines)
+        public void DrawLinesF(LineF[] lines)
         {
             fixed (LineF* ptr = lines)
             {
@@ -327,7 +327,7 @@
         /// Draws a rectangle on a renderer.
         /// </summary>
         /// <param name="rectangle">The rectangle.</param>
-        public void DrawRectangle(RectangleF? rectangle)
+        public void DrawRectangleF(RectangleF? rectangle)
         {
             Native.SDL_FRect rect;
             _ = Native.CheckError(Native.SDL_RenderDrawRectF(_renderer, RectangleF.ToNative(rectangle, &rect)));
@@ -349,7 +349,7 @@
         /// Draws rectangles on a renderer.
         /// </summary>
         /// <param name="rectangles">The rectangles.</param>
-        public void DrawRectangles(RectangleF[] rectangles)
+        public void DrawRectanglesF(RectangleF[] rectangles)
         {
             fixed (RectangleF* ptr = rectangles)
             {
@@ -371,7 +371,7 @@
         /// Fills a rectangle on a renderer.
         /// </summary>
         /// <param name="rectangle">The rectangle.</param>
-        public void FillRectangle(RectangleF? rectangle)
+        public void FillRectangleF(RectangleF? rectangle)
         {
             Native.SDL_FRect rect;
             _ = Native.CheckError(Native.SDL_RenderFillRectF(_renderer, RectangleF.ToNative(rectangle, &rect)));
@@ -393,7 +393,7 @@
         /// Fills rectangles on the renderer.
         /// </summary>
         /// <param name="rectangles">The rectangles.</param>
-        public void FillRectangles(RectangleF[] rectangles)
+        public void FillRectanglesF(RectangleF[] rectangles)
         {
             fixed (RectangleF* ptr = rectangles)
             {
@@ -419,7 +419,7 @@
         /// <param name="texture">The texture.</param>
         /// <param name="source">The source rectangle.</param>
         /// <param name="destination">The destination rectangle.</param>
-        public void Copy(Texture texture, Rectangle? source, RectangleF? destination)
+        public void CopyF(Texture texture, Rectangle? source, RectangleF? destination)
         {
             Native.SDL_Rect sourceRect;
             Native.SDL_FRect destRect;
@@ -451,7 +451,7 @@
         /// <param name="angle">The rotation angle.</param>
         /// <param name="center">The center.</param>
         /// <param name="flip">Whether to flip the texture.</param>
-        public void Copy(Texture texture, Rectangle? source, RectangleF? destination, double angle, PointF? center, RendererFlip flip)
+        public void CopyF(Texture texture, Rectangle? source, RectangleF? destination, double angle, PointF? center, RendererFlip flip)
         {
             Native.SDL_Rect sourceRect;
             Native.SDL_FRect destRect;

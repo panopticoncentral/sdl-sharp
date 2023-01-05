@@ -39,8 +39,8 @@ namespace SdlSharp.Input
             _windowId = motion.windowID;
             IsTouch = motion.which == uint.MaxValue;
             Buttons = (MouseButton)motion.state;
-            Location = (motion.x, motion.y);
-            RelativeLocation = (motion.xrel, motion.yrel);
+            Location = new(motion.x, motion.y);
+            RelativeLocation = new(motion.xrel, motion.yrel);
         }
     }
 }

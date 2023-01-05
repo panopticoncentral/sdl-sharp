@@ -13,15 +13,9 @@
         {
         }
 
-        private RectangleF(Native.SDL_FRect native) : this((PointF)(native.x, native.y), (SizeF)(native.w, native.h))
+        private RectangleF(Native.SDL_FRect native) : this(new(native.x, native.y), new(native.w, native.h))
         {
         }
-
-        /// <summary>
-        /// Converts a tuple to a recangle.
-        /// </summary>
-        /// <param name="tuple">The tuple.</param>
-        public static explicit operator RectangleF((PointF location, SizeF size) tuple) => new(tuple.location, tuple.size);
 
         /// <summary>
         /// Whether the rectangle is empty.
@@ -111,7 +105,7 @@
             var y2 = line.End.Y;
             Native.SDL_FRect rect;
             var result = Native.SDL_IntersectFRectAndLine(ToNative(this, &rect), &x1, &y1, &x2, &y2);
-            return result ? ((PointF)(x1, y1), (PointF)(x2, y2)) : null;
+            return result ? new(new(x1, y1), new(x2, y2)) : null;
         }
 
         /// <summary>
@@ -137,7 +131,7 @@
         /// </summary>
         /// <returns>The center point.</returns>
         public PointF Center() =>
-            (PointF)(Location.X + Size.Width / 2, Location.Y + Size.Height / 2);
+            new(Location.X + Size.Width / 2, Location.Y + Size.Height / 2);
 
         internal static Native.SDL_FRect* ToNative(RectangleF rect, Native.SDL_FRect* nativeRect)
         {

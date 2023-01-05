@@ -17,7 +17,7 @@ namespace SdlSharp.Input
         /// <summary>
         /// The location of the finger.
         /// </summary>
-        public PointF Location => (PointF)(_finger->x, _finger->y);
+        public PointF Location => new(_finger->x, _finger->y);
 
         /// <summary>
         /// The amount of pressure.

@@ -128,7 +128,7 @@ namespace SdlSharp.Graphics
             {
                 int x, y;
                 Native.SDL_GetWindowPosition(_window, &x, &y);
-                return (x, y);
+                return new(x, y);
             }
             set => Native.SDL_SetWindowPosition(_window, value.X, value.Y);
         }
@@ -142,7 +142,7 @@ namespace SdlSharp.Graphics
             {
                 int width, height;
                 Native.SDL_GetWindowSize(_window, &width, &height);
-                return (width, height);
+                return new(width, height);
             }
             set => Native.SDL_SetWindowSize(_window, value.Width, value.Height);
         }
@@ -156,7 +156,7 @@ namespace SdlSharp.Graphics
             {
                 int width, height;
                 Native.SDL_GetWindowSizeInPixels(_window, &width, &height);
-                return (width, height);
+                return new(width, height);
             }
         }
 
@@ -182,7 +182,7 @@ namespace SdlSharp.Graphics
             {
                 int width, height;
                 Native.SDL_GetWindowMinimumSize(_window, &width, &height);
-                return (width, height);
+                return new(width, height);
             }
             set => Native.SDL_SetWindowMinimumSize(_window, value.Width, value.Height);
         }
@@ -196,7 +196,7 @@ namespace SdlSharp.Graphics
             {
                 int width, height;
                 Native.SDL_GetWindowMaximumSize(_window, &width, &height);
-                return (width, height);
+                return new(width, height);
             }
             set => Native.SDL_SetWindowMaximumSize(_window, value.Width, value.Height);
         }
@@ -633,7 +633,7 @@ namespace SdlSharp.Graphics
         internal static unsafe Native.SDL_HitTestResult HitTestCallback(Native.SDL_Window* window, Native.SDL_Point* point, nint userdata)
         {
             return HitTestCallbacks.TryGetValue((nint)window, out var callback)
-                ? (Native.SDL_HitTestResult)callback(new(window), new Point(point->x, point->y))
+                ? (Native.SDL_HitTestResult)callback(new(window), new(point->x, point->y))
                 : Native.SDL_HitTestResult.SDL_HITTEST_NORMAL;
         }
 

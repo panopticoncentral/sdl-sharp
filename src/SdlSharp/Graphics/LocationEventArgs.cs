@@ -12,7 +12,7 @@
 
         internal LocationEventArgs(Native.SDL_WindowEvent e) : base(e.timestamp)
         {
-            Location = new Point(e.data1, e.data2);
+            Location = new(e.data1, e.data2);
         }
     }
 }

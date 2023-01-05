@@ -46,7 +46,7 @@ namespace SdlSharp.Input
             Button = (MouseButton)button.button;
             IsPressed = button.state != 0;
             Clicks = button.clicks;
-            Location = (button.x, button.y);
+            Location = new(button.x, button.y);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace SdlSharp.Input
         internal JoystickBallMotionEventArgs(Native.SDL_JoyBallEvent ball) : base(ball.timestamp)
         {
             Ball = ball.ball;
-            RelativeLocation = (ball.xrel, ball.yrel);
+            RelativeLocation = new(ball.xrel, ball.yrel);
         }
     }
 }

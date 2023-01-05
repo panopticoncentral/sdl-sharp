@@ -3,8 +3,8 @@ using SdlSharp.Graphics;
 using SdlSharp.Input;
 
 using Application app = new(Subsystems.Video);
-Size windowSize = (640, 480);
-Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
+Size windowSize = new(640, 480);
+Rectangle windowRectangle = new(Window.UndefinedWindowLocation, windowSize);
 using var window = Window.Create("Drawing on the Screen", windowRectangle, WindowOptions.Shown);
 
 using var sunflowers = Surface.LoadBmp("Sunflowers.bmp");
@@ -25,7 +25,7 @@ while (app.DispatchEvents())
 {
     if (stretch)
     {
-        sunflowers.BlitScaled(window.Surface, null, (Point.Origin, windowSize));
+        sunflowers.BlitScaled(window.Surface, null, new(Point.Origin, windowSize));
     }
     else
     {

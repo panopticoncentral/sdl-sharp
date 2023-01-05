@@ -12,7 +12,7 @@
 
         internal SizeEventArgs(Native.SDL_WindowEvent e) : base(e.timestamp)
         {
-            Size = (e.data1, e.data2);
+            Size = new(e.data1, e.data2);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace SdlSharp.Input
             _deviceIndex = multiGesture.touchId;
             DTheta = multiGesture.dTheta;
             DDist = multiGesture.dDist;
-            Center = (PointF)(multiGesture.x, multiGesture.y);
+            Center = new(multiGesture.x, multiGesture.y);
             FingerCount = multiGesture.numFingers;
         }
     }

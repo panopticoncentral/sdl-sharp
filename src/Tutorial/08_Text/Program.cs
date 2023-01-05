@@ -3,8 +3,8 @@ using SdlSharp.Graphics;
 using SdlSharp.Input;
 
 using Application app = new(Subsystems.Video, fontSupport: true);
-Size windowSize = (640, 480);
-Rectangle windowRectangle = (Window.UndefinedWindowLocation, windowSize);
+Size windowSize = new(640, 480);
+Rectangle windowRectangle = new(Window.UndefinedWindowLocation, windowSize);
 using var window = Window.Create("Text", windowRectangle, WindowOptions.Shown);
 using var renderer = Renderer.Create(window, -1, RendererOptions.Accelerated);
 using var font = Font.Create("SDS_8x8.ttf", 12);
@@ -65,8 +65,8 @@ while (app.DispatchEvents())
         renderText = false;
     }
 
-    renderer.Copy(textTexture, null, (Point.Origin, textTexture.Size));
-    renderer.Copy(inputTextTexture, null, ((0, textTexture.Size.Height * 2), inputTextTexture.Size));
+    renderer.Copy(textTexture, null, new(Point.Origin, textTexture.Size));
+    renderer.Copy(inputTextTexture, null, new(new(0, textTexture.Size.Height * 2), inputTextTexture.Size));
 
     renderer.Present();
 }

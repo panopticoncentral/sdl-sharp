@@ -21,7 +21,7 @@ namespace SdlSharp.Input
             {
                 int x, y;
                 var buttons = Native.SDL_GetMouseState(&x, &y);
-                return ((x, y), (MouseButton)buttons);
+                return (new(x, y), (MouseButton)buttons);
             }
         }
 
@@ -34,7 +34,7 @@ namespace SdlSharp.Input
             {
                 int x, y;
                 var buttons = Native.SDL_GetGlobalMouseState(&x, &y);
-                return ((x, y), (MouseButton)buttons);
+                return (new(x, y), (MouseButton)buttons);
             }
         }
 
@@ -47,7 +47,7 @@ namespace SdlSharp.Input
             {
                 int x, y;
                 var buttons = Native.SDL_GetRelativeMouseState(&x, &y);
-                return ((x, y), (MouseButton)buttons);
+                return (new(x, y), (MouseButton)buttons);
             }
         }
 

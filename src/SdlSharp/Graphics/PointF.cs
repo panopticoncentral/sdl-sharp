@@ -8,13 +8,7 @@
         /// <summary>
         /// A point representing the origin (0, 0).
         /// </summary>
-        public static readonly PointF Origin = (PointF)(0.0f, 0.0f);
-
-        /// <summary>
-        /// Converts a tuple to a point.
-        /// </summary>
-        /// <param name="tuple">The tuple.</param>
-        public static explicit operator PointF((float X, float Y) tuple) => new(tuple.X, tuple.Y);
+        public static readonly PointF Origin = new(0.0f, 0.0f);
 
         /// <summary>
         /// Adds two points together.
@@ -22,7 +16,7 @@
         /// <param name="left">One point.</param>
         /// <param name="right">The other point.</param>
         /// <returns>The sum of the two points.</returns>
-        public static PointF operator +(PointF left, PointF right) => (PointF)(left.X + right.X, left.Y + right.Y);
+        public static PointF operator +(PointF left, PointF right) => new(left.X + right.X, left.Y + right.Y);
 
         /// <summary>
         /// Subtracts two points.
@@ -30,7 +24,7 @@
         /// <param name="left">One point.</param>
         /// <param name="right">The other point.</param>
         /// <returns>The difference between the two points.</returns>
-        public static PointF operator -(PointF left, PointF right) => (PointF)(left.X - right.X, left.Y - right.Y);
+        public static PointF operator -(PointF left, PointF right) => new(left.X - right.X, left.Y - right.Y);
 
         /// <summary>
         /// Scales a point.
@@ -38,7 +32,7 @@
         /// <param name="left">The point.</param>
         /// <param name="scale">The scale.</param>
         /// <returns>The scaled point.</returns>
-        public static PointF operator *(PointF left, int scale) => (PointF)(left.X * scale, left.Y * scale);
+        public static PointF operator *(PointF left, int scale) => new(left.X * scale, left.Y * scale);
 
         /// <summary>
         /// Scales a point.
@@ -46,7 +40,7 @@
         /// <param name="left">The point.</param>
         /// <param name="scale">The scale.</param>
         /// <returns>The scaled point.</returns>
-        public static PointF operator *(PointF left, float scale) => (PointF)((int)(left.X * scale), (int)(left.Y * scale));
+        public static PointF operator *(PointF left, float scale) => new((int)(left.X * scale), (int)(left.Y * scale));
 
         /// <summary>
         /// Multiplies two points together.
@@ -54,7 +48,7 @@
         /// <param name="left">One point.</param>
         /// <param name="right">The other point.</param>
         /// <returns>The two points multiplied together.</returns>
-        public static PointF operator *(PointF left, PointF right) => (PointF)(left.X * right.X, left.Y * right.Y);
+        public static PointF operator *(PointF left, PointF right) => new(left.X * right.X, left.Y * right.Y);
 
         /// <summary>
         /// Divides one point by the other.
@@ -62,7 +56,7 @@
         /// <param name="left">One point.</param>
         /// <param name="right">The other.</param>
         /// <returns>The point divided by the other point.</returns>
-        public static PointF operator /(PointF left, PointF right) => (PointF)(left.X / right.X, left.Y / right.Y);
+        public static PointF operator /(PointF left, PointF right) => new(left.X / right.X, left.Y / right.Y);
 
         /// <summary>
         /// Bounds a point to a given size.
@@ -92,7 +86,7 @@
                 newY = bound.Height - 1;
             }
 
-            return (PointF)(newX, newY);
+            return new(newX, newY);
         }
 
         internal static Native.SDL_FPoint* ToNative(PointF point, Native.SDL_FPoint* nativePoint)

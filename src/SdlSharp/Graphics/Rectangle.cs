@@ -13,15 +13,9 @@
         {
         }
 
-        internal Rectangle(Native.SDL_Rect native) : this((native.x, native.y), (native.w, native.h))
+        internal Rectangle(Native.SDL_Rect native) : this(new(native.x, native.y), new(native.w, native.h))
         {
         }
-
-        /// <summary>
-        /// Converts a tuple to a recangle.
-        /// </summary>
-        /// <param name="tuple">The tuple.</param>
-        public static implicit operator Rectangle((Point location, Size size) tuple) => new(tuple.location, tuple.size);
 
         /// <summary>
         /// Whether the rectangle is empty.
@@ -92,7 +86,7 @@
             var y2 = line.End.Y;
             Native.SDL_Rect rect;
             var result = Native.SDL_IntersectRectAndLine(ToNative(this, &rect), &x1, &y1, &x2, &y2);
-            return result ? ((x1, y1), (x2, y2)) : null;
+            return result ? new(new(x1, y1), new(x2, y2)) : null;
         }
 
         /// <summary>
@@ -118,7 +112,7 @@
         /// </summary>
         /// <returns>The center point.</returns>
         public Point Center() =>
-            (Location.X + Size.Width / 2, Location.Y + Size.Height / 2);
+            new(Location.X + (Size.Width / 2), Location.Y + (Size.Height / 2));
 
         internal static Native.SDL_Rect* ToNative(Rectangle rect, Native.SDL_Rect* nativeRect)
         {

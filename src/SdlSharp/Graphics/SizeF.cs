@@ -50,18 +50,12 @@ namespace SdlSharp.Graphics
         public bool Equals(SizeF other) => Width == other.Width && Height == other.Height;
 
         /// <summary>
-        /// Converts a tuple to a size.
-        /// </summary>
-        /// <param name="tuple">The tuple.</param>
-        public static implicit operator SizeF((float Width, float Height) tuple) => new(tuple.Width, tuple.Height);
-
-        /// <summary>
         /// Adds two sizes together.
         /// </summary>
         /// <param name="left">The first size.</param>
         /// <param name="right">The second size.</param>
         /// <returns>The sum of the two sizes.</returns>
-        public static SizeF operator +(SizeF left, SizeF right) => (left.Width + right.Width, left.Height + right.Height);
+        public static SizeF operator +(SizeF left, SizeF right) => new(left.Width + right.Width, left.Height + right.Height);
 
         /// <summary>
         /// Subtracts one size from another.
@@ -69,7 +63,7 @@ namespace SdlSharp.Graphics
         /// <param name="left">The first size.</param>
         /// <param name="right">The second size.</param>
         /// <returns>The difference of the two sizes.</returns>
-        public static SizeF operator -(SizeF left, SizeF right) => (left.Width - right.Width, left.Height - right.Height);
+        public static SizeF operator -(SizeF left, SizeF right) => new(left.Width - right.Width, left.Height - right.Height);
 
         /// <summary>
         /// Scales a size.
@@ -77,7 +71,7 @@ namespace SdlSharp.Graphics
         /// <param name="left">The size.</param>
         /// <param name="scale">The scale.</param>
         /// <returns>The scaled size.</returns>
-        public static SizeF operator *(SizeF left, int scale) => (left.Width * scale, left.Height * scale);
+        public static SizeF operator *(SizeF left, int scale) => new(left.Width * scale, left.Height * scale);
 
         /// <summary>
         /// Scales a size.
@@ -85,7 +79,7 @@ namespace SdlSharp.Graphics
         /// <param name="left">The size.</param>
         /// <param name="scale">The scale.</param>
         /// <returns>The scaled size.</returns>
-        public static SizeF operator *(SizeF left, float scale) => ((int)(left.Width * scale), (int)(left.Height * scale));
+        public static SizeF operator *(SizeF left, float scale) => new((int)(left.Width * scale), (int)(left.Height * scale));
 
         /// <summary>
         /// Multiplies two sizes together.
@@ -93,7 +87,7 @@ namespace SdlSharp.Graphics
         /// <param name="left">One size.</param>
         /// <param name="right">The other size.</param>
         /// <returns>The two sizes multiplied together.</returns>
-        public static SizeF operator *(SizeF left, SizeF right) => (left.Width * right.Width, left.Height * right.Height);
+        public static SizeF operator *(SizeF left, SizeF right) => new(left.Width * right.Width, left.Height * right.Height);
 
         /// <summary>
         /// Divides one size by the other.
@@ -101,7 +95,7 @@ namespace SdlSharp.Graphics
         /// <param name="left">One size.</param>
         /// <param name="right">The other.</param>
         /// <returns>The size divided by the other size.</returns>
-        public static SizeF operator /(SizeF left, SizeF right) => (left.Width / right.Width, left.Height / right.Height);
+        public static SizeF operator /(SizeF left, SizeF right) => new(left.Width / right.Width, left.Height / right.Height);
 
         /// <summary>
         /// Determines if two sizes are equal.

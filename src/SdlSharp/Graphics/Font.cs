@@ -302,8 +302,8 @@
             int minx, maxx, miny, maxy, advanceLocal;
             _ = Native.CheckError(Native.TTF_GlyphMetrics(_font, ch, &minx, &maxx, &miny, &maxy, &advanceLocal));
             advance = advanceLocal;
-            minimum = (minx, miny);
-            maximum = (maxx, maxy);
+            minimum = new(minx, miny);
+            maximum = new(maxx, maxy);
         }
 
         /// <summary>
@@ -318,8 +318,8 @@
             int minx, maxx, miny, maxy, advanceLocal;
             _ = Native.CheckError(Native.TTF_GlyphMetrics32(_font, ch, &minx, &maxx, &miny, &maxy, &advanceLocal));
             advance = advanceLocal;
-            minimum = (minx, miny);
-            maximum = (maxx, maxy);
+            minimum = new(minx, miny);
+            maximum = new(maxx, maxy);
         }
 
         /// <summary>
@@ -333,7 +333,7 @@
             {
                 int w, h;
                 _ = Native.CheckError(Native.TTF_SizeUNICODE(_font, (ushort*)ptr, &w, &h));
-                return (w, h);
+                return new(w, h);
             }
         }
 

@@ -47,7 +47,7 @@
             {
                 int width, height;
                 _ = Native.CheckError(Native.SDL_QueryTexture(_texture, null, null, &width, &height));
-                return (width, height);
+                return new(width, height);
             }
         }
 

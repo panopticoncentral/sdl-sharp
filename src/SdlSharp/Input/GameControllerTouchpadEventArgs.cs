@@ -31,7 +31,7 @@ namespace SdlSharp.Input
         {
             Touchpad = touchpad.touchpad;
             Finger = touchpad.finger;
-            Location = (PointF)(touchpad.x, touchpad.y);
+            Location = new(touchpad.x, touchpad.y);
             Pressure = touchpad.pressure;
         }
     }

@@ -43,10 +43,10 @@ namespace SdlSharp.Input
         {
             _windowId = wheel.windowID;
             IsTouch = wheel.which == uint.MaxValue;
-            Scroll = (wheel.x, wheel.y);
+            Scroll = new(wheel.x, wheel.y);
             Direction = (MouseWheelDirection)wheel.direction;
-            PreciseLocation = (PointF)(wheel.preciseX, wheel.preciseY);
-            Location = (wheel.mouseX, wheel.mouseY);
+            PreciseLocation = new(wheel.preciseX, wheel.preciseY);
+            Location = new(wheel.mouseX, wheel.mouseY);
         }
     }
 }

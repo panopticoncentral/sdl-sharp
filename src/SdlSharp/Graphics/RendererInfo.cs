@@ -36,7 +36,7 @@
             Name = Native.Utf8ToString(info->name);
             Flags = (RendererOptions)info->flags;
             TextureFormats = formats;
-            MaxTextureSize = (info->max_texture_width, info->max_texture_height);
+            MaxTextureSize = new(info->max_texture_width, info->max_texture_height);
         }
     }
 }
