@@ -27,6 +27,11 @@ namespace SdlSharp.Graphics
         /// </summary>
         public const int CenteredWindowPosition = (int)Native.SDL_WINDOWPOS_CENTERED_MASK;
 
+        /// <summary>
+        /// A centered window location.
+        /// </summary>
+        public static readonly Point CenteredWindowLocation = new(CenteredWindowPosition, CenteredWindowPosition);
+
         private static Dictionary<nint, Func<Window, Point, HitTestResult>> HitTestCallbacks => s_hitTestCallbacks ??= new();
 
         /// <summary>
