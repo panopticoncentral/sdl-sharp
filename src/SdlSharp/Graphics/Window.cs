@@ -115,13 +115,7 @@ namespace SdlSharp.Graphics
         public string? Title
         {
             get => Native.Utf8ToString(Native.SDL_GetWindowTitle(_window));
-            set
-            {
-                fixed (byte* ptr = Native.StringToUtf8(value))
-                {
-                    Native.SDL_SetWindowTitle(_window, ptr);
-                }
-            }
+            set => Native.StringToUtf8Action(value, ptr => Native.SDL_SetWindowTitle(_window, ptr));
         }
 
         /// <summary>
@@ -453,13 +447,7 @@ namespace SdlSharp.Graphics
         /// <param name="rectangle">The dimensions.</param>
         /// <param name="flags">Window flags.</param>
         /// <returns></returns>
-        public static Window Create(string title, Rectangle rectangle, WindowOptions flags)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(title))
-            {
-                return new(Native.SDL_CreateWindow(ptr, rectangle.Location.X, rectangle.Location.Y, rectangle.Size.Width, rectangle.Size.Height, (uint)flags));
-            }
-        }
+        public static Window Create(string title, Rectangle rectangle, WindowOptions flags) => Native.StringToUtf8Func(title, ptr => new Window(Native.SDL_CreateWindow(ptr, rectangle.Location.X, rectangle.Location.Y, rectangle.Size.Width, rectangle.Size.Height, (uint)flags)));
 
         /// <summary>
         /// Creates a new window.
@@ -484,13 +472,7 @@ namespace SdlSharp.Graphics
         /// <param name="rectangle">The window.</param>
         /// <param name="flags">The window flags.</param>
         /// <returns></returns>
-        public static Window CreateShaped(string title, Rectangle rectangle, WindowOptions flags)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(title))
-            {
-                return Native.CheckNotNull(new Window(Native.SDL_CreateShapedWindow(ptr, (uint)rectangle.Location.X, (uint)rectangle.Location.Y, (uint)rectangle.Size.Width, (uint)rectangle.Size.Height, (uint)flags)));
-            }
-        }
+        public static Window CreateShaped(string title, Rectangle rectangle, WindowOptions flags) => Native.StringToUtf8Func(title, ptr => Native.CheckNotNull(new Window(Native.SDL_CreateShapedWindow(ptr, (uint)rectangle.Location.X, (uint)rectangle.Location.Y, (uint)rectangle.Size.Width, (uint)rectangle.Size.Height, (uint)flags))));
 
         /// <inheritdoc/>
         public void Dispose()
@@ -776,17 +758,13 @@ namespace SdlSharp.Graphics
             {
                 get
                 {
-                    fixed (byte* ptr = Native.StringToUtf8(name))
-                    {
-                        return Native.SDL_GetWindowData(_window._window, ptr);
-                    }
+                    var window = _window._window;
+                    return Native.StringToUtf8Func(name, ptr => Native.SDL_GetWindowData(window, ptr));
                 }
                 set
                 {
-                    fixed (byte* ptr = Native.StringToUtf8(name))
-                    {
-                        _ = Native.SDL_SetWindowData(_window._window, ptr, value);
-                    }
+                    var window = _window._window;
+                    Native.StringToUtf8Action(name, ptr => _ = Native.SDL_SetWindowData(window, ptr, value));
                 }
             }
         }

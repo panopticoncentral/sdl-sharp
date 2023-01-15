@@ -41,13 +41,7 @@
         /// </summary>
         /// <param name="file">The file to load.</param>
         /// <returns>The sample.</returns>
-        public static MixChunk LoadWav(string file)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(file))
-            {
-                return new(Native.Mix_LoadWAV(ptr));
-            }
-        }
+        public static MixChunk LoadWav(string file) => Native.StringToUtf8Func(file, ptr => new MixChunk(Native.Mix_LoadWAV(ptr)));
 
         /// <summary>
         /// Quickly loads a music sample, which must be in the correct format.
@@ -80,13 +74,7 @@
         /// </summary>
         /// <param name="decoder">The decoder.</param>
         /// <returns><c>true</c> if it is, <c>false</c> otherwise.</returns>
-        public static bool HasDecoder(string decoder)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(decoder))
-            {
-                return Native.Mix_HasChunkDecoder(ptr);
-            }
-        }
+        public static bool HasDecoder(string decoder) => Native.StringToUtf8Func(decoder, Native.Mix_HasChunkDecoder);
 
         /// <summary>
         /// Sets the volume of the sample.

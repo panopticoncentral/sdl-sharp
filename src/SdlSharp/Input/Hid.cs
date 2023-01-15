@@ -103,13 +103,6 @@ namespace SdlSharp.Input
         /// <param name="path">The path name of the device.</param>
         /// <param name="exclusive">Whether the open is exclusive.</param>
         /// <returns>The device.</returns>
-        public static HidDevice OpenPath(string path, bool exclusive = false)
-        {
-            var utf8Path = Native.StringToUtf8(path);
-            fixed (byte* ptrPath = utf8Path)
-            {
-                return new(Native.CheckPointer(Native.SDL_hid_open_path(ptrPath, Native.BoolToInt(exclusive))));
-            }
-        }
+        public static HidDevice OpenPath(string path, bool exclusive = false) => Native.StringToUtf8Func(path, ptr => new HidDevice(Native.CheckPointer(Native.SDL_hid_open_path(ptr, Native.BoolToInt(exclusive)))));
     }
 }

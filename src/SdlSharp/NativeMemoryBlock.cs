@@ -33,12 +33,12 @@
         /// <param name="filename">The file name.</param>
         public NativeMemoryBlock(string filename)
         {
-            fixed (byte* namePtr = Native.StringToUtf8(filename))
+            Native.StringToUtf8Action(filename, namePtr =>
             {
                 nuint size;
                 _block = Native.SDL_LoadFile(namePtr, &size);
                 Size = (uint)size;
-            }
+            });
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace SdlSharp
     {
         private static readonly Dictionary<string, Hint> s_hints = new();
 
-        private readonly byte[] _name;
+        private readonly string _name;
         private EventHandler<HintChangedEventArgs>? _hintChanged;
 
         /// <summary>
@@ -885,10 +885,7 @@ namespace SdlSharp
                 {
                     if (_hintChanged == null)
                     {
-                        fixed (byte* namePtr = _name)
-                        {
-                            Native.SDL_AddHintCallback(namePtr, &HintCallback, 0);
-                        }
+                        Native.StringToUtf8Action(_name, namePtr => Native.SDL_AddHintCallback(namePtr, &HintCallback, 0));
                     }
 
                     _hintChanged += value;
@@ -903,10 +900,7 @@ namespace SdlSharp
 
                     if (_hintChanged == null)
                     {
-                        fixed (byte* namePtr = _name)
-                        {
-                            Native.SDL_DelHintCallback(namePtr, &HintCallback, 0);
-                        }
+                        Native.StringToUtf8Action(_name, namePtr => Native.SDL_DelHintCallback(namePtr, &HintCallback, 0));
                     }
                 }
             }
@@ -914,7 +908,7 @@ namespace SdlSharp
 
         private Hint(string name)
         {
-            _name = Native.StringToUtf8(name).ToArray();
+            _name = name;
         }
 
         [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(CallConvCdecl) })]
@@ -952,40 +946,20 @@ namespace SdlSharp
         /// <param name="value">The value to set.</param>
         /// <param name="priority">The priority of the value.</param>
         /// <returns><c>true</c> if the hint was set, <c>false</c> otherwise.</returns>
-        public bool Set(string value, HintPriority priority)
-        {
-            fixed (byte* namePtr = _name)
-            fixed (byte* valuePtr = Native.StringToUtf8(value))
-            {
-                return Native.SDL_SetHintWithPriority(namePtr, valuePtr, (Native.SDL_HintPriority)priority);
-            }
-        }
+        public bool Set(string value, HintPriority priority) => Native.StringToUtf8Func(_name, value, (namePtr, valuePtr) => Native.SDL_SetHintWithPriority(namePtr, valuePtr, (Native.SDL_HintPriority)priority));
 
         /// <summary>
         /// Sets the hint's value.
         /// </summary>
         /// <param name="value">The value to set.</param>
         /// <returns><c>true</c> if the hint was set, <c>false</c> otherwise.</returns>
-        public bool Set(string value)
-        {
-            fixed (byte* namePtr = _name)
-            fixed (byte* valuePtr = Native.StringToUtf8(value))
-            {
-                return Native.SDL_SetHint(namePtr, valuePtr);
-            }
-        }
+        public bool Set(string value) => Native.StringToUtf8Func(_name, value, Native.SDL_SetHint);
 
         /// <summary>
         /// Resets the hint's value.
         /// </summary>
         /// <returns><c>true</c> if the hint was reset, <c>false</c> otherwise.</returns>
-        public bool Reset()
-        {
-            fixed (byte* namePtr = _name)
-            {
-                return Native.SDL_ResetHint(namePtr);
-            }
-        }
+        public bool Reset() => Native.StringToUtf8Func(_name, Native.SDL_ResetHint);
 
         /// <summary>
         /// Resets all hints.
@@ -996,26 +970,14 @@ namespace SdlSharp
         /// Get the hint's value.
         /// </summary>
         /// <returns>The hint's value.</returns>
-        public string? Get()
-        {
-            fixed (byte* namePtr = _name)
-            {
-                return Native.Utf8ToString(Native.SDL_GetHint(namePtr));
-            }
-        }
+        public string? Get() => Native.StringToUtf8Func(_name, namePtr => Native.Utf8ToString(Native.SDL_GetHint(namePtr)));
 
         /// <summary>
         /// Gets the value of hint as a Boolean value.
         /// </summary>
         /// <param name="defaultValue">The default value to return if the hint is not set.</param>
         /// <returns>The value of the hint.</returns>
-        public bool GetBoolean(bool defaultValue)
-        {
-            fixed (byte* namePtr = _name)
-            {
-                return Native.SDL_GetHintBoolean(namePtr, defaultValue);
-            }
-        }
+        public bool GetBoolean(bool defaultValue) => Native.StringToUtf8Func(_name, namePtr => Native.SDL_GetHintBoolean(namePtr, defaultValue));
 
         /// <summary>
         /// Clears all hint settings.

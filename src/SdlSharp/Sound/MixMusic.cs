@@ -113,13 +113,7 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <param name="file">The file to load.</param>
         /// <returns>The music.</returns>
-        public static MixMusic Load(string file)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(file))
-            {
-                return new(Native.Mix_LoadMUS(ptr));
-            }
-        }
+        public static MixMusic Load(string file) => Native.StringToUtf8Func(file, ptr => new MixMusic(Native.Mix_LoadMUS(ptr)));
 
         /// <summary>
         /// Loads a music file from storage.
@@ -168,13 +162,7 @@ namespace SdlSharp.Sound
         /// </summary>
         /// <param name="decoder">The decoder.</param>
         /// <returns><c>true</c> if it is, <c>false</c> otherwise.</returns>
-        public static bool HasDecoder(string decoder)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(decoder))
-            {
-                return Native.Mix_HasMusicDecoder(ptr);
-            }
-        }
+        public static bool HasDecoder(string decoder) => Native.StringToUtf8Func(decoder, Native.Mix_HasMusicDecoder);
 
         /// <summary>
         /// Sets the music volume.
@@ -227,13 +215,7 @@ namespace SdlSharp.Sound
         /// Sets the command to use to play the music.
         /// </summary>
         /// <param name="command">The command string.</param>
-        public static void SetCommand(string command)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(command))
-            {
-                _ = Native.CheckError(Native.Mix_SetMusicCMD(ptr));
-            }
-        }
+        public static void SetCommand(string command) => Native.StringToUtf8Action(command, ptr => _ = Native.CheckError(Native.Mix_SetMusicCMD(ptr)));
 
         /// <summary>
         /// Jump to a given order in MOD music.

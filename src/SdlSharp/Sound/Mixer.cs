@@ -42,17 +42,11 @@ namespace SdlSharp.Sound
 
         /// <summary>
         /// The sound fonts for supported MIDI backends.
-        /// </summary>
+        /// </summary>`
         public static string? SoundFonts
         {
             get => Native.Utf8ToString(Native.Mix_GetSoundFonts());
-            set
-            {
-                fixed (byte* ptr = Native.StringToUtf8(value))
-                {
-                    _ = Native.CheckError(Native.Mix_SetSoundFonts(ptr));
-                }
-            }
+            set => Native.StringToUtf8Action(value, ptr => _ = Native.CheckError(Native.Mix_SetSoundFonts(ptr)));
         }
 
         /// <summary>
@@ -61,13 +55,7 @@ namespace SdlSharp.Sound
         public static string? TimidityConfiguration
         {
             get => Native.Utf8ToString(Native.Mix_GetTimidityCfg());
-            set
-            {
-                fixed (byte* ptr = Native.StringToUtf8(value))
-                {
-                    _ = Native.CheckError(Native.Mix_SetTimidityCfg(ptr));
-                }
-            }
+            set => Native.StringToUtf8Action(value, ptr => _ = Native.CheckError(Native.Mix_SetTimidityCfg(ptr)));
         }
 
         /// <summary>
@@ -89,13 +77,7 @@ namespace SdlSharp.Sound
         /// <param name="chunksize">The size of each output sample.</param>
         /// <param name="device">The audio device to use.</param>
         /// <param name="allowedChanges">Changes to the format that are allowed.</param>
-        public static void OpenAudio(int frequency, AudioFormat format, int channels, int chunksize, string device, AudioAllowChange allowedChanges)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(device))
-            {
-                _ = Native.CheckError(Native.Mix_OpenAudioDevice(frequency, format.Format.Value, channels, chunksize, ptr, (int)allowedChanges));
-            }
-        }
+        public static void OpenAudio(int frequency, AudioFormat format, int channels, int chunksize, string device, AudioAllowChange allowedChanges) => Native.StringToUtf8Action(device, ptr => _ = Native.CheckError(Native.Mix_OpenAudioDevice(frequency, format.Format.Value, channels, chunksize, ptr, (int)allowedChanges)));
 
         /// <summary>
         /// Closes the mixer.

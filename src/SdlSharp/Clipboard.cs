@@ -16,13 +16,7 @@
         public static unsafe string? Text
         {
             get => Native.Utf8ToStringAndFree(Native.SDL_GetClipboardText());
-            set
-            {
-                fixed (byte* ptr = Native.StringToUtf8(value))
-                {
-                    _ = Native.CheckError(Native.SDL_SetClipboardText(ptr));
-                }
-            }
+            set => Native.StringToUtf8Action(value, ptr => _ = Native.CheckError(Native.SDL_SetClipboardText(ptr)));
         }
 
         /// <summary>

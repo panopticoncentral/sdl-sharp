@@ -133,10 +133,8 @@
         /// <param name="name">The name.</param>
         public unsafe GameControllerButton(string name)
         {
-            fixed (byte* ptr = Native.StringToUtf8(name))
-            {
-                _button = Native.SDL_GameControllerGetButtonFromString(ptr);
-            }
+            var button = Native.StringToUtf8Func(name, Native.SDL_GameControllerGetButtonFromString);
+            _button = button;
         }
 
         /// <summary>

@@ -26,14 +26,7 @@ namespace SdlSharp
         /// <param name="filename">The filename.</param>
         /// <param name="mode">The file mode.</param>
         /// <returns>The storage.</returns>
-        public static RWOps Create(string filename, string mode)
-        {
-            fixed (byte* namePtr = Native.StringToUtf8(filename))
-            fixed (byte* modePtr = Native.StringToUtf8(mode))
-            {
-                return new(Native.CheckPointer(Native.SDL_RWFromFile(namePtr, modePtr)));
-            }
-        }
+        public static RWOps Create(string filename, string mode) => Native.StringToUtf8Func(filename, mode, (filenamePtr, modePtr) => new RWOps(Native.CheckPointer(Native.SDL_RWFromFile(filenamePtr, modePtr))));
 
         /// <summary>
         /// Creates a storage over a block of memory.

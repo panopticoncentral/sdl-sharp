@@ -10,13 +10,7 @@
         /// </summary>
         /// <param name="filename">The filename.</param>
         /// <returns>The image.</returns>
-        public static Surface Load(string filename)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                return new(Native.IMG_Load(ptr));
-            }
-        }
+        public static Surface Load(string filename) => Native.StringToUtf8Func(filename, ptr => new Surface(Native.IMG_Load(ptr)));
 
         /// <summary>
         /// Loads an image from a file compatible with a target surface.
@@ -54,13 +48,7 @@
         /// <param name="shouldDispose">Whether the storage should be disposed when loading is finished.</param>
         /// <param name="type">The type of the image.</param>
         /// <returns>The image.</returns>
-        public static Surface Load(RWOps rwops, bool shouldDispose, string type)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(type))
-            {
-                return new(Native.IMG_LoadTyped_RW(rwops.ToNative(), Native.BoolToInt(shouldDispose), ptr));
-            }
-        }
+        public static Surface Load(RWOps rwops, bool shouldDispose, string type) => Native.StringToUtf8Func(type, ptr => new Surface(Native.IMG_LoadTyped_RW(rwops.ToNative(), Native.BoolToInt(shouldDispose), ptr)));
 
         /// <summary>
         /// Loads an image from a storage into a texture.
@@ -96,13 +84,7 @@
         /// <param name="renderer">The renderer.</param>
         /// <param name="filename">The filename.</param>
         /// <returns>The texture.</returns>
-        public static Texture LoadTexture(Renderer renderer, string filename)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                return new(Native.IMG_LoadTexture(renderer.ToNative(), ptr));
-            }
-        }
+        public static Texture LoadTexture(Renderer renderer, string filename) => Native.StringToUtf8Func(filename, ptr => new Texture(Native.IMG_LoadTexture(renderer.ToNative(), ptr)));
 
         /// <summary>
         /// Loads an image as a texture from a storage.
@@ -112,13 +94,7 @@
         /// <param name="shouldDispose">Whether the storage should be disposed when loading is finished.</param>
         /// <param name="type">The type of the image.</param>
         /// <returns>The texture.</returns>
-        public static Texture LoadTexture(Renderer renderer, RWOps rwops, bool shouldDispose, string type)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(type))
-            {
-                return new(Native.IMG_LoadTextureTyped_RW(renderer.ToNative(), rwops.ToNative(), Native.BoolToInt(shouldDispose), ptr));
-            }
-        }
+        public static Texture LoadTexture(Renderer renderer, RWOps rwops, bool shouldDispose, string type) => Native.StringToUtf8Func(type, ptr => new Texture(Native.IMG_LoadTextureTyped_RW(renderer.ToNative(), rwops.ToNative(), Native.BoolToInt(shouldDispose), ptr)));
 
         /// <summary>
         /// Loads an image as a texture from a storage.
@@ -440,13 +416,7 @@
         /// </summary>
         /// <param name="surface">The surface.</param>
         /// <param name="filename">The filename.</param>
-        public static void SavePng(Surface surface, string filename)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                _ = Native.CheckError(Native.IMG_SavePNG(surface.ToNative(), ptr));
-            }
-        }
+        public static void SavePng(Surface surface, string filename) => Native.StringToUtf8Action(filename, ptr => _ = Native.CheckError(Native.IMG_SavePNG(surface.ToNative(), ptr)));
 
         /// <summary>
         /// Saves a surface as a PNG image.
@@ -463,13 +433,7 @@
         /// <param name="surface">The surface.</param>
         /// <param name="filename">The filename.</param>
         /// <param name="quality">The quality to save as.</param>
-        public static void SaveJpg(Surface surface, string filename, int quality)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                _ = Native.CheckError(Native.IMG_SaveJPG(surface.ToNative(), ptr, quality));
-            }
-        }
+        public static void SaveJpg(Surface surface, string filename, int quality) => Native.StringToUtf8Action(filename, ptr => _ = Native.CheckError(Native.IMG_SaveJPG(surface.ToNative(), ptr, quality)));
 
         /// <summary>
         /// Saves a surface as a JPG image.
@@ -486,13 +450,7 @@
         /// </summary>
         /// <param name="filename">The filename.</param>
         /// <returns>The animation.</returns>
-        public static Animation LoadAnimation(string filename)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                return new(Native.CheckPointer(Native.IMG_LoadAnimation(ptr)));
-            }
-        }
+        public static Animation LoadAnimation(string filename) => Native.StringToUtf8Func(filename, ptr => new Animation(Native.CheckPointer(Native.IMG_LoadAnimation(ptr))));
 
         /// <summary>
         /// Loads an animated image.
@@ -510,13 +468,7 @@
         /// <param name="shouldDispose">Whether the storage should be disposed when loading is finished.</param>
         /// <param name="type">The type of the image.</param>
         /// <returns>The animation.</returns>
-        public static Animation LoadAnimation(RWOps rwops, bool shouldDispose, string type)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(type))
-            {
-                return new(Native.IMG_LoadAnimationTyped_RW(rwops.ToNative(), Native.BoolToInt(shouldDispose), ptr));
-            }
-        }
+        public static Animation LoadAnimation(RWOps rwops, bool shouldDispose, string type) => Native.StringToUtf8Func(type, ptr => new Animation(Native.IMG_LoadAnimationTyped_RW(rwops.ToNative(), Native.BoolToInt(shouldDispose), ptr)));
 
         /// <summary>
         /// Loads an animated image.

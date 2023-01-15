@@ -19,13 +19,7 @@
         /// Initializes the video subsystem.
         /// </summary>
         /// <param name="driver">The video driver to use.</param>
-        public static void Init(string driver)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(driver))
-            {
-                _ = Native.CheckError(Native.SDL_VideoInit(ptr));
-            }
-        }
+        public static void Init(string driver) => Native.StringToUtf8Action(driver, ptr => _ = Native.CheckError(Native.SDL_VideoInit(ptr)));
 
         /// <summary>
         /// Quits the video subsystem.

@@ -212,9 +212,7 @@
         /// </summary>
         /// <param name="joystick">The description of the joystick.</param>
         /// <returns>The joystick info.</returns>
-        public static JoystickInfo AttachVirtual(VirtualJoystickBase joystick)
-        {
-            fixed (byte* namePtr = Native.StringToUtf8(joystick.Name))
+        public static JoystickInfo AttachVirtual(VirtualJoystickBase joystick) => Native.StringToUtf8Func(joystick.Name, ptr =>
             {
                 Native.SDL_VirtualJoystickDesc desc = new()
                 {
@@ -227,7 +225,7 @@
                     product_id = joystick.ProductId,
                     button_mask = joystick.ButtonMask,
                     axis_mask = joystick.AxisMask,
-                    name = namePtr,
+                    name = ptr,
                     Update = &VirtualJoystickBase.UpdateCallback,
                     SetPlayerIndex = &VirtualJoystickBase.SetPlayerIndexCallback,
                     Rumble = &VirtualJoystickBase.RumbleCallback,
@@ -236,9 +234,8 @@
                     SendEffect = &VirtualJoystickBase.SendEffectCallback
                 };
 
-                return new(Native.CheckError(Native.SDL_JoystickAttachVirtualEx(&desc)));
-            }
-        }
+                return new JoystickInfo(Native.CheckError(Native.SDL_JoystickAttachVirtualEx(&desc)));
+            });
 
         /// <summary>
         /// Locks the joysticks.

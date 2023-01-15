@@ -127,13 +127,7 @@
         /// <param name="filename">The filename.</param>
         /// <param name="pointSize">The point size.</param>
         /// <returns>The font.</returns>
-        public static Font Create(string filename, int pointSize)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                return new(Native.TTF_OpenFont(ptr, pointSize));
-            }
-        }
+        public static Font Create(string filename, int pointSize) => Native.StringToUtf8Func(filename, ptr => new Font(Native.TTF_OpenFont(ptr, pointSize)));
 
         /// <summary>
         /// Creates a font from a file.
@@ -143,13 +137,7 @@
         /// <param name="hdpi">The horizontal DPI.</param>
         /// <param name="vdpi">The vertical DPI.</param>
         /// <returns>The font.</returns>
-        public static Font CreateDpi(string filename, int pointSize, uint hdpi, uint vdpi)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                return new(Native.TTF_OpenFontDPI(ptr, pointSize, hdpi, vdpi));
-            }
-        }
+        public static Font CreateDpi(string filename, int pointSize, uint hdpi, uint vdpi) => Native.StringToUtf8Func(filename, ptr => new Font(Native.TTF_OpenFontDPI(ptr, pointSize, hdpi, vdpi)));
 
         /// <summary>
         /// Creates a specific font face from a file.
@@ -158,13 +146,7 @@
         /// <param name="pointSize">The point size.</param>
         /// <param name="index">The font face index.</param>
         /// <returns>The font.</returns>
-        public static Font Create(string filename, int pointSize, int index)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                return new(Native.TTF_OpenFontIndex(ptr, pointSize, index));
-            }
-        }
+        public static Font Create(string filename, int pointSize, int index) => Native.StringToUtf8Func(filename, ptr => new Font(Native.TTF_OpenFontIndex(ptr, pointSize, index)));
 
         /// <summary>
         /// Creates a specific font face from a file.
@@ -175,13 +157,7 @@
         /// <param name="hdpi">The horizontal DPI.</param>
         /// <param name="vdpi">The vertical DPI.</param>
         /// <returns>The font.</returns>
-        public static Font CreateDpi(string filename, int pointSize, int index, uint hdpi, uint vdpi)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                return new(Native.TTF_OpenFontIndexDPI(ptr, pointSize, index, hdpi, vdpi));
-            }
-        }
+        public static Font CreateDpi(string filename, int pointSize, int index, uint hdpi, uint vdpi) => Native.StringToUtf8Func(filename, ptr => new Font(Native.TTF_OpenFontIndexDPI(ptr, pointSize, index, hdpi, vdpi)));
 
         /// <summary>
         /// Creates a font from a storage.
@@ -266,13 +242,7 @@
         /// Sets the script to be used by text shaping.
         /// </summary>
         /// <param name="script">The script.</param>
-        public void SetFontScriptName(string script)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(script))
-            {
-                _ = Native.CheckError(Native.TTF_SetFontScriptName(_font, ptr));
-            }
-        }
+        public void SetFontScriptName(string script) => Native.StringToUtf8Action(script, ptr => _ = Native.CheckError(Native.TTF_SetFontScriptName(_font, ptr)));
 
         /// <summary>
         /// Does the font provide a glyph for this UTF-16 character?

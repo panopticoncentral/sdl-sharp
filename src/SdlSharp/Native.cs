@@ -178,26 +178,13 @@ namespace SdlSharp
         /// </summary>
         /// <param name="s">The regular string.</param>
         /// <returns>The new UTF-8 string.</returns>
-        public static Span<byte> StringToUtf8(string? s)
-        {
-            if (s != null)
-            {
-                var terminatedString = s + '\0';
-                var byteCount = Encoding.UTF8.GetByteCount(terminatedString);
-                var buffer = new byte[byteCount];
-
-                _ = Encoding.UTF8.GetBytes(terminatedString, 0, terminatedString.Length, buffer, 0);
-                return new Span<byte>(buffer, 0, byteCount);
-            }
-
-            return null;
-        }
+        public static ReadOnlySpan<byte> StringToUtf8(string? s) => s == null ? null : new ReadOnlySpan<byte>(Encoding.UTF8.GetBytes(s));
 
         public delegate void Utf8Action(byte* ptr);
 
         public delegate void Utf8Action2(byte* ptr1, byte* ptr2);
 
-        public static void StringToUtf8Action(string s1, Utf8Action action)
+        public static void StringToUtf8Action(string? s1, Utf8Action action)
         {
             fixed (byte* ptr = StringToUtf8(s1))
             {
@@ -205,7 +192,7 @@ namespace SdlSharp
             }
         }
 
-        public static void StringToUtf8Action(string s1, string s2, Utf8Action2 func)
+        public static void StringToUtf8Action(string? s1, string? s2, Utf8Action2 func)
         {
             fixed (byte* ptr1 = StringToUtf8(s1))
             fixed (byte* ptr2 = StringToUtf8(s2))
@@ -218,7 +205,7 @@ namespace SdlSharp
 
         public delegate T Utf8Func2<T>(byte* ptr1, byte* ptr2);
 
-        public static T StringToUtf8Func<T>(string s1, Utf8Func<T> func)
+        public static T StringToUtf8Func<T>(string? s1, Utf8Func<T> func)
         {
             fixed (byte* ptr = StringToUtf8(s1))
             {
@@ -226,7 +213,7 @@ namespace SdlSharp
             }
         }
 
-        public static T StringToUtf8Func<T>(string s1, string s2, Utf8Func2<T> func)
+        public static T StringToUtf8Func<T>(string? s1, string? s2, Utf8Func2<T> func)
         {
             fixed (byte* ptr1 = StringToUtf8(s1))
             fixed (byte* ptr2 = StringToUtf8(s2))

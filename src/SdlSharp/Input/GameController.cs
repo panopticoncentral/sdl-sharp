@@ -213,26 +213,14 @@ namespace SdlSharp.Input
         /// </summary>
         /// <param name="filename">The filename that holds the mappings.</param>
         /// <returns>The number of mappings added.</returns>
-        public static int AddMappings(string filename)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(filename))
-            {
-                return Native.CheckError(Native.SDL_GameControllerAddMappingsFromFile(ptr));
-            }
-        }
+        public static int AddMappings(string filename) => Native.StringToUtf8Func(filename, ptr => Native.CheckError(Native.SDL_GameControllerAddMappingsFromFile(ptr)));
 
         /// <summary>
         /// Adds a game controller mapping.
         /// </summary>
         /// <param name="mapping">The mapping.</param>
         /// <returns><c>true</c> if the mapping was added, <c>false</c> if it updated an existing mapping.</returns>
-        public static bool AddMapping(string mapping)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(mapping))
-            {
-                return Native.CheckError(Native.SDL_GameControllerAddMapping(ptr)) == 1;
-            }
-        }
+        public static bool AddMapping(string mapping) => Native.StringToUtf8Func(mapping, ptr => Native.CheckError(Native.SDL_GameControllerAddMapping(ptr)) == 1);
 
         /// <summary>
         /// Gets a controller mapping for a particular joystick ID.

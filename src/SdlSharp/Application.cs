@@ -333,14 +333,8 @@ namespace SdlSharp
         /// <param name="title">The title.</param>
         /// <param name="message">The message.</param>
         /// <param name="window">The parent window, if any.</param>
-        public static void ShowMessageBox(MessageBoxType flags, string title, string message, Window? window)
-        {
-            fixed (byte* titlePtr = Native.StringToUtf8(title))
-            fixed (byte* messagePtr = Native.StringToUtf8(message))
-            {
-                _ = Native.CheckError(Native.SDL_ShowSimpleMessageBox((uint)flags, titlePtr, messagePtr, window == null ? null : window.ToNative()));
-            }
-        }
+        public static void ShowMessageBox(MessageBoxType flags, string title, string message, Window? window) =>
+            Native.StringToUtf8Action(title, message, (titlePtr, messagePtr) => _ = Native.CheckError(Native.SDL_ShowSimpleMessageBox((uint)flags, titlePtr, messagePtr, window == null ? null : window.ToNative())));
 
         /// <summary>
         /// Get the path to store user preferences.
@@ -348,26 +342,14 @@ namespace SdlSharp
         /// <param name="organization">Organization name.</param>
         /// <param name="application">Application name.</param>
         /// <returns>The path to store preferences.</returns>
-        public static string GetPreferencesPath(string organization, string application)
-        {
-            fixed (byte* organizationString = Native.StringToUtf8(organization))
-            fixed (byte* applicationString = Native.StringToUtf8(application))
-            {
-                return Native.Utf8ToStringAndFree(Native.SDL_GetPrefPath(organizationString, applicationString))!;
-            }
-        }
+        public static string GetPreferencesPath(string organization, string application) =>
+            Native.StringToUtf8Func(organization, application, (organizationPtr, applicationPtr) => Native.Utf8ToStringAndFree(Native.SDL_GetPrefPath(organizationPtr, applicationPtr))!);
 
         /// <summary>
         /// Opens a URL, if possible.
         /// </summary>
         /// <param name="url">The URL to open.</param>
-        public static void OpenUrl(string url)
-        {
-            fixed (byte* urlPtr = Native.StringToUtf8(url))
-            {
-                _ = Native.CheckError(Native.SDL_OpenURL(urlPtr));
-            }
-        }
+        public static void OpenUrl(string url) => Native.StringToUtf8Action(url, urlPtr => _ = Native.CheckError(Native.SDL_OpenURL(urlPtr)));
 
         private void DispatchEvent(ref Native.SDL_Event e)
         {

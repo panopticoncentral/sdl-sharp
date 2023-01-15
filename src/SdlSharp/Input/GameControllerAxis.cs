@@ -58,10 +58,8 @@
         /// <param name="name">The name.</param>
         public unsafe GameControllerAxis(string name)
         {
-            fixed (byte* ptr = Native.StringToUtf8(name))
-            {
-                _axis = Native.SDL_GameControllerGetAxisFromString(ptr);
-            }
+            var axis = Native.StringToUtf8Func(name, Native.SDL_GameControllerGetAxisFromString);
+            _axis = axis;
         }
 
         /// <summary>

@@ -34,13 +34,7 @@
         /// </summary>
         /// <param name="name">The name of the scancode.</param>
         /// <returns>The scancode.</returns>
-        public static Scancode ToScancode(this string name)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(name))
-            {
-                return (Scancode)Native.SDL_GetScancodeFromName(ptr);
-            }
-        }
+        public static Scancode ToScancode(this string name) => Native.StringToUtf8Func(name, ptr => (Scancode)Native.SDL_GetScancodeFromName(ptr));
 
         /// <summary>
         /// Converts a keycode to a string.
@@ -55,12 +49,6 @@
         /// </summary>
         /// <param name="name">The name of the keycode.</param>
         /// <returns>The keycode.</returns>
-        public static Keycode ToKeycode(this string name)
-        {
-            fixed (byte* ptr = Native.StringToUtf8(name))
-            {
-                return (Keycode)Native.SDL_GetKeyFromName(ptr).Value;
-            }
-        }
+        public static Keycode ToKeycode(this string name) => Native.StringToUtf8Func(name, ptr => (Keycode)Native.SDL_GetKeyFromName(ptr).Value);
     }
 }
