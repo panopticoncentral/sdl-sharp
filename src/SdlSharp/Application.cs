@@ -191,62 +191,62 @@ namespace SdlSharp
         /// <summary>
         /// An event that fires when the locale changed.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? LocaleChanged;
+        public static event EventHandler<SdlEventArgs>? LocaleChanged;
 
         /// <summary>
         /// An event that fires when a drop begins.
         /// </summary>
-        public event EventHandler<DropEventArgs>? DropBegin;
+        public static event EventHandler<DropEventArgs>? DropBegin;
 
         /// <summary>
         /// An event that fires when a drop completes.
         /// </summary>
-        public event EventHandler<DropEventArgs>? DropComplete;
+        public static event EventHandler<DropEventArgs>? DropComplete;
 
         /// <summary>
         /// An event that fires when a file is dropped.
         /// </summary>
-        public event EventHandler<DroppedEventArgs>? FileDropped;
+        public static event EventHandler<DroppedEventArgs>? FileDropped;
 
         /// <summary>
         /// An event that fires when text is dropped.
         /// </summary>
-        public event EventHandler<DroppedEventArgs>? TextDropped;
+        public static event EventHandler<DroppedEventArgs>? TextDropped;
 
         /// <summary>
         /// An event that fires when the application is quit.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Quitting;
+        public static event EventHandler<SdlEventArgs>? Quitting;
 
         /// <summary>
         /// An event that fires when the application is terminating.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? Terminating;
+        public static event EventHandler<SdlEventArgs>? Terminating;
 
         /// <summary>
         /// An event that fires when the application is low on memory.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? LowMemory;
+        public static event EventHandler<SdlEventArgs>? LowMemory;
 
         /// <summary>
         /// An event that fires when the application is going to enter the background.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? WillEnterBackground;
+        public static event EventHandler<SdlEventArgs>? WillEnterBackground;
 
         /// <summary>
         /// An event that fires when the application entered the background.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? DidEnterBackground;
+        public static event EventHandler<SdlEventArgs>? DidEnterBackground;
 
         /// <summary>
         /// An event that fires when the application is going to enter the foreground.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? WillEnterForeground;
+        public static event EventHandler<SdlEventArgs>? WillEnterForeground;
 
         /// <summary>
         /// An event that fires when the application entered the foreground.
         /// </summary>
-        public event EventHandler<SdlEventArgs>? DidEnterForeground;
+        public static event EventHandler<SdlEventArgs>? DidEnterForeground;
 
         /// <inheritdoc/>
         public void Dispose()
@@ -269,6 +269,11 @@ namespace SdlSharp
             Native.SDL_Quit();
             _quitReceived = true;
         }
+
+        /// <summary>
+        /// Quits the application.
+        /// </summary>
+        public void Quit() => _quitReceived = true;
 
         /// <summary>
         /// Shows a message box.
