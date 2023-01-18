@@ -205,6 +205,8 @@ namespace SdlSharp
 
         public delegate T Utf8Func2<T>(byte* ptr1, byte* ptr2);
 
+        public delegate T Utf8Func3<T>(byte* ptr1, byte* ptr2, byte* ptr3);
+
         public static T StringToUtf8Func<T>(string? s1, Utf8Func<T> func)
         {
             fixed (byte* ptr = StringToUtf8(s1))
@@ -219,6 +221,16 @@ namespace SdlSharp
             fixed (byte* ptr2 = StringToUtf8(s2))
             {
                 return func(ptr1, ptr2);
+            }
+        }
+
+        public static T StringToUtf8Func<T>(string? s1, string? s2, string? s3, Utf8Func3<T> func)
+        {
+            fixed (byte* ptr1 = StringToUtf8(s1))
+            fixed (byte* ptr2 = StringToUtf8(s2))
+            fixed (byte* ptr3 = StringToUtf8(s3))
+            {
+                return func(ptr1, ptr2, ptr3);
             }
         }
 
