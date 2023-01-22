@@ -8,17 +8,17 @@
         /// <summary>
         /// The window's HWND.
         /// </summary>
-        public nint Window { get; }
+        public nuint Window { get; }
 
         /// <summary>
         /// The window's HDC.
         /// </summary>
-        public nint Hdc { get; }
+        public nuint Hdc { get; }
 
         /// <summary>
         /// The window's HINSTANCE
         /// </summary>
-        public nint Hinstance { get; }
+        public nuint Hinstance { get; }
 
         internal WindowManagerInfo(Native.SDL_SysWMinfo* info)
         {

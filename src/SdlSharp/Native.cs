@@ -4491,9 +4491,9 @@ namespace SdlSharp
 
         public struct SDL_SysWMinfo_Windows
         {
-            public nint window;
-            public nint hdc;
-            public nint hinstance;
+            public nuint window;
+            public nuint hdc;
+            public nuint hinstance;
         }
 
         public struct SDL_SysWMinfo
