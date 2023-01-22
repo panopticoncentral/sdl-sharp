@@ -1101,7 +1101,7 @@ namespace SdlSharp
         {
             public readonly uint type;
             public readonly uint timestamp;
-            public readonly /*SDL_SysWMmsg*/byte* msg;
+            public readonly SDL_SysWMmsg* msg;
         }
 
         [StructLayout(LayoutKind.Explicit)]
@@ -4441,13 +4441,95 @@ namespace SdlSharp
 
         // SDL_system.h -- Not supporting low level Windows functions.
 
-        // SDL_syswm -- Platform specific windows stuff.
+        #region SDL_syswm.h
+
+        public enum SDL_SYSWM_TYPE
+        {
+            SDL_SYSWM_UNKNOWN,
+            SDL_SYSWM_WINDOWS,
+            SDL_SYSWM_X11,
+            SDL_SYSWM_DIRECTFB,
+            SDL_SYSWM_COCOA,
+            SDL_SYSWM_UIKIT,
+            SDL_SYSWM_WAYLAND,
+            SDL_SYSWM_MIR,
+            SDL_SYSWM_WINRT,
+            SDL_SYSWM_ANDROID,
+            SDL_SYSWM_VIVANTE,
+            SDL_SYSWM_OS2,
+            SDL_SYSWM_HAIKU,
+            SDL_SYSWM_KMSDRM,
+            SDL_SYSWM_RISCOS
+        }
+
+        public struct SDL_SysWMmsg_Windows
+        {
+            public nint hwnd;
+            public uint msg;
+            public nuint wParam;
+            public nint lParam;
+        }
+
+        public struct SDL_SysWMmsg
+        {
+            public SDL_version version;
+            public SDL_SYSWM_TYPE subsystem;
+            public SDL_SysWMmsg_Windows win;
+        }
+
+        public struct SDL_SysWMinfo_Windows
+        {
+            public nint window;
+            public nint hdc;
+            public nint hinstance;
+        }
+
+        public struct SDL_SysWMinfo
+        {
+            public SDL_version version;
+            public SDL_SYSWM_TYPE subsystem;
+            public SDL_SysWMinfo_Windows win;
+        }
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_GetWindowWMInfo(SDL_Window* window, SDL_SysWMinfo* info);
+
+#endregion
 
         // SDL_thread.h -- Should use Framework threading primitives
 
-        // SDL_timer.h -- Should use Framework timing primitives
+#region SDL_timer.h
 
-        #region SDL_touch.h
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint SDL_GetTicks();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern ulong SDL_GetTicks64();
+
+        public static bool SDL_TICKS_PASSED(uint a, uint b) => (int)(b - a) <= 0;
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern ulong SDL_GetPerformanceCounter();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern ulong SDL_GetPerformanceFrequency();
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SDL_Delay(uint ms);
+
+        // SDL_TimerCallback is covered by TimerCallbackDelegate.cs
+
+        public readonly record struct SDL_TimerID(int Value);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern SDL_TimerID SDL_AddTimer(uint interval, delegate* unmanaged[Cdecl]<int, nuint, int> callback, nint param);
+
+        [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool SDL_RemoveTimer(SDL_TimerID id);
+
+#endregion
+
+#region SDL_touch.h
 
         public readonly record struct SDL_TouchID(long Value);
 
@@ -4491,9 +4573,9 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Finger* SDL_GetTouchFinger(SDL_TouchID touchID, int index);
 
-        #endregion
+#endregion
 
-        #region SDL_version.h
+#region SDL_version.h
 
         public readonly record struct SDL_version(byte major, byte minor, byte patch);
 
@@ -4511,9 +4593,9 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetRevisionNumber();
 
-        #endregion
+#endregion
 
-        #region SDL_video.h
+#region SDL_video.h
 
         public struct SDL_DisplayMode
         {
@@ -4887,11 +4969,11 @@ namespace SdlSharp
         //public extern static void SDL_GL_SwapWindow(SDL_Window* window);
         //public extern static void SDL_GL_DeleteContext(SDL_GLContext context);
 
-        #endregion
+#endregion
 
         // SDL_vulkan.h -- Not supporting OpenGL at this time
 
-        #region SDL_image.h
+#region SDL_image.h
 
         public static readonly Version IntegratedSdl2ImageVersion = new(2, 6, 2);
 
@@ -5087,9 +5169,9 @@ namespace SdlSharp
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern IMG_Animation* IMG_LoadGIFAnimation_RW(SDL_RWops* src);
 
-        #endregion
+#endregion
 
-        #region SDL_ttf.h
+#region SDL_ttf.h
 
         public static readonly SDL_version IntegratedSdl2TtfVersion = new(2, 20, 1);
 
@@ -5374,9 +5456,9 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern int TTF_SetFontScriptName(TTF_Font* font, byte* script);
 
-        #endregion
+#endregion
 
-        #region SDL_mixer.h
+#region SDL_mixer.h
 
         public static readonly Version IntegratedSdl2MixerVersion = new(2, 6, 2);
 
@@ -5713,6 +5795,6 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern void Mix_CloseAudio();
 
-        #endregion
+#endregion
     }
 }

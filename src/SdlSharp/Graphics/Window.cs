@@ -342,6 +342,24 @@ namespace SdlSharp.Graphics
         }
 
         /// <summary>
+        /// The native window manager information about the window.
+        /// </summary>
+        public WindowManagerInfo? WindowManagerInfo
+        {
+            get
+            {
+                Native.SDL_SysWMinfo info;
+                info.version = Native.IntegratedSdl2Version;
+                return Native.SDL_GetWindowWMInfo(_window, &info) ? new(&info) : null;
+            }
+        }
+
+        /// <summary>
+        /// An event that's fired when a system window message comes in.
+        /// </summary>
+        public static event EventHandler<SystemWindowMessageEventArgs>? SystemWindowMessage;
+
+        /// <summary>
         /// An event that's fired when the window is shown.
         /// </summary>
         public static event EventHandler<SdlEventArgs>? Shown;
@@ -650,7 +668,7 @@ namespace SdlSharp.Graphics
         {
             if ((Native.SDL_EventType)e.type == Native.SDL_EventType.SDL_SYSWMEVENT)
             {
-                // Not surfacing system specific events.
+                SystemWindowMessage?.Invoke(null, new SystemWindowMessageEventArgs(e.syswm));
                 return;
             }
 
