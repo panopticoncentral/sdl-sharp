@@ -2789,7 +2789,7 @@ namespace SdlSharp
 
         #region SDL_locale.h
 
-        public struct SDL_Locale
+        public readonly struct SDL_Locale
         {
             public readonly byte* language;
             public readonly byte* country;
@@ -4506,11 +4506,11 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_GetWindowWMInfo(SDL_Window* window, SDL_SysWMinfo* info);
 
-#endregion
+        #endregion
 
         // SDL_thread.h -- Should use Framework threading primitives
 
-#region SDL_timer.h
+        #region SDL_timer.h
 
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SDL_GetTicks();
@@ -4539,9 +4539,9 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SDL_RemoveTimer(SDL_TimerID id);
 
-#endregion
+        #endregion
 
-#region SDL_touch.h
+        #region SDL_touch.h
 
         public readonly record struct SDL_TouchID(long Value);
 
@@ -4585,9 +4585,9 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern SDL_Finger* SDL_GetTouchFinger(SDL_TouchID touchID, int index);
 
-#endregion
+        #endregion
 
-#region SDL_version.h
+        #region SDL_version.h
 
         public readonly record struct SDL_version(byte major, byte minor, byte patch);
 
@@ -4605,9 +4605,9 @@ namespace SdlSharp
         [DllImport(Sdl2, CallingConvention = CallingConvention.Cdecl)]
         public static extern int SDL_GetRevisionNumber();
 
-#endregion
+        #endregion
 
-#region SDL_video.h
+        #region SDL_video.h
 
         public struct SDL_DisplayMode
         {
@@ -4981,11 +4981,11 @@ namespace SdlSharp
         //public extern static void SDL_GL_SwapWindow(SDL_Window* window);
         //public extern static void SDL_GL_DeleteContext(SDL_GLContext context);
 
-#endregion
+        #endregion
 
         // SDL_vulkan.h -- Not supporting OpenGL at this time
 
-#region SDL_image.h
+        #region SDL_image.h
 
         public static readonly Version IntegratedSdl2ImageVersion = new(2, 6, 2);
 
@@ -5181,9 +5181,9 @@ namespace SdlSharp
         [DllImport(Sdl2Image, CallingConvention = CallingConvention.Cdecl)]
         public static extern IMG_Animation* IMG_LoadGIFAnimation_RW(SDL_RWops* src);
 
-#endregion
+        #endregion
 
-#region SDL_ttf.h
+        #region SDL_ttf.h
 
         public static readonly SDL_version IntegratedSdl2TtfVersion = new(2, 20, 1);
 
@@ -5468,9 +5468,9 @@ namespace SdlSharp
         [DllImport(Sdl2Ttf, CallingConvention = CallingConvention.Cdecl)]
         public static extern int TTF_SetFontScriptName(TTF_Font* font, byte* script);
 
-#endregion
+        #endregion
 
-#region SDL_mixer.h
+        #region SDL_mixer.h
 
         public static readonly Version IntegratedSdl2MixerVersion = new(2, 6, 2);
 
@@ -5807,6 +5807,6 @@ namespace SdlSharp
         [DllImport(Sdl2Mixer, CallingConvention = CallingConvention.Cdecl)]
         public static extern void Mix_CloseAudio();
 
-#endregion
+        #endregion
     }
 }
