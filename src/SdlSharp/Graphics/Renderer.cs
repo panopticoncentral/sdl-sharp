@@ -465,12 +465,37 @@
         /// <param name="texture">The texture to use, if any.</param>
         /// <param name="vertices">The vertices to draw.</param>
         /// <param name="indices">Optional ordering of vertices.</param>
-        public void DrawGeometry(Texture? texture, Vertex[] vertices, int[]? indices)
+        public void DrawGeometry(Texture? texture, Span<Vertex> vertices, Span<int> indices)
         {
             fixed (Vertex* verticiesPtr = vertices)
             fixed (int* indicesPtr = indices)
             {
-                _ = Native.CheckError(Native.SDL_RenderGeometry(_renderer, texture == null ? null : texture.ToNative(), (Native.SDL_Vertex*)verticiesPtr, vertices.Length, indicesPtr, indices?.Length ?? 0));
+                _ = Native.CheckError(Native.SDL_RenderGeometry(_renderer, texture == null ? null : texture.ToNative(), (Native.SDL_Vertex*)verticiesPtr, vertices.Length, indicesPtr, indices.Length));
+            }
+        }
+
+        /// <summary>
+        /// Draws a list of triangles.
+        /// </summary>
+        /// <typeparam name="TVertex">The vertex type.</typeparam>
+        /// <typeparam name="TIndex">The index type.</typeparam>
+        /// <param name="texture">The texture to use, if any.</param>
+        /// <param name="vertices">The vertices to draw.</param>
+        /// <param name="indices">Optional ordering of vertices.</param>
+        public void DrawGeometry<TVertex, TIndex>(Texture? texture, Span<TVertex> vertices, Span<TIndex> indices)
+            where TVertex : unmanaged, IGeometryRaw
+            where TIndex : unmanaged
+        {
+            fixed (TVertex* verticesPtr = vertices)
+            fixed (TIndex* indicesPtr = indices)
+            {
+                var xyPtr = (float*)(((byte*)verticesPtr) + IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.FieldXyOffset);
+                var colorPtr = (Native.SDL_Color*)(((byte*)verticesPtr) + IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.FieldColorOffset);
+                var uvPtr = (float*)(((byte*)verticesPtr) + IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.FieldColorOffset);
+                var stride = (int)IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.VertexSize;
+                var indexSize = (int)IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.IndexSize;
+
+                _ = Native.CheckError(Native.SDL_RenderGeometryRaw(_renderer, texture == null ? null : texture.ToNative(), xyPtr, stride, colorPtr, stride, uvPtr, stride, vertices.Length, (byte*)indicesPtr, indices.Length, indexSize));
             }
         }
 
