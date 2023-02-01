@@ -482,18 +482,19 @@
         /// <param name="texture">The texture to use, if any.</param>
         /// <param name="vertices">The vertices to draw.</param>
         /// <param name="indices">Optional ordering of vertices.</param>
-        public void DrawGeometry<TVertex, TIndex>(Texture? texture, Span<TVertex> vertices, Span<TIndex> indices)
-            where TVertex : unmanaged, IGeometryRaw
+        /// <param name="descriptor">Descriptor of the raw types.</param>
+        public void DrawGeometry<TVertex, TIndex>(Texture? texture, Span<TVertex> vertices, Span<TIndex> indices, RawGeometryDescriptor<TVertex, TIndex> descriptor)
+            where TVertex : unmanaged
             where TIndex : unmanaged
         {
             fixed (TVertex* verticesPtr = vertices)
             fixed (TIndex* indicesPtr = indices)
             {
-                var xyPtr = (float*)(((byte*)verticesPtr) + IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.FieldXyOffset);
-                var colorPtr = (Native.SDL_Color*)(((byte*)verticesPtr) + IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.FieldColorOffset);
-                var uvPtr = (float*)(((byte*)verticesPtr) + IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.FieldColorOffset);
-                var stride = (int)IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.VertexSize;
-                var indexSize = (int)IGeometryRaw.GeometryRawInfo<TVertex, TIndex>.IndexSize;
+                var xyPtr = (float*)(((byte*)verticesPtr) + descriptor.FieldXyOffset);
+                var colorPtr = (Native.SDL_Color*)(((byte*)verticesPtr) + descriptor.FieldColorOffset);
+                var uvPtr = (float*)(((byte*)verticesPtr) + descriptor.FieldColorOffset);
+                var stride = (int)descriptor.VertexSize;
+                var indexSize = (int)descriptor.IndexSize;
 
                 _ = Native.CheckError(Native.SDL_RenderGeometryRaw(_renderer, texture == null ? null : texture.ToNative(), xyPtr, stride, colorPtr, stride, uvPtr, stride, vertices.Length, (byte*)indicesPtr, indices.Length, indexSize));
             }
