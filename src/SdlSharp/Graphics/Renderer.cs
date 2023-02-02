@@ -492,7 +492,7 @@
             {
                 var xyPtr = (float*)(((byte*)verticesPtr) + descriptor.FieldXyOffset);
                 var colorPtr = (Native.SDL_Color*)(((byte*)verticesPtr) + descriptor.FieldColorOffset);
-                var uvPtr = (float*)(((byte*)verticesPtr) + descriptor.FieldColorOffset);
+                var uvPtr = (float*)(((byte*)verticesPtr) + descriptor.FieldUvOffset);
                 var stride = (int)descriptor.VertexSize;
                 var indexSize = (int)descriptor.IndexSize;
 
