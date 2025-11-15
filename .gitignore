@@ -331,3 +331,6 @@ ASALocalRun/
 
 # SDL3 headers
 SDL3-*
+
+# Claude settings file
+.claude/settings.local.json
