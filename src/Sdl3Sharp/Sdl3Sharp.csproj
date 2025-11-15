@@ -12,11 +12,15 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Paul Vick</Authors>
     <Company>Paul Vick</Company>
-    <Description>A C# binding for the Simple DirectMedia Layer 2 library (http://www.libsdl.org).</Description>
-    <Copyright>Copyright 2019</Copyright>
+    <Description>A C# binding for the Simple DirectMedia Layer 3 library (http://www.libsdl.org).</Description>
+    <Copyright>Copyright 2025</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/panopticoncentral/sdk-sharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SdlVersion>3</SdlVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,0 +1,35 @@
+<Solution>
+  <Folder Name="/Samples/" />
+  <Folder Name="/Samples/Audio/">
+    <Project Path="src/Samples/Audio/Convert/Convert.csproj" />
+    <Project Path="src/Samples/Audio/ConvertLegacy/ConvertLegacy.csproj" />
+    <Project Path="src/Samples/Audio/ListAudioDevices/ListAudioDevices.csproj" />
+    <Project Path="src/Samples/Audio/ListAudioDrivers/ListAudioDrivers.csproj" />
+    <Project Path="src/Samples/Audio/Playback/Playback.csproj" />
+    <Project Path="src/Samples/Audio/Record/Record.csproj" />
+    <Project Path="src/Samples/Audio/RecordCallback/RecordCallback.csproj" />
+  </Folder>
+  <Folder Name="/Samples/Base/">
+    <Project Path="src/Samples/Base/Clipboard/Clipboard.csproj" />
+    <Project Path="src/Samples/Base/CpuInfo/CpuInfo.csproj" />
+    <Project Path="src/Samples/Base/Init/Init.csproj" />
+    <Project Path="src/Samples/Base/MessageBox/MessageBox.csproj" />
+    <Project Path="src/Samples/Base/SimpleInit/SimpleInit.csproj" />
+    <Project Path="src/Samples/Base/Versions/Versions.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tutorial/">
+    <Project Path="src/Tutorial/01_Hello_World/01_Hello_World.csproj" />
+    <Project Path="src/Tutorial/02_Event_Driven_Programming/02_Event_Driven_Programming.csproj" />
+    <Project Path="src/Tutorial/03_Drawing_on_the_Screen/03_Drawing_on_the_Screen.csproj" />
+    <Project Path="src/Tutorial/04_Working_with_Images/04_Working_with_Images.csproj" />
+    <Project Path="src/Tutorial/05_Hardware_Acceleration/05_Hardware_Acceleration.csproj" />
+    <Project Path="src/Tutorial/06_Drawing/06_Drawing.csproj" />
+    <Project Path="src/Tutorial/07_Sprites/07_Sprites.csproj" />
+    <Project Path="src/Tutorial/08_Text/08_Text.csproj" />
+  </Folder>
+  <Project Path="src/Sdl3Sharp/Sdl3Sharp.csproj" />
+  <Project Path="src/SdlSharp/SdlSharp.csproj" />
+</Solution>
