@@ -8,8 +8,6 @@
     <AssemblyName>Clipboard</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- TODO: Remove when error is fixed. -->
-    <NoWarn>CA1852</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
