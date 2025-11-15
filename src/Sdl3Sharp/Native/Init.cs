@@ -59,10 +59,13 @@ public static unsafe partial class SDL
         SDL_INIT_CAMERA = 0x00010000u
     }
 
-    // SDL_AppResult doesn't apply to .NET, so we don't need to define it.
-    // SDL_AppInit_func doesn't apply to .NET, so we don't need to define it.
-    // SDL_AppIterate_func doesn't apply to .NET, so we don't need to define it.
-    // SDL_AppQuit_func doesn't apply to .NET, so we don't need to define it.
+    // SDL_AppResult is not wrapped - doesn't apply to .NET, so we don't need to define it.
+
+    // SDL_AppInit_func is not wrapped - doesn't apply to .NET, so we don't need to define it.
+
+    // SDL_AppIterate_func is not wrapped - doesn't apply to .NET, so we don't need to define it.
+
+    // SDL_AppQuit_func is not wrapped - doesn't apply to .NET, so we don't need to define it.
 
     /// <summary>
     /// Initialize the SDL library.

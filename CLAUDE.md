@@ -26,3 +26,13 @@ The current SDL3 headers can be found in the root of the solution, in a director
 - For opaque `void*` userdata parameters that SDL does not dereference, use `nuint` instead to indicate they are opaque values rather than pointers
 - Import `System.Runtime.InteropServices.Marshalling` namespace when needed
 - Do not use `#region` directives to organize code
+
+## Documenting Skipped APIs
+When wrapping SDL headers, some APIs cannot or should not be wrapped. Document these with comments in the C# file:
+- Add a comment explaining which API was not wrapped and why
+- Common reasons for skipping APIs:
+  - Variadic functions (e.g., functions with `...` parameters) - va_list is not supported in C# P/Invoke
+  - C macros that are simple wrappers - can be implemented as C# helper methods if needed
+  - Platform-specific internal APIs not intended for public use
+  - APIs that don't apply to .NET (e.g., main() entry point functions)
+- Example format: `// SDL_FunctionName is not wrapped - reason why. Alternative approach if applicable.`
