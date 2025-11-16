@@ -1,5 +1,6 @@
 ﻿using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Init;
+using static Sdl3Sharp.Native.Version;
 
 namespace Sdl3Sharp;
 
@@ -8,6 +9,21 @@ namespace Sdl3Sharp;
 /// </summary>
 public sealed unsafe class Application : IDisposable
 {
+    /// <summary>
+    /// The version of SDL that was compiled against.
+    /// </summary>
+    public static Version CompiledVersion => new(SDL_VERSION);
+
+    /// <summary>
+    /// The version of SDL that is being run against.
+    /// </summary>
+    public static Version Version => new(SDL_GetVersion());
+
+    /// <summary>
+    /// The revision string of the version of SDL that's being used.
+    /// </summary>
+    public static string Revision => SDL_GetRevision();
+
     /// <summary>
     /// The SDL subsystems that have been initialized.
     /// </summary>
