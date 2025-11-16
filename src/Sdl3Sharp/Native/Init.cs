@@ -1,4 +1,6 @@
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
+using static Sdl3Sharp.Native.Common;
 
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible
@@ -8,10 +10,8 @@ namespace Sdl3Sharp.Native;
 /// <summary>
 /// P/Invoke bindings for SDL_init.h - SDL initialization and shutdown APIs.
 /// </summary>
-public static unsafe partial class SDL
+public static unsafe partial class Init
 {
-    private const string Sdl3 = "SDL3";
-
     /// <summary>
     /// Initialization flags for SDL_Init and/or SDL_InitSubSystem.
     /// </summary>
@@ -142,7 +142,7 @@ public static unsafe partial class SDL
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_SetAppMetadata(byte* appname, byte* appversion, byte* appidentifier);
+    public static partial bool SDL_SetAppMetadata([MarshalUsing(typeof(Utf8StringMarshaller))] string appname, [MarshalUsing(typeof(Utf8StringMarshaller))] string appversion, [MarshalUsing(typeof(Utf8StringMarshaller))] string appidentifier);
 
     /// <summary>
     /// Specify metadata about your app through a set of properties.
@@ -153,7 +153,7 @@ public static unsafe partial class SDL
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_SetAppMetadataProperty(byte* name, byte* value);
+    public static partial bool SDL_SetAppMetadataProperty([MarshalUsing(typeof(Utf8StringMarshaller))] string name, [MarshalUsing(typeof(Utf8StringMarshaller))] string value);
 
     /// <summary>
     /// The human-readable name of the application, like "My Game 2: Bad Guy's Revenge!".
@@ -197,5 +197,6 @@ public static unsafe partial class SDL
     /// <returns>the current value of the metadata property, or the default if it is not set, NULL for properties with no default.</returns>
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
-    public static partial byte* SDL_GetAppMetadataProperty(byte* name);
+    [return: MarshalUsing(typeof(Utf8StringMarshaller))]
+    public static partial string SDL_GetAppMetadataProperty([MarshalUsing(typeof(Utf8StringMarshaller))] string name);
 }

@@ -1,24 +1,22 @@
-﻿using SdlSharp;
+﻿using Sdl3Sharp;
 
-using var application = new Application(Subsystems.Timer);
+using var application = new Application(Subsystems.Events);
 
-if (application.InitializedSubystems != Subsystems.Timer)
+if (application.InitializedSubystems != Subsystems.Events)
 {
     throw new InvalidOperationException();
 }
 
 application.InitializedSubystems |= Subsystems.Haptic;
 
-if (application.InitializedSubystems != (Subsystems.Timer | Subsystems.Haptic))
+if (application.InitializedSubystems != (Subsystems.Events | Subsystems.Haptic))
 {
     throw new InvalidOperationException();
 }
 
 application.InitializedSubystems &= ~Subsystems.Haptic;
 
-if (application.InitializedSubystems != Subsystems.Timer)
+if (application.InitializedSubystems != Subsystems.Events)
 {
     throw new InvalidOperationException();
 }
-
-Native.SDL_Quit();

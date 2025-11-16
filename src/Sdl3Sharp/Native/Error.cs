@@ -1,4 +1,6 @@
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
+using static Sdl3Sharp.Native.Common;
 
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible
@@ -8,7 +10,7 @@ namespace Sdl3Sharp.Native;
 /// <summary>
 /// P/Invoke bindings for SDL_error.h - Simple error message routines for SDL.
 /// </summary>
-public static unsafe partial class SDL
+public static unsafe partial class Error
 {
     /// <summary>
     /// Set the SDL error message for the current thread.
@@ -23,7 +25,7 @@ public static unsafe partial class SDL
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_SetError(byte* fmt);
+    public static partial bool SDL_SetError([MarshalUsing(typeof(Utf8StringMarshaller))] string fmt);
 
     // SDL_SetErrorV is not wrapped - va_list parameters are not supported in C# P/Invoke.
 
@@ -66,7 +68,8 @@ public static unsafe partial class SDL
     /// </remarks>
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
-    public static partial byte* SDL_GetError();
+    [return: MarshalUsing(typeof(Utf8StringMarshaller))]
+    public static partial string SDL_GetError();
 
     /// <summary>
     /// Clear any previous error message for this thread.
