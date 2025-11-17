@@ -3,7 +3,7 @@
 /// <summary>
 /// Common routines and helpers for SDL bindings.
 /// </summary>
-public static class Common
+public unsafe static class Common
 {
     /// <summary>
     /// The name of the SDL3 native library.
@@ -19,5 +19,16 @@ public static class Common
     public static bool CheckError(bool returnValue)
     {
         return !returnValue ? throw new SdlException() : returnValue;
+    }
+
+    /// <summary>
+    /// Check that the pointer returned from a method is not null.
+    /// </summary>
+    /// <param name="returnValue">The return value of the API.</param>
+    /// <returns>The return value.</returns>
+    /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+    public static T* CheckPointer<T>(T* returnValue) where T : unmanaged
+    {
+        return (returnValue == null) ? throw new SdlException() : returnValue;
     }
 }
