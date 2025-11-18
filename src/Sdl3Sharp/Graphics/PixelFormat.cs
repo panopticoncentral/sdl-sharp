@@ -311,7 +311,7 @@ public readonly unsafe record struct PixelFormat(SDL_PixelFormat Format)
         {
             int bits;
             uint red, green, blue, alpha;
-            _ = CheckError(SDL_GetMasksForPixelFormat(Format, &bits, &red, &green, &blue, &alpha));
+            _ = CheckErrorBool(SDL_GetMasksForPixelFormat(Format, &bits, &red, &green, &blue, &alpha));
             return new PixelFormatMask(bits, red, green, blue, alpha);
         }
     }

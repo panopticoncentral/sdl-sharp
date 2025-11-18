@@ -16,9 +16,42 @@ public unsafe static class Common
     /// <param name="returnValue">The return value of the API.</param>
     /// <returns>The return value.</returns>
     /// <exception cref="SdlException">Thrown if method returned an error.</exception>
-    public static bool CheckError(bool returnValue)
+    public static bool CheckErrorBool(bool returnValue)
     {
         return !returnValue ? throw new SdlException() : returnValue;
+    }
+
+    /// <summary>
+    /// Check that the return of a method is not an error (i.e. zero).
+    /// </summary>
+    /// <param name="returnValue">The return value of the API.</param>
+    /// <returns>The return value.</returns>
+    /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+    public static int CheckErrorZero(int returnValue)
+    {
+        return (returnValue == 0) ? throw new SdlException() : returnValue;
+    }
+
+    /// <summary>
+    /// Check that the return of a method is not an error (i.e. zero).
+    /// </summary>
+    /// <param name="returnValue">The return value of the API.</param>
+    /// <returns>The return value.</returns>
+    /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+    public static uint CheckErrorZero(uint returnValue)
+    {
+        return (returnValue == 0) ? throw new SdlException() : returnValue;
+    }
+
+    /// <summary>
+    /// Check that the return of a method is not an error (i.e. zero).
+    /// </summary>
+    /// <param name="returnValue">The return value of the API.</param>
+    /// <returns>The return value.</returns>
+    /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+    public static nuint CheckErrorZero(nuint returnValue)
+    {
+        return (returnValue == 0) ? throw new SdlException() : returnValue;
     }
 
     /// <summary>

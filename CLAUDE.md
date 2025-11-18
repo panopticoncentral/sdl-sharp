@@ -28,6 +28,12 @@ The current SDL3 headers can be found in the root of the solution, in a director
 - Import `System.Runtime.InteropServices.Marshalling` namespace when needed
 - Do not use `#region` directives to organize code
 
+## XML Documentation
+- All public types (classes, structs, enums), methods, properties, and fields must have XML documentation comments
+- For enums, document each enum member with a `<summary>` tag explaining its purpose
+- For struct fields and properties, include XML documentation describing what the field/property represents
+- Use clear, concise descriptions that help developers understand the purpose and usage of each member
+
 ## Documenting Skipped APIs
 When wrapping SDL headers, some APIs cannot or should not be wrapped. Document these with comments in the C# file:
 - Add a comment explaining which API was not wrapped and why

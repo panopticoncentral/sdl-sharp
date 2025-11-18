@@ -40,7 +40,7 @@ public sealed unsafe class Palette : IDisposable
     {
         fixed (Color* ptr = colors)
         {
-            _ = CheckError(SDL_SetPaletteColors(_palette, (SDL_Color*)ptr, firstColor, colors.Length));
+            _ = CheckErrorBool(SDL_SetPaletteColors(_palette, (SDL_Color*)ptr, firstColor, colors.Length));
         }
     }
 

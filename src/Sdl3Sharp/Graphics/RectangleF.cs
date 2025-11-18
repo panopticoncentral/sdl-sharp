@@ -89,7 +89,7 @@ public readonly unsafe record struct RectangleF(PointF Location, SizeF Size)
     public RectangleF Union(RectangleF other)
     {
         SDL_FRect rect, otherRect, resultRect;
-        _ = CheckError(SDL_GetRectUnionFloat(ToNative(this, &rect), ToNative(other, &otherRect), &resultRect));
+        _ = CheckErrorBool(SDL_GetRectUnionFloat(ToNative(this, &rect), ToNative(other, &otherRect), &resultRect));
         return new(resultRect);
     }
 

@@ -65,7 +65,7 @@ public readonly unsafe record struct Rectangle(Point Location, Size Size)
     public Rectangle Union(Rectangle other)
     {
         SDL_Rect rect, otherRect, resultRect;
-        _ = CheckError(SDL_GetRectUnion(ToNative(this, &rect), ToNative(other, &otherRect), &resultRect));
+        _ = CheckErrorBool(SDL_GetRectUnion(ToNative(this, &rect), ToNative(other, &otherRect), &resultRect));
         return new(resultRect);
     }
 

@@ -35,7 +35,7 @@ public sealed unsafe class Application : IDisposable
             Subsystems current = InitializedSubystems;
 
             SDL_QuitSubSystem((SDL_InitFlags)(current & ~value));
-            _ = CheckError(SDL_InitSubSystem((SDL_InitFlags)(value & ~current)));
+            _ = CheckErrorBool(SDL_InitSubSystem((SDL_InitFlags)(value & ~current)));
         }
     }
 
@@ -45,7 +45,7 @@ public sealed unsafe class Application : IDisposable
     /// <param name="subsystems">The subsystems to initialize.</param>
     public Application(Subsystems subsystems)
     {
-        _ = CheckError(SDL_Init((SDL_InitFlags)subsystems));
+        _ = CheckErrorBool(SDL_Init((SDL_InitFlags)subsystems));
     }
 
     /// <inheritdoc/>
