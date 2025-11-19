@@ -38,6 +38,17 @@ public unsafe static class Common
     /// <param name="returnValue">The return value of the API.</param>
     /// <returns>The return value.</returns>
     /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+    public static long CheckErrorZero(long returnValue)
+    {
+        return (returnValue == 0) ? throw new SdlException() : returnValue;
+    }
+
+    /// <summary>
+    /// Check that the return of a method is not an error (i.e. zero).
+    /// </summary>
+    /// <param name="returnValue">The return value of the API.</param>
+    /// <returns>The return value.</returns>
+    /// <exception cref="SdlException">Thrown if method returned an error.</exception>
     public static uint CheckErrorZero(uint returnValue)
     {
         return (returnValue == 0) ? throw new SdlException() : returnValue;
@@ -61,6 +72,17 @@ public unsafe static class Common
     /// <returns>The return value.</returns>
     /// <exception cref="SdlException">Thrown if method returned an error.</exception>
     public static T* CheckPointer<T>(T* returnValue) where T : unmanaged
+    {
+        return (returnValue == null) ? throw new SdlException() : returnValue;
+    }
+
+    /// <summary>
+    /// Check that the pointer returned from a method is not null.
+    /// </summary>
+    /// <param name="returnValue">The return value of the API.</param>
+    /// <returns>The return value.</returns>
+    /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+    public static void* CheckPointer(void* returnValue)
     {
         return (returnValue == null) ? throw new SdlException() : returnValue;
     }

@@ -32,6 +32,7 @@ The current SDL3 headers can be found in the root of the solution, in a director
 - All public types (classes, structs, enums), methods, properties, and fields must have XML documentation comments
 - For enums, document each enum member with a `<summary>` tag explaining its purpose
 - For struct fields and properties, include XML documentation describing what the field/property represents
+- For string constants (especially SDL property names), include XML documentation explaining what the constant represents and how it's used
 - Use clear, concise descriptions that help developers understand the purpose and usage of each member
 
 ## Documenting Skipped APIs
@@ -43,6 +44,15 @@ When wrapping SDL headers, some APIs cannot or should not be wrapped. Document t
   - Platform-specific internal APIs not intended for public use
   - APIs that don't apply to .NET (e.g., main() entry point functions)
 - Example format: `// SDL_FunctionName is not wrapped - reason why. Alternative approach if applicable.`
+
+## High-Level Wrapper Classes (Sdl3Sharp namespace)
+When creating managed wrapper classes in the `Sdl3Sharp` namespace that wrap low-level P/Invoke APIs:
+- Use the error checking helper methods from `Sdl3Sharp.Native.Common` for consistent error handling
+- Use `CheckPointer<T>(T* ptr)` for pointer return values that should not be null
+- Use `CheckErrorBool(bool returnValue)` for boolean return values where `false` indicates an error
+- Use `CheckErrorZero(int/uint/nuint returnValue)` for return values where `0` indicates an error
+- These helper methods automatically throw `SdlException` with the appropriate SDL error message
+- Example: `return new IOStream(CheckPointer(SDL_IOFromFile(path, mode)), ownsHandle: true);` instead of manually checking for null and throwing
 
 ## Code Style and Formatting Rules
 
