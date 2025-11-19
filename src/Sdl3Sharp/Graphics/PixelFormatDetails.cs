@@ -97,39 +97,22 @@ public readonly unsafe struct PixelFormatDetails
     /// <summary>
     /// Maps an RGB triple to an opaque pixel value.
     /// </summary>
-    /// <param name="red">The red component (0-255).</param>
-    /// <param name="green">The green component (0-255).</param>
-    /// <param name="blue">The blue component (0-255).</param>
+    /// <param name="color">The color.</param>
     /// <param name="palette">The optional palette for indexed formats.</param>
     /// <returns>A pixel value.</returns>
-    public PixelColor MapRgb(byte red, byte green, byte blue, Palette? palette = null)
+    public PixelColor MapRgb(Color color, Palette? palette = null)
     {
         SDL_Palette* palettePtr = palette == null ? null : palette.ToNative();
-        return new(SDL_MapRGB(_details, palettePtr, red, green, blue));
+        return new(SDL_MapRGB(_details, palettePtr, color.Red, color.Green, color.Blue));
     }
 
     /// <summary>
     /// Maps an RGBA quadruple to a pixel value.
     /// </summary>
-    /// <param name="red">The red component (0-255).</param>
-    /// <param name="green">The green component (0-255).</param>
-    /// <param name="blue">The blue component (0-255).</param>
-    /// <param name="alpha">The alpha component (0-255).</param>
-    /// <param name="palette">The optional palette for indexed formats.</param>
-    /// <returns>A pixel value.</returns>
-    public PixelColor MapRgba(byte red, byte green, byte blue, byte alpha, Palette? palette = null)
-    {
-        SDL_Palette* palettePtr = palette == null ? null : palette.ToNative();
-        return new(SDL_MapRGBA(_details, palettePtr, red, green, blue, alpha));
-    }
-
-    /// <summary>
-    /// Maps a color to a pixel value.
-    /// </summary>
     /// <param name="color">The color.</param>
     /// <param name="palette">The optional palette for indexed formats.</param>
     /// <returns>A pixel value.</returns>
-    public PixelColor Map(Color color, Palette? palette = null)
+    public PixelColor MapRgba(Color color, Palette? palette = null)
     {
         SDL_Palette* palettePtr = palette == null ? null : palette.ToNative();
         return new(SDL_MapRGBA(_details, palettePtr, color.Red, color.Green, color.Blue, color.Alpha));
