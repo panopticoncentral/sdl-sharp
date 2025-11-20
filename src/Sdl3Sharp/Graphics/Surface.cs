@@ -154,7 +154,7 @@ public sealed unsafe class Surface : IDisposable
     public Palette CreatePalette()
     {
         ThrowIfDisposed();
-        return new Palette(CheckPointer(SDL_CreateSurfacePalette(Handle)));
+        return new Palette(CheckErrorPointer(SDL_CreateSurfacePalette(Handle)));
     }
 
     /// <summary>
@@ -181,6 +181,7 @@ public sealed unsafe class Surface : IDisposable
             {
                 return null;
             }
+
             uint key;
             _ = CheckErrorBool(SDL_GetSurfaceColorKey(Handle, &key));
             return key;
@@ -281,7 +282,7 @@ public sealed unsafe class Surface : IDisposable
     /// <returns>A new surface.</returns>
     public static Surface Create(int width, int height, PixelFormat format)
     {
-        return new Surface(CheckPointer(SDL_CreateSurface(width, height, format.Format)), ownsHandle: true);
+        return new Surface(CheckErrorPointer(SDL_CreateSurface(width, height, format.Format)), ownsHandle: true);
     }
 
     /// <summary>
@@ -295,7 +296,7 @@ public sealed unsafe class Surface : IDisposable
     /// <returns>A new surface.</returns>
     public static Surface CreateFrom(int width, int height, PixelFormat format, void* pixels, int pitch)
     {
-        return new Surface(CheckPointer(SDL_CreateSurfaceFrom(width, height, format.Format, pixels, pitch)), ownsHandle: true);
+        return new Surface(CheckErrorPointer(SDL_CreateSurfaceFrom(width, height, format.Format, pixels, pitch)), ownsHandle: true);
     }
 
     /// <summary>
@@ -305,7 +306,7 @@ public sealed unsafe class Surface : IDisposable
     /// <returns>A new surface containing the loaded image.</returns>
     public static Surface LoadBmp(string file)
     {
-        return new Surface(CheckPointer(SDL_LoadBMP(file)), ownsHandle: true);
+        return new Surface(CheckErrorPointer(SDL_LoadBMP(file)), ownsHandle: true);
     }
 
     /// <summary>
@@ -316,7 +317,7 @@ public sealed unsafe class Surface : IDisposable
     /// <returns>A new surface containing the loaded image.</returns>
     public static Surface LoadBmp(IOStream stream, bool closeStream)
     {
-        return new Surface(CheckPointer(SDL_LoadBMP_IO(stream.Handle, closeStream)), ownsHandle: true);
+        return new Surface(CheckErrorPointer(SDL_LoadBMP_IO(stream.Handle, closeStream)), ownsHandle: true);
     }
 
     /// <summary>
@@ -411,7 +412,7 @@ public sealed unsafe class Surface : IDisposable
     public Surface Duplicate()
     {
         ThrowIfDisposed();
-        return new Surface(CheckPointer(SDL_DuplicateSurface(Handle)), ownsHandle: true);
+        return new Surface(CheckErrorPointer(SDL_DuplicateSurface(Handle)), ownsHandle: true);
     }
 
     /// <summary>
@@ -424,7 +425,7 @@ public sealed unsafe class Surface : IDisposable
     public Surface Scale(int width, int height, ScaleMode scaleMode)
     {
         ThrowIfDisposed();
-        return new Surface(CheckPointer(SDL_ScaleSurface(Handle, width, height, (SDL_ScaleMode)scaleMode)), ownsHandle: true);
+        return new Surface(CheckErrorPointer(SDL_ScaleSurface(Handle, width, height, (SDL_ScaleMode)scaleMode)), ownsHandle: true);
     }
 
     /// <summary>
@@ -435,7 +436,7 @@ public sealed unsafe class Surface : IDisposable
     public Surface Convert(PixelFormat format)
     {
         ThrowIfDisposed();
-        return new Surface(CheckPointer(SDL_ConvertSurface(Handle, format.Format)), ownsHandle: true);
+        return new Surface(CheckErrorPointer(SDL_ConvertSurface(Handle, format.Format)), ownsHandle: true);
     }
 
     /// <summary>
@@ -454,8 +455,9 @@ public sealed unsafe class Surface : IDisposable
         {
             palettePtr = palette.ToNative();
         }
+
         Native.Properties.SDL_PropertiesID propsId = properties?.Id ?? 0;
-        return new Surface(CheckPointer(SDL_ConvertSurfaceAndColorspace(Handle, format.Format, palettePtr, colorspace.Value, propsId)), ownsHandle: true);
+        return new Surface(CheckErrorPointer(SDL_ConvertSurfaceAndColorspace(Handle, format.Format, palettePtr, colorspace.Value, propsId)), ownsHandle: true);
     }
 
     /// <summary>

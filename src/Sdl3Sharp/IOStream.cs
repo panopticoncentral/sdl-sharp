@@ -80,7 +80,7 @@ public sealed unsafe class IOStream : IDisposable
     /// <returns>A new IOStream instance.</returns>
     public static IOStream FromFile(string path, string mode)
     {
-        return new IOStream(CheckPointer(SDL_IOFromFile(path, mode)), ownsHandle: true);
+        return new IOStream(CheckErrorPointer(SDL_IOFromFile(path, mode)), ownsHandle: true);
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public sealed unsafe class IOStream : IDisposable
     {
         fixed (byte* ptr = buffer)
         {
-            return new IOStream(CheckPointer(SDL_IOFromMem(ptr, (nuint)buffer.Length)), ownsHandle: true);
+            return new IOStream(CheckErrorPointer(SDL_IOFromMem(ptr, (nuint)buffer.Length)), ownsHandle: true);
         }
     }
 
@@ -105,7 +105,7 @@ public sealed unsafe class IOStream : IDisposable
     {
         fixed (byte* ptr = buffer)
         {
-            return new IOStream(CheckPointer(SDL_IOFromConstMem(ptr, (nuint)buffer.Length)), ownsHandle: true);
+            return new IOStream(CheckErrorPointer(SDL_IOFromConstMem(ptr, (nuint)buffer.Length)), ownsHandle: true);
         }
     }
 
@@ -115,7 +115,7 @@ public sealed unsafe class IOStream : IDisposable
     /// <returns>A new IOStream instance.</returns>
     public static IOStream FromDynamicMemory()
     {
-        return new IOStream(CheckPointer(SDL_IOFromDynamicMem()), ownsHandle: true);
+        return new IOStream(CheckErrorPointer(SDL_IOFromDynamicMem()), ownsHandle: true);
     }
 
     /// <summary>
@@ -126,7 +126,7 @@ public sealed unsafe class IOStream : IDisposable
     public static byte[] LoadFile(string path)
     {
         nuint size;
-        var data = CheckPointer(SDL_LoadFile(path, &size));
+        var data = CheckErrorPointer(SDL_LoadFile(path, &size));
 
         try
         {

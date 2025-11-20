@@ -22,7 +22,7 @@ public sealed unsafe class Palette : IDisposable
     /// <returns>The palette.</returns>
     public Palette(int colorCount)
     {
-        _palette = CheckPointer(SDL_CreatePalette(colorCount));
+        _palette = CheckErrorPointer(SDL_CreatePalette(colorCount));
     }
 
     /// <inheritdoc/>

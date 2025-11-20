@@ -25,6 +25,11 @@ The current SDL3 headers can be found in the root of the solution, in a director
 - For UTF-8 strings (`const char*` or `byte*` in SDL), use `[MarshalUsing(typeof(Utf8StringMarshaller))]` for parameters and `[return: MarshalUsing(typeof(Utf8StringMarshaller))]` for return values - this provides efficient UTF-8 conversion with minimal copying
 - For callback parameters, use function pointer syntax `delegate* unmanaged[Cdecl]<...>` instead of delegate types (better performance, no GC allocation, explicit calling convention)
 - For opaque `void*` userdata parameters that SDL does not dereference, use `nuint` instead to indicate they are opaque values rather than pointers
+- For SDL typedefs of primitive types (like `typedef Uint32 SDL_DisplayID`), create type-safe wrapper structs with:
+  - A readonly `Value` property of the underlying type
+  - A constructor that takes the underlying type
+  - Implicit conversion operators to/from the underlying type
+  - Full XML documentation for all members (Value property, constructor, and both conversion operators)
 - Import `System.Runtime.InteropServices.Marshalling` namespace when needed
 - Do not use `#region` directives to organize code
 
@@ -32,6 +37,7 @@ The current SDL3 headers can be found in the root of the solution, in a director
 - All public types (classes, structs, enums), methods, properties, and fields must have XML documentation comments
 - For enums, document each enum member with a `<summary>` tag explaining its purpose
 - For struct fields and properties, include XML documentation describing what the field/property represents
+- For type-safe wrapper structs (like `SDL_DisplayID`, `SDL_WindowID`), document the `Value` property, constructor, and implicit conversion operators
 - For string constants (especially SDL property names), include XML documentation explaining what the constant represents and how it's used
 - Use clear, concise descriptions that help developers understand the purpose and usage of each member
 
@@ -48,7 +54,8 @@ When wrapping SDL headers, some APIs cannot or should not be wrapped. Document t
 ## High-Level Wrapper Classes (Sdl3Sharp namespace)
 When creating managed wrapper classes in the `Sdl3Sharp` namespace that wrap low-level P/Invoke APIs:
 - Use the error checking helper methods from `Sdl3Sharp.Native.Common` for consistent error handling
-- Use `CheckPointer<T>(T* ptr)` for pointer return values that should not be null
+- Use `CheckErrorNull<T>(T? value)` for return values that should not be null
+- Use `CheckErrorPointer<T>(T* ptr)` for pointer return values that should not be null
 - Use `CheckErrorBool(bool returnValue)` for boolean return values where `false` indicates an error
 - Use `CheckErrorZero(int/uint/nuint returnValue)` for return values where `0` indicates an error
 - These helper methods automatically throw `SdlException` with the appropriate SDL error message

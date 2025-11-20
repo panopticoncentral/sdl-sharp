@@ -235,7 +235,7 @@ public readonly unsafe record struct PixelFormat(SDL_PixelFormat Format)
     /// <summary>
     /// Gets the details of the pixel format.
     /// </summary>
-    public PixelFormatDetails Details => new(CheckPointer(SDL_GetPixelFormatDetails(Format)));
+    public PixelFormatDetails Details => new(CheckErrorPointer(SDL_GetPixelFormatDetails(Format)));
 
     /// <summary>
     /// Gets the pixel format flag.
