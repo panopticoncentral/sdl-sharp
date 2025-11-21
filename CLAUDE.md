@@ -55,9 +55,9 @@ When wrapping SDL headers, some APIs cannot or should not be wrapped. Document t
 When creating managed wrapper classes in the `Sdl3Sharp` namespace that wrap low-level P/Invoke APIs:
 - Use the error checking helper methods from `Sdl3Sharp.Native.Common` for consistent error handling
 - Use `CheckErrorNull<T>(T? value)` for return values that should not be null
-- Use `CheckErrorPointer<T>(T* ptr)` for pointer return values that should not be null
+- Use `CheckErrorPointer<T/T*>(T*/T** ptr)` for pointer return values that should not be null
 - Use `CheckErrorBool(bool returnValue)` for boolean return values where `false` indicates an error
-- Use `CheckErrorZero(int/uint/nuint returnValue)` for return values where `0` indicates an error
+- Use `CheckErrorZero(float/int/uint/nuint returnValue)` for return values where `0` indicates an error
 - These helper methods automatically throw `SdlException` with the appropriate SDL error message
 - Example: `return new IOStream(CheckPointer(SDL_IOFromFile(path, mode)), ownsHandle: true);` instead of manually checking for null and throwing
 

@@ -1,5 +1,6 @@
 using Sdl3Sharp.Native;
 using static Sdl3Sharp.Native.Common;
+using static Sdl3Sharp.Native.Mouse;
 using static Sdl3Sharp.Native.Rect;
 using static Sdl3Sharp.Native.StdInc;
 using static Sdl3Sharp.Native.Video;
@@ -525,7 +526,36 @@ public sealed unsafe class Window : IDisposable
                 _ = CheckErrorBool(SDL_SetWindowMouseRect(Handle, null));
             }
         }
+    }
 
+    /// <summary>
+    /// Gets or sets whether relative mouse mode is enabled for this window.
+    /// While relative mouse mode is enabled, the cursor is hidden, the mouse position
+    /// is constrained to the window, and SDL will report continuous relative mouse motion.
+    /// </summary>
+    public bool RelativeMouseMode
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return SDL_GetWindowRelativeMouseMode(Handle);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowRelativeMouseMode(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// Moves the mouse cursor to the given position within this window.
+    /// This function generates a mouse motion event if relative mode is not enabled.
+    /// </summary>
+    /// <param name="position">The position within the window.</param>
+    public void WarpMouse(PointF position)
+    {
+        ThrowIfDisposed();
+        SDL_WarpMouseInWindow(Handle, position.X, position.Y);
     }
 
     /// <summary>

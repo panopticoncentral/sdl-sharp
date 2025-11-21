@@ -27,4 +27,8 @@
     <PackageReference Include="SdlSharp.Redist" Version="$(SdlRedistVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Input\" />
+  </ItemGroup>
+
 </Project>
