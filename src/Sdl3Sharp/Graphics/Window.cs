@@ -1,5 +1,7 @@
+using Sdl3Sharp.Input;
 using Sdl3Sharp.Native;
 using static Sdl3Sharp.Native.Common;
+using static Sdl3Sharp.Native.Keyboard;
 using static Sdl3Sharp.Native.Mouse;
 using static Sdl3Sharp.Native.Rect;
 using static Sdl3Sharp.Native.StdInc;
@@ -556,6 +558,106 @@ public sealed unsafe class Window : IDisposable
     {
         ThrowIfDisposed();
         SDL_WarpMouseInWindow(Handle, position.X, position.Y);
+    }
+
+    /// <summary>
+    /// Starts accepting Unicode text input events in this window.
+    /// Text input events are not received by default.
+    /// On some platforms this shows the screen keyboard and/or activates an IME.
+    /// </summary>
+    public void StartTextInput()
+    {
+        ThrowIfDisposed();
+        _ = CheckErrorBool(SDL_StartTextInput(Handle));
+    }
+
+    /// <summary>
+    /// Starts accepting Unicode text input events in this window with properties describing the input.
+    /// Text input events are not received by default.
+    /// </summary>
+    /// <param name="properties">The properties describing the text input.</param>
+    public void StartTextInput(PropertyGroup properties)
+    {
+        ThrowIfDisposed();
+        _ = CheckErrorBool(SDL_StartTextInputWithProperties(Handle, properties.Id));
+    }
+
+    /// <summary>
+    /// Gets whether text input events are enabled for this window.
+    /// </summary>
+    public bool TextInputActive
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return SDL_TextInputActive(Handle);
+        }
+    }
+
+    /// <summary>
+    /// Stops receiving text input events in this window.
+    /// If StartTextInput showed the screen keyboard, this will hide it.
+    /// </summary>
+    public void StopTextInput()
+    {
+        ThrowIfDisposed();
+        _ = CheckErrorBool(SDL_StopTextInput(Handle));
+    }
+
+    /// <summary>
+    /// Dismisses the composition window/IME without disabling the text input subsystem.
+    /// </summary>
+    public void ClearComposition()
+    {
+        ThrowIfDisposed();
+        _ = CheckErrorBool(SDL_ClearComposition(Handle));
+    }
+
+    /// <summary>
+    /// Sets the area used to type Unicode text input.
+    /// Native input methods may place a window with word suggestions near the cursor.
+    /// </summary>
+    /// <param name="rect">The rectangle representing the text input area, or null to clear it.</param>
+    /// <param name="cursor">The offset of the current cursor location relative to rect.X.</param>
+    public void SetTextInputArea(Rectangle? rect, int cursor = 0)
+    {
+        ThrowIfDisposed();
+        if (rect.HasValue)
+        {
+            SDL_Rect r = new() { x = rect.Value.Location.X, y = rect.Value.Location.Y, w = rect.Value.Size.Width, h = rect.Value.Size.Height };
+            _ = CheckErrorBool(SDL_SetTextInputArea(Handle, &r, cursor));
+        }
+        else
+        {
+            _ = CheckErrorBool(SDL_SetTextInputArea(Handle, null, cursor));
+        }
+    }
+
+    /// <summary>
+    /// Gets the area used to type Unicode text input.
+    /// </summary>
+    /// <param name="cursor">Receives the offset of the current cursor location relative to the rect.</param>
+    /// <returns>The text input area rectangle.</returns>
+    public Rectangle GetTextInputArea(out int cursor)
+    {
+        ThrowIfDisposed();
+        SDL_Rect rect;
+        int c;
+        _ = CheckErrorBool(SDL_GetTextInputArea(Handle, &rect, &c));
+        cursor = c;
+        return new Rectangle(new Point(rect.x, rect.y), new Size(rect.w, rect.h));
+    }
+
+    /// <summary>
+    /// Gets whether the screen keyboard is shown for this window.
+    /// </summary>
+    public bool ScreenKeyboardShown
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return SDL_ScreenKeyboardShown(Handle);
+        }
     }
 
     /// <summary>

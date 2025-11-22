@@ -1,6 +1,6 @@
 using static Sdl3Sharp.Native.Scancode;
 
-namespace Sdl3Sharp;
+namespace Sdl3Sharp.Input;
 
 /// <summary>
 /// Represents a keyboard scancode - the physical representation of a key on the keyboard,

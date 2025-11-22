@@ -42,7 +42,7 @@ public sealed unsafe class Application : IDisposable
     {
         int seconds;
         int percent;
-        var state = SDL_GetPowerInfo(&seconds, &percent);
+        SDL_PowerState state = SDL_GetPowerInfo(&seconds, &percent);
 
         if (state == SDL_PowerState.SDL_POWERSTATE_ERROR)
         {
