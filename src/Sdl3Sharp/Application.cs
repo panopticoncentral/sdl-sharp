@@ -1,5 +1,7 @@
 ﻿using static Sdl3Sharp.Native.Common;
+using static Sdl3Sharp.Native.Error;
 using static Sdl3Sharp.Native.Init;
+using static Sdl3Sharp.Native.Power;
 using static Sdl3Sharp.Native.Version;
 
 namespace Sdl3Sharp;
@@ -23,6 +25,35 @@ public sealed unsafe class Application : IDisposable
     /// The revision string of the version of SDL that's being used.
     /// </summary>
     public static string Revision => SDL_GetRevision();
+
+    /// <summary>
+    /// Gets the current power supply details.
+    /// </summary>
+    /// <remarks>
+    /// You should never take a battery status as absolute truth. Batteries
+    /// (especially failing batteries) are delicate hardware, and the values
+    /// reported here are best estimates based on what that hardware reports.
+    /// Battery status can change at any time; if you are concerned with power
+    /// state, you should call this function frequently.
+    /// </remarks>
+    /// <returns>Information about the current power state.</returns>
+    /// <exception cref="SdlException">Thrown when an error occurs determining the power state.</exception>
+    public static PowerInfo GetPowerInfo()
+    {
+        int seconds;
+        int percent;
+        var state = SDL_GetPowerInfo(&seconds, &percent);
+
+        if (state == SDL_PowerState.SDL_POWERSTATE_ERROR)
+        {
+            throw new SdlException(SDL_GetError());
+        }
+
+        return new PowerInfo(
+            (PowerState)state,
+            seconds == -1 ? null : seconds,
+            percent == -1 ? null : percent);
+    }
 
     /// <summary>
     /// The SDL subsystems that have been initialized.
