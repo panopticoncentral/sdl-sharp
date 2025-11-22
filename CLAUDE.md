@@ -31,6 +31,8 @@ The current SDL3 headers can be found in the root of the solution, in a director
   - Implicit conversion operators to/from the underlying type
   - Full XML documentation for all members (Value property, constructor, and both conversion operators)
 - Import `System.Runtime.InteropServices.Marshalling` namespace when needed
+- For `SDL_GUID`, use the native `System.Guid` structure directly - both are 128-bit/16-byte structs with compatible memory layouts, and `System.Guid` provides better .NET integration (string conversion, equality, formatting). Note: SDL's GUID string format is lowercase hex without dashes; use `guid.ToString("N")` for SDL-compatible formatting. The `SDL_GUIDToString` and `SDL_StringToGUID` functions do not need to be wrapped.
+- For `SDL_mutex.h`, use .NET's built-in threading primitives instead of wrapping SDL's: `System.Threading.Lock` or `lock` statement for `SDL_Mutex`, `ReaderWriterLockSlim` for `SDL_RWLock`, `SemaphoreSlim` for `SDL_Semaphore`, and `Monitor.Wait/Pulse/PulseAll` for `SDL_Condition`. .NET primitives offer better integration with async/await, no P/Invoke overhead, and safer resource management. Only wrap `SDL_InitState`/`SDL_InitStatus` if needed for SDL API interop.
 - Do not use `#region` directives to organize code
 
 ## XML Documentation
