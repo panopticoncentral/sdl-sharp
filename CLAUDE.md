@@ -53,6 +53,7 @@ When wrapping SDL headers, some APIs cannot or should not be wrapped. Document t
 
 ## High-Level Wrapper Classes (Sdl3Sharp namespace)
 When creating managed wrapper classes in the `Sdl3Sharp` namespace that wrap low-level P/Invoke APIs:
+- Each type (class, struct, enum) should be in its own file
 - Use the error checking helper methods from `Sdl3Sharp.Native.Common` for consistent error handling
 - Use `CheckErrorNull<T>(T? value)` for return values that should not be null
 - Use `CheckErrorPointer<T/T*>(T*/T** ptr)` for pointer return values that should not be null
