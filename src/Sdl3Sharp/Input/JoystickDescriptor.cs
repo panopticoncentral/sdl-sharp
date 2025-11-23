@@ -18,12 +18,12 @@ public readonly unsafe struct JoystickDescriptor(SDL_JoystickID id)
     /// <summary>
     /// Gets the implementation dependent name of this joystick.
     /// </summary>
-    public string? Name => SDL_GetJoystickNameForID(Id);
+    public string Name => CheckErrorNull(SDL_GetJoystickNameForID(Id));
 
     /// <summary>
     /// Gets the implementation dependent path of this joystick.
     /// </summary>
-    public string? Path => SDL_GetJoystickPathForID(Id);
+    public string Path => CheckErrorNull(SDL_GetJoystickPathForID(Id));
 
     /// <summary>
     /// Gets the player index of this joystick, or -1 if not available.
@@ -73,11 +73,10 @@ public readonly unsafe struct JoystickDescriptor(SDL_JoystickID id)
     /// <summary>
     /// Gets the Joystick associated with this descriptor, if it has been opened.
     /// </summary>
-    /// <returns>A Joystick instance if opened, null otherwise.</returns>
-    public Joystick? GetOpened()
+    /// <returns>A Joystick instance if opened.</returns>
+    public Joystick GetOpened()
     {
-        SDL_Joystick* joystick = SDL_GetJoystickFromID(Id);
-        return joystick != null ? new Joystick(joystick, ownsHandle: false) : null;
+        return new(CheckErrorPointer(SDL_GetJoystickFromID(Id)), ownsHandle: false);
     }
 
     /// <summary>

@@ -82,6 +82,17 @@ public unsafe static class Common
     /// <param name="returnValue">The return value of the API.</param>
     /// <returns>The return value.</returns>
     /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+    public static int CheckErrorNegativeOne(int returnValue)
+    {
+        return (returnValue == -1) ? throw new SdlException() : returnValue;
+    }
+
+    /// <summary>
+    /// Check that the return of a method is not an error (i.e. -1.0f).
+    /// </summary>
+    /// <param name="returnValue">The return value of the API.</param>
+    /// <returns>The return value.</returns>
+    /// <exception cref="SdlException">Thrown if method returned an error.</exception>
     public static float CheckErrorNegativeOne(float returnValue)
     {
         return (returnValue == -1.0f) ? throw new SdlException() : returnValue;

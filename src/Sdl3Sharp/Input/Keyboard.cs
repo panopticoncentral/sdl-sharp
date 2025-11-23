@@ -42,6 +42,7 @@ public unsafe readonly record struct Keyboard(uint Id)
             {
                 result[i] = new Keyboard(keyboards[i]);
             }
+
             return result;
         }
         finally

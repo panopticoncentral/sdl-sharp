@@ -99,6 +99,7 @@ public sealed unsafe class Sensor : IDisposable
             {
                 result[i] = new SensorDescriptor(sensors[i]);
             }
+
             return result;
         }
         finally

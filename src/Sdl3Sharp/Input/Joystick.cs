@@ -1,3 +1,4 @@
+using Sdl3Sharp.Graphics;
 using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Joystick;
 using static Sdl3Sharp.Native.StdInc;
@@ -56,17 +57,17 @@ public sealed unsafe class Joystick : IDisposable
     /// <summary>
     /// Gets the implementation dependent path of this joystick.
     /// </summary>
-    public string? Path
+    public string Path
     {
         get
         {
             ThrowIfDisposed();
-            return SDL_GetJoystickPath(Handle);
+            return CheckErrorNull(SDL_GetJoystickPath(Handle));
         }
     }
 
     /// <summary>
-    /// Gets the player index of this joystick, or -1 if not available.
+    /// The player index of this joystick, or -1 if not available.
     /// For XInput controllers this returns the XInput user index.
     /// </summary>
     public int PlayerIndex
@@ -76,17 +77,11 @@ public sealed unsafe class Joystick : IDisposable
             ThrowIfDisposed();
             return SDL_GetJoystickPlayerIndex(Handle);
         }
-    }
-
-    /// <summary>
-    /// Sets the player index of this joystick.
-    /// Pass -1 to clear the player index and turn off player LEDs.
-    /// </summary>
-    /// <param name="playerIndex">The player index to assign.</param>
-    public void SetPlayerIndex(int playerIndex)
-    {
-        ThrowIfDisposed();
-        _ = CheckErrorBool(SDL_SetJoystickPlayerIndex(Handle, playerIndex));
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetJoystickPlayerIndex(Handle, value));
+        }
     }
 
     /// <summary>
@@ -217,8 +212,7 @@ public sealed unsafe class Joystick : IDisposable
         get
         {
             ThrowIfDisposed();
-            var count = SDL_GetNumJoystickAxes(Handle);
-            return count < 0 ? throw new SdlException() : count;
+            return CheckErrorNegativeOne(SDL_GetNumJoystickAxes(Handle));
         }
     }
 
@@ -232,8 +226,7 @@ public sealed unsafe class Joystick : IDisposable
         get
         {
             ThrowIfDisposed();
-            var count = SDL_GetNumJoystickBalls(Handle);
-            return count < 0 ? throw new SdlException() : count;
+            return CheckErrorNegativeOne(SDL_GetNumJoystickBalls(Handle));
         }
     }
 
@@ -294,6 +287,7 @@ public sealed unsafe class Joystick : IDisposable
             {
                 result[i] = new JoystickDescriptor(joysticks[i]);
             }
+
             return result;
         }
         finally
@@ -306,11 +300,10 @@ public sealed unsafe class Joystick : IDisposable
     /// Gets the joystick associated with a player index.
     /// </summary>
     /// <param name="playerIndex">The player index to get the joystick for.</param>
-    /// <returns>A Joystick instance, or null if not found.</returns>
-    public static Joystick? GetFromPlayerIndex(int playerIndex)
+    /// <returns>A Joystick instance.</returns>
+    public static Joystick GetFromPlayerIndex(int playerIndex)
     {
-        SDL_Joystick* joystick = SDL_GetJoystickFromPlayerIndex(playerIndex);
-        return joystick != null ? new Joystick(joystick, ownsHandle: false) : null;
+        return new(SDL_GetJoystickFromPlayerIndex(playerIndex), ownsHandle: false);
     }
 
     /// <summary>
@@ -351,7 +344,7 @@ public sealed unsafe class Joystick : IDisposable
     /// <param name="crc16">A CRC used to distinguish different products with the same VID/PID, or 0 if not available.</param>
     public static void GetGuidInfo(Guid guid, out ushort vendorId, out ushort productId, out ushort version, out ushort crc16)
     {
-        fixed (ushort* pVendor = &vendorId)
+        fixed (ushort* pVendor = &vendorId) 
         fixed (ushort* pProduct = &productId)
         fixed (ushort* pVersion = &version)
         fixed (ushort* pCrc = &crc16)
@@ -470,13 +463,11 @@ public sealed unsafe class Joystick : IDisposable
     /// Updates this joystick's LED color.
     /// An example of a joystick LED is the light on the back of a PlayStation 4's DualShock 4 controller.
     /// </summary>
-    /// <param name="red">The intensity of the red LED.</param>
-    /// <param name="green">The intensity of the green LED.</param>
-    /// <param name="blue">The intensity of the blue LED.</param>
-    public void SetLed(byte red, byte green, byte blue)
+    /// <param name="color">The color.</param>
+    public void SetLed(Color color)
     {
         ThrowIfDisposed();
-        _ = CheckErrorBool(SDL_SetJoystickLED(Handle, red, green, blue));
+        _ = CheckErrorBool(SDL_SetJoystickLED(Handle, color.Red, color.Green, color.b));
     }
 
     /// <summary>
