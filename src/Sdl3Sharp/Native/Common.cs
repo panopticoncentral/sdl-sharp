@@ -88,6 +88,17 @@ public unsafe static class Common
     }
 
     /// <summary>
+    /// Check that the return of a method is not an error (i.e. less than 0).
+    /// </summary>
+    /// <param name="returnValue">The return value of the API.</param>
+    /// <returns>The return value.</returns>
+    /// <exception cref="SdlException">Thrown if method returned an error.</exception>
+    public static long CheckErrorNegative(long returnValue)
+    {
+        return (returnValue < 0) ? throw new SdlException() : returnValue;
+    }
+
+    /// <summary>
     /// Check that the return of a method is not an error (i.e. -1.0f).
     /// </summary>
     /// <param name="returnValue">The return value of the API.</param>

@@ -467,7 +467,7 @@ public sealed unsafe class Joystick : IDisposable
     public void SetLed(Color color)
     {
         ThrowIfDisposed();
-        _ = CheckErrorBool(SDL_SetJoystickLED(Handle, color.Red, color.Green, color.b));
+        _ = CheckErrorBool(SDL_SetJoystickLED(Handle, color.Red, color.Green, color.Blue));
     }
 
     /// <summary>
