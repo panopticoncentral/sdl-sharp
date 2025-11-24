@@ -58,7 +58,7 @@ public static unsafe class Clipboard
     /// <exception cref="SdlException">Thrown when clearing the clipboard fails.</exception>
     public static void Clear()
     {
-        CheckErrorBool(SDL_ClearClipboardData());
+        _ = CheckErrorBool(SDL_ClearClipboardData());
     }
 
     /// <summary>
@@ -193,7 +193,7 @@ public static unsafe class Clipboard
         var handle = GCHandle.FromIntPtr((nint)userdata);
         var context = (ClipboardCallbackContext)handle.Target!;
 
-        string? mimeTypeString = mimeType is not null
+        var mimeTypeString = mimeType is not null
             ? Marshal.PtrToStringUTF8((nint)mimeType)
             : null;
 
