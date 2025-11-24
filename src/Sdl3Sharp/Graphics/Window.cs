@@ -1,5 +1,3 @@
-using Sdl3Sharp.Input;
-using Sdl3Sharp.Native;
 using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Keyboard;
 using static Sdl3Sharp.Native.Mouse;

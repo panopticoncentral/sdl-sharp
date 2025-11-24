@@ -1,6 +1,3 @@
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
 using static Sdl3Sharp.Native.Mouse;
 using static Sdl3Sharp.Native.Touch;
 

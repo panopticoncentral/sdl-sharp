@@ -44,12 +44,9 @@ public sealed unsafe class Application : IDisposable
         int percent;
         SDL_PowerState state = SDL_GetPowerInfo(&seconds, &percent);
 
-        if (state == SDL_PowerState.SDL_POWERSTATE_ERROR)
-        {
-            throw new SdlException(SDL_GetError());
-        }
-
-        return new PowerInfo(
+        return state == SDL_PowerState.SDL_POWERSTATE_ERROR
+            ? throw new SdlException(SDL_GetError())
+            : new PowerInfo(
             (PowerState)state,
             seconds == -1 ? null : seconds,
             percent == -1 ? null : percent);
