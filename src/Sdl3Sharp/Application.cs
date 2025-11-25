@@ -2,6 +2,7 @@
 using static Sdl3Sharp.Native.Error;
 using static Sdl3Sharp.Native.Init;
 using static Sdl3Sharp.Native.Misc;
+using static Sdl3Sharp.Native.Platform;
 using static Sdl3Sharp.Native.Power;
 using static Sdl3Sharp.Native.Version;
 
@@ -26,6 +27,22 @@ public sealed unsafe class Application : IDisposable
     /// The revision string of the version of SDL that's being used.
     /// </summary>
     public static string Revision => SDL_GetRevision();
+
+    /// <summary>
+    /// The name of the platform SDL is running on.
+    /// </summary>
+    /// <remarks>
+    /// <para>Here are the names returned for some (but not all) supported platforms:</para>
+    /// <list type="bullet">
+    /// <item><description>"Windows"</description></item>
+    /// <item><description>"macOS"</description></item>
+    /// <item><description>"Linux"</description></item>
+    /// <item><description>"iOS"</description></item>
+    /// <item><description>"Android"</description></item>
+    /// </list>
+    /// <para>If the correct platform name is not available, returns a string beginning with the text "Unknown".</para>
+    /// </remarks>
+    public static string Platform => SDL_GetPlatform();
 
     /// <summary>
     /// Opens a URL/URI in the browser or other appropriate external application.
