@@ -15,5 +15,8 @@ public readonly record struct MessageBoxColor(byte R, byte G, byte B)
     /// <param name="g">The green component (0-255).</param>
     /// <param name="b">The blue component (0-255).</param>
     /// <returns>A new <see cref="MessageBoxColor"/> instance.</returns>
-    public static MessageBoxColor FromRgb(byte r, byte g, byte b) => new(r, g, b);
+    public static MessageBoxColor FromRgb(byte r, byte g, byte b)
+    {
+        return new(r, g, b);
+    }
 }

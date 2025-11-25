@@ -63,5 +63,8 @@ public sealed class MessageBoxColorScheme
         set => this[MessageBoxColorType.ButtonSelected] = value;
     }
 
-    internal MessageBoxColor[] GetColors() => _colors;
+    internal MessageBoxColor[] GetColors()
+    {
+        return _colors;
+    }
 }
