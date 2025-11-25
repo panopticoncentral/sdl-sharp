@@ -177,7 +177,7 @@ public static unsafe class Hints
     /// </remarks>
     public static void AddCallback(string name, HintCallback callback)
     {
-        var key = (name, callback);
+        (string name, HintCallback callback) key = (name, callback);
 
         if (_callbacks.ContainsKey(key))
         {
@@ -211,9 +211,9 @@ public static unsafe class Hints
     /// <param name="callback">The callback function that was registered.</param>
     public static void RemoveCallback(string name, HintCallback callback)
     {
-        var key = (name, callback);
+        (string name, HintCallback callback) key = (name, callback);
 
-        if (_callbacks.TryRemove(key, out var entry))
+        if (_callbacks.TryRemove(key, out CallbackEntry? entry))
         {
             SDL_RemoveHintCallback(name, entry.NativeCallback, (nuint)GCHandle.ToIntPtr(entry.Handle));
             entry.Handle.Free();

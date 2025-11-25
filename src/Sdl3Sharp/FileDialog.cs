@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 using Sdl3Sharp.Graphics;
-
 using static Sdl3Sharp.Native.Dialog;
 using static Sdl3Sharp.Native.Video;
 
@@ -151,7 +150,7 @@ public static unsafe class FileDialog
     {
         var callbackState = new DialogCallbackState(callback, filters);
         var handle = GCHandle.Alloc(callbackState);
-        var windowHandle = window == null ? null : window.Handle;
+        SDL_Window* windowHandle = window == null ? null : window.Handle;
 
         if (filters is { Count: > 0 })
         {

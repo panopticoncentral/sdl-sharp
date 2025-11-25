@@ -177,7 +177,7 @@ public static unsafe class Clipboard
         }
         finally
         {
-            foreach (var handle in mimeTypeHandles)
+            foreach (GCHandle handle in mimeTypeHandles)
             {
                 if (handle.IsAllocated)
                 {

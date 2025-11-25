@@ -1,6 +1,5 @@
 using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Haptic;
-using static Sdl3Sharp.Native.Joystick;
 using static Sdl3Sharp.Native.StdInc;
 
 namespace Sdl3Sharp.Input;

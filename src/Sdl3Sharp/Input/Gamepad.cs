@@ -420,7 +420,7 @@ public sealed unsafe class Gamepad : IDisposable
     /// <returns>The corresponding GamepadAxis, or null if invalid.</returns>
     public static GamepadAxis? GetAxisFromString(string str)
     {
-        var axis = SDL_GetGamepadAxisFromString(str);
+        SDL_GamepadAxis axis = SDL_GetGamepadAxisFromString(str);
         return axis == SDL_GamepadAxis.SDL_GAMEPAD_AXIS_INVALID ? null : (GamepadAxis)axis;
     }
 
@@ -441,7 +441,7 @@ public sealed unsafe class Gamepad : IDisposable
     /// <returns>The corresponding GamepadButton, or null if invalid.</returns>
     public static GamepadButton? GetButtonFromString(string str)
     {
-        var button = SDL_GetGamepadButtonFromString(str);
+        SDL_GamepadButton button = SDL_GetGamepadButtonFromString(str);
         return button == SDL_GamepadButton.SDL_GAMEPAD_BUTTON_INVALID ? null : (GamepadButton)button;
     }
 
