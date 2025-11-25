@@ -159,8 +159,9 @@ public static unsafe partial class MessageBox
     {
         /// <summary>
         /// Fixed-size array of colors for the message box color scheme.
+        /// SDL_MESSAGEBOX_COLOR_COUNT = 5, sizeof(SDL_MessageBoxColor) = 3 bytes (r, g, b)
         /// </summary>
-        public fixed byte colors[sizeof(SDL_MessageBoxColor) * (int)SDL_MessageBoxColorType.SDL_MESSAGEBOX_COLOR_COUNT];
+        public fixed byte colors[15];
 
         /// <summary>
         /// Gets or sets a color at the specified index.

@@ -68,7 +68,7 @@ public sealed unsafe class Application : IDisposable
     /// </remarks>
     public static void OpenUrl(string url)
     {
-        CheckErrorBool(SDL_OpenURL(url));
+        _ = CheckErrorBool(SDL_OpenURL(url));
     }
 
     /// <summary>

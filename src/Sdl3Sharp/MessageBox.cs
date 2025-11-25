@@ -34,11 +34,11 @@ public static unsafe class MessageBox
     /// </remarks>
     public static void Show(MessageBoxFlags flags, string title, string message, Window? window = null)
     {
-        CheckErrorBool(SDL_ShowSimpleMessageBox(
+        _ = CheckErrorBool(SDL_ShowSimpleMessageBox(
             (SDL_MessageBoxFlags)flags,
             title,
             message,
-            window?.Handle));
+            window is not null ? window.Handle : null));
     }
 
     /// <summary>
@@ -104,15 +104,15 @@ public static unsafe class MessageBox
             throw new ArgumentException("At least one button must be provided.", nameof(buttons));
         }
 
-        var nativeButtons = CreateNativeButtons(buttons, out var allocatedStrings);
-        var nativeColorScheme = CreateNativeColorScheme(colorScheme);
+        SDL_MessageBoxButtonData* nativeButtons = CreateNativeButtons(buttons, out var allocatedStrings);
+        SDL_MessageBoxColorScheme* nativeColorScheme = CreateNativeColorScheme(colorScheme);
 
         try
         {
             var messageBoxData = new SDL_MessageBoxData
             {
                 flags = (SDL_MessageBoxFlags)flags,
-                window = window?.Handle,
+                window = window is not null ? window.Handle : null,
                 title = null,
                 message = null,
                 numbuttons = buttons.Count,
@@ -130,7 +130,7 @@ public static unsafe class MessageBox
                 messageBoxData.message = messagePtr;
 
                 int buttonId = 0;
-                CheckErrorBool(SDL_ShowMessageBox(&messageBoxData, &buttonId));
+                _ = CheckErrorBool(SDL_ShowMessageBox(&messageBoxData, &buttonId));
                 return buttonId;
             }
         }
@@ -193,7 +193,7 @@ public static unsafe class MessageBox
         }
 
         var nativeScheme = (SDL_MessageBoxColorScheme*)Marshal.AllocHGlobal(sizeof(SDL_MessageBoxColorScheme));
-        var colors = colorScheme.GetColors();
+        MessageBoxColor[] colors = colorScheme.GetColors();
 
         for (var i = 0; i < colors.Length; i++)
         {
