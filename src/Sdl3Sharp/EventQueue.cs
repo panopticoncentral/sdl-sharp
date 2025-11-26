@@ -1,0 +1,410 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+using static Sdl3Sharp.Native.Common;
+using static Sdl3Sharp.Native.Events;
+using static Sdl3Sharp.Native.Video;
+
+namespace Sdl3Sharp;
+
+/// <summary>
+/// Provides access to the SDL event queue for polling, waiting, and managing events.
+/// </summary>
+/// <remarks>
+/// <para>The event queue is the core of SDL's event handling. All user interactions
+/// (keyboard, mouse, touch, gamepad, etc.) and system notifications (window events,
+/// device connections, etc.) flow through this queue.</para>
+/// <para>A typical game loop calls <see cref="Poll"/> in a loop until it returns null,
+/// processing each event as it comes.</para>
+/// </remarks>
+public static unsafe class EventQueue
+{
+    /// <summary>
+    /// Pumps the event loop, gathering events from the input devices.
+    /// </summary>
+    /// <remarks>
+    /// <para>This function updates the event queue and internal input device state.
+    /// This should only be called in the thread that initialized the video subsystem,
+    /// and for extra safety, you should consider only doing those things on the main thread.</para>
+    /// <para><see cref="Poll"/> and <see cref="Wait()"/> implicitly call this function,
+    /// so you only need to call it if you're not polling or waiting for events.</para>
+    /// </remarks>
+    public static void Pump()
+    {
+        SDL_PumpEvents();
+    }
+
+    /// <summary>
+    /// Polls for currently pending events.
+    /// </summary>
+    /// <returns>The next event from the queue, or null if there are no events available.</returns>
+    /// <remarks>
+    /// <para>This function removes the event from the queue when it is returned.
+    /// Call this in a loop to process all pending events.</para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// while (EventQueue.Poll() is { } e)
+    /// {
+    ///     switch (e.Type)
+    ///     {
+    ///         case EventType.Quit:
+    ///             running = false;
+    ///             break;
+    ///         case EventType.KeyDown:
+    ///             Console.WriteLine($"Key pressed: {e.Keyboard.Keycode}");
+    ///             break;
+    ///     }
+    /// }
+    /// </code>
+    /// </example>
+    public static Event? Poll()
+    {
+        SDL_Event sdlEvent;
+        return SDL_PollEvent(&sdlEvent) ? new Event(sdlEvent) : null;
+    }
+
+    /// <summary>
+    /// Waits indefinitely for the next available event.
+    /// </summary>
+    /// <returns>The next event from the queue.</returns>
+    /// <exception cref="SdlException">Thrown if there was an error while waiting for events.</exception>
+    /// <remarks>
+    /// <para>This function blocks until an event is available. Use this when your
+    /// application is event-driven and doesn't need to continuously render.</para>
+    /// </remarks>
+    public static Event Wait()
+    {
+        SDL_Event sdlEvent;
+        _ = CheckErrorBool(SDL_WaitEvent(&sdlEvent));
+        return new Event(sdlEvent);
+    }
+
+    /// <summary>
+    /// Waits until the specified timeout for the next available event.
+    /// </summary>
+    /// <param name="timeout">The maximum time to wait for an event.</param>
+    /// <returns>The next event from the queue, or null if the timeout elapsed without any events.</returns>
+    /// <remarks>
+    /// <para>This function blocks until an event is available or the timeout expires.</para>
+    /// </remarks>
+    public static Event? Wait(TimeSpan timeout)
+    {
+        SDL_Event sdlEvent;
+        var timeoutMs = (int)timeout.TotalMilliseconds;
+        return SDL_WaitEventTimeout(&sdlEvent, timeoutMs) ? new Event(sdlEvent) : null;
+    }
+
+    /// <summary>
+    /// Waits until the specified timeout (in milliseconds) for the next available event.
+    /// </summary>
+    /// <param name="timeoutMs">The maximum number of milliseconds to wait for an event.</param>
+    /// <returns>The next event from the queue, or null if the timeout elapsed without any events.</returns>
+    public static Event? Wait(int timeoutMs)
+    {
+        SDL_Event sdlEvent;
+        return SDL_WaitEventTimeout(&sdlEvent, timeoutMs) ? new Event(sdlEvent) : null;
+    }
+
+    /// <summary>
+    /// Adds an event to the event queue.
+    /// </summary>
+    /// <param name="event">The event to add.</param>
+    /// <returns>True on success, false if the event was filtered or on failure.</returns>
+    /// <exception cref="SdlException">Thrown if there was an error pushing the event.</exception>
+    public static bool Push(Event @event)
+    {
+        var sdlEvent = @event.Native;
+        return SDL_PushEvent(&sdlEvent);
+    }
+
+    /// <summary>
+    /// Checks for the existence of a certain event type in the event queue.
+    /// </summary>
+    /// <param name="type">The type of event to check for.</param>
+    /// <returns>True if events of the specified type are present.</returns>
+    public static bool HasEvent(EventType type)
+    {
+        return SDL_HasEvent((uint)type);
+    }
+
+    /// <summary>
+    /// Checks for the existence of events within a range of types in the event queue.
+    /// </summary>
+    /// <param name="minType">The minimum event type (inclusive).</param>
+    /// <param name="maxType">The maximum event type (inclusive).</param>
+    /// <returns>True if events within the range are present.</returns>
+    public static bool HasEvents(EventType minType, EventType maxType)
+    {
+        return SDL_HasEvents((uint)minType, (uint)maxType);
+    }
+
+    /// <summary>
+    /// Clears events of a specific type from the event queue.
+    /// </summary>
+    /// <param name="type">The type of event to clear.</param>
+    public static void Flush(EventType type)
+    {
+        SDL_FlushEvent((uint)type);
+    }
+
+    /// <summary>
+    /// Clears events within a range of types from the event queue.
+    /// </summary>
+    /// <param name="minType">The minimum event type to clear (inclusive).</param>
+    /// <param name="maxType">The maximum event type to clear (inclusive).</param>
+    public static void Flush(EventType minType, EventType maxType)
+    {
+        SDL_FlushEvents((uint)minType, (uint)maxType);
+    }
+
+    /// <summary>
+    /// Peeks at events in the queue without removing them.
+    /// </summary>
+    /// <param name="events">A span to receive the events.</param>
+    /// <param name="minType">The minimum event type to retrieve (inclusive).</param>
+    /// <param name="maxType">The maximum event type to retrieve (inclusive).</param>
+    /// <returns>The number of events actually retrieved.</returns>
+    public static int Peek(Span<Event> events, EventType minType = EventType.First, EventType maxType = EventType.Last)
+    {
+        var nativeEvents = stackalloc SDL_Event[events.Length];
+        var count = SDL_PeepEvents(nativeEvents, events.Length, SDL_EventAction.SDL_PEEKEVENT, (uint)minType, (uint)maxType);
+
+        if (count < 0)
+        {
+            throw new SdlException();
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            events[i] = new Event(nativeEvents[i]);
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Gets and removes events from the queue.
+    /// </summary>
+    /// <param name="events">A span to receive the events.</param>
+    /// <param name="minType">The minimum event type to retrieve (inclusive).</param>
+    /// <param name="maxType">The maximum event type to retrieve (inclusive).</param>
+    /// <returns>The number of events actually retrieved.</returns>
+    public static int Get(Span<Event> events, EventType minType = EventType.First, EventType maxType = EventType.Last)
+    {
+        var nativeEvents = stackalloc SDL_Event[events.Length];
+        var count = SDL_PeepEvents(nativeEvents, events.Length, SDL_EventAction.SDL_GETEVENT, (uint)minType, (uint)maxType);
+
+        if (count < 0)
+        {
+            throw new SdlException();
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            events[i] = new Event(nativeEvents[i]);
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Enables or disables processing of a specific event type.
+    /// </summary>
+    /// <param name="type">The type of event to enable or disable.</param>
+    /// <param name="enabled">True to enable processing, false to disable.</param>
+    /// <remarks>
+    /// <para>Disabled events are automatically dropped from the event queue and will
+    /// not be delivered to the application.</para>
+    /// </remarks>
+    public static void SetEnabled(EventType type, bool enabled)
+    {
+        SDL_SetEventEnabled((uint)type, enabled);
+    }
+
+    /// <summary>
+    /// Checks whether processing of a specific event type is enabled.
+    /// </summary>
+    /// <param name="type">The type of event to check.</param>
+    /// <returns>True if the event type is being processed.</returns>
+    public static bool IsEnabled(EventType type)
+    {
+        return SDL_EventEnabled((uint)type);
+    }
+
+    /// <summary>
+    /// Allocates a set of user-defined events.
+    /// </summary>
+    /// <param name="count">The number of events to allocate.</param>
+    /// <returns>The beginning event number for the allocated range, or 0 if allocation failed.</returns>
+    /// <remarks>
+    /// <para>User events should have types between <see cref="EventType.User"/> and
+    /// <see cref="EventType.Last"/>. This function reserves a contiguous range of
+    /// event numbers for your application's use.</para>
+    /// </remarks>
+    public static uint RegisterEvents(int count)
+    {
+        return SDL_RegisterEvents(count);
+    }
+
+    private static EventFilterCallback? _currentFilter;
+    private static GCHandle _currentFilterHandle;
+
+    /// <summary>
+    /// Sets a filter function to process all events before they are added to the queue.
+    /// </summary>
+    /// <param name="filter">The filter function. Return true to keep the event, false to drop it.
+    /// Pass null to remove the current filter.</param>
+    /// <remarks>
+    /// <para>The filter function is called when an event is added to the queue. If it returns
+    /// false, the event is dropped and will never be seen by the application.</para>
+    /// <para>Be careful what you do in the filter function, as it may be called from a
+    /// different thread.</para>
+    /// </remarks>
+    public static void SetFilter(EventFilterCallback? filter)
+    {
+        // Clean up previous filter
+        if (_currentFilterHandle.IsAllocated)
+        {
+            _currentFilterHandle.Free();
+        }
+
+        _currentFilter = filter;
+
+        if (filter is null)
+        {
+            SDL_SetEventFilter(null, 0);
+        }
+        else
+        {
+            _currentFilterHandle = GCHandle.Alloc(filter);
+            SDL_SetEventFilter(&EventFilterHandler, (nuint)GCHandle.ToIntPtr(_currentFilterHandle));
+        }
+    }
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static bool EventFilterHandler(nuint userdata, SDL_Event* sdlEvent)
+    {
+        var handle = GCHandle.FromIntPtr((nint)userdata);
+        var callback = (EventFilterCallback)handle.Target!;
+        var e = new Event(*sdlEvent);
+        return callback(e);
+    }
+
+    private static readonly List<EventWatchRegistration> _eventWatches = [];
+
+    /// <summary>
+    /// Adds a callback to be triggered when an event is added to the event queue.
+    /// </summary>
+    /// <param name="callback">The callback function to invoke for each event.</param>
+    /// <returns>A registration handle that can be used to remove the watch.</returns>
+    /// <remarks>
+    /// <para>Event watches are called for every event added to the queue, whether or not
+    /// it passes the event filter. They cannot modify or block events.</para>
+    /// <para>Be careful what you do in the callback, as it may be called from a different thread.</para>
+    /// </remarks>
+    public static EventWatchHandle AddWatch(EventWatchCallback callback)
+    {
+        var registration = new EventWatchRegistration(callback);
+        var handle = GCHandle.Alloc(registration);
+        registration.Handle = handle;
+
+        lock (_eventWatches)
+        {
+            _eventWatches.Add(registration);
+        }
+
+        if (!SDL_AddEventWatch(&EventWatchHandler, (nuint)GCHandle.ToIntPtr(handle)))
+        {
+            handle.Free();
+            lock (_eventWatches)
+            {
+                _eventWatches.Remove(registration);
+            }
+            throw new SdlException();
+        }
+
+        return new EventWatchHandle(registration);
+    }
+
+    /// <summary>
+    /// Removes an event watch callback.
+    /// </summary>
+    /// <param name="handle">The handle returned by <see cref="AddWatch"/>.</param>
+    public static void RemoveWatch(EventWatchHandle handle)
+    {
+        var registration = handle.Registration;
+        if (registration is null || !registration.Handle.IsAllocated)
+        {
+            return;
+        }
+
+        SDL_RemoveEventWatch(&EventWatchHandler, (nuint)GCHandle.ToIntPtr(registration.Handle));
+
+        lock (_eventWatches)
+        {
+            _eventWatches.Remove(registration);
+        }
+
+        registration.Handle.Free();
+    }
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static bool EventWatchHandler(nuint userdata, SDL_Event* sdlEvent)
+    {
+        var handle = GCHandle.FromIntPtr((nint)userdata);
+        var registration = (EventWatchRegistration)handle.Target!;
+        var e = new Event(*sdlEvent);
+        registration.Callback(e);
+        return true; // Event watches always return true
+    }
+
+    /// <summary>
+    /// Filters events currently in the queue, removing any for which the filter returns false.
+    /// </summary>
+    /// <param name="filter">The filter function. Return true to keep the event, false to remove it.</param>
+    public static void Filter(EventFilterCallback filter)
+    {
+        var handle = GCHandle.Alloc(filter);
+        try
+        {
+            SDL_FilterEvents(&EventFilterHandler, (nuint)GCHandle.ToIntPtr(handle));
+        }
+        finally
+        {
+            handle.Free();
+        }
+    }
+}
+
+/// <summary>
+/// A callback function for filtering events.
+/// </summary>
+/// <param name="event">The event to filter.</param>
+/// <returns>True to keep the event, false to drop it.</returns>
+public delegate bool EventFilterCallback(Event @event);
+
+/// <summary>
+/// A callback function for watching events.
+/// </summary>
+/// <param name="event">The event that was added to the queue.</param>
+public delegate void EventWatchCallback(Event @event);
+
+/// <summary>
+/// A handle to an event watch registration.
+/// </summary>
+public readonly struct EventWatchHandle
+{
+    internal EventWatchRegistration? Registration { get; }
+
+    internal EventWatchHandle(EventWatchRegistration registration)
+    {
+        Registration = registration;
+    }
+}
+
+internal sealed class EventWatchRegistration(EventWatchCallback callback)
+{
+    public EventWatchCallback Callback { get; } = callback;
+    public GCHandle Handle { get; set; }
+}
