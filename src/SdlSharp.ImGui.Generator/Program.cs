@@ -2,6 +2,7 @@ using System.Text.Json;
 using SdlSharp.ImGui.Generator;
 
 const string Namespace = "SdlSharp.ImGui.Native";
+const string BackendsNamespace = "SdlSharp.ImGui.Native.Backends";
 
 // Determine paths
 var baseDir = FindSolutionRoot();
@@ -18,10 +19,9 @@ if (Directory.Exists(outputDir))
 {
     Directory.Delete(outputDir, recursive: true);
 }
+
 Directory.CreateDirectory(outputDir);
-Directory.CreateDirectory(Path.Combine(outputDir, "Enums"));
-Directory.CreateDirectory(Path.Combine(outputDir, "Structs"));
-Directory.CreateDirectory(Path.Combine(outputDir, "NativeMethods"));
+Directory.CreateDirectory(Path.Combine(outputDir, "Backends"));
 
 // Load and parse JSON files
 var jsonOptions = new JsonSerializerOptions
@@ -32,7 +32,7 @@ var jsonOptions = new JsonSerializerOptions
 
 Console.WriteLine("\nLoading dcimgui.json...");
 var mainJsonPath = Path.Combine(dearBindingsDir, "dcimgui.json");
-var mainRoot = JsonSerializer.Deserialize<DearBindingsRoot>(
+DearBindingsRoot mainRoot = JsonSerializer.Deserialize<DearBindingsRoot>(
     File.ReadAllText(mainJsonPath), jsonOptions)!;
 
 // Load backend JSONs
@@ -44,7 +44,7 @@ var backendFiles = new Dictionary<string, string>
 };
 
 var backends = new Dictionary<string, DearBindingsRoot>();
-foreach (var (name, path) in backendFiles)
+foreach ((var name, var path) in backendFiles)
 {
     if (File.Exists(path))
     {
@@ -57,7 +57,7 @@ foreach (var (name, path) in backendFiles)
 // Initialize type mapper with all type information
 var typeMapper = new TypeMapper();
 typeMapper.Initialize(mainRoot);
-foreach (var backend in backends.Values)
+foreach (DearBindingsRoot backend in backends.Values)
 {
     typeMapper.Initialize(backend);
 }
@@ -70,48 +70,51 @@ var functionGenerator = new FunctionGenerator(typeMapper);
 // === Generate Enums (one file per enum) ===
 Console.WriteLine("\nGenerating enums...");
 var enumCount = 0;
-foreach (var enumInfo in mainRoot.Enums.Where(e => !e.IsInternal))
+foreach (EnumInfo? enumInfo in mainRoot.Enums.Where(e => !e.IsInternal))
 {
     var cleanName = NamingConventions.CleanEnumName(enumInfo.Name);
     var content = EnumGenerator.GenerateSingleEnum(enumInfo, Namespace);
-    var filePath = Path.Combine(outputDir, "Enums", $"{cleanName}.cs");
+    var filePath = Path.Combine(outputDir, $"{cleanName}.cs");
     File.WriteAllText(filePath, content);
     enumCount++;
 }
+
 Console.WriteLine($"  Generated {enumCount} enum files");
 
 // Generate backend enums (one file per enum)
-foreach (var (name, backend) in backends)
+foreach ((var name, DearBindingsRoot? backend) in backends)
 {
-    foreach (var enumInfo in backend.Enums.Where(e => !e.IsInternal))
+    foreach (EnumInfo? enumInfo in backend.Enums.Where(e => !e.IsInternal))
     {
         var cleanName = NamingConventions.CleanEnumName(enumInfo.Name);
-        var content = EnumGenerator.GenerateSingleEnum(enumInfo, Namespace);
-        var filePath = Path.Combine(outputDir, "Enums", $"{cleanName}.cs");
+        var content = EnumGenerator.GenerateSingleEnum(enumInfo, BackendsNamespace);
+        var filePath = Path.Combine(outputDir, "Backends", $"{cleanName}.cs");
         File.WriteAllText(filePath, content);
         enumCount++;
     }
 }
+
 Console.WriteLine($"  Generated {backends.Sum(b => b.Value.Enums.Count(e => !e.IsInternal))} backend enum files");
 
 // === Generate Structs (one file per struct) ===
 Console.WriteLine("\nGenerating structs...");
 var structCount = 0;
-foreach (var structInfo in mainRoot.Structs
+foreach (StructInfo? structInfo in mainRoot.Structs
     .Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0))
 {
     var content = structGenerator.GenerateSingleStruct(structInfo, Namespace);
-    var filePath = Path.Combine(outputDir, "Structs", $"{structInfo.Name}.cs");
+    var filePath = Path.Combine(outputDir, $"{structInfo.Name}.cs");
     File.WriteAllText(filePath, content);
     structCount++;
 }
+
 Console.WriteLine($"  Generated {structCount} struct files");
 
 // === Generate Native Methods (one file per class grouping) ===
 Console.WriteLine("\nGenerating native methods...");
 
 // Group functions by their class/prefix
-var functionGroups = GroupFunctionsByClass(mainRoot.Functions
+Dictionary<string, List<FunctionInfo>> functionGroups = GroupFunctionsByClass(mainRoot.Functions
     .Where(f => !f.IsInternal)
     .Where(f => !f.IsDefaultArgumentHelper)
     .Where(f => !f.IsImstrHelper)
@@ -119,18 +122,18 @@ var functionGroups = GroupFunctionsByClass(mainRoot.Functions
     .Where(f => !typeMapper.FunctionHasUnsupportedTypes(f)));
 
 var totalFuncCount = 0;
-foreach (var (className, functions) in functionGroups)
+foreach ((var className, List<FunctionInfo>? functions) in functionGroups)
 {
-    var safeClassName = GetSafeClassName(className);
-    var content = functionGenerator.GenerateForClass(functions, Namespace, $"NativeMethods{safeClassName}");
-    var filePath = Path.Combine(outputDir, "NativeMethods", $"NativeMethods{safeClassName}.cs");
+    var content = functionGenerator.GenerateForClass(functions, Namespace, $"{className}");
+    var filePath = Path.Combine(outputDir, $"{className}.cs");
     File.WriteAllText(filePath, content);
     totalFuncCount += functions.Count;
 }
+
 Console.WriteLine($"  Generated {functionGroups.Count} native method files ({totalFuncCount} functions)");
 
 // Generate backend functions (one file per backend)
-foreach (var (name, backend) in backends)
+foreach ((var name, DearBindingsRoot? backend) in backends)
 {
     if (backend.Functions.Count > 0)
     {
@@ -144,8 +147,8 @@ foreach (var (name, backend) in backends)
 
         if (backendFunctions.Count > 0)
         {
-            var content = functionGenerator.GenerateForClass(backendFunctions, Namespace, $"NativeMethods{name}");
-            var filePath = Path.Combine(outputDir, "NativeMethods", $"NativeMethods{name}.cs");
+            var content = functionGenerator.GenerateForClass(backendFunctions, BackendsNamespace, $"{name}");
+            var filePath = Path.Combine(outputDir, "Backends", $"{name}.cs");
             File.WriteAllText(filePath, content);
             Console.WriteLine($"  Generated {backendFunctions.Count} {name} backend functions");
         }
@@ -169,6 +172,7 @@ static string FindSolutionRoot()
         {
             return dir;
         }
+
         dir = Directory.GetParent(dir)?.FullName;
     }
 
@@ -180,7 +184,7 @@ static Dictionary<string, List<FunctionInfo>> GroupFunctionsByClass(IEnumerable<
 {
     var groups = new Dictionary<string, List<FunctionInfo>>();
 
-    foreach (var func in functions)
+    foreach (FunctionInfo func in functions)
     {
         var className = GetFunctionClass(func);
 
@@ -218,13 +222,4 @@ static string GetFunctionClass(FunctionInfo func)
 
     // Default to ImGui
     return "ImGui";
-}
-
-static string GetSafeClassName(string className)
-{
-    // Remove Im prefix for cleaner file names, but keep it for ImGui
-    if (className == "ImGui")
-        return "";
-
-    return className;
 }

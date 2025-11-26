@@ -35,9 +35,9 @@ public sealed class EnumGenerator
             .Where(e => !e.IsInternal && !e.IsCount)
             .ToList();
 
-        for (int i = 0; i < elements.Count; i++)
+        for (var i = 0; i < elements.Count; i++)
         {
-            var element = elements[i];
+            EnumElement element = elements[i];
             var elementName = NamingConventions.CleanEnumElementName(enumInfo.Name, element.Name);
 
             // Write element comment inline

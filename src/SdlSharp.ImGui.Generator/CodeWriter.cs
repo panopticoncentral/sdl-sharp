@@ -21,7 +21,7 @@ public sealed class CodeWriter
             return;
         }
 
-        for (int i = 0; i < _indentLevel; i++)
+        for (var i = 0; i < _indentLevel; i++)
             _sb.Append(IndentString);
 
         _sb.AppendLine(line);
@@ -116,6 +116,7 @@ public sealed class CodeWriter
         {
             AppendLine($"/// {EscapeXml(line)}");
         }
+
         AppendLine("/// </summary>");
     }
 

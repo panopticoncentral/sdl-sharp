@@ -27,7 +27,7 @@ public sealed class FunctionGenerator
         writer.AppendLine("using System.Runtime.InteropServices;");
 
         // Add static using directives for SDL modules (types are nested in module classes)
-        var sdlModules = TypeMapper.GetSdlModulesUsedByFunctions(functionList);
+        HashSet<string> sdlModules = TypeMapper.GetSdlModulesUsedByFunctions(functionList);
         foreach (var module in sdlModules.OrderBy(m => m))
         {
             writer.AppendLine($"using static Sdl3Sharp.Native.{module};");
@@ -46,9 +46,9 @@ public sealed class FunctionGenerator
         functionList = [.. functionList.OrderBy(f => f.Name)];
 
         // Group by category based on comments or naming
-        var groups = GroupFunctions(functionList);
+        Dictionary<string, List<FunctionInfo>> groups = GroupFunctions(functionList);
 
-        foreach (var group in groups)
+        foreach (KeyValuePair<string, List<FunctionInfo>> group in groups)
         {
             if (!string.IsNullOrEmpty(group.Key))
             {
@@ -56,7 +56,7 @@ public sealed class FunctionGenerator
                 writer.AppendLine();
             }
 
-            foreach (var func in group.Value)
+            foreach (FunctionInfo func in group.Value)
             {
                 GenerateFunction(writer, func);
                 writer.AppendLine();
@@ -77,9 +77,9 @@ public sealed class FunctionGenerator
     private static Dictionary<string, List<FunctionInfo>> GroupFunctions(List<FunctionInfo> functions)
     {
         var groups = new Dictionary<string, List<FunctionInfo>>();
-        string currentCategory = "";
+        var currentCategory = "";
 
-        foreach (var func in functions)
+        foreach (FunctionInfo func in functions)
         {
             // Check for category comment
             if (func.Comments?.Preceding != null)
@@ -147,7 +147,7 @@ public sealed class FunctionGenerator
     {
         var parts = new List<string>();
 
-        foreach (var arg in arguments)
+        foreach (ArgumentInfo arg in arguments)
         {
             if (arg.IsVarargs)
                 continue; // Skip varargs
@@ -186,7 +186,7 @@ public sealed class FunctionGenerator
         if (returnType?.Description == null)
             return null;
 
-        var desc = returnType.Description;
+        TypeDescriptionDetail desc = returnType.Description;
 
         // bool needs marshaling
         if (desc.Kind == "Builtin" && desc.BuiltinType == "bool")

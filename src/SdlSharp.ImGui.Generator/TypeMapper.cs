@@ -151,13 +151,13 @@ public sealed class TypeMapper
     public void Initialize(DearBindingsRoot root)
     {
         // Collect by-value structs
-        foreach (var s in root.Structs.Where(s => !s.ForwardDeclaration && s.ByValue))
+        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && s.ByValue))
         {
             _byValueStructs.Add(s.Name);
         }
 
         // Collect opaque/reference structs
-        foreach (var s in root.Structs.Where(s => !s.ForwardDeclaration && !s.ByValue))
+        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.ByValue))
         {
             _opaqueStructs.Add(s.Name);
         }
@@ -169,7 +169,7 @@ public sealed class TypeMapper
         }
 
         // Collect enums
-        foreach (var e in root.Enums)
+        foreach (EnumInfo e in root.Enums)
         {
             _enumTypes.Add(e.Name);
             // Also add without trailing underscore (ImGuiWindowFlags_ -> ImGuiWindowFlags)
@@ -180,7 +180,7 @@ public sealed class TypeMapper
         }
 
         // Collect typedefs
-        foreach (var t in root.Typedefs)
+        foreach (TypedefInfo t in root.Typedefs)
         {
             if (t.Type?.Description != null)
             {
@@ -237,7 +237,7 @@ public sealed class TypeMapper
             return true;
 
         // Check arguments
-        foreach (var arg in func.Arguments)
+        foreach (ArgumentInfo arg in func.Arguments)
         {
             if (UsesSdlNativeTypes(arg.Type))
                 return true;
@@ -251,7 +251,7 @@ public sealed class TypeMapper
     /// </summary>
     public static bool StructUsesSdlNativeTypes(StructInfo structInfo)
     {
-        foreach (var field in structInfo.Fields)
+        foreach (FieldInfo field in structInfo.Fields)
         {
             if (UsesSdlNativeTypes(field.Type))
                 return true;
@@ -286,7 +286,7 @@ public sealed class TypeMapper
     {
         var modules = new HashSet<string>();
 
-        foreach (var field in structInfo.Fields)
+        foreach (FieldInfo field in structInfo.Fields)
         {
             CollectSdlModulesFromType(field.Type, modules);
         }
@@ -357,7 +357,7 @@ public sealed class TypeMapper
             return true;
 
         // Check arguments
-        foreach (var arg in func.Arguments)
+        foreach (ArgumentInfo arg in func.Arguments)
         {
             if (HasUnsupportedType(arg.Type))
                 return true;
@@ -425,7 +425,7 @@ public sealed class TypeMapper
 
     private string MapPointerType(TypeDescriptionDetail desc, bool forParameter, bool forReturn)
     {
-        var innerType = desc.InnerType;
+        TypeDescriptionDetail? innerType = desc.InnerType;
         if (innerType == null)
             return "nint";
 
@@ -505,7 +505,7 @@ public sealed class TypeMapper
     private string MapArrayType(TypeDescriptionDetail desc)
     {
         // Fixed-size arrays in structs - we'll handle these specially
-        var innerType = desc.InnerType;
+        TypeDescriptionDetail? innerType = desc.InnerType;
         if (innerType == null)
             return "nint";
 
@@ -524,7 +524,7 @@ public sealed class TypeMapper
         if (type?.Description == null)
             return null;
 
-        var desc = type.Description;
+        TypeDescriptionDetail desc = type.Description;
 
         // bool needs MarshalAs for LibraryImport
         if (desc.Kind == "Builtin" && desc.BuiltinType == "bool")
@@ -559,7 +559,7 @@ public sealed class TypeMapper
         if (type?.Description == null)
             return false;
 
-        var desc = type.Description;
+        TypeDescriptionDetail desc = type.Description;
 
         // Instance pointers are passed as-is
         if (arg.IsInstancePointer)

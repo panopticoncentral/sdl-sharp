@@ -1,3 +1,4 @@
+
 namespace SdlSharp.ImGui.Generator;
 
 /// <summary>
@@ -20,7 +21,7 @@ public sealed class StructGenerator
         writer.AppendLine("using System.Runtime.InteropServices;");
 
         // Add static using directives for SDL modules (types are nested in module classes)
-        var sdlModules = TypeMapper.GetSdlModulesUsedByStruct(structInfo);
+        HashSet<string> sdlModules = TypeMapper.GetSdlModulesUsedByStruct(structInfo);
         foreach (var module in sdlModules.OrderBy(m => m))
         {
             writer.AppendLine($"using static Sdl3Sharp.Native.{module};");
@@ -54,9 +55,9 @@ public sealed class StructGenerator
             .Where(f => !f.IsInternal && !f.IsAnonymous)
             .ToList();
 
-        for (int i = 0; i < fields.Count; i++)
+        for (var i = 0; i < fields.Count; i++)
         {
-            var field = fields[i];
+            FieldInfo field = fields[i];
             GenerateField(writer, field, structInfo);
 
             if (i < fields.Count - 1)
@@ -158,7 +159,7 @@ public sealed class StructGenerator
 
     private bool NeedsUnsafeContext(StructInfo structInfo)
     {
-        foreach (var field in structInfo.Fields)
+        foreach (FieldInfo field in structInfo.Fields)
         {
             // Fixed-size arrays require unsafe
             if (field.IsArray && field.Type?.Description?.Kind == "Array")
