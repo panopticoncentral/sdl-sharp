@@ -68,7 +68,6 @@ public sealed class TypeMapper
         ["size_t"] = "nuint",
         ["va_list"] = "nint", // Will be filtered out at function level
         ["ImStr"] = "nint",   // Will be filtered out at function level
-        ["SDL_Event"] = "nint",
         // Additional missing typedefs
         ["ImGuiSelectionUserData"] = "long",  // typedef ImS64
         ["ImGuiKeyData"] = "nint",  // Opaque struct
@@ -107,13 +106,47 @@ public sealed class TypeMapper
         "ImGuiSelectionRequest",
         "ImGuiSelectionBasicStorage",
         "ImGuiSelectionExternalStorage",
-        // SDL types
-        "SDL_Window",
-        "SDL_Renderer",
-        "SDL_Gamepad",
-        "SDL_GPUDevice",
-        "SDL_GPUTexture",
     ];
+
+    /// <summary>
+    /// SDL types mapped to their containing module class in Sdl3Sharp.Native.
+    /// The types are nested within module classes (e.g., SDL_Window is Video.SDL_Window).
+    /// </summary>
+    private static readonly Dictionary<string, string> SdlTypeToModule = new()
+    {
+        // Video module types
+        ["SDL_Window"] = "Video",
+        // Render module types
+        ["SDL_Renderer"] = "Render",
+        ["SDL_Texture"] = "Render",
+        // Events module types
+        ["SDL_Event"] = "Events",
+        // Gamepad module types
+        ["SDL_Gamepad"] = "Gamepad",
+        // GPU module types
+        ["SDL_GPUDevice"] = "Gpu",
+        ["SDL_GPUTexture"] = "Gpu",
+        ["SDL_GPUSampler"] = "Gpu",
+        ["SDL_GPUCommandBuffer"] = "Gpu",
+        ["SDL_GPURenderPass"] = "Gpu",
+        ["SDL_GPUGraphicsPipeline"] = "Gpu",
+        // GPU enum types
+        ["SDL_GPUTextureFormat"] = "Gpu",
+        ["SDL_GPUSampleCount"] = "Gpu",
+        ["SDL_GPUSwapchainComposition"] = "Gpu",
+        ["SDL_GPUPresentMode"] = "Gpu",
+    };
+
+    /// <summary>
+    /// Checks if a type name is an SDL type from Sdl3Sharp.Native.
+    /// </summary>
+    public static bool IsSdlType(string typeName) => SdlTypeToModule.ContainsKey(typeName);
+
+    /// <summary>
+    /// Gets the module class name for an SDL type.
+    /// </summary>
+    public static string? GetSdlTypeModule(string typeName) =>
+        SdlTypeToModule.TryGetValue(typeName, out var module) ? module : null;
 
     public void Initialize(DearBindingsRoot root)
     {
@@ -159,6 +192,131 @@ public sealed class TypeMapper
     public bool IsByValueStruct(string typeName) => _byValueStructs.Contains(typeName);
     public bool IsOpaqueStruct(string typeName) => _opaqueStructs.Contains(typeName) || OpaqueHandleTypes.Contains(typeName);
     public bool IsEnumType(string typeName) => _enumTypes.Contains(typeName) || _enumTypes.Contains(typeName + "_");
+
+    /// <summary>
+    /// Checks if a type is an SDL native type from Sdl3Sharp.Native.
+    /// </summary>
+    public static bool IsSdlNativeType(string typeName) => SdlTypeToModule.ContainsKey(typeName);
+
+    /// <summary>
+    /// Checks if a type description uses any SDL native types.
+    /// </summary>
+    public static bool UsesSdlNativeTypes(TypeDescription? type)
+    {
+        if (type?.Description == null)
+            return false;
+
+        return UsesSdlNativeTypesDetail(type.Description);
+    }
+
+    private static bool UsesSdlNativeTypesDetail(TypeDescriptionDetail desc)
+    {
+        // Check direct user type
+        if (desc.Kind == "User" && desc.Name != null)
+        {
+            if (SdlTypeToModule.ContainsKey(desc.Name))
+                return true;
+        }
+
+        // Check inner type for pointers/arrays
+        if (desc.InnerType != null)
+        {
+            return UsesSdlNativeTypesDetail(desc.InnerType);
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if a function uses any SDL native types in its signature.
+    /// </summary>
+    public static bool FunctionUsesSdlNativeTypes(FunctionInfo func)
+    {
+        // Check return type
+        if (UsesSdlNativeTypes(func.ReturnType))
+            return true;
+
+        // Check arguments
+        foreach (var arg in func.Arguments)
+        {
+            if (UsesSdlNativeTypes(arg.Type))
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if a struct uses any SDL native types in its fields.
+    /// </summary>
+    public static bool StructUsesSdlNativeTypes(StructInfo structInfo)
+    {
+        foreach (var field in structInfo.Fields)
+        {
+            if (UsesSdlNativeTypes(field.Type))
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Gets all SDL module names used by the functions.
+    /// </summary>
+    public static HashSet<string> GetSdlModulesUsedByFunctions(IEnumerable<FunctionInfo> functions)
+    {
+        var modules = new HashSet<string>();
+
+        foreach (FunctionInfo func in functions)
+        {
+            CollectSdlModulesFromType(func.ReturnType, modules);
+            foreach (ArgumentInfo arg in func.Arguments)
+            {
+                CollectSdlModulesFromType(arg.Type, modules);
+            }
+        }
+
+        return modules;
+    }
+
+    /// <summary>
+    /// Gets all SDL module names used by a struct.
+    /// </summary>
+    public static HashSet<string> GetSdlModulesUsedByStruct(StructInfo structInfo)
+    {
+        var modules = new HashSet<string>();
+
+        foreach (var field in structInfo.Fields)
+        {
+            CollectSdlModulesFromType(field.Type, modules);
+        }
+
+        return modules;
+    }
+
+    private static void CollectSdlModulesFromType(TypeDescription? type, HashSet<string> modules)
+    {
+        if (type?.Description == null)
+            return;
+
+        CollectSdlModulesFromTypeDetail(type.Description, modules);
+    }
+
+    private static void CollectSdlModulesFromTypeDetail(TypeDescriptionDetail desc, HashSet<string> modules)
+    {
+        if (desc.Kind == "User" && desc.Name != null)
+        {
+            if (SdlTypeToModule.TryGetValue(desc.Name, out var module))
+            {
+                modules.Add(module);
+            }
+        }
+
+        if (desc.InnerType != null)
+        {
+            CollectSdlModulesFromTypeDetail(desc.InnerType, modules);
+        }
+    }
 
     /// <summary>
     /// Checks if a type contains unsupported types (va_list, ImStr, etc.)
@@ -253,6 +411,10 @@ public sealed class TypeMapper
         if (_byValueStructs.Contains(name))
             return name;
 
+        // Check if it's an SDL type from Sdl3Sharp.Native - keep the type name
+        if (SdlTypeToModule.ContainsKey(name))
+            return name;
+
         // Check if it's an opaque struct - use nint as handle
         if (_opaqueStructs.Contains(name) || OpaqueHandleTypes.Contains(name))
             return "nint";
@@ -311,6 +473,12 @@ public sealed class TypeMapper
 
             // By-value struct pointer -> ref or pointer
             if (_byValueStructs.Contains(userName))
+            {
+                return $"{userName}*";
+            }
+
+            // SDL type pointer -> use the actual SDL type pointer for type safety
+            if (SdlTypeToModule.ContainsKey(userName))
             {
                 return $"{userName}*";
             }

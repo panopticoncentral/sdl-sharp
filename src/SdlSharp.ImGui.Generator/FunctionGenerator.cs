@@ -19,10 +19,20 @@ public sealed class FunctionGenerator
     /// </summary>
     public string GenerateForClass(IEnumerable<FunctionInfo> functions, string namespaceName, string className)
     {
+        var functionList = functions.ToList();
+
         var writer = new CodeWriter();
         writer.WriteFileHeader();
 
         writer.AppendLine("using System.Runtime.InteropServices;");
+
+        // Add static using directives for SDL modules (types are nested in module classes)
+        var sdlModules = TypeMapper.GetSdlModulesUsedByFunctions(functionList);
+        foreach (var module in sdlModules.OrderBy(m => m))
+        {
+            writer.AppendLine($"using static Sdl3Sharp.Native.{module};");
+        }
+
         writer.AppendLine();
         writer.AppendLine($"namespace {namespaceName};");
         writer.AppendLine();
@@ -33,7 +43,7 @@ public sealed class FunctionGenerator
         writer.AppendLine($"private const string DllName = \"{_dllName}\";");
         writer.AppendLine();
 
-        var functionList = functions.OrderBy(f => f.Name).ToList();
+        functionList = [.. functionList.OrderBy(f => f.Name)];
 
         // Group by category based on comments or naming
         var groups = GroupFunctions(functionList);

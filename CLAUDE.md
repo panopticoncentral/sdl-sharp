@@ -5,6 +5,11 @@ This project provides bindings for the Simple DirectMedia Layer 3 (SDL3) library
 
 The solution also contains bindings for the Simple DirectMedia Layer 2 (SDL2) library. These can be used as guidelines for writing SDL3 bindings, but more modern interop features should be preferred.
 
+The solution includes Dear ImGui bindings that integrate with Sdl3Sharp:
+- `SdlSharp.ImGui.Native` - A native C++ library that compiles Dear ImGui with dear_bindings to expose a C-compatible API. Includes SDL3 backends for input handling (`imgui_impl_sdl3`), SDL_Renderer (`imgui_impl_sdlrenderer3`), and SDL_GPU (`imgui_impl_sdlgpu3`).
+- `SdlSharp.ImGui` - C# bindings that wrap the native ImGui library for use with Sdl3Sharp.
+- `SdlSharp.ImGui.Generator` - A code generator that produces the C# bindings from the dear_bindings JSON metadata files.
+
 ## SDL3 Headers and Documentation
 
 The current SDL3 headers can be found in the root of the solution, in a directory that starts with `SDL3-`, in the `include/SDL3` subdirectory. SDL3 documentation can be found at https://wiki.libsdl.org/SDL3/FrontPage.

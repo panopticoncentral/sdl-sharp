@@ -18,6 +18,14 @@ public sealed class StructGenerator
         writer.WriteFileHeader();
 
         writer.AppendLine("using System.Runtime.InteropServices;");
+
+        // Add static using directives for SDL modules (types are nested in module classes)
+        var sdlModules = TypeMapper.GetSdlModulesUsedByStruct(structInfo);
+        foreach (var module in sdlModules.OrderBy(m => m))
+        {
+            writer.AppendLine($"using static Sdl3Sharp.Native.{module};");
+        }
+
         writer.AppendLine();
         writer.AppendLine($"namespace {namespaceName};");
         writer.AppendLine();

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices.Marshalling;
 
 using static Sdl3Sharp.Native.BlendMode;
 using static Sdl3Sharp.Native.Common;
+using static Sdl3Sharp.Native.Events;
 using static Sdl3Sharp.Native.Pixels;
 using static Sdl3Sharp.Native.Properties;
 using static Sdl3Sharp.Native.Rect;
@@ -116,10 +117,7 @@ public static unsafe partial class Render
         public int refcount;
     }
 
-    /// <summary>
-    /// SDL event structure (opaque).
-    /// </summary>
-    public struct SDL_Event { }
+    // SDL_Event is defined in Events.cs
 
     /// <summary>
     /// Property name: the name of the rendering driver for renderer creation.
