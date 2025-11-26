@@ -40,6 +40,12 @@
     <Filter Include="Header Files\sdl3">
       <UniqueIdentifier>{4181987b-32e5-4a47-a2ee-c169b51e19c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Spec Files">
+      <UniqueIdentifier>{bddf9186-b183-47fb-b678-0ab77953197d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Spec Files\backends">
+      <UniqueIdentifier>{404b580d-75f7-4c3c-9c51-f9d66ae76e7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -389,5 +395,49 @@
     <ClCompile Include="imgui\backends\imgui_impl_sdlrenderer3.cpp">
       <Filter>Source Files\imgui\backends</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dear_bindings\dcimgui.json">
+      <Filter>Spec Files</Filter>
+    </None>
+    <None Include="dear_bindings\dcimgui_imconfig.json">
+      <Filter>Spec Files</Filter>
+    </None>
+    <None Include="dear_bindings\dcimgui_internal.json">
+      <Filter>Spec Files</Filter>
+    </None>
+    <None Include="dear_bindings\dcimgui_internal_imconfig.json">
+      <Filter>Spec Files</Filter>
+    </None>
+    <None Include="dear_bindings\dcimgui_internal_imgui.json">
+      <Filter>Spec Files</Filter>
+    </None>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdl3.json">
+      <Filter>Spec Files\backends</Filter>
+    </None>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdl3_imconfig.json">
+      <Filter>Spec Files\backends</Filter>
+    </None>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdl3_imgui.json">
+      <Filter>Spec Files\backends</Filter>
+    </None>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlgpu3.json">
+      <Filter>Spec Files\backends</Filter>
+    </None>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlgpu3_imconfig.json">
+      <Filter>Spec Files\backends</Filter>
+    </None>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlgpu3_imgui.json">
+      <Filter>Spec Files\backends</Filter>
+    </None>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlrenderer3.json">
+      <Filter>Spec Files\backends</Filter>
+    </None>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlrenderer3_imconfig.json">
+      <Filter>Spec Files\backends</Filter>
+    </None>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlrenderer3_imgui.json">
+      <Filter>Spec Files\backends</Filter>
+    </None>
   </ItemGroup>
 </Project>

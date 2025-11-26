@@ -265,6 +265,22 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="dear_bindings\backends\dcimgui_impl_sdl3.json" />
+    <None Include="dear_bindings\backends\dcimgui_impl_sdl3_imconfig.json" />
+    <None Include="dear_bindings\backends\dcimgui_impl_sdl3_imgui.json" />
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlgpu3.json" />
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlgpu3_imconfig.json" />
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlgpu3_imgui.json" />
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlrenderer3.json" />
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlrenderer3_imconfig.json" />
+    <None Include="dear_bindings\backends\dcimgui_impl_sdlrenderer3_imgui.json" />
+    <None Include="dear_bindings\dcimgui.json" />
+    <None Include="dear_bindings\dcimgui_imconfig.json" />
+    <None Include="dear_bindings\dcimgui_internal.json" />
+    <None Include="dear_bindings\dcimgui_internal_imconfig.json" />
+    <None Include="dear_bindings\dcimgui_internal_imgui.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
