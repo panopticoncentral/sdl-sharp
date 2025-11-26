@@ -1,4 +1,9 @@
 <Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
   <Folder Name="/Samples/" />
   <Folder Name="/Samples/Audio/">
     <Project Path="src/Samples/Audio/Convert/Convert.csproj" />
@@ -31,5 +36,8 @@
     <Project Path="src/Tutorial/08_Text/08_Text.csproj" />
   </Folder>
   <Project Path="src/Sdl3Sharp/Sdl3Sharp.csproj" />
+  <Project Path="src/SdlSharp.ImGui.Generator/SdlSharp.ImGui.Generator.csproj" />
+  <Project Path="src/SdlSharp.ImGui.Native/SdlSharp.ImGui.Native.vcxproj" Id="bf862498-3b42-420b-bccd-02d42f2083af" />
+  <Project Path="src/SdlSharp.ImGui/SdlSharp.ImGui.csproj" />
   <Project Path="src/SdlSharp/SdlSharp.csproj" />
 </Solution>

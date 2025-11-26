@@ -1,0 +1,661 @@
+{
+    "defines": [],
+    "enums": [],
+    "typedefs": [
+        {
+            "name": "ImDrawIdx",
+            "type": {
+                "declaration": "unsigned short",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "unsigned_short"
+                }
+            },
+            "comments": {
+                "attached": "// Default: 16-bit (for maximum compatibility with renderer backends)"
+            },
+            "conditionals": [
+                {
+                    "condition": "ifndef",
+                    "expression": "ImDrawIdx"
+                }
+            ],
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h"
+            }
+        }
+    ],
+    "structs": [
+        {
+            "name": "ImGui_ImplSDLGPU3_InitInfo",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_InitInfo",
+            "kind": "struct",
+            "by_value": false,
+            "forward_declaration": false,
+            "is_anonymous": false,
+            "fields": [
+                {
+                    "name": "Device",
+                    "is_array": false,
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "SDL_GPUDevice*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPUDevice"
+                            }
+                        }
+                    },
+                    "default_value": "nullptr",
+                    "is_internal": false,
+                    "source_location": {
+                        "filename": "imgui_impl_sdlgpu3.h",
+                        "line": 33
+                    }
+                },
+                {
+                    "name": "ColorTargetFormat",
+                    "is_array": false,
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "SDL_GPUTextureFormat",
+                        "description": {
+                            "kind": "User",
+                            "name": "SDL_GPUTextureFormat"
+                        }
+                    },
+                    "default_value": "SDL_GPU_TEXTUREFORMAT_INVALID",
+                    "is_internal": false,
+                    "source_location": {
+                        "filename": "imgui_impl_sdlgpu3.h",
+                        "line": 34
+                    }
+                },
+                {
+                    "name": "MSAASamples",
+                    "is_array": false,
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "SDL_GPUSampleCount",
+                        "description": {
+                            "kind": "User",
+                            "name": "SDL_GPUSampleCount"
+                        }
+                    },
+                    "default_value": "SDL_GPU_SAMPLECOUNT_1",
+                    "is_internal": false,
+                    "source_location": {
+                        "filename": "imgui_impl_sdlgpu3.h",
+                        "line": 35
+                    }
+                },
+                {
+                    "name": "SwapchainComposition",
+                    "is_array": false,
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "SDL_GPUSwapchainComposition",
+                        "description": {
+                            "kind": "User",
+                            "name": "SDL_GPUSwapchainComposition"
+                        }
+                    },
+                    "default_value": "SDL_GPU_SWAPCHAINCOMPOSITION_SDR",
+                    "comments": {
+                        "attached": "// Only used in multi-viewports mode."
+                    },
+                    "is_internal": false,
+                    "source_location": {
+                        "filename": "imgui_impl_sdlgpu3.h",
+                        "line": 36
+                    }
+                },
+                {
+                    "name": "PresentMode",
+                    "is_array": false,
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "SDL_GPUPresentMode",
+                        "description": {
+                            "kind": "User",
+                            "name": "SDL_GPUPresentMode"
+                        }
+                    },
+                    "default_value": "SDL_GPU_PRESENTMODE_VSYNC",
+                    "comments": {
+                        "attached": "// Only used in multi-viewports mode."
+                    },
+                    "is_internal": false,
+                    "source_location": {
+                        "filename": "imgui_impl_sdlgpu3.h",
+                        "line": 37
+                    }
+                }
+            ],
+            "comments": {
+                "preceding": [
+                    "// - Remember to set ColorTargetFormat to the correct format. If you're rendering to the swapchain, call SDL_GetGPUSwapchainTextureFormat() to query the right value"
+                ]
+            },
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 31
+            }
+        },
+        {
+            "name": "ImDrawData",
+            "original_fully_qualified_name": "ImDrawData",
+            "kind": "struct",
+            "by_value": false,
+            "forward_declaration": true,
+            "is_anonymous": false,
+            "fields": [],
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 1
+            }
+        },
+        {
+            "name": "ImGui_ImplSDLGPU3_RenderState",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_RenderState",
+            "kind": "struct",
+            "by_value": false,
+            "forward_declaration": false,
+            "is_anonymous": false,
+            "fields": [
+                {
+                    "name": "Device",
+                    "is_array": false,
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "SDL_GPUDevice*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPUDevice"
+                            }
+                        }
+                    },
+                    "is_internal": false,
+                    "source_location": {
+                        "filename": "imgui_impl_sdlgpu3.h",
+                        "line": 59
+                    }
+                },
+                {
+                    "name": "SamplerDefault",
+                    "is_array": false,
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "SDL_GPUSampler*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPUSampler"
+                            }
+                        }
+                    },
+                    "comments": {
+                        "attached": "// Default sampler (bilinear filtering)"
+                    },
+                    "is_internal": false,
+                    "source_location": {
+                        "filename": "imgui_impl_sdlgpu3.h",
+                        "line": 60
+                    }
+                },
+                {
+                    "name": "SamplerCurrent",
+                    "is_array": false,
+                    "is_anonymous": false,
+                    "type": {
+                        "declaration": "SDL_GPUSampler*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPUSampler"
+                            }
+                        }
+                    },
+                    "comments": {
+                        "attached": "// Current sampler (may be changed by callback)"
+                    },
+                    "is_internal": false,
+                    "source_location": {
+                        "filename": "imgui_impl_sdlgpu3.h",
+                        "line": 61
+                    }
+                }
+            ],
+            "comments": {
+                "preceding": [
+                    "// [BETA] Selected render state data shared with callbacks.",
+                    "// This is temporarily stored in GetPlatformIO().Renderer_RenderState during the ImGui_ImplSDLGPU3_RenderDrawData() call.",
+                    "// (Please open an issue if you feel you need access to more data)"
+                ]
+            },
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 57
+            }
+        }
+    ],
+    "functions": [
+        {
+            "name": "cImGui_ImplSDLGPU3_Init",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_Init",
+            "return_type": {
+                "declaration": "bool",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "bool"
+                }
+            },
+            "arguments": [
+                {
+                    "name": "info",
+                    "type": {
+                        "declaration": "ImGui_ImplSDLGPU3_InitInfo*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "ImGui_ImplSDLGPU3_InitInfo"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "is_unformatted_helper": false,
+            "is_static": false,
+            "comments": {
+                "preceding": [
+                    "// Follow \"Getting Started\" link and check examples/ folder to learn about using backends!"
+                ]
+            },
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 41
+            }
+        },
+        {
+            "name": "cImGui_ImplSDLGPU3_Shutdown",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_Shutdown",
+            "return_type": {
+                "declaration": "void",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "void"
+                }
+            },
+            "arguments": [],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "is_unformatted_helper": false,
+            "is_static": false,
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 42
+            }
+        },
+        {
+            "name": "cImGui_ImplSDLGPU3_NewFrame",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_NewFrame",
+            "return_type": {
+                "declaration": "void",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "void"
+                }
+            },
+            "arguments": [],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "is_unformatted_helper": false,
+            "is_static": false,
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 43
+            }
+        },
+        {
+            "name": "cImGui_ImplSDLGPU3_PrepareDrawData",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_PrepareDrawData",
+            "return_type": {
+                "declaration": "void",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "void"
+                }
+            },
+            "arguments": [
+                {
+                    "name": "draw_data",
+                    "type": {
+                        "declaration": "ImDrawData*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "ImDrawData"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                },
+                {
+                    "name": "command_buffer",
+                    "type": {
+                        "declaration": "SDL_GPUCommandBuffer*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPUCommandBuffer"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "is_unformatted_helper": false,
+            "is_static": false,
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 44
+            }
+        },
+        {
+            "name": "cImGui_ImplSDLGPU3_RenderDrawData",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_RenderDrawData",
+            "return_type": {
+                "declaration": "void",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "void"
+                }
+            },
+            "arguments": [
+                {
+                    "name": "draw_data",
+                    "type": {
+                        "declaration": "ImDrawData*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "ImDrawData"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                },
+                {
+                    "name": "command_buffer",
+                    "type": {
+                        "declaration": "SDL_GPUCommandBuffer*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPUCommandBuffer"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                },
+                {
+                    "name": "render_pass",
+                    "type": {
+                        "declaration": "SDL_GPURenderPass*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPURenderPass"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                }
+            ],
+            "is_default_argument_helper": true,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "is_unformatted_helper": false,
+            "is_static": false,
+            "comments": {
+                "attached": "// Implied pipeline = nullptr"
+            },
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 45
+            }
+        },
+        {
+            "name": "cImGui_ImplSDLGPU3_RenderDrawDataEx",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_RenderDrawData",
+            "return_type": {
+                "declaration": "void",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "void"
+                }
+            },
+            "arguments": [
+                {
+                    "name": "draw_data",
+                    "type": {
+                        "declaration": "ImDrawData*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "ImDrawData"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                },
+                {
+                    "name": "command_buffer",
+                    "type": {
+                        "declaration": "SDL_GPUCommandBuffer*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPUCommandBuffer"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                },
+                {
+                    "name": "render_pass",
+                    "type": {
+                        "declaration": "SDL_GPURenderPass*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPURenderPass"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                },
+                {
+                    "name": "pipeline",
+                    "type": {
+                        "declaration": "SDL_GPUGraphicsPipeline*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "SDL_GPUGraphicsPipeline"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "default_value": "nullptr",
+                    "is_instance_pointer": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "is_unformatted_helper": false,
+            "is_static": false,
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 45
+            }
+        },
+        {
+            "name": "cImGui_ImplSDLGPU3_CreateDeviceObjects",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_CreateDeviceObjects",
+            "return_type": {
+                "declaration": "void",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "void"
+                }
+            },
+            "arguments": [],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "is_unformatted_helper": false,
+            "is_static": false,
+            "comments": {
+                "preceding": [
+                    "// Use if you want to reset your rendering device without losing Dear ImGui state."
+                ]
+            },
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 48
+            }
+        },
+        {
+            "name": "cImGui_ImplSDLGPU3_DestroyDeviceObjects",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_DestroyDeviceObjects",
+            "return_type": {
+                "declaration": "void",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "void"
+                }
+            },
+            "arguments": [],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "is_unformatted_helper": false,
+            "is_static": false,
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 49
+            }
+        },
+        {
+            "name": "cImGui_ImplSDLGPU3_UpdateTexture",
+            "original_fully_qualified_name": "ImGui_ImplSDLGPU3_UpdateTexture",
+            "return_type": {
+                "declaration": "void",
+                "description": {
+                    "kind": "Builtin",
+                    "builtin_type": "void"
+                }
+            },
+            "arguments": [
+                {
+                    "name": "tex",
+                    "type": {
+                        "declaration": "ImTextureData*",
+                        "description": {
+                            "kind": "Pointer",
+                            "inner_type": {
+                                "kind": "User",
+                                "name": "ImTextureData"
+                            }
+                        }
+                    },
+                    "is_array": false,
+                    "is_varargs": false,
+                    "is_instance_pointer": false
+                }
+            ],
+            "is_default_argument_helper": false,
+            "is_manual_helper": false,
+            "is_imstr_helper": false,
+            "has_imstr_helper": false,
+            "is_unformatted_helper": false,
+            "is_static": false,
+            "comments": {
+                "preceding": [
+                    "// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually."
+                ]
+            },
+            "is_internal": false,
+            "source_location": {
+                "filename": "imgui_impl_sdlgpu3.h",
+                "line": 52
+            }
+        }
+    ]
+}
