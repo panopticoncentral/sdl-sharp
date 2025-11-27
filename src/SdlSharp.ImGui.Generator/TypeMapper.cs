@@ -36,6 +36,9 @@ public sealed class TypeMapper
 
     /// <summary>
     /// Known ImGui typedefs that map to specific C# types.
+    /// Typedefs that should become wrapper structs are not included here;
+    /// they are handled by <see cref="TypedefGenerator.WrapperTypedefs"/> and
+    /// <see cref="TypedefGenerator.CallbackTypedefs"/>.
     /// </summary>
     private static readonly Dictionary<string, string> KnownTypedefs = new()
     {
@@ -50,27 +53,9 @@ public sealed class TypeMapper
         ["ImWchar16"] = "ushort",
         ["ImWchar32"] = "uint",
         ["ImWchar"] = "ushort",     // Default is 16-bit
-        ["ImDrawIdx"] = "ushort",
-        ["ImGuiID"] = "uint",
-        ["ImTextureID"] = "nint",
-        ["ImGuiKeyChord"] = "int",
-        ["ImPoolIdx"] = "int",
-        ["ImFileHandle"] = "nint",
-        ["ImGuiMemAllocFunc"] = "nint",
-        ["ImGuiMemFreeFunc"] = "nint",
-        // Additional typedefs
-        ["ImFontAtlasRectId"] = "int",
-        ["ImDrawCallback"] = "nint",
-        ["ImGuiInputTextCallback"] = "nint",
-        ["ImGuiSizeCallback"] = "nint",
-        ["ImGuiContextHookCallback"] = "nint",
-        ["ImGuiErrorCallback"] = "nint",
         ["size_t"] = "nuint",
         ["va_list"] = "nint", // Will be filtered out at function level
         ["ImStr"] = "nint",   // Will be filtered out at function level
-        // Additional missing typedefs
-        ["ImGuiSelectionUserData"] = "long",  // typedef ImS64
-        ["ImGuiKeyData"] = "nint",  // Opaque struct
     };
 
     /// <summary>
@@ -81,32 +66,6 @@ public sealed class TypeMapper
         "va_list",
         "ImColor",
         "ImStr",
-    ];
-
-    /// <summary>
-    /// Types that should be treated as opaque handles (pointers).
-    /// </summary>
-    private static readonly HashSet<string> OpaqueHandleTypes =
-    [
-        "ImGuiContext",
-        "ImFontAtlas",
-        "ImFont",
-        "ImDrawList",
-        "ImDrawListSharedData",
-        "ImFontAtlasBuilder",
-        "ImFontLoader",
-        "ImGuiStorage",
-        "ImGuiTextBuffer",
-        "ImGuiListClipper",
-        "ImGuiInputTextCallbackData",
-        "ImGuiPayload",
-        "ImGuiViewport",
-        "ImGuiPlatformIO",
-        "ImGuiPlatformImeData",
-        "ImGuiMultiSelectIO",
-        "ImGuiSelectionRequest",
-        "ImGuiSelectionBasicStorage",
-        "ImGuiSelectionExternalStorage",
     ];
 
     /// <summary>
@@ -153,7 +112,7 @@ public sealed class TypeMapper
         }
 
         // Add known opaque types
-        foreach (var t in OpaqueHandleTypes)
+        foreach (var t in TypedefGenerator.OpaqueHandleTypedefs)
         {
             _ = _opaqueStructs.Add(t);
         }
@@ -336,7 +295,19 @@ public sealed class TypeMapper
 
     private string MapUserType(string name)
     {
-        // Check known typedefs first
+        // Check if it's a wrapper typedef (these become type-safe wrapper structs)
+        if (TypedefGenerator.WrapperTypedefs.ContainsKey(name))
+        {
+            return name;
+        }
+
+        // Check if it's a callback typedef (these become wrapper structs)
+        if (TypedefGenerator.CallbackTypedefs.Contains(name))
+        {
+            return name;
+        }
+
+        // Check known typedefs that map directly to primitives
         if (KnownTypedefs.TryGetValue(name, out var known))
         {
             return known;
@@ -360,8 +331,14 @@ public sealed class TypeMapper
             return name;
         }
 
+        // Check if it's an opaque handle wrapper typedef - return wrapper struct name
+        if (TypedefGenerator.OpaqueHandleTypedefs.Contains(name))
+        {
+            return name;
+        }
+
         // Check if it's an opaque struct - use nint as handle
-        if (_opaqueStructs.Contains(name) || OpaqueHandleTypes.Contains(name))
+        if (_opaqueStructs.Contains(name))
         {
             return "nint";
         }
@@ -410,7 +387,13 @@ public sealed class TypeMapper
         {
             var userName = innerType.Name ?? "";
 
-            // Known typedefs that are pointers
+            // Wrapper typedef pointers
+            if (TypedefGenerator.WrapperTypedefs.ContainsKey(userName))
+            {
+                return $"{userName}*";
+            }
+
+            // Known typedefs that map to primitive pointers
             if (KnownTypedefs.TryGetValue(userName, out var known))
             {
                 return $"{known}*";
@@ -435,8 +418,14 @@ public sealed class TypeMapper
                 return $"{userName}*";
             }
 
+            // Opaque handle wrapper typedef pointer -> return wrapper type (these are already pointers conceptually)
+            if (TypedefGenerator.OpaqueHandleTypedefs.Contains(userName))
+            {
+                return userName;
+            }
+
             // Opaque struct pointer -> nint (it's already a pointer conceptually)
-            if (_opaqueStructs.Contains(userName) || OpaqueHandleTypes.Contains(userName))
+            if (_opaqueStructs.Contains(userName))
             {
                 return "nint";
             }

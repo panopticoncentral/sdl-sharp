@@ -155,6 +155,24 @@ public sealed class TypeDescription
 
     [JsonPropertyName("description")]
     public TypeDescriptionDetail? Description { get; set; }
+
+    [JsonPropertyName("type_details")]
+    public FunctionPointerDetails? TypeDetails { get; set; }
+}
+
+/// <summary>
+/// Details for function pointer typedefs.
+/// </summary>
+public sealed class FunctionPointerDetails
+{
+    [JsonPropertyName("flavour")]
+    public string Flavour { get; set; } = "";
+
+    [JsonPropertyName("return_type")]
+    public TypeDescription? ReturnType { get; set; }
+
+    [JsonPropertyName("arguments")]
+    public List<ArgumentInfo> Arguments { get; set; } = [];
 }
 
 public sealed class TypeDescriptionDetail

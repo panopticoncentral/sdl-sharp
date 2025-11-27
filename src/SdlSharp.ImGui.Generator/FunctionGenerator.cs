@@ -3,16 +3,9 @@ namespace SdlSharp.ImGui.Generator;
 /// <summary>
 /// Generates C# P/Invoke declarations from Dear Bindings function data.
 /// </summary>
-public sealed class FunctionGenerator
+public sealed class FunctionGenerator(TypeMapper typeMapper)
 {
-    private readonly TypeMapper _typeMapper;
-    private readonly string _dllName;
-
-    public FunctionGenerator(TypeMapper typeMapper, string dllName = "SdlSharp.ImGui.Native")
-    {
-        _typeMapper = typeMapper;
-        _dllName = dllName;
-    }
+    private readonly TypeMapper _typeMapper = typeMapper;
 
     /// <summary>
     /// Generates a native methods class for a pre-filtered list of functions.
@@ -40,33 +33,12 @@ public sealed class FunctionGenerator
         writer.AppendLine($"internal static unsafe partial class {className}");
         writer.OpenBrace();
 
-        writer.AppendLine($"private const string DllName = \"{_dllName}\";");
-        writer.AppendLine();
-
         functionList = [.. functionList.OrderBy(f => f.Name)];
 
-        // Group by category based on comments or naming
-        Dictionary<string, List<FunctionInfo>> groups = GroupFunctions(functionList);
-
-        foreach (KeyValuePair<string, List<FunctionInfo>> group in groups)
+        foreach (FunctionInfo func in functionList)
         {
-            if (!string.IsNullOrEmpty(group.Key))
-            {
-                writer.AppendLine($"#region {group.Key}");
-                writer.AppendLine();
-            }
-
-            foreach (FunctionInfo func in group.Value)
-            {
-                GenerateFunction(writer, func);
-                writer.AppendLine();
-            }
-
-            if (!string.IsNullOrEmpty(group.Key))
-            {
-                writer.AppendLine("#endregion");
-                writer.AppendLine();
-            }
+            GenerateFunction(writer, func);
+            writer.AppendLine();
         }
 
         writer.CloseBrace();
@@ -74,46 +46,23 @@ public sealed class FunctionGenerator
         return writer.ToString();
     }
 
-    private static Dictionary<string, List<FunctionInfo>> GroupFunctions(List<FunctionInfo> functions)
-    {
-        var groups = new Dictionary<string, List<FunctionInfo>>();
-        var currentCategory = "";
-
-        foreach (FunctionInfo func in functions)
-        {
-            // Check for category comment
-            if (func.Comments?.Preceding != null)
-            {
-                foreach (var comment in func.Comments.Preceding)
-                {
-                    var trimmed = comment.Trim().TrimStart('/').Trim();
-                    // Category comments are typically short headers
-                    if (trimmed.Length > 0 && trimmed.Length < 60 && !trimmed.Contains('.'))
-                    {
-                        currentCategory = trimmed;
-                        break;
-                    }
-                }
-            }
-
-            if (!groups.ContainsKey(currentCategory))
-            {
-                groups[currentCategory] = [];
-            }
-
-            groups[currentCategory].Add(func);
-        }
-
-        return groups;
-    }
-
     private void GenerateFunction(CodeWriter writer, FunctionInfo func)
     {
         // Write documentation
         writer.WriteDocComment(func.Comments);
 
-        // Generate LibraryImport attribute
-        writer.AppendLine($"[LibraryImport(DllName, EntryPoint = \"{func.Name}\")]");
+        // Build method signature
+        var methodName = GetMethodName(func);
+
+        // Generate LibraryImport attribute (only include EntryPoint if it differs from method name)
+        if (methodName == func.Name)
+        {
+            writer.AppendLine("[LibraryImport(NativeLibrary.Name)]");
+        }
+        else
+        {
+            writer.AppendLine($"[LibraryImport(NativeLibrary.Name, EntryPoint = \"{func.Name}\")]");
+        }
 
         // Check if return type needs marshaling
         var returnMarshal = GetReturnMarshalAttribute(func.ReturnType);
@@ -122,9 +71,7 @@ public sealed class FunctionGenerator
             writer.AppendLine(returnMarshal);
         }
 
-        // Build method signature
         var returnType = _typeMapper.MapType(func.ReturnType, forReturn: true);
-        var methodName = GetMethodName(func);
         var parameters = GenerateParameters(func.Arguments);
 
         writer.AppendLine($"public static partial {returnType} {methodName}({parameters});");

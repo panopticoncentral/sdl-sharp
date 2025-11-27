@@ -1,20 +1,16 @@
-
 namespace SdlSharp.ImGui.Generator;
 
 /// <summary>
 /// Generates C# struct definitions from Dear Bindings struct data.
 /// </summary>
-public sealed class StructGenerator
+public sealed class StructGenerator(TypeMapper typeMapper)
 {
-    private readonly TypeMapper _typeMapper;
+    private readonly TypeMapper _typeMapper = typeMapper;
 
-    public StructGenerator(TypeMapper typeMapper)
+    public string GenerateSingleStruct(StructInfo structInfo, string namespaceName, IEnumerable<FunctionInfo>? methods = null)
     {
-        _typeMapper = typeMapper;
-    }
+        var methodList = methods?.ToList() ?? [];
 
-    public string GenerateSingleStruct(StructInfo structInfo, string namespaceName)
-    {
         var writer = new CodeWriter();
         writer.WriteFileHeader();
 
@@ -22,6 +18,14 @@ public sealed class StructGenerator
 
         // Add static using directives for SDL modules (types are nested in module classes)
         HashSet<string> sdlModules = TypeMapper.GetSdlModulesUsedByStruct(structInfo);
+        foreach (FunctionInfo method in methodList)
+        {
+            foreach (var module in TypeMapper.GetSdlModulesUsedByFunctions([method]))
+            {
+                sdlModules.Add(module);
+            }
+        }
+
         foreach (var module in sdlModules.OrderBy(m => m))
         {
             writer.AppendLine($"using static Sdl3Sharp.Native.{module};");
@@ -31,12 +35,12 @@ public sealed class StructGenerator
         writer.AppendLine($"namespace {namespaceName};");
         writer.AppendLine();
 
-        GenerateStruct(writer, structInfo);
+        GenerateStruct(writer, structInfo, methodList);
 
         return writer.ToString();
     }
 
-    private void GenerateStruct(CodeWriter writer, StructInfo structInfo)
+    private void GenerateStruct(CodeWriter writer, StructInfo structInfo, List<FunctionInfo> methods)
     {
         // Write documentation
         writer.WriteDocComment(structInfo.Comments);
@@ -44,8 +48,8 @@ public sealed class StructGenerator
         // Write struct layout attribute
         writer.AppendLine("[StructLayout(LayoutKind.Sequential)]");
 
-        // Determine if we need unsafe context
-        var needsUnsafe = NeedsUnsafeContext(structInfo);
+        // Determine if we need unsafe context (fields with pointers, fixed buffers, or methods)
+        var needsUnsafe = NeedsUnsafeContext(structInfo) || methods.Count > 0;
         var unsafeModifier = needsUnsafe ? "unsafe " : "";
 
         writer.AppendLine($"public {unsafeModifier}partial struct {structInfo.Name}");
@@ -60,13 +64,117 @@ public sealed class StructGenerator
             FieldInfo field = fields[i];
             GenerateField(writer, field, structInfo);
 
-            if (i < fields.Count - 1)
+            if (i < fields.Count - 1 || methods.Count > 0)
             {
                 writer.AppendLine();
             }
         }
 
+        // Generate methods
+        foreach (FunctionInfo method in methods)
+        {
+            GenerateMethod(writer, method, structInfo.Name);
+            writer.AppendLine();
+        }
+
         writer.CloseBrace();
+    }
+
+    private void GenerateMethod(CodeWriter writer, FunctionInfo func, string structName)
+    {
+        // Write documentation
+        writer.WriteDocComment(func.Comments);
+
+        // Get the short method name (e.g., "GetTexID" from "ImDrawCmd_GetTexID")
+        var methodName = func.OriginalFullyQualifiedName ?? func.Name;
+        if (methodName.StartsWith(structName + "_"))
+        {
+            methodName = methodName[(structName.Length + 1)..];
+        }
+
+        // Generate LibraryImport attribute
+        if (methodName == func.Name)
+        {
+            writer.AppendLine("[LibraryImport(NativeLibrary.Name)]");
+        }
+        else
+        {
+            writer.AppendLine($"[LibraryImport(NativeLibrary.Name, EntryPoint = \"{func.Name}\")]");
+        }
+
+        // Check if return type needs marshaling
+        var returnMarshal = GetReturnMarshalAttribute(func.ReturnType);
+        if (returnMarshal != null)
+        {
+            writer.AppendLine(returnMarshal);
+        }
+
+        var returnType = _typeMapper.MapType(func.ReturnType, forReturn: true);
+        var parameters = GenerateMethodParameters(func.Arguments, structName);
+
+        writer.AppendLine($"public static partial {returnType} {methodName}({parameters});");
+    }
+
+    private string GenerateMethodParameters(List<ArgumentInfo> arguments, string structName)
+    {
+        var parts = new List<string>();
+
+        foreach (ArgumentInfo arg in arguments)
+        {
+            if (arg.IsVarargs)
+            {
+                continue;
+            }
+
+            string paramType;
+            if (arg.IsInstancePointer)
+            {
+                // Use typed pointer for self parameter
+                paramType = $"{structName}*";
+            }
+            else
+            {
+                paramType = _typeMapper.MapType(arg.Type, forParameter: true);
+            }
+
+            var paramName = NamingConventions.ToParameterName(arg.Name);
+
+            // Check if we need ref modifier (but not for instance pointer)
+            var refModifier = "";
+            if (!arg.IsInstancePointer && _typeMapper.ShouldUseRef(arg.Type, arg))
+            {
+                refModifier = "ref ";
+                if (paramType.EndsWith('*'))
+                {
+                    paramType = paramType[..^1];
+                }
+            }
+
+            // Get marshaling attribute
+            var marshalAttr = TypeMapper.GetMarshalAsAttribute(arg.Type, forParameter: true);
+
+            if (marshalAttr != null)
+            {
+                parts.Add($"{marshalAttr} {refModifier}{paramType} {paramName}");
+            }
+            else
+            {
+                parts.Add($"{refModifier}{paramType} {paramName}");
+            }
+        }
+
+        return string.Join(", ", parts);
+    }
+
+    private static string? GetReturnMarshalAttribute(TypeDescription? returnType)
+    {
+        if (returnType?.Description == null)
+        {
+            return null;
+        }
+
+        TypeDescriptionDetail desc = returnType.Description;
+        return desc.Kind == "Builtin" && desc.BuiltinType == "bool" ? "[return: MarshalAs(UnmanagedType.U1)]" : null;
     }
 
     private void GenerateField(CodeWriter writer, FieldInfo field, StructInfo structInfo)
