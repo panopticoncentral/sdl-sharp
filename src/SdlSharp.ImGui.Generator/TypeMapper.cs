@@ -138,22 +138,6 @@ public sealed class TypeMapper
         ["SDL_GPUPresentMode"] = "Gpu",
     };
 
-    /// <summary>
-    /// Checks if a type name is an SDL type from Sdl3Sharp.Native.
-    /// </summary>
-    public static bool IsSdlType(string typeName)
-    {
-        return SdlTypeToModule.ContainsKey(typeName);
-    }
-
-    /// <summary>
-    /// Gets the module class name for an SDL type.
-    /// </summary>
-    public static string? GetSdlTypeModule(string typeName)
-    {
-        return SdlTypeToModule.TryGetValue(typeName, out var module) ? module : null;
-    }
-
     public void Initialize(DearBindingsRoot root)
     {
         // Collect by-value structs
@@ -195,37 +179,6 @@ public sealed class TypeMapper
         }
     }
 
-    public bool IsByValueStruct(string typeName)
-    {
-        return _byValueStructs.Contains(typeName);
-    }
-
-    public bool IsOpaqueStruct(string typeName)
-    {
-        return _opaqueStructs.Contains(typeName) || OpaqueHandleTypes.Contains(typeName);
-    }
-
-    public bool IsEnumType(string typeName)
-    {
-        return _enumTypes.Contains(typeName) || _enumTypes.Contains(typeName + "_");
-    }
-
-    /// <summary>
-    /// Checks if a type is an SDL native type from Sdl3Sharp.Native.
-    /// </summary>
-    public static bool IsSdlNativeType(string typeName)
-    {
-        return SdlTypeToModule.ContainsKey(typeName);
-    }
-
-    /// <summary>
-    /// Checks if a type description uses any SDL native types.
-    /// </summary>
-    public static bool UsesSdlNativeTypes(TypeDescription? type)
-    {
-        return (type?.Description) != null && UsesSdlNativeTypesDetail(type.Description);
-    }
-
     private static bool UsesSdlNativeTypesDetail(TypeDescriptionDetail desc)
     {
         // Check direct user type
@@ -239,45 +192,6 @@ public sealed class TypeMapper
 
         // Check inner type for pointers/arrays
         return desc.InnerType != null && UsesSdlNativeTypesDetail(desc.InnerType);
-    }
-
-    /// <summary>
-    /// Checks if a function uses any SDL native types in its signature.
-    /// </summary>
-    public static bool FunctionUsesSdlNativeTypes(FunctionInfo func)
-    {
-        // Check return type
-        if (UsesSdlNativeTypes(func.ReturnType))
-        {
-            return true;
-        }
-
-        // Check arguments
-        foreach (ArgumentInfo arg in func.Arguments)
-        {
-            if (UsesSdlNativeTypes(arg.Type))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Checks if a struct uses any SDL native types in its fields.
-    /// </summary>
-    public static bool StructUsesSdlNativeTypes(StructInfo structInfo)
-    {
-        foreach (FieldInfo field in structInfo.Fields)
-        {
-            if (UsesSdlNativeTypes(field.Type))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /// <summary>
@@ -408,7 +322,7 @@ public sealed class TypeMapper
         {
             "Builtin" => MapBuiltinType(desc.BuiltinType ?? "void"),
             "User" => MapUserType(desc.Name ?? "void"),
-            "Pointer" => MapPointerType(desc, forParameter, forReturn),
+            "Pointer" => MapPointerType(desc, forParameter),
             "Array" => MapArrayType(desc),
             "Type" => MapTypeDescription(desc.InnerType!, forParameter, forReturn),
             _ => "nint" // Unknown types default to native int
@@ -456,7 +370,7 @@ public sealed class TypeMapper
         return name;
     }
 
-    private string MapPointerType(TypeDescriptionDetail desc, bool forParameter, bool forReturn)
+    private string MapPointerType(TypeDescriptionDetail desc, bool forParameter)
     {
         TypeDescriptionDetail? innerType = desc.InnerType;
         if (innerType == null)
