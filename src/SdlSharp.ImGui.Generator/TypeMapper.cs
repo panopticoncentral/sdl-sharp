@@ -8,7 +8,7 @@ public sealed class TypeMapper
     private readonly HashSet<string> _byValueStructs = [];
     private readonly HashSet<string> _opaqueStructs = [];
     private readonly HashSet<string> _enumTypes = [];
-    private readonly Dictionary<string, string> _typedefs = new();
+    private readonly Dictionary<string, string> _typedefs = [];
 
     /// <summary>
     /// Builtin C type to C# type mapping.
@@ -79,6 +79,7 @@ public sealed class TypeMapper
     public static readonly HashSet<string> UnsupportedTypes =
     [
         "va_list",
+        "ImColor",
         "ImStr",
     ];
 
@@ -140,42 +141,47 @@ public sealed class TypeMapper
     /// <summary>
     /// Checks if a type name is an SDL type from Sdl3Sharp.Native.
     /// </summary>
-    public static bool IsSdlType(string typeName) => SdlTypeToModule.ContainsKey(typeName);
+    public static bool IsSdlType(string typeName)
+    {
+        return SdlTypeToModule.ContainsKey(typeName);
+    }
 
     /// <summary>
     /// Gets the module class name for an SDL type.
     /// </summary>
-    public static string? GetSdlTypeModule(string typeName) =>
-        SdlTypeToModule.TryGetValue(typeName, out var module) ? module : null;
+    public static string? GetSdlTypeModule(string typeName)
+    {
+        return SdlTypeToModule.TryGetValue(typeName, out var module) ? module : null;
+    }
 
     public void Initialize(DearBindingsRoot root)
     {
         // Collect by-value structs
         foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && s.ByValue))
         {
-            _byValueStructs.Add(s.Name);
+            _ = _byValueStructs.Add(s.Name);
         }
 
         // Collect opaque/reference structs
         foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.ByValue))
         {
-            _opaqueStructs.Add(s.Name);
+            _ = _opaqueStructs.Add(s.Name);
         }
 
         // Add known opaque types
         foreach (var t in OpaqueHandleTypes)
         {
-            _opaqueStructs.Add(t);
+            _ = _opaqueStructs.Add(t);
         }
 
         // Collect enums
         foreach (EnumInfo e in root.Enums)
         {
-            _enumTypes.Add(e.Name);
+            _ = _enumTypes.Add(e.Name);
             // Also add without trailing underscore (ImGuiWindowFlags_ -> ImGuiWindowFlags)
             if (e.Name.EndsWith('_'))
             {
-                _enumTypes.Add(e.Name[..^1]);
+                _ = _enumTypes.Add(e.Name[..^1]);
             }
         }
 
@@ -189,24 +195,35 @@ public sealed class TypeMapper
         }
     }
 
-    public bool IsByValueStruct(string typeName) => _byValueStructs.Contains(typeName);
-    public bool IsOpaqueStruct(string typeName) => _opaqueStructs.Contains(typeName) || OpaqueHandleTypes.Contains(typeName);
-    public bool IsEnumType(string typeName) => _enumTypes.Contains(typeName) || _enumTypes.Contains(typeName + "_");
+    public bool IsByValueStruct(string typeName)
+    {
+        return _byValueStructs.Contains(typeName);
+    }
+
+    public bool IsOpaqueStruct(string typeName)
+    {
+        return _opaqueStructs.Contains(typeName) || OpaqueHandleTypes.Contains(typeName);
+    }
+
+    public bool IsEnumType(string typeName)
+    {
+        return _enumTypes.Contains(typeName) || _enumTypes.Contains(typeName + "_");
+    }
 
     /// <summary>
     /// Checks if a type is an SDL native type from Sdl3Sharp.Native.
     /// </summary>
-    public static bool IsSdlNativeType(string typeName) => SdlTypeToModule.ContainsKey(typeName);
+    public static bool IsSdlNativeType(string typeName)
+    {
+        return SdlTypeToModule.ContainsKey(typeName);
+    }
 
     /// <summary>
     /// Checks if a type description uses any SDL native types.
     /// </summary>
     public static bool UsesSdlNativeTypes(TypeDescription? type)
     {
-        if (type?.Description == null)
-            return false;
-
-        return UsesSdlNativeTypesDetail(type.Description);
+        return (type?.Description) != null && UsesSdlNativeTypesDetail(type.Description);
     }
 
     private static bool UsesSdlNativeTypesDetail(TypeDescriptionDetail desc)
@@ -215,16 +232,13 @@ public sealed class TypeMapper
         if (desc.Kind == "User" && desc.Name != null)
         {
             if (SdlTypeToModule.ContainsKey(desc.Name))
+            {
                 return true;
+            }
         }
 
         // Check inner type for pointers/arrays
-        if (desc.InnerType != null)
-        {
-            return UsesSdlNativeTypesDetail(desc.InnerType);
-        }
-
-        return false;
+        return desc.InnerType != null && UsesSdlNativeTypesDetail(desc.InnerType);
     }
 
     /// <summary>
@@ -234,13 +248,17 @@ public sealed class TypeMapper
     {
         // Check return type
         if (UsesSdlNativeTypes(func.ReturnType))
+        {
             return true;
+        }
 
         // Check arguments
         foreach (ArgumentInfo arg in func.Arguments)
         {
             if (UsesSdlNativeTypes(arg.Type))
+            {
                 return true;
+            }
         }
 
         return false;
@@ -254,7 +272,9 @@ public sealed class TypeMapper
         foreach (FieldInfo field in structInfo.Fields)
         {
             if (UsesSdlNativeTypes(field.Type))
+            {
                 return true;
+            }
         }
 
         return false;
@@ -297,7 +317,9 @@ public sealed class TypeMapper
     private static void CollectSdlModulesFromType(TypeDescription? type, HashSet<string> modules)
     {
         if (type?.Description == null)
+        {
             return;
+        }
 
         CollectSdlModulesFromTypeDetail(type.Description, modules);
     }
@@ -308,7 +330,7 @@ public sealed class TypeMapper
         {
             if (SdlTypeToModule.TryGetValue(desc.Name, out var module))
             {
-                modules.Add(module);
+                _ = modules.Add(module);
             }
         }
 
@@ -319,14 +341,19 @@ public sealed class TypeMapper
     }
 
     /// <summary>
+    /// Checks if a type is an unsupported type.
+    /// </summary>
+    public static bool IsUnsupportedType(StructInfo structInfo)
+    {
+        return UnsupportedTypes.Contains(structInfo.Name);
+    }
+
+    /// <summary>
     /// Checks if a type contains unsupported types (va_list, ImStr, etc.)
     /// </summary>
     public static bool HasUnsupportedType(TypeDescription? type)
     {
-        if (type?.Description == null)
-            return false;
-
-        return HasUnsupportedTypeDetail(type.Description);
+        return (type?.Description) != null && HasUnsupportedTypeDetail(type.Description);
     }
 
     private static bool HasUnsupportedTypeDetail(TypeDescriptionDetail desc)
@@ -335,32 +362,33 @@ public sealed class TypeMapper
         if (desc.Kind == "User" && desc.Name != null)
         {
             if (UnsupportedTypes.Contains(desc.Name))
+            {
                 return true;
+            }
         }
 
         // Check inner type for pointers/arrays
-        if (desc.InnerType != null)
-        {
-            return HasUnsupportedTypeDetail(desc.InnerType);
-        }
-
-        return false;
+        return desc.InnerType != null && HasUnsupportedTypeDetail(desc.InnerType);
     }
 
     /// <summary>
     /// Checks if a function has any unsupported types in its signature.
     /// </summary>
-    public bool FunctionHasUnsupportedTypes(FunctionInfo func)
+    public static bool FunctionHasUnsupportedTypes(FunctionInfo func)
     {
         // Check return type
         if (HasUnsupportedType(func.ReturnType))
+        {
             return true;
+        }
 
         // Check arguments
         foreach (ArgumentInfo arg in func.Arguments)
         {
             if (HasUnsupportedType(arg.Type))
+            {
                 return true;
+            }
         }
 
         return false;
@@ -371,10 +399,7 @@ public sealed class TypeMapper
     /// </summary>
     public string MapType(TypeDescription? type, bool forParameter = false, bool forReturn = false)
     {
-        if (type?.Description == null)
-            return "void";
-
-        return MapTypeDescription(type.Description, forParameter, forReturn);
+        return type?.Description == null ? "void" : MapTypeDescription(type.Description, forParameter, forReturn);
     }
 
     private string MapTypeDescription(TypeDescriptionDetail desc, bool forParameter, bool forReturn)
@@ -399,7 +424,9 @@ public sealed class TypeMapper
     {
         // Check known typedefs first
         if (KnownTypedefs.TryGetValue(name, out var known))
+        {
             return known;
+        }
 
         // Check if it's an enum (remove trailing underscore for C# name)
         if (_enumTypes.Contains(name))
@@ -409,15 +436,21 @@ public sealed class TypeMapper
 
         // Check if it's a by-value struct
         if (_byValueStructs.Contains(name))
+        {
             return name;
+        }
 
         // Check if it's an SDL type from Sdl3Sharp.Native - keep the type name
         if (SdlTypeToModule.ContainsKey(name))
+        {
             return name;
+        }
 
         // Check if it's an opaque struct - use nint as handle
         if (_opaqueStructs.Contains(name) || OpaqueHandleTypes.Contains(name))
+        {
             return "nint";
+        }
 
         // Default: assume it's a struct type
         return name;
@@ -427,20 +460,27 @@ public sealed class TypeMapper
     {
         TypeDescriptionDetail? innerType = desc.InnerType;
         if (innerType == null)
+        {
             return "nint";
+        }
 
         // Check for const
         var isConst = innerType.StorageClasses?.Contains("const") ?? false;
 
         // void* -> nint
         if (innerType.Kind == "Builtin" && innerType.BuiltinType == "void")
+        {
             return "nint";
+        }
 
         // char* -> string for parameters, nint for return
         if (innerType.Kind == "Builtin" && innerType.BuiltinType == "char")
         {
             if (forParameter && isConst)
+            {
                 return "string"; // Will need [MarshalAs(UnmanagedType.LPUTF8Str)]
+            }
+
             return "nint"; // byte* essentially
         }
 
@@ -448,9 +488,7 @@ public sealed class TypeMapper
         if (innerType.Kind == "Builtin")
         {
             var baseType = MapBuiltinType(innerType.BuiltinType ?? "void");
-            if (baseType == "void")
-                return "nint";
-            return $"{baseType}*";
+            return baseType == "void" ? "nint" : $"{baseType}*";
         }
 
         // Pointer to user type
@@ -507,7 +545,9 @@ public sealed class TypeMapper
         // Fixed-size arrays in structs - we'll handle these specially
         TypeDescriptionDetail? innerType = desc.InnerType;
         if (innerType == null)
+        {
             return "nint";
+        }
 
         var bounds = desc.Bounds;
         var elementType = MapTypeDescription(innerType, false, false);
@@ -522,7 +562,9 @@ public sealed class TypeMapper
     public static string? GetMarshalAsAttribute(TypeDescription? type, bool forParameter)
     {
         if (type?.Description == null)
+        {
             return null;
+        }
 
         TypeDescriptionDetail desc = type.Description;
 
@@ -557,13 +599,17 @@ public sealed class TypeMapper
     public bool ShouldUseRef(TypeDescription? type, ArgumentInfo arg)
     {
         if (type?.Description == null)
+        {
             return false;
+        }
 
         TypeDescriptionDetail desc = type.Description;
 
         // Instance pointers are passed as-is
         if (arg.IsInstancePointer)
+        {
             return false;
+        }
 
         // Pointer to by-value struct (non-const) should be ref
         if (desc.Kind == "Pointer" && desc.InnerType?.Kind == "User")

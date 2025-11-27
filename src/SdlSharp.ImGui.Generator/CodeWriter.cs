@@ -11,25 +11,30 @@ public sealed class CodeWriter
     private int _indentLevel;
     private const string IndentString = "    ";
 
-    public void AppendLine() => _sb.AppendLine();
+    public void AppendLine()
+    {
+        _ = _sb.AppendLine();
+    }
 
     public void AppendLine(string line)
     {
         if (string.IsNullOrEmpty(line))
         {
-            _sb.AppendLine();
+            _ = _sb.AppendLine();
             return;
         }
 
         for (var i = 0; i < _indentLevel; i++)
-            _sb.Append(IndentString);
+        {
+            _ = _sb.Append(IndentString);
+        }
 
-        _sb.AppendLine(line);
+        _ = _sb.AppendLine(line);
     }
 
     public void Append(string text)
     {
-        _sb.Append(text);
+        _ = _sb.Append(text);
     }
 
     public void OpenBrace()
@@ -44,10 +49,20 @@ public sealed class CodeWriter
         AppendLine(withSemicolon ? "};" : "}");
     }
 
-    public void Indent() => _indentLevel++;
-    public void Unindent() => _indentLevel--;
+    public void Indent()
+    {
+        _indentLevel++;
+    }
 
-    public override string ToString() => _sb.ToString();
+    public void Unindent()
+    {
+        _indentLevel--;
+    }
+
+    public override string ToString()
+    {
+        return _sb.ToString();
+    }
 
     /// <summary>
     /// Writes the standard file header.
@@ -69,12 +84,16 @@ public sealed class CodeWriter
     public void WriteSummary(string? summary)
     {
         if (string.IsNullOrWhiteSpace(summary))
+        {
             return;
+        }
 
         // Clean up the comment
         summary = summary.Trim();
         if (summary.StartsWith("//"))
+        {
             summary = summary[2..].Trim();
+        }
 
         AppendLine("/// <summary>");
         AppendLine($"/// {EscapeXml(summary)}");
@@ -87,7 +106,9 @@ public sealed class CodeWriter
     public void WriteDocComment(Comments? comments)
     {
         if (comments == null)
+        {
             return;
+        }
 
         var lines = new List<string>();
 
@@ -97,7 +118,9 @@ public sealed class CodeWriter
             {
                 var cleaned = CleanComment(line);
                 if (!string.IsNullOrWhiteSpace(cleaned))
+                {
                     lines.Add(cleaned);
+                }
             }
         }
 
@@ -105,11 +128,15 @@ public sealed class CodeWriter
         {
             var cleaned = CleanComment(comments.Attached);
             if (!string.IsNullOrWhiteSpace(cleaned))
+            {
                 lines.Add(cleaned);
+            }
         }
 
         if (lines.Count == 0)
+        {
             return;
+        }
 
         AppendLine("/// <summary>");
         foreach (var line in lines)
@@ -124,7 +151,10 @@ public sealed class CodeWriter
     {
         comment = comment.Trim();
         if (comment.StartsWith("//"))
+        {
             comment = comment[2..].Trim();
+        }
+
         return comment;
     }
 
@@ -148,9 +178,7 @@ public static class NamingConventions
     public static string CleanEnumName(string name)
     {
         // Remove trailing underscore
-        if (name.EndsWith('_'))
-            return name[..^1];
-        return name;
+        return name.EndsWith('_') ? name[..^1] : name;
     }
 
     /// <summary>
@@ -186,7 +214,9 @@ public static class NamingConventions
     public static string ToPascalCase(string name)
     {
         if (string.IsNullOrEmpty(name))
+        {
             return name;
+        }
 
         // Handle leading underscore (private field indicator)
         if (name.StartsWith('_'))
@@ -208,16 +238,15 @@ public static class NamingConventions
     public static string ToParameterName(string name)
     {
         if (string.IsNullOrEmpty(name))
+        {
             return name;
+        }
 
         // Convert to camelCase
         var result = char.ToLower(name[0]) + name[1..];
 
         // Check for C# keywords
-        if (IsKeyword(result))
-            return "@" + result;
-
-        return result;
+        return IsKeyword(result) ? "@" + result : result;
     }
 
     private static readonly HashSet<string> CSharpKeywords =
@@ -236,5 +265,8 @@ public static class NamingConventions
         "volatile", "while"
     ];
 
-    public static bool IsKeyword(string name) => CSharpKeywords.Contains(name);
+    public static bool IsKeyword(string name)
+    {
+        return CSharpKeywords.Contains(name);
+    }
 }

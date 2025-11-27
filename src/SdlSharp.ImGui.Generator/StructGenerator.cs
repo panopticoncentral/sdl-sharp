@@ -61,7 +61,9 @@ public sealed class StructGenerator
             GenerateField(writer, field, structInfo);
 
             if (i < fields.Count - 1)
+            {
                 writer.AppendLine();
+            }
         }
 
         writer.CloseBrace();
@@ -107,16 +109,15 @@ public sealed class StructGenerator
 
     private string MapFieldType(FieldInfo field)
     {
-        if (field.Type == null)
-            return "nint";
-
-        return _typeMapper.MapType(field.Type);
+        return field.Type == null ? "nint" : _typeMapper.MapType(field.Type);
     }
 
     private string GetArrayElementType(TypeDescriptionDetail desc)
     {
         if (desc.InnerType == null)
+        {
             return "nint";
+        }
 
         // Use the type mapper to properly resolve user types
         var innerType = new TypeDescription
@@ -167,13 +168,17 @@ public sealed class StructGenerator
                 var bounds = field.Type.Description.Bounds;
                 var elementType = GetArrayElementType(field.Type.Description);
                 if (bounds != null && CanBeFixedBuffer(elementType))
+                {
                     return true;
+                }
             }
 
             // Pointer types require unsafe
             var fieldType = MapFieldType(field);
             if (fieldType.Contains('*'))
+            {
                 return true;
+            }
         }
 
         return false;

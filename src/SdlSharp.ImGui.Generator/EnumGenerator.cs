@@ -46,7 +46,10 @@ public sealed class EnumGenerator
             {
                 var cleanComment = element.Comments.Attached.Trim();
                 if (cleanComment.StartsWith("//"))
+                {
                     cleanComment = cleanComment[2..].Trim();
+                }
+
                 comment = $" // {cleanComment}";
             }
 
@@ -64,18 +67,24 @@ public sealed class EnumGenerator
     private static string DetermineUnderlyingType(List<EnumElement> elements)
     {
         if (elements.Count == 0)
+        {
             return "int";
+        }
 
         var maxValue = elements.Max(e => e.Value);
         var minValue = elements.Min(e => e.Value);
 
         // Check if values fit in int (most common case)
         if (minValue >= int.MinValue && maxValue <= int.MaxValue)
+        {
             return "int";
+        }
 
         // Need long for larger values
         if (minValue >= long.MinValue && maxValue <= long.MaxValue)
+        {
             return "long";
+        }
 
         return "int"; // Fallback
     }

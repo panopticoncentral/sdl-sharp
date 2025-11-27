@@ -97,7 +97,9 @@ public sealed class FunctionGenerator
             }
 
             if (!groups.ContainsKey(currentCategory))
+            {
                 groups[currentCategory] = [];
+            }
 
             groups[currentCategory].Add(func);
         }
@@ -134,10 +136,14 @@ public sealed class FunctionGenerator
 
         // Remove common prefixes for cleaner names
         if (name.StartsWith("ImGui_"))
+        {
             return name[6..]; // Remove "ImGui_"
+        }
 
         if (name.StartsWith("cImGui_"))
+        {
             return name[7..]; // Remove "cImGui_"
+        }
 
         // For member functions like ImVec2_Add, keep the full name
         return name;
@@ -150,7 +156,9 @@ public sealed class FunctionGenerator
         foreach (ArgumentInfo arg in arguments)
         {
             if (arg.IsVarargs)
+            {
                 continue; // Skip varargs
+            }
 
             var paramType = _typeMapper.MapType(arg.Type, forParameter: true);
             var paramName = NamingConventions.ToParameterName(arg.Name);
@@ -162,7 +170,9 @@ public sealed class FunctionGenerator
                 refModifier = "ref ";
                 // Remove the pointer from the type since we're using ref
                 if (paramType.EndsWith('*'))
+                {
                     paramType = paramType[..^1];
+                }
             }
 
             // Get marshaling attribute
@@ -184,17 +194,14 @@ public sealed class FunctionGenerator
     private static string? GetReturnMarshalAttribute(TypeDescription? returnType)
     {
         if (returnType?.Description == null)
+        {
             return null;
+        }
 
         TypeDescriptionDetail desc = returnType.Description;
 
         // bool needs marshaling
-        if (desc.Kind == "Builtin" && desc.BuiltinType == "bool")
-        {
-            return "[return: MarshalAs(UnmanagedType.U1)]";
-        }
-
-        return null;
+        return desc.Kind == "Builtin" && desc.BuiltinType == "bool" ? "[return: MarshalAs(UnmanagedType.U1)]" : null;
     }
 
     private static bool IsVarargs(FunctionInfo func)

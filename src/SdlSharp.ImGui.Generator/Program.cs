@@ -46,12 +46,14 @@ var backendFiles = new Dictionary<string, string>
 var backends = new Dictionary<string, DearBindingsRoot>();
 foreach ((var name, var path) in backendFiles)
 {
-    if (File.Exists(path))
+    if (!File.Exists(path))
     {
-        Console.WriteLine($"Loading {name} backend...");
-        backends[name] = JsonSerializer.Deserialize<DearBindingsRoot>(
-            File.ReadAllText(path), jsonOptions)!;
+        continue;
     }
+
+    Console.WriteLine($"Loading {name} backend...");
+    backends[name] = JsonSerializer.Deserialize<DearBindingsRoot>(
+        File.ReadAllText(path), jsonOptions)!;
 }
 
 // Initialize type mapper with all type information
@@ -100,7 +102,8 @@ Console.WriteLine($"  Generated {backends.Sum(b => b.Value.Enums.Count(e => !e.I
 Console.WriteLine("\nGenerating structs...");
 var structCount = 0;
 foreach (StructInfo? structInfo in mainRoot.Structs
-    .Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0))
+    .Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0)
+    .Where(s => !TypeMapper.IsUnsupportedType(s)))
 {
     var content = structGenerator.GenerateSingleStruct(structInfo, Namespace);
     var filePath = Path.Combine(outputDir, $"{structInfo.Name}.cs");
@@ -112,47 +115,12 @@ Console.WriteLine($"  Generated {structCount} struct files");
 
 // === Generate Native Methods (one file per class grouping) ===
 Console.WriteLine("\nGenerating native methods...");
-
-// Group functions by their class/prefix
-Dictionary<string, List<FunctionInfo>> functionGroups = GroupFunctionsByClass(mainRoot.Functions
-    .Where(f => !f.IsInternal)
-    .Where(f => !f.IsDefaultArgumentHelper)
-    .Where(f => !f.IsImstrHelper)
-    .Where(f => !f.Arguments.Any(a => a.IsVarargs))
-    .Where(f => !typeMapper.FunctionHasUnsupportedTypes(f)));
-
-var totalFuncCount = 0;
-foreach ((var className, List<FunctionInfo>? functions) in functionGroups)
-{
-    var content = functionGenerator.GenerateForClass(functions, Namespace, $"{className}");
-    var filePath = Path.Combine(outputDir, $"{className}.cs");
-    File.WriteAllText(filePath, content);
-    totalFuncCount += functions.Count;
-}
-
-Console.WriteLine($"  Generated {functionGroups.Count} native method files ({totalFuncCount} functions)");
+GenerateFunctions(mainRoot, typeMapper, functionGenerator, outputDir, Namespace, "ImGui");
 
 // Generate backend functions (one file per backend)
 foreach ((var name, DearBindingsRoot? backend) in backends)
 {
-    if (backend.Functions.Count > 0)
-    {
-        var backendFunctions = backend.Functions
-            .Where(f => !f.IsInternal)
-            .Where(f => !f.IsDefaultArgumentHelper)
-            .Where(f => !f.IsImstrHelper)
-            .Where(f => !f.Arguments.Any(a => a.IsVarargs))
-            .Where(f => !typeMapper.FunctionHasUnsupportedTypes(f))
-            .ToList();
-
-        if (backendFunctions.Count > 0)
-        {
-            var content = functionGenerator.GenerateForClass(backendFunctions, BackendsNamespace, $"{name}");
-            var filePath = Path.Combine(outputDir, "Backends", $"{name}.cs");
-            File.WriteAllText(filePath, content);
-            Console.WriteLine($"  Generated {backendFunctions.Count} {name} backend functions");
-        }
-    }
+    GenerateFunctions(backend, typeMapper, functionGenerator, outputDir, BackendsNamespace, name);
 }
 
 Console.WriteLine("\nGeneration complete!");
@@ -180,6 +148,27 @@ static string FindSolutionRoot()
         "Could not find solution root. Please run from the solution directory or a project directory.");
 }
 
+static void GenerateFunctions(DearBindingsRoot root, TypeMapper typeMapper, FunctionGenerator functionGenerator, string outputDir, string ns, string name)
+{
+    List<FunctionInfo> functions = [.. root.Functions
+    .Where(f => !f.IsInternal)
+    .Where(f => !f.IsDefaultArgumentHelper)
+    .Where(f => !f.IsImstrHelper)
+    .Where(f => !f.Arguments.Any(a => a.IsVarargs))
+    .Where(f => !TypeMapper.FunctionHasUnsupportedTypes(f))];
+
+    if (functions.Count == 0)
+    {
+        return;
+    }
+
+    var content = functionGenerator.GenerateForClass(functions, ns, name);
+    var filePath = Path.Combine(outputDir, $"{name}.cs");
+    File.WriteAllText(filePath, content);
+
+    Console.WriteLine($"  Generated {functions.Count} {name} functions");
+}
+
 static Dictionary<string, List<FunctionInfo>> GroupFunctionsByClass(IEnumerable<FunctionInfo> functions)
 {
     var groups = new Dictionary<string, List<FunctionInfo>>();
@@ -189,7 +178,9 @@ static Dictionary<string, List<FunctionInfo>> GroupFunctionsByClass(IEnumerable<
         var className = GetFunctionClass(func);
 
         if (!groups.ContainsKey(className))
+        {
             groups[className] = [];
+        }
 
         groups[className].Add(func);
     }
@@ -201,17 +192,23 @@ static string GetFunctionClass(FunctionInfo func)
 {
     // If it has an original class, use that
     if (!string.IsNullOrEmpty(func.OriginalClass))
+    {
         return func.OriginalClass;
+    }
 
     var name = func.Name;
 
     // ImGui_ functions -> ImGui
     if (name.StartsWith("ImGui_"))
+    {
         return "ImGui";
+    }
 
     // cImGui_ functions -> ImGui
     if (name.StartsWith("cImGui_"))
+    {
         return "ImGui";
+    }
 
     // Extract class from pattern like ImDrawList_AddLine -> ImDrawList
     var underscoreIndex = name.IndexOf('_');
