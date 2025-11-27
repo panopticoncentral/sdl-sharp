@@ -128,29 +128,6 @@ public sealed class StructGenerator
         return _typeMapper.MapType(innerType);
     }
 
-    private static string MapBuiltinType(string builtinType)
-    {
-        return builtinType switch
-        {
-            "void" => "void",
-            "bool" => "bool",
-            "char" => "byte",
-            "signed_char" => "sbyte",
-            "unsigned_char" => "byte",
-            "short" => "short",
-            "unsigned_short" => "ushort",
-            "int" => "int",
-            "unsigned_int" => "uint",
-            "long" => "int",
-            "unsigned_long" => "uint",
-            "long_long" => "long",
-            "unsigned_long_long" => "ulong",
-            "float" => "float",
-            "double" => "double",
-            _ => "nint"
-        };
-    }
-
     private static bool CanBeFixedBuffer(string elementType)
     {
         // Only primitive types can be used with fixed buffers
