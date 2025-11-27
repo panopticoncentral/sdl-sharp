@@ -173,10 +173,31 @@ public sealed class CodeWriter
 public static class NamingConventions
 {
     /// <summary>
+    /// Backend prefixes to strip from enum names and elements.
+    /// </summary>
+    private static readonly string[] BackendPrefixes =
+    [
+        "ImGui_ImplSDL3_",
+        "ImGui_ImplSDLRenderer3_",
+        "ImGui_ImplSDLGPU3_",
+    ];
+
+    /// <summary>
     /// Converts an ImGui enum name (ImGuiWindowFlags_) to C# style (ImGuiWindowFlags).
+    /// Also handles backend enums (ImGui_ImplSDL3_GamepadMode -> GamepadMode).
     /// </summary>
     public static string CleanEnumName(string name)
     {
+        // Remove backend prefixes (e.g., ImGui_ImplSDL3_GamepadMode -> GamepadMode)
+        foreach (var prefix in BackendPrefixes)
+        {
+            if (name.StartsWith(prefix))
+            {
+                name = name[prefix.Length..];
+                break;
+            }
+        }
+
         // Remove trailing underscore
         return name.EndsWith('_') ? name[..^1] : name;
     }
@@ -184,28 +205,67 @@ public static class NamingConventions
     /// <summary>
     /// Converts an enum element name to C# style.
     /// For example: ImGuiWindowFlags_NoTitleBar -> NoTitleBar
+    /// Also handles backend enums: ImGui_ImplSDL3_GamepadMode_AutoFirst -> AutoFirst
     /// </summary>
     public static string CleanEnumElementName(string enumName, string elementName)
     {
         var prefix = enumName;
+        string result;
 
         // Try with underscore
         if (elementName.StartsWith(prefix))
         {
-            return elementName[prefix.Length..];
+            result = elementName[prefix.Length..];
         }
-
         // Try without trailing underscore
-        if (prefix.EndsWith('_'))
+        else if (prefix.EndsWith('_'))
         {
             var prefixWithoutUnderscore = prefix[..^1];
             if (elementName.StartsWith(prefixWithoutUnderscore + "_"))
             {
-                return elementName[(prefixWithoutUnderscore.Length + 1)..];
+                result = elementName[(prefixWithoutUnderscore.Length + 1)..];
+            }
+            else
+            {
+                result = elementName;
             }
         }
+        else
+        {
+            result = elementName;
+        }
 
-        return elementName;
+        // Remove leading underscore if present (e.g., _AutoFirst -> AutoFirst)
+        if (result.StartsWith('_'))
+        {
+            result = result[1..];
+        }
+
+        // C# identifiers cannot start with a digit; use word form for single digits
+        if (result.Length == 1 && char.IsDigit(result[0]))
+        {
+            result = result[0] switch
+            {
+                '0' => "Zero",
+                '1' => "One",
+                '2' => "Two",
+                '3' => "Three",
+                '4' => "Four",
+                '5' => "Five",
+                '6' => "Six",
+                '7' => "Seven",
+                '8' => "Eight",
+                '9' => "Nine",
+                _ => "_" + result
+            };
+        }
+        else if (result.Length > 0 && char.IsDigit(result[0]))
+        {
+            // For multi-character names starting with digit, prefix with underscore
+            result = "_" + result;
+        }
+
+        return result;
     }
 
     /// <summary>

@@ -6,6 +6,7 @@ namespace SdlSharp.ImGui.Generator;
 public sealed class TypeMapper
 {
     private readonly HashSet<string> _byValueStructs = [];
+    private readonly HashSet<string> _referenceStructs = [];
     private readonly HashSet<string> _opaqueStructs = [];
     private readonly HashSet<string> _enumTypes = [];
     private readonly Dictionary<string, string> _typedefs = [];
@@ -105,8 +106,14 @@ public sealed class TypeMapper
             _ = _byValueStructs.Add(s.Name);
         }
 
-        // Collect opaque/reference structs
-        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.ByValue))
+        // Collect reference structs (passed by pointer but have known layout)
+        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.ByValue && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0))
+        {
+            _ = _referenceStructs.Add(s.Name);
+        }
+
+        // Collect truly opaque structs (no fields or forward declarations)
+        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.ByValue && (s.Fields.Count == 0 || s.IsInternal || s.IsAnonymous)))
         {
             _ = _opaqueStructs.Add(s.Name);
         }
@@ -313,10 +320,10 @@ public sealed class TypeMapper
             return known;
         }
 
-        // Check if it's an enum (remove trailing underscore for C# name)
+        // Check if it's an enum (use CleanEnumName for consistent naming)
         if (_enumTypes.Contains(name))
         {
-            return name.EndsWith('_') ? name[..^1] : name;
+            return NamingConventions.CleanEnumName(name);
         }
 
         // Check if it's a by-value struct
@@ -402,12 +409,18 @@ public sealed class TypeMapper
             // Enum pointer
             if (_enumTypes.Contains(userName))
             {
-                var enumName = userName.EndsWith('_') ? userName[..^1] : userName;
+                var enumName = NamingConventions.CleanEnumName(userName);
                 return $"{enumName}*";
             }
 
             // By-value struct pointer -> ref or pointer
             if (_byValueStructs.Contains(userName))
+            {
+                return $"{userName}*";
+            }
+
+            // Reference struct pointer -> typed pointer (we have the struct definition)
+            if (_referenceStructs.Contains(userName))
             {
                 return $"{userName}*";
             }

@@ -33,11 +33,21 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         writer.AppendLine($"internal static unsafe partial class {className}");
         writer.OpenBrace();
 
-        functionList = [.. functionList.OrderBy(f => f.Name)];
+        // Group functions by category (from preceding comments) while preserving original order
+        var groupedFunctions = GroupFunctions(functionList);
 
-        foreach (FunctionInfo func in functionList)
+        foreach (var group in groupedFunctions)
         {
-            GenerateFunction(writer, func);
+            writer.AppendLine($"#region {group.Category}");
+            writer.AppendLine();
+
+            foreach (FunctionInfo func in group.Functions)
+            {
+                GenerateFunction(writer, func);
+                writer.AppendLine();
+            }
+
+            writer.AppendLine("#endregion");
             writer.AppendLine();
         }
 
@@ -77,6 +87,16 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         writer.AppendLine($"public static partial {returnType} {methodName}({parameters});");
     }
 
+    /// <summary>
+    /// Backend prefixes to strip from method names (after removing ImGui_/cImGui_).
+    /// </summary>
+    private static readonly string[] BackendPrefixes =
+    [
+        "ImplSDL3_",
+        "ImplSDLRenderer3_",
+        "ImplSDLGPU3_",
+    ];
+
     private static string GetMethodName(FunctionInfo func)
     {
         var name = func.Name;
@@ -84,12 +104,20 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         // Remove common prefixes for cleaner names
         if (name.StartsWith("ImGui_"))
         {
-            return name[6..]; // Remove "ImGui_"
+            name = name[6..]; // Remove "ImGui_"
+        }
+        else if (name.StartsWith("cImGui_"))
+        {
+            name = name[7..]; // Remove "cImGui_"
         }
 
-        if (name.StartsWith("cImGui_"))
+        // Remove backend prefixes (e.g., ImplSDL3_InitForOpenGL -> InitForOpenGL)
+        foreach (var prefix in BackendPrefixes)
         {
-            return name[7..]; // Remove "cImGui_"
+            if (name.StartsWith(prefix))
+            {
+                return name[prefix.Length..];
+            }
         }
 
         // For member functions like ImVec2_Add, keep the full name
@@ -155,4 +183,82 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
     {
         return func.Arguments.Any(a => a.IsVarargs);
     }
+
+    /// <summary>
+    /// Groups functions by category based on preceding comments, preserving original order.
+    /// </summary>
+    private static List<FunctionGroup> GroupFunctions(List<FunctionInfo> functions)
+    {
+        var groups = new List<FunctionGroup>();
+        string currentCategory = "General";
+        var currentFunctions = new List<FunctionInfo>();
+
+        foreach (var func in functions)
+        {
+            // Check if the function has a preceding comment that indicates a new category
+            var category = ExtractCategory(func.Comments?.Preceding);
+
+            if (category != null && category != currentCategory)
+            {
+                // Save the current group if it has functions
+                if (currentFunctions.Count > 0)
+                {
+                    groups.Add(new FunctionGroup(currentCategory, currentFunctions));
+                    currentFunctions = [];
+                }
+
+                currentCategory = category;
+            }
+
+            currentFunctions.Add(func);
+        }
+
+        // Add the last group
+        if (currentFunctions.Count > 0)
+        {
+            groups.Add(new FunctionGroup(currentCategory, currentFunctions));
+        }
+
+        return groups;
+    }
+
+    /// <summary>
+    /// Extracts a category name from preceding comments.
+    /// </summary>
+    private static string? ExtractCategory(List<string>? precedingComments)
+    {
+        if (precedingComments == null || precedingComments.Count == 0)
+        {
+            return null;
+        }
+
+        // Look for patterns like "Context creation and access" or section headers
+        // The preceding comments typically contain the category/section name
+        foreach (var comment in precedingComments)
+        {
+            var trimmed = comment.Trim().TrimStart('-', ' ', '/');
+
+            // Skip empty lines or lines that look like documentation rather than headers
+            if (string.IsNullOrWhiteSpace(trimmed) ||
+                trimmed.StartsWith("See", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("Note", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("Use", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("This", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("The", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("If", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("When", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.StartsWith("For", StringComparison.OrdinalIgnoreCase) ||
+                trimmed.Length > 80) // Long lines are likely documentation, not headers
+            {
+                continue;
+            }
+
+            // Return the first line that looks like a category header
+            return trimmed;
+        }
+
+        return null;
+    }
+
+    private sealed record FunctionGroup(string Category, List<FunctionInfo> Functions);
 }
