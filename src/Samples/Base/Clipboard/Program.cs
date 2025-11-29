@@ -1,4 +1,4 @@
-﻿using SdlSharp;
+﻿using Sdl3Sharp;
 
 using var applications = new Application(Subsystems.Video);
 
@@ -21,6 +21,10 @@ while (!exit)
         case "p":
             Console.WriteLine(Clipboard.Text);
             Console.WriteLine("Read clipboard text.");
+            break;
+
+        case "h":
+            Console.WriteLine(Clipboard.HasText ? "Clipboard has text." : "Clipboard is empty.");
             break;
     }
 }

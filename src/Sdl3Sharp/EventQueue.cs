@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 
 using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Events;
-using static Sdl3Sharp.Native.Video;
 
 namespace Sdl3Sharp;
 

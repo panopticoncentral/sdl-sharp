@@ -17,6 +17,7 @@
   <Folder Name="/Samples/Base/">
     <Project Path="src/Samples/Base/Clipboard/Clipboard.csproj" />
     <Project Path="src/Samples/Base/CpuInfo/CpuInfo.csproj" />
+    <Project Path="src/Samples/Base/FileSystem/FileSystem.csproj" />
     <Project Path="src/Samples/Base/Init/Init.csproj" />
     <Project Path="src/Samples/Base/MessageBox/MessageBox.csproj" />
     <Project Path="src/Samples/Base/SimpleInit/SimpleInit.csproj" />

@@ -1,4 +1,3 @@
-using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Gpu;
 
 namespace Sdl3Sharp.Graphics.Gpu;

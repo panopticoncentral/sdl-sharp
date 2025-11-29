@@ -1,25 +1,25 @@
-﻿using SdlSharp;
+﻿using Sdl3Sharp;
+using Sdl3Sharp.Graphics;
 
-Application.ShowMessageBox(MessageBoxType.Information, "Test", "This is a test.", null);
+MessageBox.Show(MessageBoxFlags.Information, "Test", "This is a test.", null);
 
-while (Application.ShowMessageBox(
-    MessageBoxType.Error | MessageBoxType.ButtonsLeftToRight,
-    null,
+while (MessageBox.ShowCustom(
+    MessageBoxFlags.Error | MessageBoxFlags.ButtonsLeftToRight,
     "Another Test",
     "This is another test.",
-    new MessageBoxButton[]
-    {
-        new(MessageBoxButtonOptions.ReturnKeyDefault, 1, "Return"),
-        new MessageBoxButton(MessageBoxButtonOptions.EscapeKeyDefault, 2, "Escape"),
-        new MessageBoxButton(MessageBoxButtonOptions.None, 3, "Quit")
-    },
+    [
+        new("Return", 1, MessageBoxButtonFlags.ReturnKeyDefault),
+        new("Escape", 2, MessageBoxButtonFlags.EscapeKeyDefault),
+        new("Quit", 3, MessageBoxButtonFlags.None)
+    ],
+    null,
     new MessageBoxColorScheme
     (
-        new(0, 0, 255),
-        new(255, 255, 255),
-        new(128, 128, 128),
-        new(0, 0, 0),
-        new(64, 64, 64)
+        Colors.Blue,
+        Colors.White,
+        Colors.Grey,
+        Colors.Black,
+        Colors.DarkerGrey
     )) != 3)
 {
 }

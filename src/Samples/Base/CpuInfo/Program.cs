@@ -1,11 +1,12 @@
-﻿using SdlSharp;
+﻿using Sdl3Sharp;
 
-Console.WriteLine($"CPU Count: {CpuInfo.CpuCount}");
-Console.WriteLine($"CPU Cache Line Size: {CpuInfo.CpuCacheLineSize}");
-Console.WriteLine($"RDTSC: {CpuInfo.HasRdtsc}");
+Console.WriteLine($"CPU Cache Line Size: {CpuInfo.CacheLineSize}");
+Console.WriteLine($"CPU Count: {CpuInfo.LogicalCoreCount}");
+Console.WriteLine($"Actual CPU Cache Line Size: {CpuInfo.CacheLineSizeActual}");
+Console.WriteLine($"System RAM: {CpuInfo.SystemRamMiB} MB");
+Console.WriteLine($"SIMD Alignment: {CpuInfo.SimdAlignment} bytes");
 Console.WriteLine($"AltiVec: {CpuInfo.HasAltiVec}");
 Console.WriteLine($"MMX: {CpuInfo.HasMmx}");
-Console.WriteLine($"3DNow: {CpuInfo.Has3dNow}");
 Console.WriteLine($"SSE: {CpuInfo.HasSse}");
 Console.WriteLine($"SSE2: {CpuInfo.HasSse2}");
 Console.WriteLine($"SSE3: {CpuInfo.HasSse3}");
@@ -14,8 +15,7 @@ Console.WriteLine($"SSE4.2: {CpuInfo.HasSse42}");
 Console.WriteLine($"AVX: {CpuInfo.HasAvx}");
 Console.WriteLine($"AVX2: {CpuInfo.HasAvx2}");
 Console.WriteLine($"AVX512F: {CpuInfo.HasAvx512F}");
-Console.WriteLine($"ARM SIMD: {CpuInfo.HasARMSIMD}");
+Console.WriteLine($"ARM SIMD: {CpuInfo.HasArmSimd}");
 Console.WriteLine($"NEON: {CpuInfo.HasNeon}");
 Console.WriteLine($"LSX: {CpuInfo.HasLsx}");
 Console.WriteLine($"LASX: {CpuInfo.HasLasx}");
-Console.WriteLine($"System RAM: {CpuInfo.SystemRam}");

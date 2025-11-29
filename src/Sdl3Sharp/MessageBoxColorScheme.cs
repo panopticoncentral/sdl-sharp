@@ -8,6 +8,23 @@ public sealed class MessageBoxColorScheme
     private readonly MessageBoxColor[] _colors = new MessageBoxColor[5];
 
     /// <summary>
+    /// Creates a new instance of the <see cref="MessageBoxColorScheme"/> class.
+    /// </summary>
+    /// <param name="background">The background color.</param>
+    /// <param name="text">The text color.</param>
+    /// <param name="buttonBorder">The button border color.</param>
+    /// <param name="buttonBackground">The button background color.</param>
+    /// <param name="buttonSelected">The selected button color.</param>
+    public MessageBoxColorScheme(MessageBoxColor background, MessageBoxColor text, MessageBoxColor buttonBorder, MessageBoxColor buttonBackground, MessageBoxColor buttonSelected)
+    {
+        Background = background;
+        Text = text;
+        ButtonBorder = buttonBorder;
+        ButtonBackground = buttonBackground;
+        ButtonSelected = buttonSelected;
+    }
+
+    /// <summary>
     /// Gets or sets a color in the color scheme.
     /// </summary>
     /// <param name="type">The type of color to get or set.</param>

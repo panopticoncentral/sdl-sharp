@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
 using static Sdl3Sharp.Native.Common;
 
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
@@ -111,7 +110,7 @@ public static unsafe partial class Version
     /// <summary>
     /// Get the code revision of SDL that is linked against your program.
     /// </summary>
-    /// <returns>an arbitrary string, uniquely identifying the exact revision of the SDL library in use.</returns>
+    /// <returns>an arbitrary string, uniquely identifying the exact revision of the SDL library in use. This string is owned by SDL and should NOT be freed.</returns>
     /// <remarks>
     /// <para>This value is the revision of the code you are linked with and may be
     /// different from the code you are compiling with, which is found in the
@@ -126,6 +125,5 @@ public static unsafe partial class Version
     /// </remarks>
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
-    [return: MarshalUsing(typeof(Utf8StringMarshaller))]
-    public static partial string SDL_GetRevision();
+    public static partial byte* SDL_GetRevision();
 }

@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
 
 using static Sdl3Sharp.Native.Common;
 
@@ -30,6 +29,5 @@ public static unsafe partial class Platform
     /// </remarks>
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(Utf8StringMarshaller))]
-    public static partial string SDL_GetPlatform();
+    public static partial byte* SDL_GetPlatform();
 }

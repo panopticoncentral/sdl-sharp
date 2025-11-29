@@ -1,4 +1,3 @@
-using Sdl3Sharp.Graphics;
 using static Sdl3Sharp.Native.Gpu;
 using static Sdl3Sharp.Native.Surface;
 

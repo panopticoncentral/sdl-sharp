@@ -31,7 +31,7 @@ public static unsafe partial class Clipboard
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_SetClipboardText([MarshalUsing(typeof(Utf8StringMarshaller))] string text);
+    public static partial bool SDL_SetClipboardText([MarshalUsing(typeof(Utf8StringMarshaller))] string? text);
 
     /// <summary>
     /// Get UTF-8 text from the clipboard.

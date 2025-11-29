@@ -4,7 +4,6 @@ using System.Runtime.InteropServices.Marshalling;
 
 using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Surface;
-using static Sdl3Sharp.Native.Video;
 
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed
 #pragma warning disable CA1401 // P/Invokes should not be visible

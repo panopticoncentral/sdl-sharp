@@ -26,7 +26,14 @@ public sealed unsafe class Application : IDisposable
     /// <summary>
     /// The revision string of the version of SDL that's being used.
     /// </summary>
-    public static string Revision => SDL_GetRevision();
+    public static unsafe string Revision
+    {
+        get
+        {
+            var ptr = SDL_GetRevision();
+            return System.Runtime.InteropServices.Marshal.PtrToStringUTF8((nint)ptr) ?? string.Empty;
+        }
+    }
 
     /// <summary>
     /// The name of the platform SDL is running on.
@@ -42,7 +49,14 @@ public sealed unsafe class Application : IDisposable
     /// </list>
     /// <para>If the correct platform name is not available, returns a string beginning with the text "Unknown".</para>
     /// </remarks>
-    public static string Platform => SDL_GetPlatform();
+    public static string Platform
+    {
+        get
+        {
+            var ptr = SDL_GetPlatform();
+            return System.Runtime.InteropServices.Marshal.PtrToStringUTF8((nint)ptr) ?? "Unknown";
+        }
+    }
 
     /// <summary>
     /// Opens a URL/URI in the browser or other appropriate external application.

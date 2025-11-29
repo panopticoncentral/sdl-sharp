@@ -1,7 +1,6 @@
 using NativeAudio = Sdl3Sharp.Native.Audio;
 
 using static Sdl3Sharp.Native.Common;
-using static Sdl3Sharp.Native.IOStream;
 using static Sdl3Sharp.Native.StdInc;
 
 namespace Sdl3Sharp.Audio;

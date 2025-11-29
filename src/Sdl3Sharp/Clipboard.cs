@@ -21,9 +21,9 @@ public static unsafe class Clipboard
     /// Gets or sets the UTF-8 text in the clipboard.
     /// </summary>
     /// <exception cref="SdlException">Thrown when setting the clipboard text fails.</exception>
-    public static string Text
+    public static string? Text
     {
-        get => SDL_GetClipboardText();
+        get => !SDL_HasClipboardText() ? null : SDL_GetClipboardText();
         set => CheckErrorBool(SDL_SetClipboardText(value));
     }
 

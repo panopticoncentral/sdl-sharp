@@ -129,7 +129,7 @@ public static unsafe class MessageBox
                 messageBoxData.title = titlePtr;
                 messageBoxData.message = messagePtr;
 
-                int buttonId = 0;
+                var buttonId = 0;
                 _ = CheckErrorBool(SDL_ShowMessageBox(&messageBoxData, &buttonId));
                 return buttonId;
             }
@@ -199,9 +199,9 @@ public static unsafe class MessageBox
         {
             (*nativeScheme)[(SDL_MessageBoxColorType)i] = new SDL_MessageBoxColor
             {
-                r = colors[i].R,
-                g = colors[i].G,
-                b = colors[i].B
+                r = colors[i].Red,
+                g = colors[i].Green,
+                b = colors[i].Blue
             };
         }
 
