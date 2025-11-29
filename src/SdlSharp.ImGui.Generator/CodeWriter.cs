@@ -203,6 +203,32 @@ public static class NamingConventions
     }
 
     /// <summary>
+    /// Cleans a backend struct name by replacing backend prefixes with shorter identifiers.
+    /// For example: ImGui_ImplSDLGPU3_InitInfo -> GpuInitInfo
+    ///              ImGui_ImplSDLRenderer3_RenderState -> RendererRenderState
+    /// </summary>
+    public static string CleanBackendStructName(string name)
+    {
+        // Map backend prefixes to short identifiers
+        if (name.StartsWith("ImGui_ImplSDLGPU3_"))
+        {
+            return "Gpu" + name["ImGui_ImplSDLGPU3_".Length..];
+        }
+
+        if (name.StartsWith("ImGui_ImplSDLRenderer3_"))
+        {
+            return "Renderer" + name["ImGui_ImplSDLRenderer3_".Length..];
+        }
+
+        if (name.StartsWith("ImGui_ImplSDL3_"))
+        {
+            return "Sdl" + name["ImGui_ImplSDL3_".Length..];
+        }
+
+        return name;
+    }
+
+    /// <summary>
     /// Converts an enum element name to C# style.
     /// For example: ImGuiWindowFlags_NoTitleBar -> NoTitleBar
     /// Also handles backend enums: ImGui_ImplSDL3_GamepadMode_AutoFirst -> AutoFirst

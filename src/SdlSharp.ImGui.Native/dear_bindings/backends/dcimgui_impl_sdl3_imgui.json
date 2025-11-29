@@ -768,7 +768,7 @@
                         "preceding": [
                             "// [Internal]"
                         ],
-                        "attached": "// Don't use! For internal use by BeginChild()"
+                        "attached": "// Don't use! For internal use by BeginChild()  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -782,7 +782,7 @@
                     "value": 33554432,
                     "is_count": false,
                     "comments": {
-                        "attached": "// Don't use! For internal use by BeginTooltip()"
+                        "attached": "// Don't use! For internal use by BeginTooltip()  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -796,7 +796,7 @@
                     "value": 67108864,
                     "is_count": false,
                     "comments": {
-                        "attached": "// Don't use! For internal use by BeginPopup()"
+                        "attached": "// Don't use! For internal use by BeginPopup()  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -810,7 +810,7 @@
                     "value": 134217728,
                     "is_count": false,
                     "comments": {
-                        "attached": "// Don't use! For internal use by BeginPopupModal()"
+                        "attached": "// Don't use! For internal use by BeginPopupModal()  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -824,7 +824,7 @@
                     "value": 268435456,
                     "is_count": false,
                     "comments": {
-                        "attached": "// Don't use! For internal use by BeginMenu()"
+                        "attached": "// Don't use! For internal use by BeginMenu()  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -5412,7 +5412,8 @@
                     "comments": {
                         "preceding": [
                             "// [Internal] Reserved for mod storage"
-                        ]
+                        ],
+                        "attached": "//  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -5424,6 +5425,9 @@
                     "name": "ImGuiKey_ReservedForModShift",
                     "value": 664,
                     "is_count": false,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -5434,6 +5438,9 @@
                     "name": "ImGuiKey_ReservedForModAlt",
                     "value": 665,
                     "is_count": false,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -5444,6 +5451,9 @@
                     "name": "ImGuiKey_ReservedForModSuper",
                     "value": 666,
                     "is_count": false,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -5457,7 +5467,8 @@
                     "comments": {
                         "preceding": [
                             "// [Internal] If you need to iterate all keys (for e.g. an input mapper) you may use ImGuiKey_NamedKey_BEGIN..ImGuiKey_NamedKey_END."
-                        ]
+                        ],
+                        "attached": "//  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -5470,6 +5481,9 @@
                     "value_expression": "ImGuiKey_NamedKey_END-ImGuiKey_NamedKey_BEGIN",
                     "value": 155,
                     "is_count": true,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -7911,7 +7925,8 @@
                     "comments": {
                         "preceding": [
                             "// [Internal] Masks"
-                        ]
+                        ],
+                        "attached": "//  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -7924,6 +7939,9 @@
                     "value_expression": "ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_DisplayHex",
                     "value": 7340032,
                     "is_count": false,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -7935,6 +7953,9 @@
                     "value_expression": "ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_Float",
                     "value": 25165824,
                     "is_count": false,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -7946,6 +7967,9 @@
                     "value_expression": "ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_PickerHueBar",
                     "value": 100663296,
                     "is_count": false,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -7957,6 +7981,9 @@
                     "value_expression": "ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_InputHSV",
                     "value": 402653184,
                     "is_count": false,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -9100,7 +9127,8 @@
                     "comments": {
                         "preceding": [
                             "// [Internal] Combinations and masks"
-                        ]
+                        ],
+                        "attached": "//  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -9495,7 +9523,8 @@
                     "comments": {
                         "preceding": [
                             "// [Internal] Combinations and masks"
-                        ]
+                        ],
+                        "attached": "//  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -9508,6 +9537,9 @@
                     "value_expression": "ImGuiTableColumnFlags_IndentEnable | ImGuiTableColumnFlags_IndentDisable",
                     "value": 196608,
                     "is_count": false,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -9519,6 +9551,9 @@
                     "value_expression": "ImGuiTableColumnFlags_IsEnabled | ImGuiTableColumnFlags_IsVisible | ImGuiTableColumnFlags_IsSorted | ImGuiTableColumnFlags_IsHovered",
                     "value": 251658240,
                     "is_count": false,
+                    "comments": {
+                        "attached": "//  [MARKED-INTERNAL]"
+                    },
                     "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
@@ -9531,7 +9566,7 @@
                     "value": 1073741824,
                     "is_count": false,
                     "comments": {
-                        "attached": "// [Internal] Disable user resizing this column directly (it may however we resized indirectly from its left edge)"
+                        "attached": "// [Internal] Disable user resizing this column directly (it may however we resized indirectly from its left edge)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -15745,7 +15780,7 @@
                         "preceding": [
                             "// [Internal]"
                         ],
-                        "attached": "// FIXME-WIP: Reference scale, as applied by ScaleAllSizes()."
+                        "attached": "// FIXME-WIP: Reference scale, as applied by ScaleAllSizes().  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -15765,7 +15800,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// FIXME: Temporary hack until we finish remaining work."
+                        "attached": "// FIXME: Temporary hack until we finish remaining work.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -15873,7 +15908,8 @@
                 "preceding": [
                     "// [Internal] Storage used by IsKeyDown(), IsKeyPressed() etc functions.",
                     "// If prior to 1.87 you used io.KeysDownDuration[] (which was marked as internal), you should use GetKeyData(key)->DownDuration and *NOT* io.KeysData[key]->DownDuration."
-                ]
+                ],
+                "attached": "//  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -18770,7 +18806,7 @@
                         "preceding": [
                             "// [Internal]"
                         ],
-                        "attached": "// Source item id"
+                        "attached": "// Source item id  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -18790,7 +18826,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Source parent id (if available)"
+                        "attached": "// Source parent id (if available)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -18810,7 +18846,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Data timestamp"
+                        "attached": "// Data timestamp  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -18835,7 +18871,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Data type tag (short user-supplied string, 32 characters max)"
+                        "attached": "// Data type tag (short user-supplied string, 32 characters max)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -18855,7 +18891,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Set when AcceptDragDropPayload() was called and mouse has been hovering the target item (nb: handle overlapping drag targets)"
+                        "attached": "// Set when AcceptDragDropPayload() was called and mouse has been hovering the target item (nb: handle overlapping drag targets)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -18875,7 +18911,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Set when AcceptDragDropPayload() was called and mouse button is released over the target item."
+                        "attached": "// Set when AcceptDragDropPayload() was called and mouse button is released over the target item.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -18953,7 +18989,8 @@
             "comments": {
                 "preceding": [
                     "// [Internal]"
-                ]
+                ],
+                "attached": "//  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -19029,7 +19066,8 @@
             "comments": {
                 "preceding": [
                     "// Helper: Parse and apply text filters. In format \"aaaaa[,bbbb][,ccccc]\""
-                ]
+                ],
+                "attached": "//  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -19120,7 +19158,8 @@
             "comments": {
                 "preceding": [
                     "// [Internal] Key+Value for ImGuiStorage"
-                ]
+                ],
+                "attached": "//  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -19219,7 +19258,8 @@
                     "comments": {
                         "preceding": [
                             "// [Internal]"
-                        ]
+                        ],
+                        "attached": "//  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -20532,7 +20572,8 @@
             "comments": {
                 "preceding": [
                     "// [Internal] For use by ImDrawList"
-                ]
+                ],
+                "attached": "//  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -20586,7 +20627,8 @@
             "comments": {
                 "preceding": [
                     "// [Internal] For use by ImDrawListSplitter"
-                ]
+                ],
+                "attached": "//  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -20781,9 +20823,9 @@
                         "preceding": [
                             "// [Internal, used while building lists]"
                         ],
-                        "attached": "// [Internal] generally == VtxBuffer.Size unless we are past 64K vertices, in which case this gets reset to 0."
+                        "attached": "// [Internal] generally == VtxBuffer.Size unless we are past 64K vertices, in which case this gets reset to 0.  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3257
@@ -20804,9 +20846,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Pointer to shared draw data (you can use ImGui::GetDrawListSharedData() to get the one from current ImGui context)"
+                        "attached": "// Pointer to shared draw data (you can use ImGui::GetDrawListSharedData() to get the one from current ImGui context)  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3258
@@ -20827,9 +20869,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// [Internal] point within VtxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)"
+                        "attached": "// [Internal] point within VtxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3259
@@ -20850,9 +20892,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// [Internal] point within IdxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)"
+                        "attached": "// [Internal] point within IdxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3260
@@ -20870,9 +20912,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// [Internal] current path building"
+                        "attached": "// [Internal] current path building  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3261
@@ -20890,9 +20932,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// [Internal] template of active commands. Fields should match those of CmdBuffer.back()."
+                        "attached": "// [Internal] template of active commands. Fields should match those of CmdBuffer.back().  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3262
@@ -20910,9 +20952,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// [Internal] for channels api (note: prefer using your own persistent instance of ImDrawListSplitter!)"
+                        "attached": "// [Internal] for channels api (note: prefer using your own persistent instance of ImDrawListSplitter!)  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3263
@@ -20930,9 +20972,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// [Internal]"
+                        "attached": "// [Internal]  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3264
@@ -20950,9 +20992,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// [Internal]"
+                        "attached": "// [Internal]  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3265
@@ -20970,9 +21012,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// [Internal]"
+                        "attached": "// [Internal]  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3266
@@ -20990,9 +21032,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content"
+                        "attached": "// [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3267
@@ -21016,9 +21058,9 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Pointer to owner window's name for debugging"
+                        "attached": "// Pointer to owner window's name for debugging  [MARKED-INTERNAL]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3268
@@ -22204,7 +22246,7 @@
                         "preceding": [
                             "// [Internal]"
                         ],
-                        "attached": "// Font flags (don't use just yet, will be exposed in upcoming 1.92.X updates)"
+                        "attached": "// Font flags (don't use just yet, will be exposed in upcoming 1.92.X updates)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -22227,7 +22269,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Target font (as we merging fonts, multiple ImFontConfig may target the same font)"
+                        "attached": "// Target font (as we merging fonts, multiple ImFontConfig may target the same font)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -22253,7 +22295,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Custom font backend for this source (default source is the one stored in ImFontAtlas)"
+                        "attached": "// Custom font backend for this source (default source is the one stored in ImFontAtlas)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -22276,7 +22318,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Font loader opaque storage (per font config)"
+                        "attached": "// Font loader opaque storage (per font config)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23047,7 +23089,7 @@
                         "preceding": [
                             "// [Internal]"
                         ],
-                        "attached": "// Texture list (most often TexList.Size == 1). TexData is always == TexList.back(). DO NOT USE DIRECTLY, USE GetDrawData().Textures[]/GetPlatformIO().Textures[] instead!"
+                        "attached": "// Texture list (most often TexList.Size == 1). TexData is always == TexList.back(). DO NOT USE DIRECTLY, USE GetDrawData().Textures[]/GetPlatformIO().Textures[] instead!  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23067,7 +23109,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Marked as locked during ImGui::NewFrame()..EndFrame() scope if TexUpdates are not supported. Any attempt to modify the atlas will assert."
+                        "attached": "// Marked as locked during ImGui::NewFrame()..EndFrame() scope if TexUpdates are not supported. Any attempt to modify the atlas will assert.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23087,7 +23129,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Copy of (BackendFlags & ImGuiBackendFlags_RendererHasTextures) from supporting context."
+                        "attached": "// Copy of (BackendFlags & ImGuiBackendFlags_RendererHasTextures) from supporting context.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23107,7 +23149,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Set when texture was built matching current font input. Mostly useful for legacy IsBuilt() call."
+                        "attached": "// Set when texture was built matching current font input. Mostly useful for legacy IsBuilt() call.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23127,7 +23169,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Tell whether our texture data is known to use colors (rather than just alpha channel), in order to help backend select a format or conversion process."
+                        "attached": "// Tell whether our texture data is known to use colors (rather than just alpha channel), in order to help backend select a format or conversion process.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23147,7 +23189,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// = (1.0f/TexData->TexWidth, 1.0f/TexData->TexHeight). May change as new texture gets created."
+                        "attached": "// = (1.0f/TexData->TexWidth, 1.0f/TexData->TexHeight). May change as new texture gets created.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23167,7 +23209,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Texture coordinates to a white pixel. May change as new texture gets created."
+                        "attached": "// Texture coordinates to a white pixel. May change as new texture gets created.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23187,7 +23229,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font."
+                        "attached": "// Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23207,7 +23249,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Source/configuration data"
+                        "attached": "// Source/configuration data  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23232,7 +23274,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// UVs for baked anti-aliased lines"
+                        "attached": "// UVs for baked anti-aliased lines  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23252,7 +23294,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Next value to be stored in TexData->UniqueID"
+                        "attached": "// Next value to be stored in TexData->UniqueID  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23272,7 +23314,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Next value to be stored in ImFont->FontID"
+                        "attached": "// Next value to be stored in ImFont->FontID  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23292,7 +23334,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// List of users for this atlas. Typically one per Dear ImGui context."
+                        "attached": "// List of users for this atlas. Typically one per Dear ImGui context.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23315,7 +23357,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Opaque interface to our data that doesn't need to be public and may be discarded when rebuilding."
+                        "attached": "// Opaque interface to our data that doesn't need to be public and may be discarded when rebuilding.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23341,7 +23383,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Font loader opaque interface (default to use FreeType when IMGUI_ENABLE_FREETYPE is defined, otherwise default to use stb_truetype). Use SetFontLoader() to change this at runtime."
+                        "attached": "// Font loader opaque interface (default to use FreeType when IMGUI_ENABLE_FREETYPE is defined, otherwise default to use stb_truetype). Use SetFontLoader() to change this at runtime.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23367,7 +23409,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Font loader name (for display e.g. in About box) == FontLoader->Name"
+                        "attached": "// Font loader name (for display e.g. in About box) == FontLoader->Name  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23390,7 +23432,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Font backend opaque storage"
+                        "attached": "// Font backend opaque storage  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23410,7 +23452,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Shared flags (for all fonts) for font loader. THIS IS BUILD IMPLEMENTATION DEPENDENT (e.g. Per-font override is also available in ImFontConfig)."
+                        "attached": "// Shared flags (for all fonts) for font loader. THIS IS BUILD IMPLEMENTATION DEPENDENT (e.g. Per-font override is also available in ImFontConfig).  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23430,7 +23472,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Number of contexts using this atlas"
+                        "attached": "// Number of contexts using this atlas  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23453,7 +23495,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Context which own the atlas will be in charge of updating and destroying it."
+                        "attached": "// Context which own the atlas will be in charge of updating and destroying it.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23613,7 +23655,7 @@
                         "preceding": [
                             "// [Internal] Members: Hot ~20/24 bytes (for CalcTextSize)"
                         ],
-                        "attached": "// 12-16 // out // Sparse. Glyphs->AdvanceX in a directly indexable way (cache-friendly for CalcTextSize functions which only this info, and are often bottleneck in large UI)."
+                        "attached": "// 12-16 // out // Sparse. Glyphs->AdvanceX in a directly indexable way (cache-friendly for CalcTextSize functions which only this info, and are often bottleneck in large UI).  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23633,7 +23675,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4     // out // FindGlyph(FallbackChar)->AdvanceX"
+                        "attached": "// 4     // out // FindGlyph(FallbackChar)->AdvanceX  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23653,7 +23695,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4     // in  // Height of characters/line, set during loading (doesn't change after loading)"
+                        "attached": "// 4     // in  // Height of characters/line, set during loading (doesn't change after loading)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23673,7 +23715,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4     // in  // Density this is baked at"
+                        "attached": "// 4     // in  // Density this is baked at  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23696,7 +23738,7 @@
                         "preceding": [
                             "// [Internal] Members: Hot ~28/36 bytes (for RenderText loop)"
                         ],
-                        "attached": "// 12-16 // out // Sparse. Index glyphs by Unicode code-point."
+                        "attached": "// 12-16 // out // Sparse. Index glyphs by Unicode code-point.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23716,7 +23758,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 12-16 // out // All glyphs."
+                        "attached": "// 12-16 // out // All glyphs.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23736,7 +23778,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4     // out // Index of FontFallbackChar"
+                        "attached": "// 4     // out // Index of FontFallbackChar  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23759,7 +23801,7 @@
                         "preceding": [
                             "// [Internal] Members: Cold"
                         ],
-                        "attached": "// 4+4   // out // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize] (unscaled)"
+                        "attached": "// 4+4   // out // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize] (unscaled)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23782,7 +23824,7 @@
                         "preceding": [
                             "// [Internal] Members: Cold"
                         ],
-                        "attached": "// 4+4   // out // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize] (unscaled)"
+                        "attached": "// 4+4   // out // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize] (unscaled)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23803,7 +23845,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 3  // out // Total surface in pixels to get an idea of the font rasterization/texture cost (not exact, we approximate the cost of padding between glyphs)"
+                        "attached": "// 3  // out // Total surface in pixels to get an idea of the font rasterization/texture cost (not exact, we approximate the cost of padding between glyphs)  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23824,7 +23866,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 0  //     // Queued for destroy"
+                        "attached": "// 0  //     // Queued for destroy  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23845,7 +23887,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 0  //     // Disable loading fallback in lower-level calls."
+                        "attached": "// 0  //     // Disable loading fallback in lower-level calls.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23866,7 +23908,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 0  //     // Enable a two-steps mode where CalcTextSize() calls will load AdvanceX *without* rendering/packing glyphs. Only advantagous if you know that the glyph is unlikely to actually be rendered, otherwise it is slower because we'd do one query on the first CalcTextSize and one query on the first Draw."
+                        "attached": "// 0  //     // Enable a two-steps mode where CalcTextSize() calls will load AdvanceX *without* rendering/packing glyphs. Only advantagous if you know that the glyph is unlikely to actually be rendered, otherwise it is slower because we'd do one query on the first CalcTextSize and one query on the first Draw.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23886,7 +23928,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4  //     // Record of that time this was bounds"
+                        "attached": "// 4  //     // Record of that time this was bounds  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23906,7 +23948,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4     //     // Unique ID for this baked storage"
+                        "attached": "// 4     //     // Unique ID for this baked storage  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23929,7 +23971,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4-8   // in  // Parent font"
+                        "attached": "// 4-8   // in  // Parent font  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23952,7 +23994,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4-8   //     // Font loader opaque storage (per baked font * sources): single contiguous buffer allocated by imgui, passed to loader."
+                        "attached": "// 4-8   //     // Font loader opaque storage (per baked font * sources): single contiguous buffer allocated by imgui, passed to loader.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -23999,7 +24041,7 @@
                         "preceding": [
                             "// [Internal] Members: Hot ~12-20 bytes"
                         ],
-                        "attached": "// 4-8   // Cache last bound baked. NEVER USE DIRECTLY. Use GetFontBaked()."
+                        "attached": "// 4-8   // Cache last bound baked. NEVER USE DIRECTLY. Use GetFontBaked().  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24022,7 +24064,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4-8   // What we have been loaded into."
+                        "attached": "// 4-8   // What we have been loaded into.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24042,7 +24084,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4     // Font flags."
+                        "attached": "// 4     // Font flags.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24062,7 +24104,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// Current rasterizer density. This is a varying state of the font."
+                        "attached": "// Current rasterizer density. This is a varying state of the font.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24086,7 +24128,7 @@
                             "// [Internal] Members: Cold ~24-52 bytes",
                             "// Conceptually Sources[] is the list of font sources merged to create this font."
                         ],
-                        "attached": "// Unique identifier for the font"
+                        "attached": "// Unique identifier for the font  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24106,7 +24148,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 4     // in  // Font size passed to AddFont(). Use for old code calling PushFont() expecting to use that size. (use ImGui::GetFontBaked() to get font baked at current bound size)."
+                        "attached": "// 4     // in  // Font size passed to AddFont(). Use for old code calling PushFont() expecting to use that size. (use ImGui::GetFontBaked() to get font baked at current bound size).  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24126,7 +24168,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 16    // in  // List of sources. Pointers within OwnerAtlas->Sources[]"
+                        "attached": "// 16    // in  // List of sources. Pointers within OwnerAtlas->Sources[]  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24146,7 +24188,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 2-4   // out // Character used for ellipsis rendering ('...')."
+                        "attached": "// 2-4   // out // Character used for ellipsis rendering ('...').  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24166,7 +24208,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 2-4   // out // Character used if a glyph isn't found (U+FFFD, '?')"
+                        "attached": "// 2-4   // out // Character used if a glyph isn't found (U+FFFD, '?')  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24191,7 +24233,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 1 bytes if ImWchar=ImWchar16, 16 bytes if ImWchar==ImWchar32. Store 1-bit for each block of 4K codepoints that has one active glyph. This is mainly used to facilitate iterations across all used codepoints."
+                        "attached": "// 1 bytes if ImWchar=ImWchar16, 16 bytes if ImWchar==ImWchar32. Store 1-bit for each block of 4K codepoints that has one active glyph. This is mainly used to facilitate iterations across all used codepoints.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24211,7 +24253,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 1     //     // Mark when the \"...\" glyph needs to be generated."
+                        "attached": "// 1     //     // Mark when the \"...\" glyph needs to be generated.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -24231,7 +24273,7 @@
                         }
                     },
                     "comments": {
-                        "attached": "// 16    //     // Remapping pairs when using AddRemapChar(), otherwise empty."
+                        "attached": "// 16    //     // Remapping pairs when using AddRemapChar(), otherwise empty.  [MARKED-INTERNAL]"
                     },
                     "is_internal": true,
                     "source_location": {
@@ -65393,9 +65435,10 @@
             "comments": {
                 "preceding": [
                     "// [Internal helpers]"
-                ]
+                ],
+                "attached": "//  [MARKED-INTERNAL]"
             },
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3389
@@ -65437,7 +65480,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3390
@@ -65479,7 +65525,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3391
@@ -65521,7 +65570,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3392
@@ -65563,7 +65615,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3393
@@ -65605,7 +65660,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3394
@@ -65647,7 +65705,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3395
@@ -65689,7 +65750,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3396
@@ -65744,7 +65808,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3397
@@ -65802,7 +65869,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3398
@@ -65909,7 +65979,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3399
@@ -66016,7 +66089,10 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3400
@@ -70265,6 +70341,9 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImFont",
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
             "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
@@ -70310,6 +70389,9 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImFont",
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
             "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
@@ -70362,7 +70444,7 @@
             "is_static": false,
             "original_class": "ImFont",
             "comments": {
-                "attached": "// Fill ImFontConfig::Name."
+                "attached": "// Fill ImFontConfig::Name.  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -70503,7 +70585,7 @@
             "is_static": false,
             "original_class": "ImFont",
             "comments": {
-                "attached": "// Get or create baked data for given size"
+                "attached": "// Get or create baked data for given size  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -70751,6 +70833,9 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImFont",
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
             "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
@@ -70863,6 +70948,9 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImFont",
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
             "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
@@ -71106,6 +71194,9 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImFont",
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
             "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
@@ -71282,6 +71373,9 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImFont",
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]"
+            },
             "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
@@ -71445,7 +71539,8 @@
             "comments": {
                 "preceding": [
                     "// [Internal] Don't use!"
-                ]
+                ],
+                "attached": "//  [MARKED-INTERNAL]  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -71516,7 +71611,7 @@
             "is_static": false,
             "original_class": "ImFont",
             "comments": {
-                "attached": "// Makes 'from_codepoint' character points to 'to_codepoint' glyph."
+                "attached": "// Makes 'from_codepoint' character points to 'to_codepoint' glyph.  [MARKED-INTERNAL]  [MARKED-INTERNAL]"
             },
             "is_internal": true,
             "source_location": {
@@ -71586,6 +71681,9 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImFont",
+            "comments": {
+                "attached": "//  [MARKED-INTERNAL]  [MARKED-INTERNAL]"
+            },
             "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",

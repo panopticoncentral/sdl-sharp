@@ -34,18 +34,6 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
     ];
 
     /// <summary>
-    /// Opaque handle types that should be generated as wrapper structs wrapping nint.
-    /// These are forward-declared structs with no exposed fields (truly opaque).
-    /// </summary>
-    public static readonly HashSet<string> OpaqueHandleTypedefs =
-    [
-        "ImGuiContext",
-        "ImDrawListSharedData",
-        "ImFontAtlasBuilder",
-        "ImFontLoader",
-    ];
-
-    /// <summary>
     /// Generates a wrapper struct for an opaque handle type.
     /// </summary>
     public static string GenerateOpaqueHandleWrapper(string name, string namespaceName)

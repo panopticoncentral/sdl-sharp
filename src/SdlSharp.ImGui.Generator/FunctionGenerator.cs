@@ -34,9 +34,9 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         writer.OpenBrace();
 
         // Group functions by category (from preceding comments) while preserving original order
-        var groupedFunctions = GroupFunctions(functionList);
+        List<FunctionGroup> groupedFunctions = GroupFunctions(functionList);
 
-        foreach (var group in groupedFunctions)
+        foreach (FunctionGroup group in groupedFunctions)
         {
             writer.AppendLine($"#region {group.Category}");
             writer.AppendLine();
@@ -67,11 +67,11 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         // Generate LibraryImport attribute (only include EntryPoint if it differs from method name)
         if (methodName == func.Name)
         {
-            writer.AppendLine("[LibraryImport(NativeLibrary.Name)]");
+            writer.AppendLine("[LibraryImport(Common.ImGuiNative)]");
         }
         else
         {
-            writer.AppendLine($"[LibraryImport(NativeLibrary.Name, EntryPoint = \"{func.Name}\")]");
+            writer.AppendLine($"[LibraryImport(Common.ImGuiNative, EntryPoint = \"{func.Name}\")]");
         }
 
         // Check if return type needs marshaling
@@ -138,28 +138,16 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
             var paramType = _typeMapper.MapType(arg.Type, forParameter: true);
             var paramName = NamingConventions.ToParameterName(arg.Name);
 
-            // Check if we need ref modifier
-            var refModifier = "";
-            if (_typeMapper.ShouldUseRef(arg.Type, arg))
-            {
-                refModifier = "ref ";
-                // Remove the pointer from the type since we're using ref
-                if (paramType.EndsWith('*'))
-                {
-                    paramType = paramType[..^1];
-                }
-            }
-
             // Get marshaling attribute
             var marshalAttr = TypeMapper.GetMarshalAsAttribute(arg.Type, forParameter: true);
 
             if (marshalAttr != null)
             {
-                parts.Add($"{marshalAttr} {refModifier}{paramType} {paramName}");
+                parts.Add($"{marshalAttr} {paramType} {paramName}");
             }
             else
             {
-                parts.Add($"{refModifier}{paramType} {paramName}");
+                parts.Add($"{paramType} {paramName}");
             }
         }
 
@@ -193,7 +181,7 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         string currentCategory = "General";
         var currentFunctions = new List<FunctionInfo>();
 
-        foreach (var func in functions)
+        foreach (FunctionInfo func in functions)
         {
             // Check if the function has a preceding comment that indicates a new category
             var category = ExtractCategory(func.Comments?.Preceding);

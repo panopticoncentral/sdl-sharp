@@ -7,9 +7,10 @@ public sealed class StructGenerator(TypeMapper typeMapper)
 {
     private readonly TypeMapper _typeMapper = typeMapper;
 
-    public string GenerateSingleStruct(StructInfo structInfo, string namespaceName, IEnumerable<FunctionInfo>? methods = null)
+    public string GenerateSingleStruct(StructInfo structInfo, string namespaceName, IEnumerable<FunctionInfo>? methods = null, string? cleanName = null)
     {
-        var methodList = methods?.ToList() ?? [];
+        List<FunctionInfo> methodList = methods?.ToList() ?? [];
+        var structName = cleanName ?? structInfo.Name;
 
         var writer = new CodeWriter();
         writer.WriteFileHeader();
@@ -22,7 +23,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         {
             foreach (var module in TypeMapper.GetSdlModulesUsedByFunctions([method]))
             {
-                sdlModules.Add(module);
+                _ = sdlModules.Add(module);
             }
         }
 
@@ -35,13 +36,15 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         writer.AppendLine($"namespace {namespaceName};");
         writer.AppendLine();
 
-        GenerateStruct(writer, structInfo, methodList);
+        GenerateStruct(writer, structInfo, methodList, structName);
 
         return writer.ToString();
     }
 
-    private void GenerateStruct(CodeWriter writer, StructInfo structInfo, List<FunctionInfo> methods)
+    private void GenerateStruct(CodeWriter writer, StructInfo structInfo, List<FunctionInfo> methods, string? structName = null)
     {
+        structName ??= structInfo.Name;
+
         // Write documentation
         writer.WriteDocComment(structInfo.Comments);
 
@@ -52,7 +55,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         var needsUnsafe = NeedsUnsafeContext(structInfo) || methods.Count > 0;
         var unsafeModifier = needsUnsafe ? "unsafe " : "";
 
-        writer.AppendLine($"public {unsafeModifier}partial struct {structInfo.Name}");
+        writer.AppendLine($"public {unsafeModifier}partial struct {structName}");
         writer.OpenBrace();
 
         var fields = structInfo.Fields
@@ -73,7 +76,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         // Generate methods
         foreach (FunctionInfo method in methods)
         {
-            GenerateMethod(writer, method, structInfo.Name);
+            GenerateMethod(writer, method, structName);
             writer.AppendLine();
         }
 
@@ -95,11 +98,11 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         // Generate LibraryImport attribute
         if (methodName == func.Name)
         {
-            writer.AppendLine("[LibraryImport(NativeLibrary.Name)]");
+            writer.AppendLine("[LibraryImport(Common.ImGuiNative)]");
         }
         else
         {
-            writer.AppendLine($"[LibraryImport(NativeLibrary.Name, EntryPoint = \"{func.Name}\")]");
+            writer.AppendLine($"[LibraryImport(Common.ImGuiNative, EntryPoint = \"{func.Name}\")]");
         }
 
         // Check if return type needs marshaling
@@ -139,27 +142,16 @@ public sealed class StructGenerator(TypeMapper typeMapper)
 
             var paramName = NamingConventions.ToParameterName(arg.Name);
 
-            // Check if we need ref modifier (but not for instance pointer)
-            var refModifier = "";
-            if (!arg.IsInstancePointer && _typeMapper.ShouldUseRef(arg.Type, arg))
-            {
-                refModifier = "ref ";
-                if (paramType.EndsWith('*'))
-                {
-                    paramType = paramType[..^1];
-                }
-            }
-
             // Get marshaling attribute
             var marshalAttr = TypeMapper.GetMarshalAsAttribute(arg.Type, forParameter: true);
 
             if (marshalAttr != null)
             {
-                parts.Add($"{marshalAttr} {refModifier}{paramType} {paramName}");
+                parts.Add($"{marshalAttr} {paramType} {paramName}");
             }
             else
             {
-                parts.Add($"{refModifier}{paramType} {paramName}");
+                parts.Add($"{paramType} {paramName}");
             }
         }
 

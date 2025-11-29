@@ -20783,7 +20783,7 @@
                         ],
                         "attached": "// [Internal] generally == VtxBuffer.Size unless we are past 64K vertices, in which case this gets reset to 0."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3257
@@ -20806,7 +20806,7 @@
                     "comments": {
                         "attached": "// Pointer to shared draw data (you can use ImGui::GetDrawListSharedData() to get the one from current ImGui context)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3258
@@ -20829,7 +20829,7 @@
                     "comments": {
                         "attached": "// [Internal] point within VtxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3259
@@ -20852,7 +20852,7 @@
                     "comments": {
                         "attached": "// [Internal] point within IdxBuffer.Data after each add command (to avoid using the ImVector<> operators too much)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3260
@@ -20872,7 +20872,7 @@
                     "comments": {
                         "attached": "// [Internal] current path building"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3261
@@ -20892,7 +20892,7 @@
                     "comments": {
                         "attached": "// [Internal] template of active commands. Fields should match those of CmdBuffer.back()."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3262
@@ -20912,7 +20912,7 @@
                     "comments": {
                         "attached": "// [Internal] for channels api (note: prefer using your own persistent instance of ImDrawListSplitter!)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3263
@@ -20932,7 +20932,7 @@
                     "comments": {
                         "attached": "// [Internal]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3264
@@ -20952,7 +20952,7 @@
                     "comments": {
                         "attached": "// [Internal]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3265
@@ -20972,7 +20972,7 @@
                     "comments": {
                         "attached": "// [Internal]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3266
@@ -20992,7 +20992,7 @@
                     "comments": {
                         "attached": "// [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3267
@@ -21018,7 +21018,7 @@
                     "comments": {
                         "attached": "// Pointer to owner window's name for debugging"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3268
@@ -65395,7 +65395,7 @@
                     "// [Internal helpers]"
                 ]
             },
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3389
@@ -65437,7 +65437,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3390
@@ -65479,7 +65479,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3391
@@ -65521,7 +65521,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3392
@@ -65563,7 +65563,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3393
@@ -65605,7 +65605,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3394
@@ -65647,7 +65647,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3395
@@ -65689,7 +65689,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3396
@@ -65744,7 +65744,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3397
@@ -65802,7 +65802,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3398
@@ -65909,7 +65909,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3399
@@ -66016,7 +66016,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImDrawList",
-            "is_internal": false,
+            "is_internal": true,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3400

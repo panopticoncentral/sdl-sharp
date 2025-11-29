@@ -5,11 +5,16 @@ namespace SdlSharp.ImGui.Generator;
 /// </summary>
 public sealed class TypeMapper
 {
-    private readonly HashSet<string> _byValueStructs = [];
-    private readonly HashSet<string> _referenceStructs = [];
+    private readonly HashSet<string> _structs = [];
     private readonly HashSet<string> _opaqueStructs = [];
     private readonly HashSet<string> _enumTypes = [];
     private readonly Dictionary<string, string> _typedefs = [];
+    private readonly Dictionary<string, string> _backendStructRenames = [];
+
+    /// <summary>
+    /// Gets the set of opaque struct names (forward-declared structs with no exposed fields).
+    /// </summary>
+    public IReadOnlySet<string> OpaqueStructs => _opaqueStructs;
 
     /// <summary>
     /// Builtin C type to C# type mapping.
@@ -100,28 +105,24 @@ public sealed class TypeMapper
 
     public void Initialize(DearBindingsRoot root)
     {
-        // Collect by-value structs
-        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && s.ByValue))
+        // Collect structs (internal/anonymous structs are filtered out at generation sites)
+        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous))
         {
-            _ = _byValueStructs.Add(s.Name);
+            _ = _structs.Add(s.Name);
+
+            // Track backend struct renames (ImGui_ImplSDLGPU3_InitInfo -> GpuInitInfo)
+            var cleanName = NamingConventions.CleanBackendStructName(s.Name);
+            if (cleanName != s.Name)
+            {
+                _backendStructRenames[s.Name] = cleanName;
+            }
         }
 
-        // Collect reference structs (passed by pointer but have known layout)
-        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.ByValue && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0))
+        // Collect opaque types (forward-declared structs with no exposed fields)
+        foreach (StructInfo? s in root.Structs.Where(s => s.ForwardDeclaration && !SdlTypeToModule.ContainsKey(s.Name)))
         {
-            _ = _referenceStructs.Add(s.Name);
-        }
-
-        // Collect truly opaque structs (no fields or forward declarations)
-        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.ByValue && (s.Fields.Count == 0 || s.IsInternal || s.IsAnonymous)))
-        {
+            Console.WriteLine($"Found opaque struct: {s.Name}");
             _ = _opaqueStructs.Add(s.Name);
-        }
-
-        // Add known opaque types
-        foreach (var t in TypedefGenerator.OpaqueHandleTypedefs)
-        {
-            _ = _opaqueStructs.Add(t);
         }
 
         // Collect enums
@@ -326,10 +327,10 @@ public sealed class TypeMapper
             return NamingConventions.CleanEnumName(name);
         }
 
-        // Check if it's a by-value struct
-        if (_byValueStructs.Contains(name))
+        // Check if it's a struct (use cleaned name for backend structs)
+        if (_structs.Contains(name))
         {
-            return name;
+            return _backendStructRenames.TryGetValue(name, out var cleanName) ? cleanName : name;
         }
 
         // Check if it's an SDL type from Sdl3Sharp.Native - keep the type name
@@ -338,16 +339,10 @@ public sealed class TypeMapper
             return name;
         }
 
-        // Check if it's an opaque handle wrapper typedef - return wrapper struct name
-        if (TypedefGenerator.OpaqueHandleTypedefs.Contains(name))
-        {
-            return name;
-        }
-
-        // Check if it's an opaque struct - use nint as handle
+        // Check if it's an opaque struct - return wrapper struct name
         if (_opaqueStructs.Contains(name))
         {
-            return "nint";
+            return name;
         }
 
         // Default: assume it's a struct type
@@ -413,16 +408,11 @@ public sealed class TypeMapper
                 return $"{enumName}*";
             }
 
-            // By-value struct pointer -> ref or pointer
-            if (_byValueStructs.Contains(userName))
+            // Struct -> typed pointer (use cleaned name for backend structs)
+            if (_structs.Contains(userName))
             {
-                return $"{userName}*";
-            }
-
-            // Reference struct pointer -> typed pointer (we have the struct definition)
-            if (_referenceStructs.Contains(userName))
-            {
-                return $"{userName}*";
+                var structName = _backendStructRenames.TryGetValue(userName, out var cleanName) ? cleanName : userName;
+                return $"{structName}*";
             }
 
             // SDL type pointer -> use the actual SDL type pointer for type safety
@@ -431,16 +421,10 @@ public sealed class TypeMapper
                 return $"{userName}*";
             }
 
-            // Opaque handle wrapper typedef pointer -> return wrapper type (these are already pointers conceptually)
-            if (TypedefGenerator.OpaqueHandleTypedefs.Contains(userName))
-            {
-                return userName;
-            }
-
-            // Opaque struct pointer -> nint (it's already a pointer conceptually)
+            // Opaque struct pointer -> return wrapper type (these are already pointers conceptually)
             if (_opaqueStructs.Contains(userName))
             {
-                return "nint";
+                return userName;
             }
 
             // Unknown user type - treat as opaque pointer
@@ -490,12 +474,6 @@ public sealed class TypeMapper
             return "[MarshalAs(UnmanagedType.U1)]";
         }
 
-        // bool* (pointer to bool) also needs MarshalAs when used as ref bool
-        if (desc.Kind == "Pointer" && desc.InnerType?.Kind == "Builtin" && desc.InnerType.BuiltinType == "bool")
-        {
-            return "[MarshalAs(UnmanagedType.U1)]";
-        }
-
         // const char* for parameters -> LPUTF8Str
         if (desc.Kind == "Pointer" && desc.InnerType?.Kind == "Builtin" && desc.InnerType.BuiltinType == "char")
         {
@@ -507,50 +485,5 @@ public sealed class TypeMapper
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// Determines if a type should use 'ref' modifier.
-    /// </summary>
-    public bool ShouldUseRef(TypeDescription? type, ArgumentInfo arg)
-    {
-        if (type?.Description == null)
-        {
-            return false;
-        }
-
-        TypeDescriptionDetail desc = type.Description;
-
-        // Instance pointers are passed as-is
-        if (arg.IsInstancePointer)
-        {
-            return false;
-        }
-
-        // Pointer to by-value struct (non-const) should be ref
-        if (desc.Kind == "Pointer" && desc.InnerType?.Kind == "User")
-        {
-            var userName = desc.InnerType.Name ?? "";
-            var isConst = desc.InnerType.StorageClasses?.Contains("const") ?? false;
-
-            if (_byValueStructs.Contains(userName) && !isConst)
-            {
-                return true;
-            }
-        }
-
-        // Pointer to builtin (non-const, non-void) for out parameters
-        if (desc.Kind == "Pointer" && desc.InnerType?.Kind == "Builtin")
-        {
-            var builtinType = desc.InnerType.BuiltinType;
-            var isConst = desc.InnerType.StorageClasses?.Contains("const") ?? false;
-
-            if (!isConst && builtinType != "void" && builtinType != "char")
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
