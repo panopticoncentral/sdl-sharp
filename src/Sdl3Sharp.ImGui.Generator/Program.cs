@@ -1,13 +1,13 @@
 using System.Text.Json;
-using SdlSharp.ImGui.Generator;
+using Sdl3Sharp.ImGui.Generator;
 
 const string Namespace = "SdlSharp.ImGui.Native";
 const string BackendsNamespace = $"{Namespace}.Backends";
 
 // Determine paths
 var baseDir = FindSolutionRoot();
-var dearBindingsDir = Path.Combine(baseDir, "src", "SdlSharp.ImGui.Native", "dear_bindings");
-var outputDir = Path.Combine(baseDir, "src", "SdlSharp.ImGui", "Native");
+var dearBindingsDir = Path.Combine(baseDir, "src", "Sdl3Sharp.ImGui.Native", "dear_bindings");
+var outputDir = Path.Combine(baseDir, "src", "Sdl3Sharp.ImGui", "Native");
 
 Console.WriteLine($"Solution root: {baseDir}");
 Console.WriteLine($"Dear Bindings dir: {dearBindingsDir}");
@@ -39,7 +39,7 @@ var commonContent = $$"""
         /// <summary>
         /// The name of the native ImGui library.
         /// </summary>
-        public const string ImGuiNative = "SdlSharp.ImGui.Native";
+        public const string ImGuiNative = "Sdl3Sharp.ImGui.Native";
     }
     """;
 File.WriteAllText(Path.Combine(outputDir, "Common.cs"), commonContent);

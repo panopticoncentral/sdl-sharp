@@ -13,5 +13,5 @@ internal static class Common
     /// <summary>
     /// The name of the native ImGui library.
     /// </summary>
-    public const string ImGuiNative = "SdlSharp.ImGui.Native";
+    public const string ImGuiNative = "Sdl3Sharp.ImGui.Native";
 }

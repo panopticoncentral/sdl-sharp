@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace SdlSharp.ImGui.Generator;
+namespace Sdl3Sharp.ImGui.Generator;
 
 /// <summary>
 /// Helper class for writing formatted C# code.

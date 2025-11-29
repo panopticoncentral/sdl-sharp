@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<PlatformTarget>x64</PlatformTarget>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Sdl3Sharp\Sdl3Sharp.csproj" />
+		<ProjectReference Include="..\Sdl3Sharp.ImGui.Native\Sdl3Sharp.ImGui.Native.vcxproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		</ProjectReference>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<None Include="$(SolutionDir)build\$(PlatformTarget)\$(Configuration)\Sdl3Sharp.ImGui.Native.dll">
+			<Link>Sdl3Sharp.ImGui.Native.dll</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+</Project>

@@ -1,4 +1,4 @@
-namespace SdlSharp.ImGui.Generator;
+namespace Sdl3Sharp.ImGui.Generator;
 
 /// <summary>
 /// Generates C# wrapper structs for ImGui typedefs.

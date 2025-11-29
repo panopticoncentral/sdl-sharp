@@ -40,8 +40,8 @@
     <Project Path="src/Tutorial/08_Text/08_Text.csproj" />
   </Folder>
   <Project Path="src/Sdl3Sharp/Sdl3Sharp.csproj" />
-  <Project Path="src/SdlSharp.ImGui.Generator/SdlSharp.ImGui.Generator.csproj" />
-  <Project Path="src/SdlSharp.ImGui.Native/SdlSharp.ImGui.Native.vcxproj" Id="bf862498-3b42-420b-bccd-02d42f2083af" />
-  <Project Path="src/SdlSharp.ImGui/SdlSharp.ImGui.csproj" />
+  <Project Path="src/Sdl3Sharp.ImGui.Generator/Sdl3Sharp.ImGui.Generator.csproj" />
+  <Project Path="src/Sdl3Sharp.ImGui.Native/Sdl3Sharp.ImGui.Native.vcxproj" Id="bf862498-3b42-420b-bccd-02d42f2083af" />
+  <Project Path="src/Sdl3Sharp.ImGui/Sdl3Sharp.ImGui.csproj" />
   <Project Path="src/SdlSharp/SdlSharp.csproj" />
 </Solution>

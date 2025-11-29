@@ -15,8 +15,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\Sdl3Sharp\Sdl3Sharp.csproj" />
-		<ProjectReference Include="..\..\..\SdlSharp.ImGui.Native\SdlSharp.ImGui.Native.vcxproj" />
-		<ProjectReference Include="..\..\..\SdlSharp.ImGui\SdlSharp.ImGui.csproj" />
+		<ProjectReference Include="..\..\..\Sdl3Sharp.ImGui\Sdl3Sharp.ImGui.csproj" />
 	</ItemGroup>
 
 </Project>

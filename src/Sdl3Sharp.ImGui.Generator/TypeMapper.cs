@@ -1,4 +1,4 @@
-namespace SdlSharp.ImGui.Generator;
+namespace Sdl3Sharp.ImGui.Generator;
 
 /// <summary>
 /// Maps C types from Dear Bindings to C# types.
@@ -121,7 +121,6 @@ public sealed class TypeMapper
         // Collect opaque types (forward-declared structs with no exposed fields)
         foreach (StructInfo? s in root.Structs.Where(s => s.ForwardDeclaration && !SdlTypeToModule.ContainsKey(s.Name)))
         {
-            Console.WriteLine($"Found opaque struct: {s.Name}");
             _ = _opaqueStructs.Add(s.Name);
         }
 

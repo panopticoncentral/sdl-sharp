@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace SdlSharp.ImGui.Generator;
+namespace Sdl3Sharp.ImGui.Generator;
 
 /// <summary>
 /// Root model for Dear Bindings JSON output.
