@@ -113,7 +113,7 @@ public static unsafe class EventQueue
     /// <exception cref="SdlException">Thrown if there was an error pushing the event.</exception>
     public static bool Push(Event @event)
     {
-        var sdlEvent = @event.Native;
+        SDL_Event sdlEvent = @event.Native;
         return SDL_PushEvent(&sdlEvent);
     }
 
@@ -166,7 +166,7 @@ public static unsafe class EventQueue
     /// <returns>The number of events actually retrieved.</returns>
     public static int Peek(Span<Event> events, EventType minType = EventType.First, EventType maxType = EventType.Last)
     {
-        var nativeEvents = stackalloc SDL_Event[events.Length];
+        SDL_Event* nativeEvents = stackalloc SDL_Event[events.Length];
         var count = SDL_PeepEvents(nativeEvents, events.Length, SDL_EventAction.SDL_PEEKEVENT, (uint)minType, (uint)maxType);
 
         if (count < 0)
@@ -191,7 +191,7 @@ public static unsafe class EventQueue
     /// <returns>The number of events actually retrieved.</returns>
     public static int Get(Span<Event> events, EventType minType = EventType.First, EventType maxType = EventType.Last)
     {
-        var nativeEvents = stackalloc SDL_Event[events.Length];
+        SDL_Event* nativeEvents = stackalloc SDL_Event[events.Length];
         var count = SDL_PeepEvents(nativeEvents, events.Length, SDL_EventAction.SDL_GETEVENT, (uint)minType, (uint)maxType);
 
         if (count < 0)
@@ -318,8 +318,9 @@ public static unsafe class EventQueue
             handle.Free();
             lock (_eventWatches)
             {
-                _eventWatches.Remove(registration);
+                _ = _eventWatches.Remove(registration);
             }
+
             throw new SdlException();
         }
 
@@ -332,7 +333,7 @@ public static unsafe class EventQueue
     /// <param name="handle">The handle returned by <see cref="AddWatch"/>.</param>
     public static void RemoveWatch(EventWatchHandle handle)
     {
-        var registration = handle.Registration;
+        EventWatchRegistration? registration = handle.Registration;
         if (registration is null || !registration.Handle.IsAllocated)
         {
             return;
@@ -342,7 +343,7 @@ public static unsafe class EventQueue
 
         lock (_eventWatches)
         {
-            _eventWatches.Remove(registration);
+            _ = _eventWatches.Remove(registration);
         }
 
         registration.Handle.Free();

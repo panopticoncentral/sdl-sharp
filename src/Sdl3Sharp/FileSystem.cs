@@ -75,7 +75,7 @@ public static unsafe class FileSystem
     /// <exception cref="SdlException">Thrown on failure.</exception>
     public static void CreateDirectory(string path)
     {
-        CheckErrorBool(SDL_CreateDirectory(path));
+        _ = CheckErrorBool(SDL_CreateDirectory(path));
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ public static unsafe class FileSystem
         try
         {
             var result = SDL_EnumerateDirectory(path, &EnumerateDirectoryCallback, (nuint)GCHandle.ToIntPtr(handle));
-            CheckErrorBool(result);
+            _ = CheckErrorBool(result);
         }
         finally
         {
@@ -126,7 +126,7 @@ public static unsafe class FileSystem
     /// <exception cref="SdlException">Thrown on failure.</exception>
     public static void RemovePath(string path)
     {
-        CheckErrorBool(SDL_RemovePath(path));
+        _ = CheckErrorBool(SDL_RemovePath(path));
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public static unsafe class FileSystem
     /// <exception cref="SdlException">Thrown on failure.</exception>
     public static void RenamePath(string oldPath, string newPath)
     {
-        CheckErrorBool(SDL_RenamePath(oldPath, newPath));
+        _ = CheckErrorBool(SDL_RenamePath(oldPath, newPath));
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public static unsafe class FileSystem
     /// <exception cref="SdlException">Thrown on failure.</exception>
     public static void CopyFile(string oldPath, string newPath)
     {
-        CheckErrorBool(SDL_CopyFile(oldPath, newPath));
+        _ = CheckErrorBool(SDL_CopyFile(oldPath, newPath));
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public static unsafe class FileSystem
     public static PathInfo GetPathInfo(string path)
     {
         Native.Filesystem.SDL_PathInfo info;
-        CheckErrorBool(SDL_GetPathInfo(path, &info));
+        _ = CheckErrorBool(SDL_GetPathInfo(path, &info));
         return new PathInfo(info);
     }
 
@@ -205,6 +205,7 @@ public static unsafe class FileSystem
             {
                 result[i] = Marshal.PtrToStringUTF8((nint)ptr[i]) ?? string.Empty;
             }
+
             return result;
         }
         finally

@@ -2,6 +2,7 @@ using NativeAudio = Sdl3Sharp.Native.Audio;
 
 using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.StdInc;
+using Sdl3Sharp.Native;
 
 namespace Sdl3Sharp.Audio;
 
@@ -26,7 +27,7 @@ public sealed unsafe class AudioStream : IDisposable
         get
         {
             ThrowIfDisposed();
-            var id = NativeAudio.SDL_GetAudioStreamProperties(Handle);
+            Properties.SDL_PropertiesID id = NativeAudio.SDL_GetAudioStreamProperties(Handle);
             return id.Value == 0 ? throw new SdlException() : new PropertyGroup(id, ownsHandle: false);
         }
     }
@@ -156,7 +157,7 @@ public sealed unsafe class AudioStream : IDisposable
         get
         {
             ThrowIfDisposed();
-            var id = NativeAudio.SDL_GetAudioStreamDevice(Handle);
+            NativeAudio.SDL_AudioDeviceID id = NativeAudio.SDL_GetAudioStreamDevice(Handle);
             return id.Value == 0 ? null : new AudioDevice(id, ownsHandle: false);
         }
     }
@@ -207,7 +208,7 @@ public sealed unsafe class AudioStream : IDisposable
             freq = outputFormat.Frequency
         };
 
-        var handle = NativeAudio.SDL_CreateAudioStream(&srcSpec, &dstSpec);
+        NativeAudio.SDL_AudioStream* handle = NativeAudio.SDL_CreateAudioStream(&srcSpec, &dstSpec);
         return handle == null ? throw new SdlException() : new AudioStream(handle, ownsHandle: true);
     }
 
@@ -244,7 +245,7 @@ public sealed unsafe class AudioStream : IDisposable
             specPtr = &nativeSpec;
         }
 
-        var handle = NativeAudio.SDL_OpenAudioDeviceStream(deviceId, specPtr, null, 0);
+        NativeAudio.SDL_AudioStream* handle = NativeAudio.SDL_OpenAudioDeviceStream(deviceId, specPtr, null, 0);
         return handle == null ? throw new SdlException() : new AudioStream(handle, ownsHandle: true);
     }
 

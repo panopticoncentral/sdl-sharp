@@ -107,7 +107,7 @@ public sealed unsafe class TrayMenu
     /// <returns>The newly created entry.</returns>
     public TrayEntry AddButton(string label, Action<TrayEntry>? callback = null)
     {
-        var entry = InsertEntryAt(-1, label, TrayEntryFlags.Button)!;
+        TrayEntry entry = InsertEntryAt(-1, label, TrayEntryFlags.Button)!;
         if (callback != null)
         {
             entry.SetCallback(callback);
@@ -125,13 +125,13 @@ public sealed unsafe class TrayMenu
     /// <returns>The newly created entry.</returns>
     public TrayEntry AddCheckbox(string label, bool isChecked = false, Action<TrayEntry>? callback = null)
     {
-        var flags = TrayEntryFlags.Checkbox;
+        TrayEntryFlags flags = TrayEntryFlags.Checkbox;
         if (isChecked)
         {
             flags |= TrayEntryFlags.Checked;
         }
 
-        var entry = InsertEntryAt(-1, label, flags)!;
+        TrayEntry entry = InsertEntryAt(-1, label, flags)!;
         if (callback != null)
         {
             entry.SetCallback(callback);
@@ -147,7 +147,7 @@ public sealed unsafe class TrayMenu
     /// <returns>The newly created submenu.</returns>
     public TrayMenu AddSubmenu(string label)
     {
-        var entry = InsertEntryAt(-1, label, TrayEntryFlags.Submenu)!;
+        TrayEntry entry = InsertEntryAt(-1, label, TrayEntryFlags.Submenu)!;
         return entry.CreateSubmenu();
     }
 

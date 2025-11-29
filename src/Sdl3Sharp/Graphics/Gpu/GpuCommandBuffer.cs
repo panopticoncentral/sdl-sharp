@@ -86,7 +86,7 @@ public sealed unsafe class GpuCommandBuffer
         {
             if (depthStencilTargetInfo.HasValue)
             {
-                var nativeDepthStencil = depthStencilTargetInfo.Value.ToNative();
+                SDL_GPUDepthStencilTargetInfo nativeDepthStencil = depthStencilTargetInfo.Value.ToNative();
                 return new GpuRenderPass(
                     CheckErrorPointer(SDL_BeginGPURenderPass(Handle, colorTargetsPtr, (uint)colorTargetInfos.Length, &nativeDepthStencil)),
                     this);
@@ -111,8 +111,8 @@ public sealed unsafe class GpuCommandBuffer
         var numTextures = (uint)(storageTextureBindings?.Length ?? 0);
         var numBuffers = (uint)(storageBufferBindings?.Length ?? 0);
 
-        var nativeTextureBindings = storageTextureBindings != null ? new SDL_GPUStorageTextureReadWriteBinding[storageTextureBindings.Length] : null;
-        var nativeBufferBindings = storageBufferBindings != null ? new SDL_GPUStorageBufferReadWriteBinding[storageBufferBindings.Length] : null;
+        SDL_GPUStorageTextureReadWriteBinding[]? nativeTextureBindings = storageTextureBindings != null ? new SDL_GPUStorageTextureReadWriteBinding[storageTextureBindings.Length] : null;
+        SDL_GPUStorageBufferReadWriteBinding[]? nativeBufferBindings = storageBufferBindings != null ? new SDL_GPUStorageBufferReadWriteBinding[storageBufferBindings.Length] : null;
 
         if (storageTextureBindings != null)
         {
@@ -245,7 +245,7 @@ public sealed unsafe class GpuCommandBuffer
     /// <param name="info">The blit info.</param>
     public void Blit(GpuBlitInfo info)
     {
-        var nativeInfo = info.ToNative();
+        SDL_GPUBlitInfo nativeInfo = info.ToNative();
         SDL_BlitGPUTexture(Handle, &nativeInfo);
     }
 

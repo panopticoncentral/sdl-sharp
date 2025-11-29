@@ -23,6 +23,9 @@
     <Project Path="src/Samples/Base/SimpleInit/SimpleInit.csproj" />
     <Project Path="src/Samples/Base/Versions/Versions.csproj" />
   </Folder>
+  <Folder Name="/Samples/ImGui/">
+    <Project Path="src/Samples/ImGui/NativeDemo/NativeDemo.csproj" Id="25b64562-eaa9-47e6-a5eb-fd909b80a59d" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>

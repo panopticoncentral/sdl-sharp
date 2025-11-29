@@ -114,7 +114,7 @@ public sealed unsafe class TrayEntry
 
         if (callback is null)
         {
-            s_callbacks.TryRemove(key, out _);
+            _ = s_callbacks.TryRemove(key, out _);
             SDL_SetTrayEntryCallback(Handle, null, 0);
         }
         else
@@ -138,13 +138,13 @@ public sealed unsafe class TrayEntry
     /// <param name="handle">The entry handle.</param>
     internal static void RemoveCallback(SDL_TrayEntry* handle)
     {
-        s_callbacks.TryRemove((nint)handle, out _);
+        _ = s_callbacks.TryRemove((nint)handle, out _);
     }
 
     [UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
     private static void NativeCallback(nuint userdata, SDL_TrayEntry* entry)
     {
-        if (s_callbacks.TryGetValue((nint)entry, out var callback))
+        if (s_callbacks.TryGetValue((nint)entry, out Action<TrayEntry>? callback))
         {
             callback(new TrayEntry(entry));
         }

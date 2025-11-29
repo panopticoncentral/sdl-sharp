@@ -33,8 +33,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="cycle">If true, cycles the texture if the texture is bound, otherwise overwrites the data.</param>
     public void UploadToTexture(GpuTextureTransferInfo source, GpuTextureRegion destination, bool cycle)
     {
-        var nativeSource = source.ToNative();
-        var nativeDestination = destination.ToNative();
+        SDL_GPUTextureTransferInfo nativeSource = source.ToNative();
+        SDL_GPUTextureRegion nativeDestination = destination.ToNative();
         SDL_UploadToGPUTexture(Handle, &nativeSource, &nativeDestination, cycle);
     }
 
@@ -46,8 +46,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="cycle">If true, cycles the buffer if it is already bound, otherwise overwrites the data.</param>
     public void UploadToBuffer(GpuTransferBufferLocation source, GpuBufferRegion destination, bool cycle)
     {
-        var nativeSource = source.ToNative();
-        var nativeDestination = destination.ToNative();
+        SDL_GPUTransferBufferLocation nativeSource = source.ToNative();
+        SDL_GPUBufferRegion nativeDestination = destination.ToNative();
         SDL_UploadToGPUBuffer(Handle, &nativeSource, &nativeDestination, cycle);
     }
 
@@ -62,8 +62,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="cycle">If true, cycles the destination texture if bound, otherwise overwrites the data.</param>
     public void CopyTextureToTexture(GpuTextureLocation source, GpuTextureLocation destination, uint width, uint height, uint depth, bool cycle)
     {
-        var nativeSource = source.ToNative();
-        var nativeDestination = destination.ToNative();
+        SDL_GPUTextureLocation nativeSource = source.ToNative();
+        SDL_GPUTextureLocation nativeDestination = destination.ToNative();
         SDL_CopyGPUTextureToTexture(Handle, &nativeSource, &nativeDestination, width, height, depth, cycle);
     }
 
@@ -76,8 +76,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="cycle">If true, cycles the destination buffer if bound, otherwise overwrites the data.</param>
     public void CopyBufferToBuffer(GpuBufferLocation source, GpuBufferLocation destination, uint size, bool cycle)
     {
-        var nativeSource = source.ToNative();
-        var nativeDestination = destination.ToNative();
+        SDL_GPUBufferLocation nativeSource = source.ToNative();
+        SDL_GPUBufferLocation nativeDestination = destination.ToNative();
         SDL_CopyGPUBufferToBuffer(Handle, &nativeSource, &nativeDestination, size, cycle);
     }
 
@@ -88,8 +88,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="destination">The destination transfer buffer with image layout information.</param>
     public void DownloadFromTexture(GpuTextureRegion source, GpuTextureTransferInfo destination)
     {
-        var nativeSource = source.ToNative();
-        var nativeDestination = destination.ToNative();
+        SDL_GPUTextureRegion nativeSource = source.ToNative();
+        SDL_GPUTextureTransferInfo nativeDestination = destination.ToNative();
         SDL_DownloadFromGPUTexture(Handle, &nativeSource, &nativeDestination);
     }
 
@@ -100,8 +100,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="destination">The destination transfer buffer with offset.</param>
     public void DownloadFromBuffer(GpuBufferRegion source, GpuTransferBufferLocation destination)
     {
-        var nativeSource = source.ToNative();
-        var nativeDestination = destination.ToNative();
+        SDL_GPUBufferRegion nativeSource = source.ToNative();
+        SDL_GPUTransferBufferLocation nativeDestination = destination.ToNative();
         SDL_DownloadFromGPUBuffer(Handle, &nativeSource, &nativeDestination);
     }
 

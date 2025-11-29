@@ -38,7 +38,7 @@ public sealed unsafe class GpuTexture : IDisposable
     /// <returns>A new texture.</returns>
     public static GpuTexture Create(GpuDevice device, GpuTextureCreateInfo createInfo)
     {
-        var nativeInfo = createInfo.ToNative();
+        SDL_GPUTextureCreateInfo nativeInfo = createInfo.ToNative();
         return new GpuTexture(CheckErrorPointer(SDL_CreateGPUTexture(device.Handle, &nativeInfo)), device, ownsHandle: true);
     }
 

@@ -161,7 +161,7 @@ public sealed unsafe class AudioDevice : IDisposable
             specPtr = &nativeSpec;
         }
 
-        var id = NativeAudio.SDL_OpenAudioDevice(deviceId, specPtr);
+        NativeAudio.SDL_AudioDeviceID id = NativeAudio.SDL_OpenAudioDevice(deviceId, specPtr);
         return id.Value == 0 ? throw new SdlException() : new AudioDevice(id, ownsHandle: true);
     }
 
@@ -187,7 +187,7 @@ public sealed unsafe class AudioDevice : IDisposable
     public static AudioDevice[] GetPlaybackDevices()
     {
         int count;
-        var devices = NativeAudio.SDL_GetAudioPlaybackDevices(&count);
+        NativeAudio.SDL_AudioDeviceID* devices = NativeAudio.SDL_GetAudioPlaybackDevices(&count);
         if (devices == null)
         {
             return [];
@@ -209,7 +209,7 @@ public sealed unsafe class AudioDevice : IDisposable
     public static AudioDevice[] GetRecordingDevices()
     {
         int count;
-        var devices = NativeAudio.SDL_GetAudioRecordingDevices(&count);
+        NativeAudio.SDL_AudioDeviceID* devices = NativeAudio.SDL_GetAudioRecordingDevices(&count);
         if (devices == null)
         {
             return [];
@@ -277,7 +277,7 @@ public sealed unsafe class AudioDevice : IDisposable
             return;
         }
 
-        var handles = stackalloc NativeAudio.SDL_AudioStream*[streams.Length];
+        NativeAudio.SDL_AudioStream** handles = stackalloc NativeAudio.SDL_AudioStream*[streams.Length];
         for (var i = 0; i < streams.Length; i++)
         {
             handles[i] = streams[i].Handle;

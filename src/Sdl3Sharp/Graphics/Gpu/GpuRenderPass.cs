@@ -40,7 +40,7 @@ public sealed unsafe class GpuRenderPass
     /// <param name="viewport">The viewport to set.</param>
     public void SetViewport(GpuViewport viewport)
     {
-        var nativeViewport = viewport.ToNative();
+        SDL_GPUViewport nativeViewport = viewport.ToNative();
         SDL_SetGPUViewport(Handle, &nativeViewport);
     }
 
@@ -98,7 +98,7 @@ public sealed unsafe class GpuRenderPass
     /// <param name="indexElementSize">Whether the index values are 16- or 32-bit.</param>
     public void BindIndexBuffer(GpuBufferBinding binding, GpuIndexElementSize indexElementSize)
     {
-        var nativeBinding = binding.ToNative();
+        SDL_GPUBufferBinding nativeBinding = binding.ToNative();
         SDL_BindGPUIndexBuffer(Handle, &nativeBinding, (SDL_GPUIndexElementSize)indexElementSize);
     }
 
