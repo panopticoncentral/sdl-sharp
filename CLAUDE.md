@@ -1,28 +1,11 @@
-﻿# SDL-Sharp
+﻿# SdlSharp
 
 ## Project Overview
-This project provides bindings for the Simple DirectMedia Layer 3 (SDL3) library in C#. SDL3 is a cross-platform development library designed to provide low-level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D. The project includes low level P/Invoke bindings to SDL3's C APIs that enable .NET developers to talk directly to the API, as well as high-level .NET classes that wrap the low-level APIs in a .NET-friendly way.
 
-The solution also contains bindings for the Simple DirectMedia Layer 2 (SDL2) library. These can be used as guidelines for writing SDL3 bindings, but more modern interop features should be preferred.
+This solution provides support for the Simple DirectMedia Layer 3 (SDL3) and the Dear ImGui libraries in C#. SDL3 is a cross-platform development library designed to provide low-level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D. Dear Imgui is a cross-platform library designed to provide immediate-mode GUI primitives for applications.
 
-The solution includes Dear ImGui bindings that integrate with Sdl3Sharp:
-- `SdlSharp.ImGui.Native` - A native C++ library that compiles Dear ImGui with dear_bindings to expose a C-compatible API. Includes SDL3 backends for input handling (`imgui_impl_sdl3`), SDL_Renderer (`imgui_impl_sdlrenderer3`), and SDL_GPU (`imgui_impl_sdlgpu3`).
-- `SdlSharp.ImGui` - C# bindings that wrap the native ImGui library for use with Sdl3Sharp.
-- `SdlSharp.ImGui.Generator` - A code generator that produces the C# bindings from the dear_bindings JSON metadata files.
+## Modern P/Invoke Conventions
 
-## SDL3 Headers and Documentation
-
-The current SDL3 headers can be found in the root of the solution, in a directory that starts with `SDL3-`, in the `include/SDL3` subdirectory. SDL3 documentation can be found at https://wiki.libsdl.org/SDL3/FrontPage.
-
-## Interop Naming Conventions
-- When converting an SDL header (e.g., `SDL_video.h`), name the C# file without the `SDL_` prefix (e.g., `Video.cs`)
-- Keep SDL function names exactly as in C (e.g., `SDL_Init`, `SDL_GetVersion`)
-- Keep SDL constant names exactly as in C (e.g., `SDL_INIT_VIDEO`)
-- Keep SDL struct names exactly as in C (e.g., `SDL_AsyncIOOutcome`)
-- Use `SdlSharp.Native` namespace for all P/Invoke declarations
-- Use file-scoped namespaces (e.g., `namespace SdlSharp.Native;` instead of `namespace SdlSharp.Native { ... }`)
-
-## Modern P/Invoke Conventions for SDL3
 - Use `[LibraryImport]` instead of `[DllImport]` for all P/Invoke declarations
 - Use `[UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]` to specify calling convention
 - Methods using `LibraryImport` must be declared as `static partial`
@@ -30,44 +13,21 @@ The current SDL3 headers can be found in the root of the solution, in a director
 - For UTF-8 strings (`const char*` or `byte*` in SDL), use `[MarshalUsing(typeof(Utf8StringMarshaller))]` for parameters and `[return: MarshalUsing(typeof(Utf8StringMarshaller))]` for return values - this provides efficient UTF-8 conversion with minimal copying
 - For callback parameters, use function pointer syntax `delegate* unmanaged[Cdecl]<...>` instead of delegate types (better performance, no GC allocation, explicit calling convention)
 - For opaque `void*` userdata parameters that SDL does not dereference, use `nuint` instead to indicate they are opaque values rather than pointers
-- For SDL typedefs of primitive types (like `typedef Uint32 SDL_DisplayID`), create type-safe wrapper structs with:
+- Fortypedefs of primitive types (like `typedef Uint32 SDL_DisplayID`), create type-safe wrapper structs with:
   - A readonly `Value` property of the underlying type
   - A constructor that takes the underlying type
   - Implicit conversion operators to/from the underlying type
   - Full XML documentation for all members (Value property, constructor, and both conversion operators)
 - Import `System.Runtime.InteropServices.Marshalling` namespace when needed
-- For `SDL_GUID`, use the native `System.Guid` structure directly - both are 128-bit/16-byte structs with compatible memory layouts, and `System.Guid` provides better .NET integration (string conversion, equality, formatting). Note: SDL's GUID string format is lowercase hex without dashes; use `guid.ToString("N")` for SDL-compatible formatting. The `SDL_GUIDToString` and `SDL_StringToGUID` functions do not need to be wrapped.
-- For `SDL_mutex.h`, use .NET's built-in threading primitives instead of wrapping SDL's: `System.Threading.Lock` or `lock` statement for `SDL_Mutex`, `ReaderWriterLockSlim` for `SDL_RWLock`, `SemaphoreSlim` for `SDL_Semaphore`, and `Monitor.Wait/Pulse/PulseAll` for `SDL_Condition`. .NET primitives offer better integration with async/await, no P/Invoke overhead, and safer resource management. Only wrap `SDL_InitState`/`SDL_InitStatus` if needed for SDL API interop.
-- Do not use `#region` directives to organize code
 
 ## XML Documentation
+
 - All public types (classes, structs, enums), methods, properties, and fields must have XML documentation comments
 - For enums, document each enum member with a `<summary>` tag explaining its purpose
 - For struct fields and properties, include XML documentation describing what the field/property represents
 - For type-safe wrapper structs (like `SDL_DisplayID`, `SDL_WindowID`), document the `Value` property, constructor, and implicit conversion operators
 - For string constants (especially SDL property names), include XML documentation explaining what the constant represents and how it's used
 - Use clear, concise descriptions that help developers understand the purpose and usage of each member
-
-## Documenting Skipped APIs
-When wrapping SDL headers, some APIs cannot or should not be wrapped. Document these with comments in the C# file:
-- Add a comment explaining which API was not wrapped and why
-- Common reasons for skipping APIs:
-  - Variadic functions (e.g., functions with `...` parameters) - va_list is not supported in C# P/Invoke
-  - C macros that are simple wrappers - can be implemented as C# helper methods if needed
-  - Platform-specific internal APIs not intended for public use
-  - APIs that don't apply to .NET (e.g., main() entry point functions)
-- Example format: `// SDL_FunctionName is not wrapped - reason why. Alternative approach if applicable.`
-
-## High-Level Wrapper Classes (Sdl3Sharp namespace)
-When creating managed wrapper classes in the `Sdl3Sharp` namespace that wrap low-level P/Invoke APIs:
-- Each type (class, struct, enum) should be in its own file
-- Use the error checking helper methods from `Sdl3Sharp.Native.Common` for consistent error handling
-- Use `CheckErrorNull<T>(T? value)` for return values that should not be null
-- Use `CheckErrorPointer<T/T*>(T*/T** ptr)` for pointer return values that should not be null
-- Use `CheckErrorBool(bool returnValue)` for boolean return values where `false` indicates an error
-- Use `CheckErrorZero(float/int/uint/nuint returnValue)` for return values where `0` indicates an error
-- These helper methods automatically throw `SdlException` with the appropriate SDL error message
-- Example: `return new IOStream(CheckPointer(SDL_IOFromFile(path, mode)), ownsHandle: true);` instead of manually checking for null and throwing
 
 ## Code Style and Formatting Rules
 
@@ -77,7 +37,7 @@ When creating managed wrapper classes in the `Sdl3Sharp` namespace that wrap low
 - Do not insert a final newline at the end of files
 
 ### Namespaces and Using Directives
-- Use file-scoped namespaces (e.g., `namespace SdlSharp.Native;`)
+- Use file-scoped namespaces (e.g., `namespace Sdl3Sharp.Native;`)
 - Place `using` directives outside the namespace
 - Do not separate `using` directives into groups
 - Do not sort System directives first
