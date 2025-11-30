@@ -164,6 +164,16 @@ public sealed unsafe class Display
     }
 
     /// <summary>
+    /// Gets a position value indicating that the window position doesn't matter on this display.
+    /// </summary>
+    public int WindowPositionUndefined => SDL_WINDOWPOS_UNDEFINED_DISPLAY(_displayID);
+
+    /// <summary>
+    /// Gets a position value indicating that the window should be centered on this display.
+    /// </summary>
+    public int WindowPositionCentered => SDL_WINDOWPOS_CENTERED_DISPLAY(_displayID);
+
+    /// <summary>
     /// Returns a string representation of this display.
     /// </summary>
     public override string ToString()

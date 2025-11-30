@@ -5,7 +5,7 @@ namespace Sdl3Sharp.Graphics;
 /// <summary>
 /// Represents a display mode with resolution, pixel format, and refresh rate information.
 /// </summary>
-public sealed unsafe class DisplayMode
+public unsafe readonly record struct DisplayMode
 {
     private readonly SDL_DisplayMode _mode;
 
@@ -35,17 +35,7 @@ public sealed unsafe class DisplayMode
     public PixelFormat PixelFormat => new(_mode.format);
 
     /// <summary>
-    /// Gets the width in pixels.
-    /// </summary>
-    public int Width => _mode.w;
-
-    /// <summary>
-    /// Gets the height in pixels.
-    /// </summary>
-    public int Height => _mode.h;
-
-    /// <summary>
-    /// Gets the size of this display mode.
+    /// Gets the size in pixels.
     /// </summary>
     public Size Size => new(_mode.w, _mode.h);
 
@@ -74,11 +64,23 @@ public sealed unsafe class DisplayMode
     /// </summary>
     public override string ToString()
     {
-        return $"{Width}x{Height} @ {RefreshRate:F2}Hz";
+        return $"{Size.Width}x{Size.Height} @ {RefreshRate:F2}Hz";
     }
 
-    internal SDL_DisplayMode ToNative()
+    /// <summary>
+    /// Converts a managed DisplayMode to a native SDL_DisplayMode.
+    /// </summary>
+    /// <param name="mode">The managed DisplayMode to convert.</param>
+    /// <param name="nativeMode">The location to store the native SDL_DisplayMode if not null.</param>
+    /// <returns>A pointer to the native SDL_DisplayMode, or null.</returns>
+    internal static SDL_DisplayMode* ToNative(DisplayMode? mode, SDL_DisplayMode* nativeMode)
     {
-        return _mode;
+        if (mode == null)
+        {
+            return null;
+        }
+
+        *nativeMode = mode.Value._mode;
+        return nativeMode;
     }
 }

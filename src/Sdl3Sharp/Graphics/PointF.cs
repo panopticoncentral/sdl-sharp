@@ -1,12 +1,41 @@
 ﻿using static Sdl3Sharp.Native.Rect;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.Graphics;
 
 /// <summary>
-/// A point.
+/// A point with floating-point coordinates.
 /// </summary>
-public readonly unsafe record struct PointF(float X, float Y)
+[StructLayout(LayoutKind.Sequential)]
+[DebuggerDisplay("({X}, {Y})")]
+public readonly unsafe record struct PointF
 {
+    /// <summary>
+    /// Gets the underlying native SDL_FPoint structure representing the coordinates in unmanaged memory.
+    /// </summary>
+    public readonly SDL_FPoint Native;
+
+    /// <summary>
+    /// The X coordinate.
+    /// </summary>
+    public float X => Native.x;
+
+    /// <summary>
+    /// The Y coordinate.
+    /// </summary>
+    public float Y => Native.y;
+
+    /// <summary>
+    /// Creates a new point.
+    /// </summary>
+    /// <param name="x">The X coordinate.</param>
+    /// <param name="y">The Y coordinate.</param>
+    public PointF(float x, float y)
+    {
+        Native = new SDL_FPoint(x, y);
+    }
+
     /// <summary>
     /// A point representing the origin (0, 0).
     /// </summary>
@@ -107,16 +136,5 @@ public readonly unsafe record struct PointF(float X, float Y)
         }
 
         return new(newX, newY);
-    }
-
-    internal static SDL_FPoint* ToNative(PointF point, SDL_FPoint* nativePoint)
-    {
-        *nativePoint = new(point.X, point.Y);
-        return nativePoint;
-    }
-
-    internal static SDL_FPoint* ToNative(PointF? point, SDL_FPoint* nativePoint)
-    {
-        return point == null ? (SDL_FPoint*)null : ToNative(point.Value, nativePoint);
     }
 }

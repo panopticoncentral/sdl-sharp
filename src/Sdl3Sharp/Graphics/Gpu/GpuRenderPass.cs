@@ -50,8 +50,7 @@ public sealed unsafe class GpuRenderPass
     /// <param name="scissor">The scissor rectangle.</param>
     public void SetScissor(Rectangle scissor)
     {
-        Native.Rect.SDL_Rect nativeScissor;
-        SDL_SetGPUScissor(Handle, Rectangle.ToNative(scissor, &nativeScissor));
+        SDL_SetGPUScissor(Handle, &scissor.Native);
     }
 
     /// <summary>

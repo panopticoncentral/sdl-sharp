@@ -1,20 +1,56 @@
 ﻿using static Sdl3Sharp.Native.Rect;
+using static Sdl3Sharp.Native.Video;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.Graphics;
 
 /// <summary>
 /// A point.
 /// </summary>
-/// <param name="X">The X coordinate.</param>
-/// <param name="Y">The Y coordinate.</param>
+[StructLayout(LayoutKind.Sequential)]
 [DebuggerDisplay("({X}, {Y})")]
-public readonly unsafe record struct Point(int X, int Y)
+public readonly unsafe record struct Point
 {
+    /// <summary>
+    /// Gets the underlying native SDL_Point structure representing the coordinates in unmanaged memory.
+    /// </summary>
+    public readonly SDL_Point Native;
+
+    /// <summary>
+    /// The X coordinate.
+    /// </summary>
+    public int X => Native.x;
+
+    /// <summary>
+    /// The Y coordinate.
+    /// </summary>
+    public int Y => Native.y;
+
+    /// <summary>
+    /// Creates a new point.
+    /// </summary>
+    /// <param name="x">The X coordinate.</param>
+    /// <param name="y">The Y coordinate.</param>
+    public Point(int x, int y)
+    {
+        Native = new SDL_Point(x, y);
+    }
+
     /// <summary>
     /// A point representing the origin (0, 0).
     /// </summary>
     public static readonly Point Origin = new(0, 0);
+
+    /// <summary>
+    /// A point representing an undefined position.
+    /// </summary>
+    public static readonly Point Undefined = new(Window.PositionUndefined, Window.PositionUndefined);
+
+    /// <summary>
+    /// A point representing a centered position.
+    /// </summary>
+    public static readonly Point Centered = new(Window.PositionCentered, Window.PositionCentered);
 
     /// <summary>
     /// Adds two points together.
@@ -111,16 +147,5 @@ public readonly unsafe record struct Point(int X, int Y)
         }
 
         return new(newX, newY);
-    }
-
-    internal static SDL_Point* ToNative(Point point, SDL_Point* nativePoint)
-    {
-        *nativePoint = new(point.X, point.Y);
-        return nativePoint;
-    }
-
-    internal static SDL_Point* ToNative(Point? point, SDL_Point* nativePoint)
-    {
-        return point == null ? (SDL_Point*)null : ToNative(point.Value, nativePoint);
     }
 }

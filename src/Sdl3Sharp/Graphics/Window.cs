@@ -25,9 +25,19 @@ public sealed unsafe class Window : IDisposable
     /// <param name="title">The title of the window.</param>
     /// <param name="size">The size of the window.</param>
     /// <param name="flags">The window flags.</param>
-    public Window(string title, Size size, WindowFlags flags = WindowFlags.None)
+    public static Window Create(string title, Size size, WindowFlags flags = WindowFlags.None)
     {
-        Handle = CheckErrorPointer(SDL_CreateWindow(title, size.Width, size.Height, (SDL_WindowFlags)flags));
+        return new(CheckErrorPointer(SDL_CreateWindow(title, size.Width, size.Height, (SDL_WindowFlags)flags)));
+    }
+
+    /// <summary>
+    /// Creates a window from an existing properties object.
+    /// </summary>
+    /// <param name="properties">The properties to use.</param>
+    public static Window Create(PropertyGroup properties)
+    {
+        ArgumentNullException.ThrowIfNull(properties);
+        return new(CheckErrorPointer(SDL_CreateWindowWithProperties(properties.Id)));
     }
 
     /// <summary>
@@ -37,21 +47,11 @@ public sealed unsafe class Window : IDisposable
     /// <param name="offset">The position of the popup window relative to the origin of the parent.</param>
     /// <param name="size">The size of the window.</param>
     /// <param name="flags">The window flags (should include Tooltip or PopupMenu).</param>
-    public Window(Window parent, Point offset, Size size, WindowFlags flags)
+    public static Window CreatePopup(Window parent, Point offset, Size size, WindowFlags flags)
     {
         ArgumentNullException.ThrowIfNull(parent);
         parent.ThrowIfDisposed();
-        Handle = CheckErrorPointer(SDL_CreatePopupWindow(parent.Handle, offset.X, offset.Y, size.Width, size.Height, (SDL_WindowFlags)flags));
-    }
-
-    /// <summary>
-    /// Creates a window from an existing properties object.
-    /// </summary>
-    /// <param name="properties">The properties to use.</param>
-    public Window(PropertyGroup properties)
-    {
-        ArgumentNullException.ThrowIfNull(properties);
-        Handle = CheckErrorPointer(SDL_CreateWindowWithProperties(properties.Id));
+        return new(CheckErrorPointer(SDL_CreatePopupWindow(parent.Handle, offset.X, offset.Y, size.Width, size.Height, (SDL_WindowFlags)flags)));
     }
 
     internal Window(SDL_Window* handle)
@@ -767,15 +767,8 @@ public sealed unsafe class Window : IDisposable
         set
         {
             ThrowIfDisposed();
-            if (value != null)
-            {
-                SDL_DisplayMode mode = value.ToNative();
-                _ = CheckErrorBool(SDL_SetWindowFullscreenMode(Handle, &mode));
-            }
-            else
-            {
-                _ = CheckErrorBool(SDL_SetWindowFullscreenMode(Handle, null));
-            }
+            SDL_DisplayMode mode;
+            _ = CheckErrorBool(SDL_SetWindowFullscreenMode(Handle, DisplayMode.ToNative(value, &mode)));
         }
     }
 
@@ -840,6 +833,36 @@ public sealed unsafe class Window : IDisposable
     }
 
     /// <summary>
+    /// Gets a position value indicating that the window position doesn't matter on the primary display.
+    /// </summary>
+    public static int PositionUndefined => SDL_WINDOWPOS_UNDEFINED;
+
+    /// <summary>
+    /// Checks if a position value represents an undefined position.
+    /// </summary>
+    /// <param name="position">The position to check.</param>
+    /// <returns>True if the position is undefined.</returns>
+    public static bool IsPositionUndefined(int position)
+    {
+        return position == SDL_WINDOWPOS_UNDEFINED;
+    }
+
+    /// <summary>
+    /// Gets a position value indicating that the window should be centered on the primary display.
+    /// </summary>
+    public static int PositionCentered => SDL_WINDOWPOS_CENTERED;
+
+    /// <summary>
+    /// Determines whether the specified window position value represents a centered position.
+    /// </summary>
+    /// <param name="position">The position to check.</param>
+    /// <returns>true if the position value corresponds to a centered window position; otherwise, false.</returns>
+    public static bool IsPositionCentered(int position)
+    {
+        return position == SDL_WINDOWPOS_CENTERED;
+    }
+
+    /// <summary>
     /// Gets a window from a stored ID.
     /// </summary>
     /// <param name="id">The window ID.</param>
@@ -859,6 +882,446 @@ public sealed unsafe class Window : IDisposable
         {
             SDL_Window* window = SDL_GetGrabbedWindow();
             return window != null ? new Window(window) : null;
+        }
+    }
+
+    /// <summary>
+    /// Property name constants for use with <see cref="PropertyGroup"/> when creating or querying windows.
+    /// </summary>
+    public static class PropertyNames
+    {
+        /// <summary>
+        /// Property names for window creation via <see cref="Window.Create(PropertyGroup)"/>.
+        /// </summary>
+        public static class Create
+        {
+            /// <summary>
+            /// Boolean property: true if the window should be always on top.
+            /// </summary>
+            public const string AlwaysOnTop = SDL_PROP_WINDOW_CREATE_ALWAYS_ON_TOP_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should be borderless.
+            /// </summary>
+            public const string Borderless = SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if popup windows should be constrained to the parent window.
+            /// </summary>
+            public const string ConstrainPopup = SDL_PROP_WINDOW_CREATE_CONSTRAIN_POPUP_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should be able to receive input focus.
+            /// </summary>
+            public const string Focusable = SDL_PROP_WINDOW_CREATE_FOCUSABLE_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window uses an external graphics context.
+            /// </summary>
+            public const string ExternalGraphicsContext = SDL_PROP_WINDOW_CREATE_EXTERNAL_GRAPHICS_CONTEXT_BOOLEAN;
+
+            /// <summary>
+            /// Number property: the window creation flags.
+            /// </summary>
+            public const string Flags = SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER;
+
+            /// <summary>
+            /// Boolean property: true if the window should be fullscreen.
+            /// </summary>
+            public const string Fullscreen = SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN;
+
+            /// <summary>
+            /// Number property: the height of the window.
+            /// </summary>
+            public const string Height = SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER;
+
+            /// <summary>
+            /// Boolean property: true if the window should be hidden.
+            /// </summary>
+            public const string Hidden = SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should be created with high pixel density support.
+            /// </summary>
+            public const string HighPixelDensity = SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should be maximized.
+            /// </summary>
+            public const string Maximized = SDL_PROP_WINDOW_CREATE_MAXIMIZED_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window is a menu window.
+            /// </summary>
+            public const string Menu = SDL_PROP_WINDOW_CREATE_MENU_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should be created with Metal support.
+            /// </summary>
+            public const string Metal = SDL_PROP_WINDOW_CREATE_METAL_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should be minimized.
+            /// </summary>
+            public const string Minimized = SDL_PROP_WINDOW_CREATE_MINIMIZED_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should be modal.
+            /// </summary>
+            public const string Modal = SDL_PROP_WINDOW_CREATE_MODAL_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should grab the mouse.
+            /// </summary>
+            public const string MouseGrabbed = SDL_PROP_WINDOW_CREATE_MOUSE_GRABBED_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should be created with OpenGL support.
+            /// </summary>
+            public const string OpenGL = SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN;
+
+            /// <summary>
+            /// Pointer property: the parent window for this window.
+            /// </summary>
+            public const string Parent = SDL_PROP_WINDOW_CREATE_PARENT_POINTER;
+
+            /// <summary>
+            /// Boolean property: true if the window should be resizable.
+            /// </summary>
+            public const string Resizable = SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN;
+
+            /// <summary>
+            /// String property: the title of the window.
+            /// </summary>
+            public const string Title = SDL_PROP_WINDOW_CREATE_TITLE_STRING;
+
+            /// <summary>
+            /// Boolean property: true if the window should be transparent.
+            /// </summary>
+            public const string Transparent = SDL_PROP_WINDOW_CREATE_TRANSPARENT_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window is a tooltip window.
+            /// </summary>
+            public const string Tooltip = SDL_PROP_WINDOW_CREATE_TOOLTIP_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window is a utility window.
+            /// </summary>
+            public const string Utility = SDL_PROP_WINDOW_CREATE_UTILITY_BOOLEAN;
+
+            /// <summary>
+            /// Boolean property: true if the window should be created with Vulkan support.
+            /// </summary>
+            public const string Vulkan = SDL_PROP_WINDOW_CREATE_VULKAN_BOOLEAN;
+
+            /// <summary>
+            /// Number property: the width of the window.
+            /// </summary>
+            public const string Width = SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER;
+
+            /// <summary>
+            /// Number property: the x position of the window.
+            /// </summary>
+            public const string X = SDL_PROP_WINDOW_CREATE_X_NUMBER;
+
+            /// <summary>
+            /// Number property: the y position of the window.
+            /// </summary>
+            public const string Y = SDL_PROP_WINDOW_CREATE_Y_NUMBER;
+
+            /// <summary>
+            /// Platform-specific creation properties for macOS (Cocoa).
+            /// </summary>
+            public static class Cocoa
+            {
+                /// <summary>
+                /// Pointer property: the NSWindow to wrap (to create a window from an existing native window).
+                /// </summary>
+                public const string Window = SDL_PROP_WINDOW_CREATE_COCOA_WINDOW_POINTER;
+
+                /// <summary>
+                /// Pointer property: the NSView to use for rendering.
+                /// </summary>
+                public const string View = SDL_PROP_WINDOW_CREATE_COCOA_VIEW_POINTER;
+            }
+
+            /// <summary>
+            /// Platform-specific creation properties for Wayland.
+            /// </summary>
+            public static class Wayland
+            {
+                /// <summary>
+                /// Boolean property: true if the application is providing its own surface role.
+                /// </summary>
+                public const string SurfaceRoleCustom = SDL_PROP_WINDOW_CREATE_WAYLAND_SURFACE_ROLE_CUSTOM_BOOLEAN;
+
+                /// <summary>
+                /// Boolean property: true to create an EGL window for the surface.
+                /// </summary>
+                public const string CreateEglWindow = SDL_PROP_WINDOW_CREATE_WAYLAND_CREATE_EGL_WINDOW_BOOLEAN;
+
+                /// <summary>
+                /// Pointer property: the wl_surface to use for the window.
+                /// </summary>
+                public const string WlSurface = SDL_PROP_WINDOW_CREATE_WAYLAND_WL_SURFACE_POINTER;
+            }
+
+            /// <summary>
+            /// Platform-specific creation properties for Windows (Win32).
+            /// </summary>
+            public static class Win32
+            {
+                /// <summary>
+                /// Pointer property: the HWND to wrap (to create a window from an existing native window).
+                /// </summary>
+                public const string Hwnd = SDL_PROP_WINDOW_CREATE_WIN32_HWND_POINTER;
+
+                /// <summary>
+                /// Pointer property: the HWND to use for setting pixel format.
+                /// </summary>
+                public const string PixelFormatHwnd = SDL_PROP_WINDOW_CREATE_WIN32_PIXEL_FORMAT_HWND_POINTER;
+            }
+
+            /// <summary>
+            /// Platform-specific creation properties for X11.
+            /// </summary>
+            public static class X11
+            {
+                /// <summary>
+                /// Number property: the X11 Window to wrap (to create a window from an existing native window).
+                /// </summary>
+                public const string Window = SDL_PROP_WINDOW_CREATE_X11_WINDOW_NUMBER;
+            }
+        }
+
+        /// <summary>
+        /// Pointer property: the surface associated with a shaped window.
+        /// </summary>
+        public const string Shape = SDL_PROP_WINDOW_SHAPE_POINTER;
+
+        /// <summary>
+        /// Boolean property: true if the window has HDR headroom above the SDR white point.
+        /// </summary>
+        public const string HdrEnabled = SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN;
+
+        /// <summary>
+        /// Float property: the value of SDR white in the SDL_COLORSPACE_SRGB_LINEAR colorspace.
+        /// </summary>
+        public const string SdrWhiteLevel = SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT;
+
+        /// <summary>
+        /// Float property: the additional high dynamic range that can be displayed, in terms of the SDR white point.
+        /// </summary>
+        public const string HdrHeadroom = SDL_PROP_WINDOW_HDR_HEADROOM_FLOAT;
+
+        /// <summary>
+        /// Platform-specific runtime properties for Android.
+        /// </summary>
+        public static class Android
+        {
+            /// <summary>
+            /// Pointer property: the ANativeWindow associated with the window.
+            /// </summary>
+            public const string Window = SDL_PROP_WINDOW_ANDROID_WINDOW_POINTER;
+
+            /// <summary>
+            /// Pointer property: the EGLSurface associated with the window.
+            /// </summary>
+            public const string Surface = SDL_PROP_WINDOW_ANDROID_SURFACE_POINTER;
+        }
+
+        /// <summary>
+        /// Platform-specific runtime properties for iOS (UIKit).
+        /// </summary>
+        public static class UIKit
+        {
+            /// <summary>
+            /// Pointer property: the UIWindow associated with the window.
+            /// </summary>
+            public const string Window = SDL_PROP_WINDOW_UIKIT_WINDOW_POINTER;
+
+            /// <summary>
+            /// Number property: the NSInteger tag associated with Metal views.
+            /// </summary>
+            public const string MetalViewTag = SDL_PROP_WINDOW_UIKIT_METAL_VIEW_TAG_NUMBER;
+
+            /// <summary>
+            /// Number property: the OpenGL framebuffer object for the view.
+            /// </summary>
+            public const string OpenGLFramebuffer = SDL_PROP_WINDOW_UIKIT_OPENGL_FRAMEBUFFER_NUMBER;
+
+            /// <summary>
+            /// Number property: the OpenGL renderbuffer object for the view.
+            /// </summary>
+            public const string OpenGLRenderbuffer = SDL_PROP_WINDOW_UIKIT_OPENGL_RENDERBUFFER_NUMBER;
+
+            /// <summary>
+            /// Number property: the OpenGL resolve framebuffer object when using MSAA.
+            /// </summary>
+            public const string OpenGLResolveFramebuffer = SDL_PROP_WINDOW_UIKIT_OPENGL_RESOLVE_FRAMEBUFFER_NUMBER;
+        }
+
+        /// <summary>
+        /// Platform-specific runtime properties for KMS/DRM.
+        /// </summary>
+        public static class KmsDrm
+        {
+            /// <summary>
+            /// Number property: the device index for the window.
+            /// </summary>
+            public const string DeviceIndex = SDL_PROP_WINDOW_KMSDRM_DEVICE_INDEX_NUMBER;
+
+            /// <summary>
+            /// Number property: the DRM file descriptor associated with the window.
+            /// </summary>
+            public const string DrmFd = SDL_PROP_WINDOW_KMSDRM_DRM_FD_NUMBER;
+
+            /// <summary>
+            /// Pointer property: the GBM device for the window.
+            /// </summary>
+            public const string GbmDevice = SDL_PROP_WINDOW_KMSDRM_GBM_DEVICE_POINTER;
+        }
+
+        /// <summary>
+        /// Platform-specific runtime properties for macOS (Cocoa).
+        /// </summary>
+        public static class Cocoa
+        {
+            /// <summary>
+            /// Pointer property: the NSWindow associated with the window.
+            /// </summary>
+            public const string Window = SDL_PROP_WINDOW_COCOA_WINDOW_POINTER;
+
+            /// <summary>
+            /// Number property: the NSInteger tag associated with Metal views.
+            /// </summary>
+            public const string MetalViewTag = SDL_PROP_WINDOW_COCOA_METAL_VIEW_TAG_NUMBER;
+        }
+
+        /// <summary>
+        /// Platform-specific runtime properties for OpenVR.
+        /// </summary>
+        public static class OpenVR
+        {
+            /// <summary>
+            /// Number property: the OpenVR Overlay Handle ID for the associated overlay window.
+            /// </summary>
+            public const string OverlayId = SDL_PROP_WINDOW_OPENVR_OVERLAY_ID;
+        }
+
+        /// <summary>
+        /// Platform-specific runtime properties for Vivante.
+        /// </summary>
+        public static class Vivante
+        {
+            /// <summary>
+            /// Pointer property: the EGLNativeDisplayType for the window.
+            /// </summary>
+            public const string Display = SDL_PROP_WINDOW_VIVANTE_DISPLAY_POINTER;
+
+            /// <summary>
+            /// Pointer property: the EGLNativeWindowType for the window.
+            /// </summary>
+            public const string Window = SDL_PROP_WINDOW_VIVANTE_WINDOW_POINTER;
+
+            /// <summary>
+            /// Pointer property: the EGLSurface associated with the window.
+            /// </summary>
+            public const string Surface = SDL_PROP_WINDOW_VIVANTE_SURFACE_POINTER;
+        }
+
+        /// <summary>
+        /// Platform-specific runtime properties for Windows (Win32).
+        /// </summary>
+        public static class Win32
+        {
+            /// <summary>
+            /// Pointer property: the HWND associated with the window.
+            /// </summary>
+            public const string Hwnd = SDL_PROP_WINDOW_WIN32_HWND_POINTER;
+
+            /// <summary>
+            /// Pointer property: the HDC associated with the window.
+            /// </summary>
+            public const string Hdc = SDL_PROP_WINDOW_WIN32_HDC_POINTER;
+
+            /// <summary>
+            /// Pointer property: the HINSTANCE associated with the window.
+            /// </summary>
+            public const string Instance = SDL_PROP_WINDOW_WIN32_INSTANCE_POINTER;
+        }
+
+        /// <summary>
+        /// Platform-specific runtime properties for Wayland.
+        /// </summary>
+        public static class Wayland
+        {
+            /// <summary>
+            /// Pointer property: the wl_display associated with the window.
+            /// </summary>
+            public const string Display = SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER;
+
+            /// <summary>
+            /// Pointer property: the wl_surface associated with the window.
+            /// </summary>
+            public const string Surface = SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER;
+
+            /// <summary>
+            /// Pointer property: the wp_viewport associated with the window.
+            /// </summary>
+            public const string Viewport = SDL_PROP_WINDOW_WAYLAND_VIEWPORT_POINTER;
+
+            /// <summary>
+            /// Pointer property: the wl_egl_window associated with the window.
+            /// </summary>
+            public const string EglWindow = SDL_PROP_WINDOW_WAYLAND_EGL_WINDOW_POINTER;
+
+            /// <summary>
+            /// Pointer property: the xdg_surface associated with the window.
+            /// </summary>
+            public const string XdgSurface = SDL_PROP_WINDOW_WAYLAND_XDG_SURFACE_POINTER;
+
+            /// <summary>
+            /// Pointer property: the xdg_toplevel role associated with the window.
+            /// </summary>
+            public const string XdgToplevel = SDL_PROP_WINDOW_WAYLAND_XDG_TOPLEVEL_POINTER;
+
+            /// <summary>
+            /// String property: the export handle for the window.
+            /// </summary>
+            public const string XdgToplevelExportHandle = SDL_PROP_WINDOW_WAYLAND_XDG_TOPLEVEL_EXPORT_HANDLE_STRING;
+
+            /// <summary>
+            /// Pointer property: the xdg_popup role associated with the window.
+            /// </summary>
+            public const string XdgPopup = SDL_PROP_WINDOW_WAYLAND_XDG_POPUP_POINTER;
+
+            /// <summary>
+            /// Pointer property: the xdg_positioner used in popup mode.
+            /// </summary>
+            public const string XdgPositioner = SDL_PROP_WINDOW_WAYLAND_XDG_POSITIONER_POINTER;
+        }
+
+        /// <summary>
+        /// Platform-specific runtime properties for X11.
+        /// </summary>
+        public static class X11
+        {
+            /// <summary>
+            /// Pointer property: the X11 Display associated with the window.
+            /// </summary>
+            public const string Display = SDL_PROP_WINDOW_X11_DISPLAY_POINTER;
+
+            /// <summary>
+            /// Number property: the screen number associated with the window.
+            /// </summary>
+            public const string Screen = SDL_PROP_WINDOW_X11_SCREEN_NUMBER;
+
+            /// <summary>
+            /// Number property: the X11 Window associated with the window.
+            /// </summary>
+            public const string Window = SDL_PROP_WINDOW_X11_WINDOW_NUMBER;
         }
     }
 
