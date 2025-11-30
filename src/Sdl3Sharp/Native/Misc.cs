@@ -39,5 +39,5 @@ public static unsafe partial class Misc
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_OpenURL([MarshalUsing(typeof(Utf8StringMarshaller))] string url);
+    public static partial bool SDL_OpenURL(byte* url);
 }

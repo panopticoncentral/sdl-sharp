@@ -1,4 +1,5 @@
-﻿using static Sdl3Sharp.Native.Version;
+﻿using System.Runtime.InteropServices;
+using static Sdl3Sharp.Native.Version;
 
 namespace Sdl3Sharp;
 
@@ -7,6 +8,28 @@ namespace Sdl3Sharp;
 /// </summary>
 public readonly record struct Version(int Value)
 {
+    /// <summary>
+    /// The version of SDL that was compiled against.
+    /// </summary>
+    public static Version CompiledVersion => new(SDL_VERSION);
+
+    /// <summary>
+    /// The version of SDL that is being run against.
+    /// </summary>
+    public static Version RunningVersion => new(SDL_GetVersion());
+
+    /// <summary>
+    /// The revision string of the version of SDL that's being used.
+    /// </summary>
+    public static unsafe string Revision
+    {
+        get
+        {
+            var ptr = SDL_GetRevision();
+            return Marshal.PtrToStringUTF8((nint)ptr) ?? string.Empty;
+        }
+    }
+
     /// <summary>
     /// Initializes a new instance of the Version class with the specified major, minor, and micro version numbers.
     /// </summary>

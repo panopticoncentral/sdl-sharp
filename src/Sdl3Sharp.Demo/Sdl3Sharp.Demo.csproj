@@ -14,8 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\Sdl3Sharp\Sdl3Sharp.csproj" />
-		<ProjectReference Include="..\..\..\Sdl3Sharp.ImGui\Sdl3Sharp.ImGui.csproj" />
+		<ProjectReference Include="..\Sdl3Sharp\Sdl3Sharp.csproj" />
 	</ItemGroup>
 
 </Project>

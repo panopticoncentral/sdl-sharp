@@ -142,7 +142,7 @@ public static unsafe partial class Init
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_SetAppMetadata([MarshalUsing(typeof(Utf8StringMarshaller))] string appname, [MarshalUsing(typeof(Utf8StringMarshaller))] string appversion, [MarshalUsing(typeof(Utf8StringMarshaller))] string appidentifier);
+    public static partial bool SDL_SetAppMetadata(byte* appname, byte* appversion, byte* appidentifier);
 
     /// <summary>
     /// Specify metadata about your app through a set of properties.
@@ -153,7 +153,7 @@ public static unsafe partial class Init
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_SetAppMetadataProperty([MarshalUsing(typeof(Utf8StringMarshaller))] string name, [MarshalUsing(typeof(Utf8StringMarshaller))] string value);
+    public static partial bool SDL_SetAppMetadataProperty(byte* name, byte* value);
 
     /// <summary>
     /// The human-readable name of the application, like "My Game 2: Bad Guy's Revenge!".
@@ -197,6 +197,5 @@ public static unsafe partial class Init
     /// <returns>the current value of the metadata property, or the default if it is not set, NULL for properties with no default.</returns>
     [LibraryImport(Sdl3)]
     [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
-    [return: MarshalUsing(typeof(Utf8StringMarshaller))]
-    public static partial string SDL_GetAppMetadataProperty([MarshalUsing(typeof(Utf8StringMarshaller))] string name);
+    public static partial byte* SDL_GetAppMetadataProperty(byte* name);
 }

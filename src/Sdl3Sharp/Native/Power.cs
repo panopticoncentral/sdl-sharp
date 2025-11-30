@@ -33,11 +33,6 @@ public static partial class Power
 
     /// <summary>
     /// Get the current power supply details.
-    /// You should never take a battery status as absolute truth. Batteries
-    /// (especially failing batteries) are delicate hardware, and the values
-    /// reported here are best estimates based on what that hardware reports.
-    /// Battery status can change at any time; if you are concerned with power
-    /// state, you should call this function frequently.
     /// </summary>
     /// <param name="seconds">A pointer filled in with the seconds of battery life left,
     /// or NULL to ignore. This will be filled in with -1 if we can't determine a value
