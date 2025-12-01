@@ -2,6 +2,7 @@
 
 ## Native
 
+Events   [SDL_events.h]
 Init	 [SDL_init.h]
 Misc     [SDL_misc.h]
 Platform [SDL_platform.h]
@@ -30,8 +31,11 @@ Graphics.Window
 Graphics.WindowFlags
 Application
 AppMetatdata
+Event
 EventAction
+EventQueue
 EventType
+EventWatchHandle
 PowerInfo
 PowerState
 Subsystems
