@@ -1,3 +1,5 @@
+using static Sdl3Sharp.Native.Video;
+
 namespace Sdl3Sharp.Graphics;
 
 /// <summary>
@@ -6,9 +8,9 @@ namespace Sdl3Sharp.Graphics;
 public enum SystemTheme
 {
     /// <summary>Unknown system theme.</summary>
-    Unknown,
+    Unknown = SDL_SystemTheme.SDL_SYSTEM_THEME_UNKNOWN,
     /// <summary>Light colored system theme.</summary>
-    Light,
+    Light = SDL_SystemTheme.SDL_SYSTEM_THEME_LIGHT,
     /// <summary>Dark colored system theme.</summary>
-    Dark
+    Dark = SDL_SystemTheme.SDL_SYSTEM_THEME_DARK
 }

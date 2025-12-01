@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+using System.Text;
 using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Keyboard;
 using static Sdl3Sharp.Native.Mouse;
@@ -12,52 +14,41 @@ namespace Sdl3Sharp.Graphics;
 /// </summary>
 public sealed unsafe class Window : IDisposable
 {
+    private static Dictionary<nint, Func<Window, Point, HitTestResult>> HitTestCallbacks => field ??= [];
+
     private bool _disposed;
-
-    /// <summary>
-    /// Gets the underlying SDL_Window pointer.
-    /// </summary>
-    public SDL_Window* Handle { get; private set; }
-
-    /// <summary>
-    /// Creates a window with the specified dimensions and flags.
-    /// </summary>
-    /// <param name="title">The title of the window.</param>
-    /// <param name="size">The size of the window.</param>
-    /// <param name="flags">The window flags.</param>
-    public static Window Create(string title, Size size, WindowFlags flags = WindowFlags.None)
-    {
-        return new(CheckErrorPointer(SDL_CreateWindow(title, size.Width, size.Height, (SDL_WindowFlags)flags)));
-    }
-
-    /// <summary>
-    /// Creates a window from an existing properties object.
-    /// </summary>
-    /// <param name="properties">The properties to use.</param>
-    public static Window Create(PropertyGroup properties)
-    {
-        ArgumentNullException.ThrowIfNull(properties);
-        return new(CheckErrorPointer(SDL_CreateWindowWithProperties(properties.Id)));
-    }
-
-    /// <summary>
-    /// Creates a child popup window of the specified parent window.
-    /// </summary>
-    /// <param name="parent">The parent of the window.</param>
-    /// <param name="offset">The position of the popup window relative to the origin of the parent.</param>
-    /// <param name="size">The size of the window.</param>
-    /// <param name="flags">The window flags (should include Tooltip or PopupMenu).</param>
-    public static Window CreatePopup(Window parent, Point offset, Size size, WindowFlags flags)
-    {
-        ArgumentNullException.ThrowIfNull(parent);
-        parent.ThrowIfDisposed();
-        return new(CheckErrorPointer(SDL_CreatePopupWindow(parent.Handle, offset.X, offset.Y, size.Width, size.Height, (SDL_WindowFlags)flags)));
-    }
 
     internal Window(SDL_Window* handle)
     {
         Handle = handle != null ? handle : throw new ArgumentNullException(nameof(handle));
     }
+
+    /// <summary>
+    /// Gets a position value indicating that the window position doesn't matter on the primary display.
+    /// </summary>
+    public static int PositionUndefined => SDL_WINDOWPOS_UNDEFINED;
+
+    /// <summary>
+    /// Gets a position value indicating that the window should be centered on the primary display.
+    /// </summary>
+    public static int PositionCentered => SDL_WINDOWPOS_CENTERED;
+
+    /// <summary>
+    /// Gets the window that currently has an input grab enabled.
+    /// </summary>
+    public static Window? GrabbedWindow
+    {
+        get
+        {
+            SDL_Window* window = SDL_GetGrabbedWindow();
+            return window != null ? new Window(window) : null;
+        }
+    }
+
+    /// <summary>
+    /// Gets the underlying SDL_Window pointer.
+    /// </summary>
+    public SDL_Window* Handle { get; private set; }
 
     /// <summary>
     /// Gets the numeric ID of this window.
@@ -121,23 +112,16 @@ public sealed unsafe class Window : IDisposable
         get
         {
             ThrowIfDisposed();
-            return SDL_GetWindowTitle(Handle);
+            return Marshal.PtrToStringUTF8((nint)SDL_GetWindowTitle(Handle))!;
         }
         set
         {
             ThrowIfDisposed();
-            _ = CheckErrorBool(SDL_SetWindowTitle(Handle, value));
+            fixed (byte* titlePtr = Encoding.UTF8.GetBytes(value + '\0'))
+            {
+                _ = CheckErrorBool(SDL_SetWindowTitle(Handle, titlePtr));
+            }
         }
-    }
-
-    /// <summary>
-    /// Sets the icon for this window.
-    /// </summary>
-    /// <param name="icon">The icon surface.</param>
-    public void SetIcon(Surface icon)
-    {
-        ThrowIfDisposed();
-        _ = CheckErrorBool(SDL_SetWindowIcon(Handle, icon.Handle));
     }
 
     /// <summary>
@@ -188,7 +172,7 @@ public sealed unsafe class Window : IDisposable
             ThrowIfDisposed();
             SDL_Rect rect;
             _ = CheckErrorBool(SDL_GetWindowSafeArea(Handle, &rect));
-            return new(new Point(rect.x, rect.y), new Size(rect.w, rect.h));
+            return new(rect);
         }
     }
 
@@ -279,33 +263,434 @@ public sealed unsafe class Window : IDisposable
     }
 
     /// <summary>
-    /// Sets whether this window has a border.
+    /// Whether this window has a border.
     /// </summary>
-    /// <param name="bordered">True to add border, false to remove border.</param>
-    public void SetBordered(bool bordered)
+    public bool Bordered
     {
-        ThrowIfDisposed();
-        _ = CheckErrorBool(SDL_SetWindowBordered(Handle, bordered));
+        get
+        {
+            ThrowIfDisposed();
+            return !Flags.HasFlag(WindowFlags.Borderless);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowBordered(Handle, value));
+        }
     }
 
     /// <summary>
-    /// Sets whether this window is resizable.
+    /// Whether this window is resizable.
     /// </summary>
-    /// <param name="resizable">True to allow resizing, false to disallow.</param>
-    public void SetResizable(bool resizable)
+    public bool Resizable
     {
-        ThrowIfDisposed();
-        _ = CheckErrorBool(SDL_SetWindowResizable(Handle, resizable));
+        get
+        {
+            ThrowIfDisposed();
+            return Flags.HasFlag(WindowFlags.Resizable);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowResizable(Handle, value));
+        }
     }
 
     /// <summary>
-    /// Sets whether this window should always be on top.
+    /// Whether this window should always be on top.
     /// </summary>
-    /// <param name="onTop">True to set always on top, false otherwise.</param>
-    public void SetAlwaysOnTop(bool onTop)
+    public bool AlwaysOnTop
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return Flags.HasFlag(WindowFlags.AlwaysOnTop);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowAlwaysOnTop(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether this window is fullscreen.
+    /// </summary>
+    public bool Fullscreen
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return Flags.HasFlag(WindowFlags.Fullscreen);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowFullscreen(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// Gets whether this window has a surface associated with it.
+    /// </summary>
+    public bool HasSurface
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return SDL_WindowHasSurface(Handle);
+        }
+    }
+
+    /// <summary>
+    /// Sets or gets the VSync mode for the window surface.
+    /// </summary>
+    public int SurfaceVSync
+    {
+        get
+        {
+            ThrowIfDisposed();
+            int vsync;
+            _ = CheckErrorBool(SDL_GetWindowSurfaceVSync(Handle, &vsync));
+            return vsync;
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowSurfaceVSync(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether keyboard input is grabbed.
+    /// </summary>
+    public bool KeyboardGrabbed
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return SDL_GetWindowKeyboardGrab(Handle);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowKeyboardGrab(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether mouse input is grabbed.
+    /// </summary>
+    public bool MouseGrabbed
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return SDL_GetWindowMouseGrab(Handle);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowMouseGrab(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// The mouse confinement rectangle.
+    /// </summary>
+    public Rectangle? MouseRect
+    {
+        get
+        {
+            ThrowIfDisposed();
+            SDL_Rect* rect = SDL_GetWindowMouseRect(Handle);
+            return rect != null ? new Rectangle(*rect) : null;
+        }
+        set
+        {
+            ThrowIfDisposed();
+            SDL_Rect rect;
+            _ = CheckErrorBool(SDL_SetWindowMouseRect(Handle, Rectangle.ToNative(value, &rect)));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether relative mouse mode is enabled for this window.
+    /// While relative mouse mode is enabled, the cursor is hidden, the mouse position
+    /// is constrained to the window, and SDL will report continuous relative mouse motion.
+    /// </summary>
+    public bool RelativeMouseMode
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return SDL_GetWindowRelativeMouseMode(Handle);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowRelativeMouseMode(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// Gets whether text input events are enabled for this window.
+    /// </summary>
+    public bool TextInputActive
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return SDL_TextInputActive(Handle);
+        }
+    }
+
+    /// <summary>
+    /// Gets whether the screen keyboard is shown for this window.
+    /// </summary>
+    public bool ScreenKeyboardShown
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return SDL_ScreenKeyboardShown(Handle);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the opacity of this window.
+    /// </summary>
+    public float Opacity
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return CheckErrorNegativeOne(SDL_GetWindowOpacity(Handle));
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowOpacity(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether this window is modal.
+    /// </summary>
+    public bool Modal
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return Flags.HasFlag(WindowFlags.Modal);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowModal(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether this window may have input focus.
+    /// </summary>
+    public bool Focusable
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return !Flags.HasFlag(WindowFlags.NotFocusable);
+        }
+        set
+        {
+            ThrowIfDisposed();
+            _ = CheckErrorBool(SDL_SetWindowFocusable(Handle, value));
+        }
+    }
+
+    /// <summary>
+    /// Gets the pixel density of this window.
+    /// </summary>
+    public float PixelDensity
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return CheckErrorZero(SDL_GetWindowPixelDensity(Handle));
+        }
+    }
+
+    /// <summary>
+    /// Gets the content display scale relative to this window's pixel size.
+    /// </summary>
+    public float DisplayScale
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return CheckErrorZero(SDL_GetWindowDisplayScale(Handle));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the display mode to use when this window is visible and fullscreen.
+    /// </summary>
+    public DisplayMode? FullscreenMode
+    {
+        get
+        {
+            ThrowIfDisposed();
+            SDL_DisplayMode* mode = SDL_GetWindowFullscreenMode(Handle);
+            return mode != null ? new DisplayMode(mode) : null;
+        }
+        set
+        {
+            ThrowIfDisposed();
+            SDL_DisplayMode mode;
+            _ = CheckErrorBool(SDL_SetWindowFullscreenMode(Handle, DisplayMode.ToNative(value, &mode)));
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw ICC profile data for the screen this window is currently on.
+    /// </summary>
+    public byte[]? ICCProfile
+    {
+        get
+        {
+            ThrowIfDisposed();
+            nuint size;
+            var data = CheckErrorPointer(SDL_GetWindowICCProfile(Handle, &size));
+            if (size == 0)
+            {
+                return null;
+            }
+
+            var result = new byte[size];
+            new Span<byte>(data, (int)size).CopyTo(result);
+            SDL_free(data);
+            return result;
+        }
+    }
+
+    /// <summary>
+    /// Gets the pixel format associated with this window.
+    /// </summary>
+    public PixelFormat PixelFormat
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return new(SDL_GetWindowPixelFormat(Handle));
+        }
+    }
+
+    /// <summary>
+    /// Gets the display associated with this window.
+    /// </summary>
+    public Display Display
+    {
+        get
+        {
+            ThrowIfDisposed();
+            return new(CheckErrorZero(SDL_GetDisplayForWindow(Handle)));
+        }
+    }
+
+    /// <summary>
+    /// Creates a window with the specified dimensions and flags.
+    /// </summary>
+    /// <param name="title">The title of the window.</param>
+    /// <param name="size">The size of the window.</param>
+    /// <param name="flags">The window flags.</param>
+    public static Window Create(string title, Size size, WindowFlags flags = WindowFlags.None)
+    {
+        fixed (byte* titlePtr = Encoding.UTF8.GetBytes(title + '\0'))
+        {
+            return new(CheckErrorPointer(SDL_CreateWindow(titlePtr, size.Width, size.Height, (SDL_WindowFlags)flags)));
+        }
+    }
+
+    /// <summary>
+    /// Creates a window from an existing properties object.
+    /// </summary>
+    /// <param name="properties">The properties to use.</param>
+    public static Window Create(PropertyGroup properties)
+    {
+        ArgumentNullException.ThrowIfNull(properties);
+        return new(CheckErrorPointer(SDL_CreateWindowWithProperties(properties.Id)));
+    }
+
+    /// <summary>
+    /// Creates a child popup window of the specified parent window.
+    /// </summary>
+    /// <param name="parent">The parent of the window.</param>
+    /// <param name="offset">The position of the popup window relative to the origin of the parent.</param>
+    /// <param name="size">The size of the window.</param>
+    /// <param name="flags">The window flags (should include Tooltip or PopupMenu).</param>
+    public static Window CreatePopup(Window parent, Point offset, Size size, WindowFlags flags)
+    {
+        ArgumentNullException.ThrowIfNull(parent);
+        parent.ThrowIfDisposed();
+        return new(CheckErrorPointer(SDL_CreatePopupWindow(parent.Handle, offset.X, offset.Y, size.Width, size.Height, (SDL_WindowFlags)flags)));
+    }
+
+    /// <summary>
+    /// Gets all valid windows.
+    /// </summary>
+    public static Window[] GetWindows()
+    {
+        int count;
+        SDL_Window** windows = CheckErrorPointer(SDL_GetWindows(&count));
+        var result = new Window[count];
+        for (var i = 0; i < count; i++)
+        {
+            result[i] = new Window(windows[i]);
+        }
+
+        SDL_free(windows);
+        return result;
+    }
+
+    /// <summary>
+    /// Checks if a position value represents an undefined position.
+    /// </summary>
+    /// <param name="position">The position to check.</param>
+    /// <returns>True if the position is undefined.</returns>
+    public static bool IsPositionUndefined(int position)
+    {
+        return position == SDL_WINDOWPOS_UNDEFINED;
+    }
+
+    /// <summary>
+    /// Determines whether the specified window position value represents a centered position.
+    /// </summary>
+    /// <param name="position">The position to check.</param>
+    /// <returns>true if the position value corresponds to a centered window position; otherwise, false.</returns>
+    public static bool IsPositionCentered(int position)
+    {
+        return position == SDL_WINDOWPOS_CENTERED;
+    }
+
+    /// <summary>
+    /// Gets a window from a stored ID.
+    /// </summary>
+    /// <param name="id">The window ID.</param>
+    /// <returns>The window, or null if it doesn't exist.</returns>
+    public static Window? FromID(uint id)
+    {
+        SDL_Window* window = SDL_GetWindowFromID(id);
+        return window != null ? new Window(window) : null;
+    }
+
+    /// <summary>
+    /// Sets the icon for this window.
+    /// </summary>
+    /// <param name="icon">The icon surface.</param>
+    public void SetIcon(Surface icon)
     {
         ThrowIfDisposed();
-        _ = CheckErrorBool(SDL_SetWindowAlwaysOnTop(Handle, onTop));
+        _ = CheckErrorBool(SDL_SetWindowIcon(Handle, icon.Handle));
     }
 
     /// <summary>
@@ -363,41 +748,12 @@ public sealed unsafe class Window : IDisposable
     }
 
     /// <summary>
-    /// Gets or sets whether this window is fullscreen.
-    /// </summary>
-    public bool Fullscreen
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return Flags.HasFlag(WindowFlags.Fullscreen);
-        }
-        set
-        {
-            ThrowIfDisposed();
-            _ = CheckErrorBool(SDL_SetWindowFullscreen(Handle, value));
-        }
-    }
-
-    /// <summary>
     /// Blocks until any pending window state is finalized.
     /// </summary>
     public void Sync()
     {
         ThrowIfDisposed();
         _ = CheckErrorBool(SDL_SyncWindow(Handle));
-    }
-
-    /// <summary>
-    /// Gets whether this window has a surface associated with it.
-    /// </summary>
-    public bool HasSurface
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return SDL_WindowHasSurface(Handle);
-        }
     }
 
     /// <summary>
@@ -408,25 +764,6 @@ public sealed unsafe class Window : IDisposable
     {
         ThrowIfDisposed();
         return new(CheckErrorPointer(SDL_GetWindowSurface(Handle)), false);
-    }
-
-    /// <summary>
-    /// Sets or gets the VSync mode for the window surface.
-    /// </summary>
-    public int SurfaceVSync
-    {
-        get
-        {
-            ThrowIfDisposed();
-            int vsync;
-            _ = CheckErrorBool(SDL_GetWindowSurfaceVSync(Handle, &vsync));
-            return vsync;
-        }
-        set
-        {
-            ThrowIfDisposed();
-            _ = CheckErrorBool(SDL_SetWindowSurfaceVSync(Handle, value));
-        }
     }
 
     /// <summary>
@@ -453,7 +790,7 @@ public sealed unsafe class Window : IDisposable
         SDL_Rect* sdlRects = stackalloc SDL_Rect[rects.Length];
         for (var i = 0; i < rects.Length; i++)
         {
-            sdlRects[i] = new SDL_Rect { x = rects[i].Location.X, y = rects[i].Location.Y, w = rects[i].Size.Width, h = rects[i].Size.Height };
+            sdlRects[i] = rects[i].Native;
         }
 
         _ = CheckErrorBool(SDL_UpdateWindowSurfaceRects(Handle, sdlRects, rects.Length));
@@ -466,85 +803,6 @@ public sealed unsafe class Window : IDisposable
     {
         ThrowIfDisposed();
         _ = CheckErrorBool(SDL_DestroyWindowSurface(Handle));
-    }
-
-    /// <summary>
-    /// Gets or sets whether keyboard input is grabbed.
-    /// </summary>
-    public bool KeyboardGrabbed
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return SDL_GetWindowKeyboardGrab(Handle);
-        }
-        set
-        {
-            ThrowIfDisposed();
-            _ = CheckErrorBool(SDL_SetWindowKeyboardGrab(Handle, value));
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets whether mouse input is grabbed.
-    /// </summary>
-    public bool MouseGrabbed
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return SDL_GetWindowMouseGrab(Handle);
-        }
-        set
-        {
-            ThrowIfDisposed();
-            _ = CheckErrorBool(SDL_SetWindowMouseGrab(Handle, value));
-        }
-    }
-
-    /// <summary>
-    /// The mouse confinement rectangle.
-    /// </summary>
-    public Rectangle? MouseRect
-    {
-        get
-        {
-            ThrowIfDisposed();
-            SDL_Rect* rect = SDL_GetWindowMouseRect(Handle);
-            return rect != null ? new Rectangle(new Point(rect->x, rect->y), new Size(rect->w, rect->h)) : null;
-        }
-        set
-        {
-            ThrowIfDisposed();
-            if (value.HasValue)
-            {
-                SDL_Rect r = new() { x = value.Value.Location.X, y = value.Value.Location.Y, w = value.Value.Size.Width, h = value.Value.Size.Height };
-                _ = CheckErrorBool(SDL_SetWindowMouseRect(Handle, &r));
-            }
-            else
-            {
-                _ = CheckErrorBool(SDL_SetWindowMouseRect(Handle, null));
-            }
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets whether relative mouse mode is enabled for this window.
-    /// While relative mouse mode is enabled, the cursor is hidden, the mouse position
-    /// is constrained to the window, and SDL will report continuous relative mouse motion.
-    /// </summary>
-    public bool RelativeMouseMode
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return SDL_GetWindowRelativeMouseMode(Handle);
-        }
-        set
-        {
-            ThrowIfDisposed();
-            _ = CheckErrorBool(SDL_SetWindowRelativeMouseMode(Handle, value));
-        }
     }
 
     /// <summary>
@@ -578,18 +836,6 @@ public sealed unsafe class Window : IDisposable
     {
         ThrowIfDisposed();
         _ = CheckErrorBool(SDL_StartTextInputWithProperties(Handle, properties.Id));
-    }
-
-    /// <summary>
-    /// Gets whether text input events are enabled for this window.
-    /// </summary>
-    public bool TextInputActive
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return SDL_TextInputActive(Handle);
-        }
     }
 
     /// <summary>
@@ -647,59 +893,6 @@ public sealed unsafe class Window : IDisposable
     }
 
     /// <summary>
-    /// Gets whether the screen keyboard is shown for this window.
-    /// </summary>
-    public bool ScreenKeyboardShown
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return SDL_ScreenKeyboardShown(Handle);
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the opacity of this window.
-    /// </summary>
-    public float Opacity
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return CheckErrorNegativeOne(SDL_GetWindowOpacity(Handle));
-        }
-        set
-        {
-            ThrowIfDisposed();
-            _ = CheckErrorBool(SDL_SetWindowOpacity(Handle, value));
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets whether this window is modal.
-    /// </summary>
-    public bool Modal
-    {
-        set
-        {
-            ThrowIfDisposed();
-            _ = CheckErrorBool(SDL_SetWindowModal(Handle, value));
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets whether this window may have input focus.
-    /// </summary>
-    public bool Focusable
-    {
-        set
-        {
-            ThrowIfDisposed();
-            _ = CheckErrorBool(SDL_SetWindowFocusable(Handle, value));
-        }
-    }
-
-    /// <summary>
     /// Displays the system-level window menu.
     /// </summary>
     /// <param name="point">The coordinate of the menu, relative to the client area.</param>
@@ -720,6 +913,32 @@ public sealed unsafe class Window : IDisposable
     }
 
     /// <summary>
+    /// Sets a callback for window hit testing.
+    /// </summary>
+    /// <param name="callback">The callback function that determines the hit test result for a given point,
+    /// or null to remove the current callback.</param>
+    /// <remarks>
+    /// Hit testing allows applications to implement custom window dragging and resizing behavior.
+    /// When the user clicks or drags on the window, the callback is invoked with the mouse position.
+    /// The callback returns a <see cref="HitTestResult"/> that determines what action should be taken
+    /// (e.g., drag the window, resize from an edge, or treat as a normal click).
+    /// </remarks>
+    public void SetHitTest(Func<Window, Point, HitTestResult>? callback)
+    {
+        ThrowIfDisposed();
+        if (callback == null)
+        {
+            _ = SDL_SetWindowHitTest(Handle, null, 0);
+            _ = HitTestCallbacks.Remove((nint)Handle);
+        }
+        else
+        {
+            _ = CheckErrorBool(SDL_SetWindowHitTest(Handle, &HitTestCallback, 0));
+            HitTestCallbacks[(nint)Handle] = callback;
+        }
+    }
+
+    /// <summary>
     /// Requests that the window demand attention from the user.
     /// </summary>
     /// <param name="operation">The flash operation to perform.</param>
@@ -729,160 +948,17 @@ public sealed unsafe class Window : IDisposable
         _ = CheckErrorBool(SDL_FlashWindow(Handle, (SDL_FlashOperation)operation));
     }
 
-    /// <summary>
-    /// Gets the pixel density of this window.
-    /// </summary>
-    public float PixelDensity
+    [UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+    private static SDL_HitTestResult HitTestCallback(SDL_Window* window, SDL_Point* point, nuint userdata)
     {
-        get
-        {
-            ThrowIfDisposed();
-            return CheckErrorZero(SDL_GetWindowPixelDensity(Handle));
-        }
+        return HitTestCallbacks.TryGetValue((nint)window, out Func<Window, Point, HitTestResult>? callback)
+            ? (SDL_HitTestResult)callback(new Window(window), new Point(point->x, point->y))
+            : SDL_HitTestResult.SDL_HITTEST_NORMAL;
     }
 
-    /// <summary>
-    /// Gets the content display scale relative to this window's pixel size.
-    /// </summary>
-    public float DisplayScale
+    private void ThrowIfDisposed()
     {
-        get
-        {
-            ThrowIfDisposed();
-            return CheckErrorZero(SDL_GetWindowDisplayScale(Handle));
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the display mode to use when this window is visible and fullscreen.
-    /// </summary>
-    public DisplayMode? FullscreenMode
-    {
-        get
-        {
-            ThrowIfDisposed();
-            SDL_DisplayMode* mode = SDL_GetWindowFullscreenMode(Handle);
-            return mode != null ? new DisplayMode(mode) : null;
-        }
-        set
-        {
-            ThrowIfDisposed();
-            SDL_DisplayMode mode;
-            _ = CheckErrorBool(SDL_SetWindowFullscreenMode(Handle, DisplayMode.ToNative(value, &mode)));
-        }
-    }
-
-    /// <summary>
-    /// Gets the raw ICC profile data for the screen this window is currently on.
-    /// </summary>
-    public byte[]? GetICCProfile()
-    {
-        ThrowIfDisposed();
-        nuint size;
-        var data = CheckErrorPointer(SDL_GetWindowICCProfile(Handle, &size));
-        if (size == 0)
-        {
-            return null;
-        }
-
-        var result = new byte[size];
-        new Span<byte>(data, (int)size).CopyTo(result);
-        SDL_free(data);
-        return result;
-    }
-
-    /// <summary>
-    /// Gets the pixel format associated with this window.
-    /// </summary>
-    public PixelFormat PixelFormat
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return new(SDL_GetWindowPixelFormat(Handle));
-        }
-    }
-
-    /// <summary>
-    /// Gets the display associated with this window.
-    /// </summary>
-    public Display Display
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return new(CheckErrorZero(SDL_GetDisplayForWindow(Handle)));
-        }
-    }
-
-    /// <summary>
-    /// Gets all valid windows.
-    /// </summary>
-    public static Window[] GetWindows()
-    {
-        int count;
-        SDL_Window** windows = CheckErrorPointer(SDL_GetWindows(&count));
-        var result = new Window[count];
-        for (var i = 0; i < count; i++)
-        {
-            result[i] = new Window(windows[i]);
-        }
-
-        SDL_free(windows);
-        return result;
-    }
-
-    /// <summary>
-    /// Gets a position value indicating that the window position doesn't matter on the primary display.
-    /// </summary>
-    public static int PositionUndefined => SDL_WINDOWPOS_UNDEFINED;
-
-    /// <summary>
-    /// Checks if a position value represents an undefined position.
-    /// </summary>
-    /// <param name="position">The position to check.</param>
-    /// <returns>True if the position is undefined.</returns>
-    public static bool IsPositionUndefined(int position)
-    {
-        return position == SDL_WINDOWPOS_UNDEFINED;
-    }
-
-    /// <summary>
-    /// Gets a position value indicating that the window should be centered on the primary display.
-    /// </summary>
-    public static int PositionCentered => SDL_WINDOWPOS_CENTERED;
-
-    /// <summary>
-    /// Determines whether the specified window position value represents a centered position.
-    /// </summary>
-    /// <param name="position">The position to check.</param>
-    /// <returns>true if the position value corresponds to a centered window position; otherwise, false.</returns>
-    public static bool IsPositionCentered(int position)
-    {
-        return position == SDL_WINDOWPOS_CENTERED;
-    }
-
-    /// <summary>
-    /// Gets a window from a stored ID.
-    /// </summary>
-    /// <param name="id">The window ID.</param>
-    /// <returns>The window, or null if it doesn't exist.</returns>
-    public static Window? FromID(uint id)
-    {
-        SDL_Window* window = SDL_GetWindowFromID(id);
-        return window != null ? new Window(window) : null;
-    }
-
-    /// <summary>
-    /// Gets the window that currently has an input grab enabled.
-    /// </summary>
-    public static Window? GrabbedWindow
-    {
-        get
-        {
-            SDL_Window* window = SDL_GetGrabbedWindow();
-            return window != null ? new Window(window) : null;
-        }
+        ObjectDisposedException.ThrowIf(_disposed, this);
     }
 
     /// <summary>
@@ -1325,11 +1401,6 @@ public sealed unsafe class Window : IDisposable
         }
     }
 
-    private void ThrowIfDisposed()
-    {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-    }
-
     /// <summary>
     /// Disposes this window.
     /// </summary>
@@ -1342,6 +1413,11 @@ public sealed unsafe class Window : IDisposable
 
         if (Handle != null)
         {
+            if (HitTestCallbacks.Remove((nint)Handle))
+            {
+                _ = SDL_SetWindowHitTest(Handle, null, 0);
+            }
+
             SDL_DestroyWindow(Handle);
             Handle = null;
         }

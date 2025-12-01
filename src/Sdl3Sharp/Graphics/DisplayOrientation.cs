@@ -1,3 +1,5 @@
+using static Sdl3Sharp.Native.Video;
+
 namespace Sdl3Sharp.Graphics;
 
 /// <summary>
@@ -6,13 +8,13 @@ namespace Sdl3Sharp.Graphics;
 public enum DisplayOrientation
 {
     /// <summary>The display orientation can't be determined.</summary>
-    Unknown,
+    Unknown = SDL_DisplayOrientation.SDL_ORIENTATION_UNKNOWN,
     /// <summary>The display is in landscape mode, with the right side up, relative to portrait mode.</summary>
-    Landscape,
+    Landscape = SDL_DisplayOrientation.SDL_ORIENTATION_LANDSCAPE,
     /// <summary>The display is in landscape mode, with the left side up, relative to portrait mode.</summary>
-    LandscapeFlipped,
+    LandscapeFlipped = SDL_DisplayOrientation.SDL_ORIENTATION_LANDSCAPE_FLIPPED,
     /// <summary>The display is in portrait mode.</summary>
-    Portrait,
+    Portrait = SDL_DisplayOrientation.SDL_ORIENTATION_PORTRAIT,
     /// <summary>The display is in portrait mode, upside down.</summary>
-    PortraitFlipped
+    PortraitFlipped = SDL_DisplayOrientation.SDL_ORIENTATION_PORTRAIT_FLIPPED
 }

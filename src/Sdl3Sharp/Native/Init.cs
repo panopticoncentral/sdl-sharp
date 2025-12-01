@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
 using static Sdl3Sharp.Native.Common;
 
 // We are intentionally exposing the P/Invoke calls so people can do low-level calls if needed

@@ -1,5 +1,4 @@
 ﻿using static Sdl3Sharp.Native.Rect;
-using static Sdl3Sharp.Native.Video;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 

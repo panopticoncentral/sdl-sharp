@@ -705,17 +705,17 @@ public static unsafe partial class Video
     /// </summary>
     /// <param name="index">The index of a video driver.</param>
     /// <returns>The name of the video driver or NULL if index is out of range.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_GetVideoDriver", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_GetVideoDriver")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial string? SDL_GetVideoDriver(int index);
+    public static partial byte* SDL_GetVideoDriver(int index);
 
     /// <summary>
     /// Get the name of the currently initialized video driver.
     /// </summary>
     /// <returns>The name of the current video driver or NULL if no driver has been initialized.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_GetCurrentVideoDriver", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_GetCurrentVideoDriver")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial string? SDL_GetCurrentVideoDriver();
+    public static partial byte* SDL_GetCurrentVideoDriver();
 
     /// <summary>
     /// Get the current system theme.
@@ -756,9 +756,9 @@ public static unsafe partial class Video
     /// </summary>
     /// <param name="displayID">The instance ID of the display to query.</param>
     /// <returns>The name of a display or NULL on failure.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_GetDisplayName", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_GetDisplayName")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial string? SDL_GetDisplayName(SDL_DisplayID displayID);
+    public static partial byte* SDL_GetDisplayName(SDL_DisplayID displayID);
 
     /// <summary>
     /// Get the desktop area represented by a display.
@@ -953,9 +953,9 @@ public static unsafe partial class Video
     /// <param name="h">The height of the window.</param>
     /// <param name="flags">0, or one or more SDL_WindowFlags OR'd together.</param>
     /// <returns>The window that was created or NULL on failure.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_CreateWindow", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_CreateWindow")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDL_Window* SDL_CreateWindow(string title, int w, int h, SDL_WindowFlags flags);
+    public static partial SDL_Window* SDL_CreateWindow(byte* title, int w, int h, SDL_WindowFlags flags);
 
     /// <summary>
     /// Create a child popup window of the specified parent window.
@@ -1031,19 +1031,19 @@ public static unsafe partial class Video
     /// <param name="window">The window to change.</param>
     /// <param name="title">The desired window title in UTF-8 format.</param>
     /// <returns>True on success or false on failure.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_SetWindowTitle", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_SetWindowTitle")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_SetWindowTitle(SDL_Window* window, string title);
+    public static partial bool SDL_SetWindowTitle(SDL_Window* window, byte* title);
 
     /// <summary>
     /// Get the title of a window.
     /// </summary>
     /// <param name="window">The window to query.</param>
     /// <returns>The title of the window in UTF-8 format or "" if there is no title.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_GetWindowTitle", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_GetWindowTitle")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial string SDL_GetWindowTitle(SDL_Window* window);
+    public static partial byte* SDL_GetWindowTitle(SDL_Window* window);
 
     /// <summary>
     /// Set the icon for a window.
@@ -1609,28 +1609,28 @@ public static unsafe partial class Video
     /// </summary>
     /// <param name="path">The platform dependent OpenGL library name, or NULL to open the default OpenGL library.</param>
     /// <returns>True on success or false on failure.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_GL_LoadLibrary", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_GL_LoadLibrary")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_GL_LoadLibrary(string? path);
+    public static partial bool SDL_GL_LoadLibrary(byte* path);
 
     /// <summary>
     /// Get an OpenGL function by name.
     /// </summary>
     /// <param name="proc">The name of an OpenGL function.</param>
     /// <returns>A pointer to the named OpenGL function, or NULL on failure.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_GL_GetProcAddress", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_GL_GetProcAddress")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial nint SDL_GL_GetProcAddress(string proc);
+    public static partial nint SDL_GL_GetProcAddress(byte* proc);
 
     /// <summary>
     /// Get an EGL library function by name.
     /// </summary>
     /// <param name="proc">The name of an EGL function.</param>
     /// <returns>A pointer to the named EGL function, or NULL on failure.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_EGL_GetProcAddress", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_EGL_GetProcAddress")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial nint SDL_EGL_GetProcAddress(string proc);
+    public static partial nint SDL_EGL_GetProcAddress(byte* proc);
 
     /// <summary>
     /// Unload the OpenGL library previously loaded by SDL_GL_LoadLibrary().
@@ -1644,10 +1644,10 @@ public static unsafe partial class Video
     /// </summary>
     /// <param name="extension">The name of the extension to check.</param>
     /// <returns>True if the extension is supported, false otherwise.</returns>
-    [LibraryImport(Sdl3, EntryPoint = "SDL_GL_ExtensionSupported", StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(Sdl3, EntryPoint = "SDL_GL_ExtensionSupported")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SDL_GL_ExtensionSupported(string extension);
+    public static partial bool SDL_GL_ExtensionSupported(byte* extension);
 
     /// <summary>
     /// Reset all previously set OpenGL context attributes to their default values.

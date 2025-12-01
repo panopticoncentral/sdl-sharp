@@ -246,7 +246,6 @@ public static unsafe class EventQueue
         return SDL_RegisterEvents(count);
     }
 
-    private static EventFilterCallback? _currentFilter;
     private static GCHandle _currentFilterHandle;
 
     /// <summary>
@@ -260,15 +259,13 @@ public static unsafe class EventQueue
     /// <para>Be careful what you do in the filter function, as it may be called from a
     /// different thread.</para>
     /// </remarks>
-    public static void SetFilter(EventFilterCallback? filter)
+    public static void SetFilter(Func<Event, bool>? filter)
     {
         // Clean up previous filter
         if (_currentFilterHandle.IsAllocated)
         {
             _currentFilterHandle.Free();
         }
-
-        _currentFilter = filter;
 
         if (filter is null)
         {
@@ -285,7 +282,7 @@ public static unsafe class EventQueue
     private static bool EventFilterHandler(nuint userdata, SDL_Event* sdlEvent)
     {
         var handle = GCHandle.FromIntPtr((nint)userdata);
-        var callback = (EventFilterCallback)handle.Target!;
+        var callback = (Func<Event, bool>)handle.Target!;
         var e = new Event(*sdlEvent);
         return callback(e);
     }
@@ -302,7 +299,7 @@ public static unsafe class EventQueue
     /// it passes the event filter. They cannot modify or block events.</para>
     /// <para>Be careful what you do in the callback, as it may be called from a different thread.</para>
     /// </remarks>
-    public static EventWatchHandle AddWatch(EventWatchCallback callback)
+    public static EventWatchHandle AddWatch(Action<Event> callback)
     {
         var registration = new EventWatchRegistration(callback);
         var handle = GCHandle.Alloc(registration);
@@ -363,7 +360,7 @@ public static unsafe class EventQueue
     /// Filters events currently in the queue, removing any for which the filter returns false.
     /// </summary>
     /// <param name="filter">The filter function. Return true to keep the event, false to remove it.</param>
-    public static void Filter(EventFilterCallback filter)
+    public static void Filter(Func<Event, bool> filter)
     {
         var handle = GCHandle.Alloc(filter);
         try
@@ -375,36 +372,10 @@ public static unsafe class EventQueue
             handle.Free();
         }
     }
-}
 
-/// <summary>
-/// A callback function for filtering events.
-/// </summary>
-/// <param name="event">The event to filter.</param>
-/// <returns>True to keep the event, false to drop it.</returns>
-public delegate bool EventFilterCallback(Event @event);
-
-/// <summary>
-/// A callback function for watching events.
-/// </summary>
-/// <param name="event">The event that was added to the queue.</param>
-public delegate void EventWatchCallback(Event @event);
-
-/// <summary>
-/// A handle to an event watch registration.
-/// </summary>
-public readonly struct EventWatchHandle
-{
-    internal EventWatchRegistration? Registration { get; }
-
-    internal EventWatchHandle(EventWatchRegistration registration)
+    internal sealed class EventWatchRegistration(Action<Event> callback)
     {
-        Registration = registration;
+        public Action<Event> Callback { get; } = callback;
+        public GCHandle Handle { get; set; }
     }
-}
-
-internal sealed class EventWatchRegistration(EventWatchCallback callback)
-{
-    public EventWatchCallback Callback { get; } = callback;
-    public GCHandle Handle { get; set; }
 }

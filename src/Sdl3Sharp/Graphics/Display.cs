@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Rect;
 using static Sdl3Sharp.Native.StdInc;
@@ -30,7 +31,14 @@ public sealed unsafe class Display
     /// <summary>
     /// Gets the name of this display.
     /// </summary>
-    public string Name => CheckErrorNull(SDL_GetDisplayName(_displayID));
+    public string Name
+    {
+        get
+        {
+            var name = CheckErrorPointer(SDL_GetDisplayName(_displayID));
+            return Marshal.PtrToStringUTF8((nint)name)!;
+        }
+    }
 
     /// <summary>
     /// Gets the desktop area represented by this display.
@@ -41,7 +49,7 @@ public sealed unsafe class Display
         {
             SDL_Rect rect;
             _ = CheckErrorBool(SDL_GetDisplayBounds(_displayID, &rect));
-            return new(new Point(rect.x, rect.y), new Size(rect.w, rect.h));
+            return new(rect);
         }
     }
 
@@ -54,7 +62,7 @@ public sealed unsafe class Display
         {
             SDL_Rect rect;
             _ = CheckErrorBool(SDL_GetDisplayUsableBounds(_displayID, &rect));
-            return new(new Point(rect.x, rect.y), new Size(rect.w, rect.h));
+            return new(rect);
         }
     }
 
@@ -96,15 +104,14 @@ public sealed unsafe class Display
     /// <summary>
     /// Gets the closest match to the requested display mode.
     /// </summary>
-    /// <param name="width">The width in pixels of the desired display mode.</param>
-    /// <param name="height">The height in pixels of the desired display mode.</param>
+    /// <param name="size">The size in pixels of the desired display mode.</param>
     /// <param name="refreshRate">The refresh rate of the desired display mode, or 0.0f for the desktop refresh rate.</param>
     /// <param name="includeHighDensityModes">Whether to include high density modes in the search.</param>
     /// <returns>The closest matching display mode, or null if no match found.</returns>
-    public DisplayMode GetClosestFullscreenMode(int width, int height, float refreshRate = 0.0f, bool includeHighDensityModes = false)
+    public DisplayMode GetClosestFullscreenMode(Size size, float refreshRate = 0.0f, bool includeHighDensityModes = false)
     {
         SDL_DisplayMode closest;
-        _ = CheckErrorBool(SDL_GetClosestFullscreenDisplayMode(_displayID, width, height, refreshRate, includeHighDensityModes, &closest));
+        _ = CheckErrorBool(SDL_GetClosestFullscreenDisplayMode(_displayID, size.Width, size.Height, refreshRate, includeHighDensityModes, &closest));
         return new(closest);
     }
 
@@ -148,8 +155,7 @@ public sealed unsafe class Display
     /// <returns>The display containing the point.</returns>
     public static Display GetDisplayForPoint(Point point)
     {
-        SDL_Point p = new() { x = point.X, y = point.Y };
-        return new(CheckErrorZero(SDL_GetDisplayForPoint(&p)));
+        return new(CheckErrorZero(SDL_GetDisplayForPoint(&point.Native)));
     }
 
     /// <summary>
@@ -159,8 +165,7 @@ public sealed unsafe class Display
     /// <returns>The display entirely containing the rect or closest to the center of the rect.</returns>
     public static Display GetDisplayForRect(Rectangle rect)
     {
-        SDL_Rect r = new() { x = rect.Location.X, y = rect.Location.Y, w = rect.Size.Width, h = rect.Size.Height };
-        return new(CheckErrorZero(SDL_GetDisplayForRect(&r)));
+        return new(CheckErrorZero(SDL_GetDisplayForRect(&rect.Native)));
     }
 
     /// <summary>
