@@ -11,6 +11,69 @@ namespace Sdl3Sharp.Graphics;
 /// </summary>
 public sealed unsafe class Display
 {
+    /// <summary>
+    /// Occurs when a display's orientation has changed.
+    /// </summary>
+    public static event EventHandler<DisplayOrientationEventArgs>? OrientationChanged;
+
+    /// <summary>
+    /// Occurs when a display has been added to the system.
+    /// </summary>
+    public static event EventHandler<DisplayEventArgs>? Added;
+
+    /// <summary>
+    /// Occurs when a display has been removed from the system.
+    /// </summary>
+    public static event EventHandler<DisplayEventArgs>? Removed;
+
+    /// <summary>
+    /// Occurs when a display has been moved.
+    /// </summary>
+    public static event EventHandler<DisplayEventArgs>? Moved;
+
+    /// <summary>
+    /// Occurs when a display's desktop mode has changed.
+    /// </summary>
+    public static event EventHandler<DisplayEventArgs>? DesktopModeChanged;
+
+    /// <summary>
+    /// Occurs when a display's current mode has changed.
+    /// </summary>
+    public static event EventHandler<DisplayEventArgs>? CurrentModeChanged;
+
+    /// <summary>
+    /// Occurs when a display's content scale has changed.
+    /// </summary>
+    public static event EventHandler<DisplayEventArgs>? ContentScaleChanged;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.DisplayOrientation:
+                OrientationChanged?.Invoke(null, (DisplayOrientationEventArgs)e.TranslateEvent());
+                break;
+            case EventType.DisplayAdded:
+                Added?.Invoke(null, (DisplayOrientationEventArgs)e.TranslateEvent());
+                break;
+            case EventType.DisplayRemoved:
+                Removed?.Invoke(null, (DisplayEventArgs)e.TranslateEvent());
+                break;
+            case EventType.DisplayMoved:
+                Moved?.Invoke(null, (DisplayEventArgs)e.TranslateEvent());
+                break;
+            case EventType.DisplayDesktopModeChanged:
+                DesktopModeChanged?.Invoke(null, (DisplayEventArgs)e.TranslateEvent());
+                break;
+            case EventType.DisplayCurrentModeChanged:
+                CurrentModeChanged?.Invoke(null, (DisplayEventArgs)e.TranslateEvent());
+                break;
+            case EventType.DisplayContentScaleChanged:
+                ContentScaleChanged?.Invoke(null, (DisplayEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
     private readonly SDL_DisplayID _displayID;
 
     internal Display(SDL_DisplayID displayID)

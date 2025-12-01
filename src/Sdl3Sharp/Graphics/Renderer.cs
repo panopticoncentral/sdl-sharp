@@ -1,5 +1,6 @@
 using static Sdl3Sharp.Native.BlendMode;
 using static Sdl3Sharp.Native.Common;
+using static Sdl3Sharp.Native.Events;
 using static Sdl3Sharp.Native.Rect;
 using static Sdl3Sharp.Native.Render;
 using static Sdl3Sharp.Native.Surface;
@@ -12,6 +13,37 @@ namespace Sdl3Sharp.Graphics;
 /// </summary>
 public sealed unsafe class Renderer : IDisposable
 {
+    /// <summary>
+    /// Occurs when render targets have been reset and their contents need to be updated.
+    /// </summary>
+    public static event EventHandler<RenderEventArgs>? TargetsReset;
+
+    /// <summary>
+    /// Occurs when the render device has been reset and all textures need to be recreated.
+    /// </summary>
+    public static event EventHandler<RenderEventArgs>? DeviceReset;
+
+    /// <summary>
+    /// Occurs when the render device has been lost and can't be recovered.
+    /// </summary>
+    public static event EventHandler<RenderEventArgs>? DeviceLost;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.RenderTargetsReset:
+                TargetsReset?.Invoke(null, (RenderEventArgs)e.TranslateEvent());
+                break;
+            case EventType.RenderDeviceReset:
+                DeviceReset?.Invoke(null, (RenderEventArgs)e.TranslateEvent());
+                break;
+            case EventType.RenderDeviceLost:
+                DeviceLost?.Invoke(null, (RenderEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
     private bool _disposed;
     private readonly bool _ownsHandle;
 

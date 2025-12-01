@@ -9,16 +9,8 @@ namespace Sdl3Sharp;
 /// <summary>
 /// Represents an SDL event with typed access to event-specific data.
 /// </summary>
-/// <remarks>
-/// <para>This class provides a managed wrapper around SDL's event system. Events are
-/// the core of SDL's input handling - all user interaction and system notifications
-/// flow through the event queue.</para>
-/// <para>Use <see cref="EventQueue.Poll"/> or <see cref="EventQueue.Wait()"/> to retrieve events,
-/// then check the <see cref="Type"/> property and access the appropriate typed data property.</para>
-/// </remarks>
-public readonly unsafe struct Event
+public readonly unsafe record struct Event
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Event"/> struct from a native SDL_Event.
     /// </summary>
@@ -49,137 +41,121 @@ public readonly unsafe struct Event
     public SDL_Event Native { get; }
 
     /// <summary>
-    /// Gets the display event data. Only valid when <see cref="Type"/> is a display event.
+    /// Translates a native SDL event structure into a managed event argument object representing the corresponding
+    /// event type.
     /// </summary>
-    public DisplayEventData Display => new(Native.display);
+    /// <returns>An instance of SdlEventArgs or a derived type that encapsulates the event data for the specified SDL event.</returns>
+    public unsafe SdlEventArgs TranslateEvent()
+    {
+        return Type switch
+        {
+            EventType.Quit
+            or EventType.Terminating
+            or EventType.LowMemory
+            or EventType.WillEnterBackground
+            or EventType.DidEnterBackground
+            or EventType.WillEnterForeground
+            or EventType.DidEnterForeground
+            or EventType.LocaleChanged
+            or EventType.SystemThemeChanged
+            or EventType.ClipboardUpdate => new SdlEventArgs(Native.common.timestamp),
 
-    /// <summary>
-    /// Gets the window event data. Only valid when <see cref="Type"/> is a window event.
-    /// </summary>
-    public WindowEventData Window => new(Native.window);
+            EventType.DisplayOrientation
+            or EventType.DisplayAdded
+            or EventType.DisplayRemoved
+            or EventType.DisplayMoved
+            or EventType.DisplayDesktopModeChanged
+            or EventType.DisplayCurrentModeChanged
+            or EventType.DisplayContentScaleChanged => new DisplayOrientationEventArgs(Native.display),
 
-    /// <summary>
-    /// Gets the keyboard event data. Only valid when <see cref="Type"/> is <see cref="EventType.KeyDown"/> or <see cref="EventType.KeyUp"/>.
-    /// </summary>
-    public KeyboardEventData Keyboard => new(Native.key);
-
-    /// <summary>
-    /// Gets the text editing event data. Only valid when <see cref="Type"/> is <see cref="EventType.TextEditing"/>.
-    /// </summary>
-    public TextEditingEventData TextEditing => new(Native.edit);
-
-    /// <summary>
-    /// Gets the text input event data. Only valid when <see cref="Type"/> is <see cref="EventType.TextInput"/>.
-    /// </summary>
-    public TextInputEventData TextInput => new(Native.text);
-
-    /// <summary>
-    /// Gets the mouse motion event data. Only valid when <see cref="Type"/> is <see cref="EventType.MouseMotion"/>.
-    /// </summary>
-    public MouseMotionEventData MouseMotion => new(Native.motion);
-
-    /// <summary>
-    /// Gets the mouse button event data. Only valid when <see cref="Type"/> is <see cref="EventType.MouseButtonDown"/> or <see cref="EventType.MouseButtonUp"/>.
-    /// </summary>
-    public MouseButtonEventData MouseButton => new(Native.button);
-
-    /// <summary>
-    /// Gets the mouse wheel event data. Only valid when <see cref="Type"/> is <see cref="EventType.MouseWheel"/>.
-    /// </summary>
-    public MouseWheelEventData MouseWheel => new(Native.wheel);
-
-    /// <summary>
-    /// Gets the joystick axis event data. Only valid when <see cref="Type"/> is <see cref="EventType.JoystickAxisMotion"/>.
-    /// </summary>
-    public JoyAxisEventData JoyAxis => new(Native.jaxis);
-
-    /// <summary>
-    /// Gets the joystick hat event data. Only valid when <see cref="Type"/> is <see cref="EventType.JoystickHatMotion"/>.
-    /// </summary>
-    public JoyHatEventData JoyHat => new(Native.jhat);
-
-    /// <summary>
-    /// Gets the joystick button event data. Only valid when <see cref="Type"/> is <see cref="EventType.JoystickButtonDown"/> or <see cref="EventType.JoystickButtonUp"/>.
-    /// </summary>
-    public JoyButtonEventData JoyButton => new(Native.jbutton);
-
-    /// <summary>
-    /// Gets the joystick device event data. Only valid when <see cref="Type"/> is a joystick device event.
-    /// </summary>
-    public JoyDeviceEventData JoyDevice => new(Native.jdevice);
-
-    /// <summary>
-    /// Gets the gamepad axis event data. Only valid when <see cref="Type"/> is <see cref="EventType.GamepadAxisMotion"/>.
-    /// </summary>
-    public GamepadAxisEventData GamepadAxis => new(Native.gaxis);
-
-    /// <summary>
-    /// Gets the gamepad button event data. Only valid when <see cref="Type"/> is <see cref="EventType.GamepadButtonDown"/> or <see cref="EventType.GamepadButtonUp"/>.
-    /// </summary>
-    public GamepadButtonEventData GamepadButton => new(Native.gbutton);
-
-    /// <summary>
-    /// Gets the gamepad device event data. Only valid when <see cref="Type"/> is a gamepad device event.
-    /// </summary>
-    public GamepadDeviceEventData GamepadDevice => new(Native.gdevice);
-
-    /// <summary>
-    /// Gets the gamepad touchpad event data. Only valid when <see cref="Type"/> is a gamepad touchpad event.
-    /// </summary>
-    public GamepadTouchpadEventData GamepadTouchpad => new(Native.gtouchpad);
-
-    /// <summary>
-    /// Gets the touch finger event data. Only valid when <see cref="Type"/> is a finger event.
-    /// </summary>
-    public TouchFingerEventData TouchFinger => new(Native.tfinger);
-
-    /// <summary>
-    /// Gets the drop event data. Only valid when <see cref="Type"/> is a drop event.
-    /// </summary>
-    public DropEventData Drop => new(Native.drop);
-
-    /// <summary>
-    /// Gets the audio device event data. Only valid when <see cref="Type"/> is an audio device event.
-    /// </summary>
-    public AudioDeviceEventData AudioDevice => new(Native.adevice);
-
-    /// <summary>
-    /// Gets the camera device event data. Only valid when <see cref="Type"/> is a camera device event.
-    /// </summary>
-    public CameraDeviceEventData CameraDevice => new(Native.cdevice);
-
-    /// <summary>
-    /// Gets the sensor event data. Only valid when <see cref="Type"/> is <see cref="EventType.SensorUpdate"/>.
-    /// </summary>
-    public SensorEventData Sensor => new(Native.sensor);
-
-    /// <summary>
-    /// Gets the pen proximity event data. Only valid when <see cref="Type"/> is <see cref="EventType.PenProximityIn"/> or <see cref="EventType.PenProximityOut"/>.
-    /// </summary>
-    public PenProximityEventData PenProximity => new(Native.pproximity);
-
-    /// <summary>
-    /// Gets the pen motion event data. Only valid when <see cref="Type"/> is <see cref="EventType.PenMotion"/>.
-    /// </summary>
-    public PenMotionEventData PenMotion => new(Native.pmotion);
-
-    /// <summary>
-    /// Gets the pen touch event data. Only valid when <see cref="Type"/> is <see cref="EventType.PenDown"/> or <see cref="EventType.PenUp"/>.
-    /// </summary>
-    public PenTouchEventData PenTouch => new(Native.ptouch);
-
-    /// <summary>
-    /// Gets the pen button event data. Only valid when <see cref="Type"/> is <see cref="EventType.PenButtonDown"/> or <see cref="EventType.PenButtonUp"/>.
-    /// </summary>
-    public PenButtonEventData PenButton => new(Native.pbutton);
-
-    /// <summary>
-    /// Gets the pen axis event data. Only valid when <see cref="Type"/> is <see cref="EventType.PenAxis"/>.
-    /// </summary>
-    public PenAxisEventData PenAxis => new(Native.paxis);
-
-    /// <summary>
-    /// Gets the user event data. Only valid when <see cref="Type"/> is a user-defined event.
-    /// </summary>
-    public UserEventData User => new(Native.user);
+            EventType.WindowShown
+            or EventType.WindowHidden
+            or EventType.WindowExposed
+            or EventType.WindowMetalViewResized
+            or EventType.WindowMinimized
+            or EventType.WindowMaximized
+            or EventType.WindowRestored
+            or EventType.WindowMouseEnter
+            or EventType.WindowMouseLeave
+            or EventType.WindowFocusGained
+            or EventType.WindowFocusLost
+            or EventType.WindowCloseRequested
+            or EventType.WindowHitTest
+            or EventType.WindowIccProfileChanged
+            or EventType.WindowDisplayScaleChanged
+            or EventType.WindowSafeAreaChanged
+            or EventType.WindowOccluded
+            or EventType.WindowEnterFullscreen
+            or EventType.WindowLeaveFullscreen
+            or EventType.WindowDestroyed
+            or EventType.WindowHdrStateChanged => new WindowEventArgs(Native.window),
+            EventType.WindowMoved => new WindowMovedEventArgs(Native.window),
+            EventType.WindowResized
+            or EventType.WindowPixelSizeChanged => new WindowResizedEventArgs(Native.window),
+            EventType.WindowDisplayChanged => new WindowDisplayChangedEventArgs(Native.window),
+            EventType.KeyDown
+            or EventType.KeyUp => new KeyboardEventArgs(Native.key),
+            EventType.TextEditing => new TextEditingEventArgs(Native.edit),
+            EventType.TextInput => new TextInputEventArgs(Native.text),
+            EventType.KeymapChanged => new SdlEventArgs(Native.common.timestamp),
+            EventType.KeyboardAdded
+            or EventType.KeyboardRemoved => new KeyboardDeviceEventArgs(Native.kdevice),
+            EventType.MouseMotion => new MouseMotionEventArgs(Native.motion),
+            EventType.MouseButtonDown
+            or EventType.MouseButtonUp => new MouseButtonEventArgs(Native.button),
+            EventType.MouseWheel => new MouseWheelEventArgs(Native.wheel),
+            EventType.MouseAdded
+            or EventType.MouseRemoved => new MouseDeviceEventArgs(Native.mdevice),
+            EventType.JoystickAxisMotion => new JoystickAxisEventArgs(Native.jaxis),
+            EventType.JoystickBallMotion => new JoystickBallEventArgs(Native.jball),
+            EventType.JoystickHatMotion => new JoystickHatEventArgs(Native.jhat),
+            EventType.JoystickButtonDown
+            or EventType.JoystickButtonUp => new JoystickButtonEventArgs(Native.jbutton),
+            EventType.JoystickAdded
+            or EventType.JoystickRemoved
+            or EventType.JoystickUpdateComplete => new JoystickDeviceEventArgs(Native.jdevice),
+            EventType.JoystickBatteryUpdated => new JoystickBatteryEventArgs(Native.jbattery),
+            EventType.GamepadAxisMotion => new GamepadAxisEventArgs(Native.gaxis),
+            EventType.GamepadButtonDown
+            or EventType.GamepadButtonUp => new GamepadButtonEventArgs(Native.gbutton),
+            EventType.GamepadAdded
+            or EventType.GamepadRemoved
+            or EventType.GamepadRemapped
+            or EventType.GamepadUpdateComplete
+            or EventType.GamepadSteamHandleUpdated => new GamepadDeviceEventArgs(Native.gdevice),
+            EventType.GamepadTouchpadDown
+            or EventType.GamepadTouchpadMotion
+            or EventType.GamepadTouchpadUp => new GamepadTouchpadEventArgs(Native.gtouchpad),
+            EventType.GamepadSensorUpdate => new GamepadSensorEventArgs(Native.gsensor),
+            EventType.FingerDown
+            or EventType.FingerUp
+            or EventType.FingerMotion
+            or EventType.FingerCanceled => new TouchFingerEventArgs(Native.tfinger),
+            EventType.DropFile
+            or EventType.DropText
+            or EventType.DropBegin
+            or EventType.DropComplete
+            or EventType.DropPosition => new DropEventArgs(Native.drop),
+            EventType.AudioDeviceAdded
+            or EventType.AudioDeviceRemoved
+            or EventType.AudioDeviceFormatChanged => new AudioDeviceEventArgs(Native.adevice),
+            EventType.SensorUpdate => new SensorEventArgs(Native.sensor),
+            EventType.PenProximityIn
+            or EventType.PenProximityOut => new PenProximityEventArgs(Native.pproximity),
+            EventType.PenDown
+            or EventType.PenUp => new PenTouchEventArgs(Native.ptouch),
+            EventType.PenButtonDown
+            or EventType.PenButtonUp => new PenButtonEventArgs(Native.pbutton),
+            EventType.PenMotion => new PenMotionEventArgs(Native.pmotion),
+            EventType.PenAxis => new PenAxisEventArgs(Native.paxis),
+            EventType.CameraDeviceAdded
+            or EventType.CameraDeviceRemoved
+            or EventType.CameraDeviceApproved
+            or EventType.CameraDeviceDenied => new CameraDeviceEventArgs(Native.cdevice),
+            EventType.RenderTargetsReset
+            or EventType.RenderDeviceReset
+            or EventType.RenderDeviceLost => new RenderEventArgs(Native.common.timestamp),
+            _ => throw new InvalidDataException($"Unsupported event type: {Type}"),
+        };
+    }
 }

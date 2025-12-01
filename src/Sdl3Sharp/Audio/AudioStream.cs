@@ -175,14 +175,9 @@ public sealed unsafe class AudioStream : IDisposable
         set
         {
             ThrowIfDisposed();
-            if (value)
-            {
-                _ = CheckErrorBool(NativeAudio.SDL_PauseAudioStreamDevice(Handle));
-            }
-            else
-            {
-                _ = CheckErrorBool(NativeAudio.SDL_ResumeAudioStreamDevice(Handle));
-            }
+            _ = value
+                ? CheckErrorBool(NativeAudio.SDL_PauseAudioStreamDevice(Handle))
+                : CheckErrorBool(NativeAudio.SDL_ResumeAudioStreamDevice(Handle));
         }
     }
 
@@ -217,7 +212,10 @@ public sealed unsafe class AudioStream : IDisposable
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>A new AudioStream instance.</returns>
-    public static AudioStream Create(AudioSpec format) => Create(format, format);
+    public static AudioStream Create(AudioSpec format)
+    {
+        return Create(format, format);
+    }
 
     /// <summary>
     /// Opens an audio device and creates a bound stream in one call.
@@ -254,16 +252,20 @@ public sealed unsafe class AudioStream : IDisposable
     /// </summary>
     /// <param name="spec">The audio format, or null to use device defaults.</param>
     /// <returns>A new AudioStream instance bound to the default playback device.</returns>
-    public static AudioStream OpenDefaultPlayback(AudioSpec? spec = null) =>
-        OpenDeviceStream(NativeAudio.SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, spec);
+    public static AudioStream OpenDefaultPlayback(AudioSpec? spec = null)
+    {
+        return OpenDeviceStream(NativeAudio.SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, spec);
+    }
 
     /// <summary>
     /// Opens the default recording device and creates a bound stream.
     /// </summary>
     /// <param name="spec">The audio format, or null to use device defaults.</param>
     /// <returns>A new AudioStream instance bound to the default recording device.</returns>
-    public static AudioStream OpenDefaultRecording(AudioSpec? spec = null) =>
-        OpenDeviceStream(NativeAudio.SDL_AUDIO_DEVICE_DEFAULT_RECORDING, spec);
+    public static AudioStream OpenDefaultRecording(AudioSpec? spec = null)
+    {
+        return OpenDeviceStream(NativeAudio.SDL_AUDIO_DEVICE_DEFAULT_RECORDING, spec);
+    }
 
     /// <summary>
     /// Creates an AudioStream wrapper for an existing SDL_AudioStream pointer.

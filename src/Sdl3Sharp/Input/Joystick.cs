@@ -12,6 +12,85 @@ namespace Sdl3Sharp.Input;
 /// </summary>
 public sealed unsafe class Joystick : IDisposable
 {
+    /// <summary>
+    /// Occurs when a joystick axis is moved.
+    /// </summary>
+    public static event EventHandler<JoystickAxisEventArgs>? AxisMotion;
+
+    /// <summary>
+    /// Occurs when a joystick trackball is moved.
+    /// </summary>
+    public static event EventHandler<JoystickBallEventArgs>? BallMotion;
+
+    /// <summary>
+    /// Occurs when a joystick hat position changes.
+    /// </summary>
+    public static event EventHandler<JoystickHatEventArgs>? HatMotion;
+
+    /// <summary>
+    /// Occurs when a joystick button is pressed.
+    /// </summary>
+    public static event EventHandler<JoystickButtonEventArgs>? ButtonDown;
+
+    /// <summary>
+    /// Occurs when a joystick button is released.
+    /// </summary>
+    public static event EventHandler<JoystickButtonEventArgs>? ButtonUp;
+
+    /// <summary>
+    /// Occurs when a joystick has been added to the system.
+    /// </summary>
+    public static event EventHandler<JoystickDeviceEventArgs>? Added;
+
+    /// <summary>
+    /// Occurs when a joystick has been removed from the system.
+    /// </summary>
+    public static event EventHandler<JoystickDeviceEventArgs>? Removed;
+
+    /// <summary>
+    /// Occurs when a joystick's battery level has been updated.
+    /// </summary>
+    public static event EventHandler<JoystickBatteryEventArgs>? BatteryUpdated;
+
+    /// <summary>
+    /// Occurs when a joystick update is complete.
+    /// </summary>
+    public static event EventHandler<JoystickDeviceEventArgs>? UpdateComplete;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.JoystickAxisMotion:
+                AxisMotion?.Invoke(null, (JoystickAxisEventArgs)e.TranslateEvent());
+                break;
+            case EventType.JoystickBallMotion:
+                BallMotion?.Invoke(null, (JoystickBallEventArgs)e.TranslateEvent());
+                break;
+            case EventType.JoystickHatMotion:
+                HatMotion?.Invoke(null, (JoystickHatEventArgs)e.TranslateEvent());
+                break;
+            case EventType.JoystickButtonDown:
+                ButtonDown?.Invoke(null, (JoystickButtonEventArgs)e.TranslateEvent());
+                break;
+            case EventType.JoystickButtonUp:
+                ButtonUp?.Invoke(null, (JoystickButtonEventArgs)e.TranslateEvent());
+                break;
+            case EventType.JoystickAdded:
+                Added?.Invoke(null, (JoystickDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.JoystickRemoved:
+                Removed?.Invoke(null, (JoystickDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.JoystickBatteryUpdated:
+                BatteryUpdated?.Invoke(null, (JoystickBatteryEventArgs)e.TranslateEvent());
+                break;
+            case EventType.JoystickUpdateComplete:
+                UpdateComplete?.Invoke(null, (JoystickDeviceEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
     private bool _disposed;
     private readonly bool _ownsHandle;
 

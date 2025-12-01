@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using static Sdl3Sharp.Native.Common;
 using static Sdl3Sharp.Native.Error;
@@ -14,6 +14,81 @@ namespace Sdl3Sharp;
 /// </summary>
 public sealed unsafe class Application : IDisposable
 {
+    /// <summary>
+    /// Occurs when the user requests a quit (e.g., by closing the last window).
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? Quitting;
+
+    /// <summary>
+    /// Occurs when the application is being terminated by the OS.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? Terminating;
+
+    /// <summary>
+    /// Occurs when the application is low on memory.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? LowMemory;
+
+    /// <summary>
+    /// Occurs when the application is about to enter the background.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? WillEnterBackground;
+
+    /// <summary>
+    /// Occurs when the application did enter the background.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? DidEnterBackground;
+
+    /// <summary>
+    /// Occurs when the application is about to enter the foreground.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? WillEnterForeground;
+
+    /// <summary>
+    /// Occurs when the application is now interactive.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? DidEnterForeground;
+
+    /// <summary>
+    /// Occurs when the user's locale preferences have changed.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? LocaleChanged;
+
+    /// <summary>
+    /// Occurs when the system theme has changed.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? SystemThemeChanged;
+
+    /// <summary>
+    /// Occurs when files are dropped on the application.
+    /// </summary>
+    public static event EventHandler<DropEventArgs>? FileDropped;
+
+    /// <summary>
+    /// Occurs when text is dropped on the application.
+    /// </summary>
+    public static event EventHandler<DropEventArgs>? TextDropped;
+
+    /// <summary>
+    /// Occurs when a drop operation begins.
+    /// </summary>
+    public static event EventHandler<DropEventArgs>? DropBegin;
+
+    /// <summary>
+    /// Occurs when a drop operation completes.
+    /// </summary>
+    public static event EventHandler<DropEventArgs>? DropComplete;
+
+    /// <summary>
+    /// Occurs when the cursor is moving during a drop operation.
+    /// </summary>
+    public static event EventHandler<DropEventArgs>? DropPosition;
+
+    /// <summary>
+    /// Occurs when the clipboard contents have changed.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? ClipboardUpdate;
+
     /// <summary>
     /// The name of the platform SDL is running on.
     /// </summary>
@@ -140,6 +215,72 @@ public sealed unsafe class Application : IDisposable
         }
 
         _ = CheckErrorBool(SDL_Init((SDL_InitFlags)subsystems));
+    }
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.Quit:
+                Quitting?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.Terminating:
+                Terminating?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.LowMemory:
+                LowMemory?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.WillEnterBackground:
+                WillEnterBackground?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.DidEnterBackground:
+                DidEnterBackground?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.WillEnterForeground:
+                WillEnterForeground?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.DidEnterForeground:
+                DidEnterForeground?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.LocaleChanged:
+                LocaleChanged?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.SystemThemeChanged:
+                SystemThemeChanged?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.ClipboardUpdate:
+                ClipboardUpdate?.Invoke(null, e.TranslateEvent());
+                break;
+
+            case EventType.DropFile:
+                FileDropped?.Invoke(null, (DropEventArgs)e.TranslateEvent());
+                break;
+
+            case EventType.DropText:
+                TextDropped?.Invoke(null, (DropEventArgs)e.TranslateEvent());
+                break;
+
+            case EventType.DropBegin:
+                DropBegin?.Invoke(null, (DropEventArgs)e.TranslateEvent());
+                break;
+
+            case EventType.DropComplete:
+                DropComplete?.Invoke(null, (DropEventArgs)e.TranslateEvent());
+                break;
+
+            case EventType.DropPosition:
+                DropPosition?.Invoke(null, (DropEventArgs)e.TranslateEvent());
+                break;
+        }
     }
 
     /// <inheritdoc/>

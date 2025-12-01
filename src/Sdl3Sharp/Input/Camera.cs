@@ -1,5 +1,6 @@
 using static Sdl3Sharp.Native.Camera;
 using static Sdl3Sharp.Native.Common;
+using static Sdl3Sharp.Native.Events;
 using static Sdl3Sharp.Native.StdInc;
 
 namespace Sdl3Sharp.Input;
@@ -10,6 +11,45 @@ namespace Sdl3Sharp.Input;
 /// </summary>
 public sealed unsafe class Camera : IDisposable
 {
+    /// <summary>
+    /// Occurs when a camera has been added to the system.
+    /// </summary>
+    public static event EventHandler<CameraDeviceEventArgs>? Added;
+
+    /// <summary>
+    /// Occurs when a camera has been removed from the system.
+    /// </summary>
+    public static event EventHandler<CameraDeviceEventArgs>? Removed;
+
+    /// <summary>
+    /// Occurs when a camera has been approved for use by the user.
+    /// </summary>
+    public static event EventHandler<CameraDeviceEventArgs>? Approved;
+
+    /// <summary>
+    /// Occurs when a camera has been denied for use by the user.
+    /// </summary>
+    public static event EventHandler<CameraDeviceEventArgs>? Denied;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.CameraDeviceAdded:
+                Added?.Invoke(null, (CameraDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.CameraDeviceRemoved:
+                Removed?.Invoke(null, (CameraDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.CameraDeviceApproved:
+                Approved?.Invoke(null, (CameraDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.CameraDeviceDenied:
+                Denied?.Invoke(null, (CameraDeviceEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
     private bool _disposed;
     private readonly bool _ownsHandle;
 

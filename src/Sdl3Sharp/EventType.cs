@@ -1,3 +1,5 @@
+using static Sdl3Sharp.Native.Events;
+
 namespace Sdl3Sharp;
 
 /// <summary>
@@ -6,242 +8,242 @@ namespace Sdl3Sharp;
 public enum EventType : uint
 {
     /// <summary>Unused (do not remove).</summary>
-    First = 0,
+    First = SDL_EventType.SDL_EVENT_FIRST,
 
     /// <summary>User-requested quit.</summary>
-    Quit = 0x100,
+    Quit = SDL_EventType.SDL_EVENT_QUIT,
 
     /// <summary>The application is being terminated by the OS.</summary>
-    Terminating,
+    Terminating = SDL_EventType.SDL_EVENT_TERMINATING,
     /// <summary>The application is low on memory, free memory if possible.</summary>
-    LowMemory,
+    LowMemory = SDL_EventType.SDL_EVENT_LOW_MEMORY,
     /// <summary>The application is about to enter the background.</summary>
-    WillEnterBackground,
+    WillEnterBackground = SDL_EventType.SDL_EVENT_WILL_ENTER_BACKGROUND,
     /// <summary>The application did enter the background and may not get CPU for some time.</summary>
-    DidEnterBackground,
+    DidEnterBackground = SDL_EventType.SDL_EVENT_DID_ENTER_BACKGROUND,
     /// <summary>The application is about to enter the foreground.</summary>
-    WillEnterForeground,
+    WillEnterForeground = SDL_EventType.SDL_EVENT_WILL_ENTER_FOREGROUND,
     /// <summary>The application is now interactive.</summary>
-    DidEnterForeground,
+    DidEnterForeground = SDL_EventType.SDL_EVENT_DID_ENTER_FOREGROUND,
 
     /// <summary>The user's locale preferences have changed.</summary>
-    LocaleChanged,
+    LocaleChanged = SDL_EventType.SDL_EVENT_LOCALE_CHANGED,
 
     /// <summary>The system theme changed.</summary>
-    SystemThemeChanged,
+    SystemThemeChanged = SDL_EventType.SDL_EVENT_SYSTEM_THEME_CHANGED,
 
     /// <summary>Display orientation has changed.</summary>
-    DisplayOrientation = 0x151,
+    DisplayOrientation = SDL_EventType.SDL_EVENT_DISPLAY_ORIENTATION,
     /// <summary>Display has been added to the system.</summary>
-    DisplayAdded,
+    DisplayAdded = SDL_EventType.SDL_EVENT_DISPLAY_ADDED,
     /// <summary>Display has been removed from the system.</summary>
-    DisplayRemoved,
+    DisplayRemoved = SDL_EventType.SDL_EVENT_DISPLAY_REMOVED,
     /// <summary>Display has changed position.</summary>
-    DisplayMoved,
+    DisplayMoved = SDL_EventType.SDL_EVENT_DISPLAY_MOVED,
     /// <summary>Display has changed desktop mode.</summary>
-    DisplayDesktopModeChanged,
+    DisplayDesktopModeChanged = SDL_EventType.SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED,
     /// <summary>Display has changed current mode.</summary>
-    DisplayCurrentModeChanged,
+    DisplayCurrentModeChanged = SDL_EventType.SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED,
     /// <summary>Display has changed content scale.</summary>
-    DisplayContentScaleChanged,
+    DisplayContentScaleChanged = SDL_EventType.SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED,
 
     /// <summary>Window has been shown.</summary>
-    WindowShown = 0x202,
+    WindowShown = SDL_EventType.SDL_EVENT_WINDOW_SHOWN,
     /// <summary>Window has been hidden.</summary>
-    WindowHidden,
+    WindowHidden = SDL_EventType.SDL_EVENT_WINDOW_HIDDEN,
     /// <summary>Window has been exposed and should be redrawn.</summary>
-    WindowExposed,
+    WindowExposed = SDL_EventType.SDL_EVENT_WINDOW_EXPOSED,
     /// <summary>Window has been moved.</summary>
-    WindowMoved,
+    WindowMoved = SDL_EventType.SDL_EVENT_WINDOW_MOVED,
     /// <summary>Window has been resized.</summary>
-    WindowResized,
+    WindowResized = SDL_EventType.SDL_EVENT_WINDOW_RESIZED,
     /// <summary>The pixel size of the window has changed.</summary>
-    WindowPixelSizeChanged,
+    WindowPixelSizeChanged = SDL_EventType.SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED,
     /// <summary>The pixel size of a Metal view associated with the window has changed.</summary>
-    WindowMetalViewResized,
+    WindowMetalViewResized = SDL_EventType.SDL_EVENT_WINDOW_METAL_VIEW_RESIZED,
     /// <summary>Window has been minimized.</summary>
-    WindowMinimized,
+    WindowMinimized = SDL_EventType.SDL_EVENT_WINDOW_MINIMIZED,
     /// <summary>Window has been maximized.</summary>
-    WindowMaximized,
+    WindowMaximized = SDL_EventType.SDL_EVENT_WINDOW_MAXIMIZED,
     /// <summary>Window has been restored to normal size and position.</summary>
-    WindowRestored,
+    WindowRestored = SDL_EventType.SDL_EVENT_WINDOW_RESTORED,
     /// <summary>Window has gained mouse focus.</summary>
-    WindowMouseEnter,
+    WindowMouseEnter = SDL_EventType.SDL_EVENT_WINDOW_MOUSE_ENTER,
     /// <summary>Window has lost mouse focus.</summary>
-    WindowMouseLeave,
+    WindowMouseLeave = SDL_EventType.SDL_EVENT_WINDOW_MOUSE_LEAVE,
     /// <summary>Window has gained keyboard focus.</summary>
-    WindowFocusGained,
+    WindowFocusGained = SDL_EventType.SDL_EVENT_WINDOW_FOCUS_GAINED,
     /// <summary>Window has lost keyboard focus.</summary>
-    WindowFocusLost,
+    WindowFocusLost = SDL_EventType.SDL_EVENT_WINDOW_FOCUS_LOST,
     /// <summary>The window manager requests that the window be closed.</summary>
-    WindowCloseRequested,
+    WindowCloseRequested = SDL_EventType.SDL_EVENT_WINDOW_CLOSE_REQUESTED,
     /// <summary>Window had a hit test that wasn't normal.</summary>
-    WindowHitTest,
+    WindowHitTest = SDL_EventType.SDL_EVENT_WINDOW_HIT_TEST,
     /// <summary>The ICC profile of the window's display has changed.</summary>
-    WindowIccProfileChanged,
+    WindowIccProfileChanged = SDL_EventType.SDL_EVENT_WINDOW_ICCPROF_CHANGED,
     /// <summary>Window has been moved to a different display.</summary>
-    WindowDisplayChanged,
+    WindowDisplayChanged = SDL_EventType.SDL_EVENT_WINDOW_DISPLAY_CHANGED,
     /// <summary>Window display scale has been changed.</summary>
-    WindowDisplayScaleChanged,
+    WindowDisplayScaleChanged = SDL_EventType.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED,
     /// <summary>The window safe area has been changed.</summary>
-    WindowSafeAreaChanged,
+    WindowSafeAreaChanged = SDL_EventType.SDL_EVENT_WINDOW_SAFE_AREA_CHANGED,
     /// <summary>The window has been occluded.</summary>
-    WindowOccluded,
+    WindowOccluded = SDL_EventType.SDL_EVENT_WINDOW_OCCLUDED,
     /// <summary>The window has entered fullscreen mode.</summary>
-    WindowEnterFullscreen,
+    WindowEnterFullscreen = SDL_EventType.SDL_EVENT_WINDOW_ENTER_FULLSCREEN,
     /// <summary>The window has left fullscreen mode.</summary>
-    WindowLeaveFullscreen,
+    WindowLeaveFullscreen = SDL_EventType.SDL_EVENT_WINDOW_LEAVE_FULLSCREEN,
     /// <summary>The window with the associated ID is being or has been destroyed.</summary>
-    WindowDestroyed,
+    WindowDestroyed = SDL_EventType.SDL_EVENT_WINDOW_DESTROYED,
     /// <summary>Window HDR properties have changed.</summary>
-    WindowHdrStateChanged,
+    WindowHdrStateChanged = SDL_EventType.SDL_EVENT_WINDOW_HDR_STATE_CHANGED,
 
     /// <summary>Key pressed.</summary>
-    KeyDown = 0x300,
+    KeyDown = SDL_EventType.SDL_EVENT_KEY_DOWN,
     /// <summary>Key released.</summary>
-    KeyUp,
+    KeyUp = SDL_EventType.SDL_EVENT_KEY_UP,
     /// <summary>Keyboard text editing (composition).</summary>
-    TextEditing,
+    TextEditing = SDL_EventType.SDL_EVENT_TEXT_EDITING,
     /// <summary>Keyboard text input.</summary>
-    TextInput,
+    TextInput = SDL_EventType.SDL_EVENT_TEXT_INPUT,
     /// <summary>Keymap changed due to a system event.</summary>
-    KeymapChanged,
+    KeymapChanged = SDL_EventType.SDL_EVENT_KEYMAP_CHANGED,
     /// <summary>A new keyboard has been inserted into the system.</summary>
-    KeyboardAdded,
+    KeyboardAdded = SDL_EventType.SDL_EVENT_KEYBOARD_ADDED,
     /// <summary>A keyboard has been removed.</summary>
-    KeyboardRemoved,
+    KeyboardRemoved = SDL_EventType.SDL_EVENT_KEYBOARD_REMOVED,
     /// <summary>Keyboard text editing candidates.</summary>
-    TextEditingCandidates,
+    TextEditingCandidates = SDL_EventType.SDL_EVENT_TEXT_EDITING_CANDIDATES,
 
     /// <summary>Mouse moved.</summary>
-    MouseMotion = 0x400,
+    MouseMotion = SDL_EventType.SDL_EVENT_MOUSE_MOTION,
     /// <summary>Mouse button pressed.</summary>
-    MouseButtonDown,
+    MouseButtonDown = SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN,
     /// <summary>Mouse button released.</summary>
-    MouseButtonUp,
+    MouseButtonUp = SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP,
     /// <summary>Mouse wheel motion.</summary>
-    MouseWheel,
+    MouseWheel = SDL_EventType.SDL_EVENT_MOUSE_WHEEL,
     /// <summary>A new mouse has been inserted into the system.</summary>
-    MouseAdded,
+    MouseAdded = SDL_EventType.SDL_EVENT_MOUSE_ADDED,
     /// <summary>A mouse has been removed.</summary>
-    MouseRemoved,
+    MouseRemoved = SDL_EventType.SDL_EVENT_MOUSE_REMOVED,
 
     /// <summary>Joystick axis motion.</summary>
-    JoystickAxisMotion = 0x600,
+    JoystickAxisMotion = SDL_EventType.SDL_EVENT_JOYSTICK_AXIS_MOTION,
     /// <summary>Joystick trackball motion.</summary>
-    JoystickBallMotion,
+    JoystickBallMotion = SDL_EventType.SDL_EVENT_JOYSTICK_BALL_MOTION,
     /// <summary>Joystick hat position change.</summary>
-    JoystickHatMotion,
+    JoystickHatMotion = SDL_EventType.SDL_EVENT_JOYSTICK_HAT_MOTION,
     /// <summary>Joystick button pressed.</summary>
-    JoystickButtonDown,
+    JoystickButtonDown = SDL_EventType.SDL_EVENT_JOYSTICK_BUTTON_DOWN,
     /// <summary>Joystick button released.</summary>
-    JoystickButtonUp,
+    JoystickButtonUp = SDL_EventType.SDL_EVENT_JOYSTICK_BUTTON_UP,
     /// <summary>A new joystick has been inserted into the system.</summary>
-    JoystickAdded,
+    JoystickAdded = SDL_EventType.SDL_EVENT_JOYSTICK_ADDED,
     /// <summary>An opened joystick has been removed.</summary>
-    JoystickRemoved,
+    JoystickRemoved = SDL_EventType.SDL_EVENT_JOYSTICK_REMOVED,
     /// <summary>Joystick battery level change.</summary>
-    JoystickBatteryUpdated,
+    JoystickBatteryUpdated = SDL_EventType.SDL_EVENT_JOYSTICK_BATTERY_UPDATED,
     /// <summary>Joystick update is complete.</summary>
-    JoystickUpdateComplete,
+    JoystickUpdateComplete = SDL_EventType.SDL_EVENT_JOYSTICK_UPDATE_COMPLETE,
 
     /// <summary>Gamepad axis motion.</summary>
-    GamepadAxisMotion = 0x650,
+    GamepadAxisMotion = SDL_EventType.SDL_EVENT_GAMEPAD_AXIS_MOTION,
     /// <summary>Gamepad button pressed.</summary>
-    GamepadButtonDown,
+    GamepadButtonDown = SDL_EventType.SDL_EVENT_GAMEPAD_BUTTON_DOWN,
     /// <summary>Gamepad button released.</summary>
-    GamepadButtonUp,
+    GamepadButtonUp = SDL_EventType.SDL_EVENT_GAMEPAD_BUTTON_UP,
     /// <summary>A new gamepad has been inserted into the system.</summary>
-    GamepadAdded,
+    GamepadAdded = SDL_EventType.SDL_EVENT_GAMEPAD_ADDED,
     /// <summary>A gamepad has been removed.</summary>
-    GamepadRemoved,
+    GamepadRemoved = SDL_EventType.SDL_EVENT_GAMEPAD_REMOVED,
     /// <summary>The gamepad mapping was updated.</summary>
-    GamepadRemapped,
+    GamepadRemapped = SDL_EventType.SDL_EVENT_GAMEPAD_REMAPPED,
     /// <summary>Gamepad touchpad was touched.</summary>
-    GamepadTouchpadDown,
+    GamepadTouchpadDown = SDL_EventType.SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN,
     /// <summary>Gamepad touchpad finger was moved.</summary>
-    GamepadTouchpadMotion,
+    GamepadTouchpadMotion = SDL_EventType.SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION,
     /// <summary>Gamepad touchpad finger was lifted.</summary>
-    GamepadTouchpadUp,
+    GamepadTouchpadUp = SDL_EventType.SDL_EVENT_GAMEPAD_TOUCHPAD_UP,
     /// <summary>Gamepad sensor was updated.</summary>
-    GamepadSensorUpdate,
+    GamepadSensorUpdate = SDL_EventType.SDL_EVENT_GAMEPAD_SENSOR_UPDATE,
     /// <summary>Gamepad update is complete.</summary>
-    GamepadUpdateComplete,
+    GamepadUpdateComplete = SDL_EventType.SDL_EVENT_GAMEPAD_UPDATE_COMPLETE,
     /// <summary>Gamepad Steam handle has changed.</summary>
-    GamepadSteamHandleUpdated,
+    GamepadSteamHandleUpdated = SDL_EventType.SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED,
 
     /// <summary>Touch finger down.</summary>
-    FingerDown = 0x700,
+    FingerDown = SDL_EventType.SDL_EVENT_FINGER_DOWN,
     /// <summary>Touch finger up.</summary>
-    FingerUp,
+    FingerUp = SDL_EventType.SDL_EVENT_FINGER_UP,
     /// <summary>Touch finger motion.</summary>
-    FingerMotion,
+    FingerMotion = SDL_EventType.SDL_EVENT_FINGER_MOTION,
     /// <summary>Touch finger canceled.</summary>
-    FingerCanceled,
+    FingerCanceled = SDL_EventType.SDL_EVENT_FINGER_CANCELED,
 
     /// <summary>The clipboard or primary selection changed.</summary>
-    ClipboardUpdate = 0x900,
+    ClipboardUpdate = SDL_EventType.SDL_EVENT_CLIPBOARD_UPDATE,
 
     /// <summary>The system requests a file open.</summary>
-    DropFile = 0x1000,
+    DropFile = SDL_EventType.SDL_EVENT_DROP_FILE,
     /// <summary>Text/plain drag-and-drop event.</summary>
-    DropText,
+    DropText = SDL_EventType.SDL_EVENT_DROP_TEXT,
     /// <summary>A new set of drops is beginning.</summary>
-    DropBegin,
+    DropBegin = SDL_EventType.SDL_EVENT_DROP_BEGIN,
     /// <summary>Current set of drops is now complete.</summary>
-    DropComplete,
+    DropComplete = SDL_EventType.SDL_EVENT_DROP_COMPLETE,
     /// <summary>Position while moving over the window.</summary>
-    DropPosition,
+    DropPosition = SDL_EventType.SDL_EVENT_DROP_POSITION,
 
     /// <summary>A new audio device is available.</summary>
-    AudioDeviceAdded = 0x1100,
+    AudioDeviceAdded = SDL_EventType.SDL_EVENT_AUDIO_DEVICE_ADDED,
     /// <summary>An audio device has been removed.</summary>
-    AudioDeviceRemoved,
+    AudioDeviceRemoved = SDL_EventType.SDL_EVENT_AUDIO_DEVICE_REMOVED,
     /// <summary>An audio device's format has been changed by the system.</summary>
-    AudioDeviceFormatChanged,
+    AudioDeviceFormatChanged = SDL_EventType.SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED,
 
     /// <summary>A sensor was updated.</summary>
-    SensorUpdate = 0x1200,
+    SensorUpdate = SDL_EventType.SDL_EVENT_SENSOR_UPDATE,
 
     /// <summary>Pressure-sensitive pen has become available.</summary>
-    PenProximityIn = 0x1300,
+    PenProximityIn = SDL_EventType.SDL_EVENT_PEN_PROXIMITY_IN,
     /// <summary>Pressure-sensitive pen has become unavailable.</summary>
-    PenProximityOut,
+    PenProximityOut = SDL_EventType.SDL_EVENT_PEN_PROXIMITY_OUT,
     /// <summary>Pressure-sensitive pen touched drawing surface.</summary>
-    PenDown,
+    PenDown = SDL_EventType.SDL_EVENT_PEN_DOWN,
     /// <summary>Pressure-sensitive pen stopped touching drawing surface.</summary>
-    PenUp,
+    PenUp = SDL_EventType.SDL_EVENT_PEN_UP,
     /// <summary>Pressure-sensitive pen button pressed.</summary>
-    PenButtonDown,
+    PenButtonDown = SDL_EventType.SDL_EVENT_PEN_BUTTON_DOWN,
     /// <summary>Pressure-sensitive pen button released.</summary>
-    PenButtonUp,
+    PenButtonUp = SDL_EventType.SDL_EVENT_PEN_BUTTON_UP,
     /// <summary>Pressure-sensitive pen is moving on the tablet.</summary>
-    PenMotion,
+    PenMotion = SDL_EventType.SDL_EVENT_PEN_MOTION,
     /// <summary>Pressure-sensitive pen angle/pressure/etc changed.</summary>
-    PenAxis,
+    PenAxis = SDL_EventType.SDL_EVENT_PEN_AXIS,
 
     /// <summary>A new camera device is available.</summary>
-    CameraDeviceAdded = 0x1400,
+    CameraDeviceAdded = SDL_EventType.SDL_EVENT_CAMERA_DEVICE_ADDED,
     /// <summary>A camera device has been removed.</summary>
-    CameraDeviceRemoved,
+    CameraDeviceRemoved = SDL_EventType.SDL_EVENT_CAMERA_DEVICE_REMOVED,
     /// <summary>A camera device has been approved for use by the user.</summary>
-    CameraDeviceApproved,
+    CameraDeviceApproved = SDL_EventType.SDL_EVENT_CAMERA_DEVICE_APPROVED,
     /// <summary>A camera device has been denied for use by the user.</summary>
-    CameraDeviceDenied,
+    CameraDeviceDenied = SDL_EventType.SDL_EVENT_CAMERA_DEVICE_DENIED,
 
     /// <summary>The render targets have been reset and their contents need to be updated.</summary>
-    RenderTargetsReset = 0x2000,
+    RenderTargetsReset = SDL_EventType.SDL_EVENT_RENDER_TARGETS_RESET,
     /// <summary>The device has been reset and all textures need to be recreated.</summary>
-    RenderDeviceReset,
+    RenderDeviceReset = SDL_EventType.SDL_EVENT_RENDER_DEVICE_RESET,
     /// <summary>The device has been lost and can't be recovered.</summary>
-    RenderDeviceLost,
+    RenderDeviceLost = SDL_EventType.SDL_EVENT_RENDER_DEVICE_LOST,
 
     /// <summary>Signals the end of an event poll cycle.</summary>
-    PollSentinel = 0x7F00,
+    PollSentinel = SDL_EventType.SDL_EVENT_POLL_SENTINEL,
 
     /// <summary>Events from User through Last are for your use, and should be allocated with RegisterEvents.</summary>
-    User = 0x8000,
+    User = SDL_EventType.SDL_EVENT_USER,
 
     /// <summary>This last event is only for bounding internal arrays.</summary>
-    Last = 0xFFFF
+    Last = SDL_EventType.SDL_EVENT_LAST
 }

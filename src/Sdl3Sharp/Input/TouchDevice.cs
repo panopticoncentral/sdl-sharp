@@ -12,6 +12,45 @@ namespace Sdl3Sharp.Input;
 public unsafe readonly record struct TouchDevice(ulong Id)
 {
     /// <summary>
+    /// Occurs when a finger touches the screen.
+    /// </summary>
+    public static event EventHandler<TouchFingerEventArgs>? FingerDown;
+
+    /// <summary>
+    /// Occurs when a finger is lifted from the screen.
+    /// </summary>
+    public static event EventHandler<TouchFingerEventArgs>? FingerUp;
+
+    /// <summary>
+    /// Occurs when a finger moves on the screen.
+    /// </summary>
+    public static event EventHandler<TouchFingerEventArgs>? FingerMotion;
+
+    /// <summary>
+    /// Occurs when a touch is canceled.
+    /// </summary>
+    public static event EventHandler<TouchFingerEventArgs>? FingerCanceled;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.FingerDown:
+                FingerDown?.Invoke(null, (TouchFingerEventArgs)e.TranslateEvent());
+                break;
+            case EventType.FingerUp:
+                FingerUp?.Invoke(null, (TouchFingerEventArgs)e.TranslateEvent());
+                break;
+            case EventType.FingerMotion:
+                FingerMotion?.Invoke(null, (TouchFingerEventArgs)e.TranslateEvent());
+                break;
+            case EventType.FingerCanceled:
+                FingerCanceled?.Invoke(null, (TouchFingerEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
+    /// <summary>
     /// The mouse for mouse events simulated with touch input.
     /// Use this to filter out simulated mouse events when processing touch input separately.
     /// </summary>

@@ -14,6 +14,109 @@ namespace Sdl3Sharp.Input;
 /// </summary>
 public sealed unsafe class Gamepad : IDisposable
 {
+    /// <summary>
+    /// Occurs when a gamepad axis is moved.
+    /// </summary>
+    public static event EventHandler<GamepadAxisEventArgs>? AxisMotion;
+
+    /// <summary>
+    /// Occurs when a gamepad button is pressed.
+    /// </summary>
+    public static event EventHandler<GamepadButtonEventArgs>? ButtonDown;
+
+    /// <summary>
+    /// Occurs when a gamepad button is released.
+    /// </summary>
+    public static event EventHandler<GamepadButtonEventArgs>? ButtonUp;
+
+    /// <summary>
+    /// Occurs when a gamepad has been added to the system.
+    /// </summary>
+    public static event EventHandler<GamepadDeviceEventArgs>? Added;
+
+    /// <summary>
+    /// Occurs when a gamepad has been removed from the system.
+    /// </summary>
+    public static event EventHandler<GamepadDeviceEventArgs>? Removed;
+
+    /// <summary>
+    /// Occurs when a gamepad's mapping has been updated.
+    /// </summary>
+    public static event EventHandler<GamepadDeviceEventArgs>? Remapped;
+
+    /// <summary>
+    /// Occurs when a finger touches a gamepad touchpad.
+    /// </summary>
+    public static event EventHandler<GamepadTouchpadEventArgs>? TouchpadDown;
+
+    /// <summary>
+    /// Occurs when a finger moves on a gamepad touchpad.
+    /// </summary>
+    public static event EventHandler<GamepadTouchpadEventArgs>? TouchpadMotion;
+
+    /// <summary>
+    /// Occurs when a finger is lifted from a gamepad touchpad.
+    /// </summary>
+    public static event EventHandler<GamepadTouchpadEventArgs>? TouchpadUp;
+
+    /// <summary>
+    /// Occurs when a gamepad sensor is updated.
+    /// </summary>
+    public static event EventHandler<GamepadSensorEventArgs>? SensorUpdate;
+
+    /// <summary>
+    /// Occurs when a gamepad update is complete.
+    /// </summary>
+    public static event EventHandler<GamepadDeviceEventArgs>? UpdateComplete;
+
+    /// <summary>
+    /// Occurs when a gamepad's Steam handle has been updated.
+    /// </summary>
+    public static event EventHandler<GamepadDeviceEventArgs>? SteamHandleUpdated;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.GamepadAxisMotion:
+                AxisMotion?.Invoke(null, (GamepadAxisEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadButtonDown:
+                ButtonDown?.Invoke(null, (GamepadButtonEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadButtonUp:
+                ButtonUp?.Invoke(null, (GamepadButtonEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadAdded:
+                Added?.Invoke(null, (GamepadDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadRemoved:
+                Removed?.Invoke(null, (GamepadDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadRemapped:
+                Remapped?.Invoke(null, (GamepadDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadTouchpadDown:
+                TouchpadDown?.Invoke(null, (GamepadTouchpadEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadTouchpadMotion:
+                TouchpadMotion?.Invoke(null, (GamepadTouchpadEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadTouchpadUp:
+                TouchpadUp?.Invoke(null, (GamepadTouchpadEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadSensorUpdate:
+                SensorUpdate?.Invoke(null, (GamepadSensorEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadUpdateComplete:
+                UpdateComplete?.Invoke(null, (GamepadDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.GamepadSteamHandleUpdated:
+                SteamHandleUpdated?.Invoke(null, (GamepadDeviceEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
     private bool _disposed;
     private readonly bool _ownsHandle;
 

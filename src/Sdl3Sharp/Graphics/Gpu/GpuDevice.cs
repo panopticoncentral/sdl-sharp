@@ -58,7 +58,10 @@ public sealed unsafe class GpuDevice : IDisposable
     /// </summary>
     /// <param name="index">The index of the GPU driver.</param>
     /// <returns>The name of the GPU driver.</returns>
-    public static string? GetDriverName(int index) => SDL_GetGPUDriver(index);
+    public static string? GetDriverName(int index)
+    {
+        return SDL_GetGPUDriver(index);
+    }
 
     /// <summary>
     /// Checks for GPU runtime support with the specified shader formats.

@@ -44,5 +44,8 @@ public sealed class AudioDriverCollection : IReadOnlyList<string>
         }
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }

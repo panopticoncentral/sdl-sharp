@@ -83,56 +83,80 @@ public static unsafe partial class Audio
     /// </summary>
     /// <param name="format">An SDL_AudioFormat value.</param>
     /// <returns>Data size in bits.</returns>
-    public static int SDL_AUDIO_BITSIZE(SDL_AudioFormat format) => (int)format & SDL_AUDIO_MASK_BITSIZE;
+    public static int SDL_AUDIO_BITSIZE(SDL_AudioFormat format)
+    {
+        return (int)format & SDL_AUDIO_MASK_BITSIZE;
+    }
 
     /// <summary>
     /// Retrieve the size, in bytes, from an SDL_AudioFormat.
     /// </summary>
     /// <param name="format">An SDL_AudioFormat value.</param>
     /// <returns>Data size in bytes.</returns>
-    public static int SDL_AUDIO_BYTESIZE(SDL_AudioFormat format) => SDL_AUDIO_BITSIZE(format) / 8;
+    public static int SDL_AUDIO_BYTESIZE(SDL_AudioFormat format)
+    {
+        return SDL_AUDIO_BITSIZE(format) / 8;
+    }
 
     /// <summary>
     /// Determine if an SDL_AudioFormat represents floating point data.
     /// </summary>
     /// <param name="format">An SDL_AudioFormat value.</param>
     /// <returns>Non-zero if format is floating point, zero otherwise.</returns>
-    public static int SDL_AUDIO_ISFLOAT(SDL_AudioFormat format) => (int)format & SDL_AUDIO_MASK_FLOAT;
+    public static int SDL_AUDIO_ISFLOAT(SDL_AudioFormat format)
+    {
+        return (int)format & SDL_AUDIO_MASK_FLOAT;
+    }
 
     /// <summary>
     /// Determine if an SDL_AudioFormat represents bigendian data.
     /// </summary>
     /// <param name="format">An SDL_AudioFormat value.</param>
     /// <returns>Non-zero if format is bigendian, zero otherwise.</returns>
-    public static int SDL_AUDIO_ISBIGENDIAN(SDL_AudioFormat format) => (int)format & SDL_AUDIO_MASK_BIG_ENDIAN;
+    public static int SDL_AUDIO_ISBIGENDIAN(SDL_AudioFormat format)
+    {
+        return (int)format & SDL_AUDIO_MASK_BIG_ENDIAN;
+    }
 
     /// <summary>
     /// Determine if an SDL_AudioFormat represents littleendian data.
     /// </summary>
     /// <param name="format">An SDL_AudioFormat value.</param>
     /// <returns>Non-zero if format is littleendian, zero otherwise.</returns>
-    public static int SDL_AUDIO_ISLITTLEENDIAN(SDL_AudioFormat format) => SDL_AUDIO_ISBIGENDIAN(format) == 0 ? 1 : 0;
+    public static int SDL_AUDIO_ISLITTLEENDIAN(SDL_AudioFormat format)
+    {
+        return SDL_AUDIO_ISBIGENDIAN(format) == 0 ? 1 : 0;
+    }
 
     /// <summary>
     /// Determine if an SDL_AudioFormat represents signed data.
     /// </summary>
     /// <param name="format">An SDL_AudioFormat value.</param>
     /// <returns>Non-zero if format is signed, zero otherwise.</returns>
-    public static int SDL_AUDIO_ISSIGNED(SDL_AudioFormat format) => (int)format & SDL_AUDIO_MASK_SIGNED;
+    public static int SDL_AUDIO_ISSIGNED(SDL_AudioFormat format)
+    {
+        return (int)format & SDL_AUDIO_MASK_SIGNED;
+    }
 
     /// <summary>
     /// Determine if an SDL_AudioFormat represents integer data.
     /// </summary>
     /// <param name="format">An SDL_AudioFormat value.</param>
     /// <returns>Non-zero if format is integer, zero otherwise.</returns>
-    public static int SDL_AUDIO_ISINT(SDL_AudioFormat format) => SDL_AUDIO_ISFLOAT(format) == 0 ? 1 : 0;
+    public static int SDL_AUDIO_ISINT(SDL_AudioFormat format)
+    {
+        return SDL_AUDIO_ISFLOAT(format) == 0 ? 1 : 0;
+    }
 
     /// <summary>
     /// Determine if an SDL_AudioFormat represents unsigned data.
     /// </summary>
     /// <param name="format">An SDL_AudioFormat value.</param>
     /// <returns>Non-zero if format is unsigned, zero otherwise.</returns>
-    public static int SDL_AUDIO_ISUNSIGNED(SDL_AudioFormat format) => SDL_AUDIO_ISSIGNED(format) == 0 ? 1 : 0;
+    public static int SDL_AUDIO_ISUNSIGNED(SDL_AudioFormat format)
+    {
+        return SDL_AUDIO_ISSIGNED(format) == 0 ? 1 : 0;
+    }
 
     /// <summary>
     /// SDL Audio Device instance IDs. Zero is used to signify an invalid/null device.
@@ -183,7 +207,10 @@ public static unsafe partial class Audio
     /// </summary>
     /// <param name="spec">An SDL_AudioSpec to query.</param>
     /// <returns>The number of bytes used per sample frame.</returns>
-    public static int SDL_AUDIO_FRAMESIZE(SDL_AudioSpec spec) => SDL_AUDIO_BYTESIZE(spec.format) * spec.channels;
+    public static int SDL_AUDIO_FRAMESIZE(SDL_AudioSpec spec)
+    {
+        return SDL_AUDIO_BYTESIZE(spec.format) * spec.channels;
+    }
 
     /// <summary>
     /// The opaque handle that represents an audio stream.

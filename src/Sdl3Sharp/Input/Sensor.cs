@@ -1,4 +1,5 @@
 using static Sdl3Sharp.Native.Common;
+using static Sdl3Sharp.Native.Events;
 using static Sdl3Sharp.Native.Sensor;
 using static Sdl3Sharp.Native.StdInc;
 
@@ -9,6 +10,21 @@ namespace Sdl3Sharp.Input;
 /// </summary>
 public sealed unsafe class Sensor : IDisposable
 {
+    /// <summary>
+    /// Occurs when a sensor is updated.
+    /// </summary>
+    public static event EventHandler<SensorEventArgs>? Updated;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.SensorUpdate:
+                Updated?.Invoke(null, (SensorEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
     private bool _disposed;
     private readonly bool _ownsHandle;
 

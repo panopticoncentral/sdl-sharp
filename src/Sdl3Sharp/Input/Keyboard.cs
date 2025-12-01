@@ -17,6 +17,68 @@ namespace Sdl3Sharp.Input;
 public unsafe readonly record struct Keyboard(uint Id)
 {
     /// <summary>
+    /// Occurs when a key is pressed.
+    /// </summary>
+    public static event EventHandler<KeyboardEventArgs>? KeyDown;
+
+    /// <summary>
+    /// Occurs when a key is released.
+    /// </summary>
+    public static event EventHandler<KeyboardEventArgs>? KeyUp;
+
+    /// <summary>
+    /// Occurs when text is being edited (composition).
+    /// </summary>
+    public static event EventHandler<TextEditingEventArgs>? TextEditing;
+
+    /// <summary>
+    /// Occurs when text input is received.
+    /// </summary>
+    public static event EventHandler<TextInputEventArgs>? TextInput;
+
+    /// <summary>
+    /// Occurs when the keymap has changed.
+    /// </summary>
+    public static event EventHandler<SdlEventArgs>? KeymapChanged;
+
+    /// <summary>
+    /// Occurs when a keyboard has been added to the system.
+    /// </summary>
+    public static event EventHandler<KeyboardDeviceEventArgs>? Added;
+
+    /// <summary>
+    /// Occurs when a keyboard has been removed from the system.
+    /// </summary>
+    public static event EventHandler<KeyboardDeviceEventArgs>? Removed;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.KeyDown:
+                KeyDown?.Invoke(null, (KeyboardEventArgs)e.TranslateEvent());
+                break;
+            case EventType.KeyUp:
+                KeyUp?.Invoke(null, (KeyboardEventArgs)e.TranslateEvent());
+                break;
+            case EventType.TextEditing:
+                TextEditing?.Invoke(null, (TextEditingEventArgs)e.TranslateEvent());
+                break;
+            case EventType.TextInput:
+                TextInput?.Invoke(null, (TextInputEventArgs)e.TranslateEvent());
+                break;
+            case EventType.KeymapChanged:
+                KeymapChanged?.Invoke(null, e.TranslateEvent());
+                break;
+            case EventType.KeyboardAdded:
+                Added?.Invoke(null, (KeyboardDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.KeyboardRemoved:
+                Removed?.Invoke(null, (KeyboardDeviceEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+    /// <summary>
     /// Gets whether a keyboard is currently connected.
     /// </summary>
     public static bool HasKeyboard => SDL_HasKeyboard();

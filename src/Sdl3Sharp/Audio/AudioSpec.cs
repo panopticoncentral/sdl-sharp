@@ -45,26 +45,38 @@ public readonly record struct AudioSpec(AudioFormat Format, int Channels, int Fr
     /// </summary>
     /// <param name="frequency">The sample rate in Hz (default: 44100).</param>
     /// <returns>A new AudioSpec for stereo 16-bit audio.</returns>
-    public static AudioSpec Stereo16(int frequency = 44100) => new(AudioFormat.S16, 2, frequency);
+    public static AudioSpec Stereo16(int frequency = 44100)
+    {
+        return new(AudioFormat.S16, 2, frequency);
+    }
 
     /// <summary>
     /// Creates a common stereo audio spec with 32-bit floating point samples.
     /// </summary>
     /// <param name="frequency">The sample rate in Hz (default: 44100).</param>
     /// <returns>A new AudioSpec for stereo float audio.</returns>
-    public static AudioSpec StereoFloat(int frequency = 44100) => new(AudioFormat.F32, 2, frequency);
+    public static AudioSpec StereoFloat(int frequency = 44100)
+    {
+        return new(AudioFormat.F32, 2, frequency);
+    }
 
     /// <summary>
     /// Creates a common mono audio spec with 16-bit signed samples.
     /// </summary>
     /// <param name="frequency">The sample rate in Hz (default: 44100).</param>
     /// <returns>A new AudioSpec for mono 16-bit audio.</returns>
-    public static AudioSpec Mono16(int frequency = 44100) => new(AudioFormat.S16, 1, frequency);
+    public static AudioSpec Mono16(int frequency = 44100)
+    {
+        return new(AudioFormat.S16, 1, frequency);
+    }
 
     /// <summary>
     /// Creates a common mono audio spec with 32-bit floating point samples.
     /// </summary>
     /// <param name="frequency">The sample rate in Hz (default: 44100).</param>
     /// <returns>A new AudioSpec for mono float audio.</returns>
-    public static AudioSpec MonoFloat(int frequency = 44100) => new(AudioFormat.F32, 1, frequency);
+    public static AudioSpec MonoFloat(int frequency = 44100)
+    {
+        return new(AudioFormat.F32, 1, frequency);
+    }
 }

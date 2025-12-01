@@ -12,6 +12,61 @@ namespace Sdl3Sharp.Input;
 public unsafe readonly record struct Mouse(uint Id)
 {
     /// <summary>
+    /// Occurs when the mouse is moved.
+    /// </summary>
+    public static event EventHandler<MouseMotionEventArgs>? Motion;
+
+    /// <summary>
+    /// Occurs when a mouse button is pressed.
+    /// </summary>
+    public static event EventHandler<MouseButtonEventArgs>? ButtonDown;
+
+    /// <summary>
+    /// Occurs when a mouse button is released.
+    /// </summary>
+    public static event EventHandler<MouseButtonEventArgs>? ButtonUp;
+
+    /// <summary>
+    /// Occurs when the mouse wheel is scrolled.
+    /// </summary>
+    public static event EventHandler<MouseWheelEventArgs>? Wheel;
+
+    /// <summary>
+    /// Occurs when a mouse has been added to the system.
+    /// </summary>
+    public static event EventHandler<MouseDeviceEventArgs>? Added;
+
+    /// <summary>
+    /// Occurs when a mouse has been removed from the system.
+    /// </summary>
+    public static event EventHandler<MouseDeviceEventArgs>? Removed;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.MouseMotion:
+                Motion?.Invoke(null, (MouseMotionEventArgs)e.TranslateEvent());
+                break;
+            case EventType.MouseButtonDown:
+                ButtonDown?.Invoke(null, (MouseButtonEventArgs)e.TranslateEvent());
+                break;
+            case EventType.MouseButtonUp:
+                ButtonUp?.Invoke(null, (MouseButtonEventArgs)e.TranslateEvent());
+                break;
+            case EventType.MouseWheel:
+                Wheel?.Invoke(null, (MouseWheelEventArgs)e.TranslateEvent());
+                break;
+            case EventType.MouseAdded:
+                Added?.Invoke(null, (MouseDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.MouseRemoved:
+                Removed?.Invoke(null, (MouseDeviceEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
+    /// <summary>
     /// Gets whether a mouse is currently connected.
     /// </summary>
     public static bool HasMouse => SDL_HasMouse();

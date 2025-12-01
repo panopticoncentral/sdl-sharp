@@ -1,3 +1,5 @@
+using static Sdl3Sharp.Native.Events;
+
 namespace Sdl3Sharp;
 
 /// <summary>
@@ -6,9 +8,9 @@ namespace Sdl3Sharp;
 public enum EventAction
 {
     /// <summary>Add events to the back of the queue.</summary>
-    Add,
+    Add = SDL_EventAction.SDL_ADDEVENT,
     /// <summary>Check but don't remove events from the queue front.</summary>
-    Peek,
+    Peek = SDL_EventAction.SDL_PEEKEVENT,
     /// <summary>Retrieve/remove events from the front of the queue.</summary>
-    Get
+    Get = SDL_EventAction.SDL_GETEVENT
 }

@@ -10,6 +10,37 @@ namespace Sdl3Sharp.Audio;
 /// </summary>
 public sealed unsafe class AudioDevice : IDisposable
 {
+    /// <summary>
+    /// Occurs when an audio device has been added to the system.
+    /// </summary>
+    public static event EventHandler<AudioDeviceEventArgs>? Added;
+
+    /// <summary>
+    /// Occurs when an audio device has been removed from the system.
+    /// </summary>
+    public static event EventHandler<AudioDeviceEventArgs>? Removed;
+
+    /// <summary>
+    /// Occurs when an audio device's format has been changed by the system.
+    /// </summary>
+    public static event EventHandler<AudioDeviceEventArgs>? FormatChanged;
+
+    internal static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.AudioDeviceAdded:
+                Added?.Invoke(null, (AudioDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.AudioDeviceRemoved:
+                Removed?.Invoke(null, (AudioDeviceEventArgs)e.TranslateEvent());
+                break;
+            case EventType.AudioDeviceFormatChanged:
+                FormatChanged?.Invoke(null, (AudioDeviceEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
     private bool _disposed;
     private readonly bool _ownsHandle;
 
@@ -51,14 +82,7 @@ public sealed unsafe class AudioDevice : IDisposable
         set
         {
             ThrowIfDisposed();
-            if (value)
-            {
-                _ = CheckErrorBool(NativeAudio.SDL_PauseAudioDevice(Id));
-            }
-            else
-            {
-                _ = CheckErrorBool(NativeAudio.SDL_ResumeAudioDevice(Id));
-            }
+            _ = value ? CheckErrorBool(NativeAudio.SDL_PauseAudioDevice(Id)) : CheckErrorBool(NativeAudio.SDL_ResumeAudioDevice(Id));
         }
     }
 
@@ -170,16 +194,20 @@ public sealed unsafe class AudioDevice : IDisposable
     /// </summary>
     /// <param name="spec">The requested audio format, or null to use device defaults.</param>
     /// <returns>A new AudioDevice instance.</returns>
-    public static AudioDevice OpenDefaultPlayback(AudioSpec? spec = null) =>
-        Open(NativeAudio.SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, spec);
+    public static AudioDevice OpenDefaultPlayback(AudioSpec? spec = null)
+    {
+        return Open(NativeAudio.SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, spec);
+    }
 
     /// <summary>
     /// Opens the default recording device.
     /// </summary>
     /// <param name="spec">The requested audio format, or null to use device defaults.</param>
     /// <returns>A new AudioDevice instance.</returns>
-    public static AudioDevice OpenDefaultRecording(AudioSpec? spec = null) =>
-        Open(NativeAudio.SDL_AUDIO_DEVICE_DEFAULT_RECORDING, spec);
+    public static AudioDevice OpenDefaultRecording(AudioSpec? spec = null)
+    {
+        return Open(NativeAudio.SDL_AUDIO_DEVICE_DEFAULT_RECORDING, spec);
+    }
 
     /// <summary>
     /// Gets all currently connected playback devices.
@@ -304,7 +332,10 @@ public sealed unsafe class AudioDevice : IDisposable
     }
 
     /// <inheritdoc/>
-    public override string ToString() => Name ?? $"AudioDevice {Id.Value}";
+    public override string ToString()
+    {
+        return Name ?? $"AudioDevice {Id.Value}";
+    }
 
     private void ThrowIfDisposed()
     {

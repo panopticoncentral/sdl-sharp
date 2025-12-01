@@ -16,6 +16,215 @@ public sealed unsafe class Window : IDisposable
 {
     private static Dictionary<nint, Func<Window, Point, HitTestResult>> HitTestCallbacks => field ??= [];
 
+    /// <summary>
+    /// Occurs when a window has been shown.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? Shown;
+
+    /// <summary>
+    /// Occurs when a window has been hidden.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? Hidden;
+
+    /// <summary>
+    /// Occurs when a window has been exposed and should be redrawn.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? Exposed;
+
+    /// <summary>
+    /// Occurs when a window has been moved.
+    /// </summary>
+    public static event EventHandler<WindowMovedEventArgs>? Moved;
+
+    /// <summary>
+    /// Occurs when a window has been resized.
+    /// </summary>
+    public static event EventHandler<WindowResizedEventArgs>? Resized;
+
+    /// <summary>
+    /// Occurs when the pixel size of a window has changed.
+    /// </summary>
+    public static event EventHandler<WindowResizedEventArgs>? PixelSizeChanged;
+
+    /// <summary>
+    /// Occurs when the pixel size of a Metal view associated with a window has changed.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? MetalViewResized;
+
+    /// <summary>
+    /// Occurs when a window has been minimized.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? Minimized;
+
+    /// <summary>
+    /// Occurs when a window has been maximized.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? Maximized;
+
+    /// <summary>
+    /// Occurs when a window has been restored to normal size and position.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? Restored;
+
+    /// <summary>
+    /// Occurs when a window has gained mouse focus.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? MouseEnter;
+
+    /// <summary>
+    /// Occurs when a window has lost mouse focus.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? MouseLeave;
+
+    /// <summary>
+    /// Occurs when a window has gained keyboard focus.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? FocusGained;
+
+    /// <summary>
+    /// Occurs when a window has lost keyboard focus.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? FocusLost;
+
+    /// <summary>
+    /// Occurs when the window manager requests that the window be closed.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? CloseRequested;
+
+    /// <summary>
+    /// Occurs when a window had a hit test that wasn't normal.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? HitTestEvent;
+
+    /// <summary>
+    /// Occurs when the ICC profile of a window's display has changed.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? IccProfileChanged;
+
+    /// <summary>
+    /// Occurs when a window has been moved to a different display.
+    /// </summary>
+    public static event EventHandler<WindowDisplayChangedEventArgs>? DisplayChanged;
+
+    /// <summary>
+    /// Occurs when a window display scale has been changed.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? DisplayScaleChanged;
+
+    /// <summary>
+    /// Occurs when the window safe area has been changed.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? SafeAreaChanged;
+
+    /// <summary>
+    /// Occurs when a window has been occluded.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? Occluded;
+
+    /// <summary>
+    /// Occurs when a window has entered fullscreen mode.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? EnterFullscreen;
+
+    /// <summary>
+    /// Occurs when a window has left fullscreen mode.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? LeaveFullscreen;
+
+    /// <summary>
+    /// Occurs when a window is being or has been destroyed.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? Destroyed;
+
+    /// <summary>
+    /// Occurs when window HDR properties have changed.
+    /// </summary>
+    public static event EventHandler<WindowEventArgs>? HdrStateChanged;
+
+    internal static void DispatchEvent(Event e)
+    {
+        Window? window = FromID(e.Native.window.windowID);
+
+        switch (e.Type)
+        {
+            case EventType.WindowShown:
+                Shown?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowHidden:
+                Hidden?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowExposed:
+                Exposed?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowMoved:
+                Moved?.Invoke(window, (WindowMovedEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowResized:
+                Resized?.Invoke(window, (WindowResizedEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowPixelSizeChanged:
+                PixelSizeChanged?.Invoke(window, (WindowResizedEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowMetalViewResized:
+                MetalViewResized?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowMinimized:
+                Minimized?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowMaximized:
+                Maximized?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowRestored:
+                Restored?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowMouseEnter:
+                MouseEnter?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowMouseLeave:
+                MouseLeave?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowFocusGained:
+                FocusGained?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowFocusLost:
+                FocusLost?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowCloseRequested:
+                CloseRequested?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowHitTest:
+                HitTestEvent?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowIccProfileChanged:
+                IccProfileChanged?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowDisplayChanged:
+                DisplayChanged?.Invoke(window, (WindowDisplayChangedEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowDisplayScaleChanged:
+                DisplayScaleChanged?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowSafeAreaChanged:
+                SafeAreaChanged?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowOccluded:
+                Occluded?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowEnterFullscreen:
+                EnterFullscreen?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowLeaveFullscreen:
+                LeaveFullscreen?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowDestroyed:
+                Destroyed?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+            case EventType.WindowHdrStateChanged:
+                HdrStateChanged?.Invoke(window, (WindowEventArgs)e.TranslateEvent());
+                break;
+        }
+    }
+
     private bool _disposed;
 
     internal Window(SDL_Window* handle)

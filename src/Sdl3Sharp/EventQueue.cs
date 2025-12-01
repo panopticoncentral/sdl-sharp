@@ -1,3 +1,6 @@
+using Sdl3Sharp.Audio;
+using Sdl3Sharp.Graphics;
+using Sdl3Sharp.Input;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -34,29 +37,166 @@ public static unsafe class EventQueue
     }
 
     /// <summary>
+    /// Dispatches a single event to the appropriate event handlers.
+    /// </summary>
+    /// <param name="e">The event to dispatch.</param>
+    public static void DispatchEvent(Event e)
+    {
+        switch (e.Type)
+        {
+            case EventType.Quit:
+            case EventType.Terminating:
+            case EventType.LowMemory:
+            case EventType.WillEnterBackground:
+            case EventType.DidEnterBackground:
+            case EventType.WillEnterForeground:
+            case EventType.DidEnterForeground:
+            case EventType.LocaleChanged:
+            case EventType.SystemThemeChanged:
+                Application.DispatchEvent(e);
+                break;
+
+            case EventType.DisplayOrientation:
+            case EventType.DisplayAdded:
+            case EventType.DisplayRemoved:
+            case EventType.DisplayMoved:
+            case EventType.DisplayDesktopModeChanged:
+            case EventType.DisplayCurrentModeChanged:
+            case EventType.DisplayContentScaleChanged:
+                Display.DispatchEvent(e);
+                break;
+
+            case EventType.WindowShown:
+            case EventType.WindowHidden:
+            case EventType.WindowExposed:
+            case EventType.WindowMoved:
+            case EventType.WindowResized:
+            case EventType.WindowPixelSizeChanged:
+            case EventType.WindowMetalViewResized:
+            case EventType.WindowMinimized:
+            case EventType.WindowMaximized:
+            case EventType.WindowRestored:
+            case EventType.WindowMouseEnter:
+            case EventType.WindowMouseLeave:
+            case EventType.WindowFocusGained:
+            case EventType.WindowFocusLost:
+            case EventType.WindowCloseRequested:
+            case EventType.WindowHitTest:
+            case EventType.WindowIccProfileChanged:
+            case EventType.WindowDisplayChanged:
+            case EventType.WindowDisplayScaleChanged:
+            case EventType.WindowSafeAreaChanged:
+            case EventType.WindowOccluded:
+            case EventType.WindowEnterFullscreen:
+            case EventType.WindowLeaveFullscreen:
+            case EventType.WindowDestroyed:
+            case EventType.WindowHdrStateChanged:
+                Window.DispatchEvent(e);
+                break;
+
+            case EventType.KeyDown:
+            case EventType.KeyUp:
+            case EventType.TextEditing:
+            case EventType.TextInput:
+            case EventType.KeymapChanged:
+            case EventType.KeyboardAdded:
+            case EventType.KeyboardRemoved:
+            case EventType.TextEditingCandidates:
+                Keyboard.DispatchEvent(e);
+                break;
+
+            case EventType.MouseMotion:
+            case EventType.MouseButtonDown:
+            case EventType.MouseButtonUp:
+            case EventType.MouseWheel:
+            case EventType.MouseAdded:
+            case EventType.MouseRemoved:
+                Mouse.DispatchEvent(e);
+                break;
+
+            case EventType.JoystickAxisMotion:
+            case EventType.JoystickBallMotion:
+            case EventType.JoystickHatMotion:
+            case EventType.JoystickButtonDown:
+            case EventType.JoystickButtonUp:
+            case EventType.JoystickAdded:
+            case EventType.JoystickRemoved:
+            case EventType.JoystickBatteryUpdated:
+            case EventType.JoystickUpdateComplete:
+                Joystick.DispatchEvent(e);
+                break;
+
+            case EventType.GamepadAxisMotion:
+            case EventType.GamepadButtonDown:
+            case EventType.GamepadButtonUp:
+            case EventType.GamepadAdded:
+            case EventType.GamepadRemoved:
+            case EventType.GamepadRemapped:
+            case EventType.GamepadTouchpadDown:
+            case EventType.GamepadTouchpadMotion:
+            case EventType.GamepadTouchpadUp:
+            case EventType.GamepadSensorUpdate:
+            case EventType.GamepadUpdateComplete:
+            case EventType.GamepadSteamHandleUpdated:
+                Gamepad.DispatchEvent(e);
+                break;
+
+            case EventType.FingerDown:
+            case EventType.FingerUp:
+            case EventType.FingerMotion:
+            case EventType.FingerCanceled:
+                TouchDevice.DispatchEvent(e);
+                break;
+
+            case EventType.ClipboardUpdate:
+            case EventType.DropFile:
+            case EventType.DropText:
+            case EventType.DropBegin:
+            case EventType.DropComplete:
+            case EventType.DropPosition:
+                Application.DispatchEvent(e);
+                break;
+
+            case EventType.AudioDeviceAdded:
+            case EventType.AudioDeviceRemoved:
+            case EventType.AudioDeviceFormatChanged:
+                AudioDevice.DispatchEvent(e);
+                break;
+
+            case EventType.SensorUpdate:
+                Sensor.DispatchEvent(e);
+                break;
+
+            case EventType.PenProximityIn:
+            case EventType.PenProximityOut:
+            case EventType.PenDown:
+            case EventType.PenUp:
+            case EventType.PenButtonDown:
+            case EventType.PenButtonUp:
+            case EventType.PenMotion:
+            case EventType.PenAxis:
+                Pen.DispatchEvent(e);
+                break;
+
+            case EventType.CameraDeviceAdded:
+            case EventType.CameraDeviceRemoved:
+            case EventType.CameraDeviceApproved:
+            case EventType.CameraDeviceDenied:
+                Camera.DispatchEvent(e);
+                break;
+
+            case EventType.RenderTargetsReset:
+            case EventType.RenderDeviceReset:
+            case EventType.RenderDeviceLost:
+                Renderer.DispatchEvent(e);
+                break;
+        }
+    }
+
+    /// <summary>
     /// Polls for currently pending events.
     /// </summary>
     /// <returns>The next event from the queue, or null if there are no events available.</returns>
-    /// <remarks>
-    /// <para>This function removes the event from the queue when it is returned.
-    /// Call this in a loop to process all pending events.</para>
-    /// </remarks>
-    /// <example>
-    /// <code>
-    /// while (EventQueue.Poll() is { } e)
-    /// {
-    ///     switch (e.Type)
-    ///     {
-    ///         case EventType.Quit:
-    ///             running = false;
-    ///             break;
-    ///         case EventType.KeyDown:
-    ///             Console.WriteLine($"Key pressed: {e.Keyboard.Keycode}");
-    ///             break;
-    ///     }
-    /// }
-    /// </code>
-    /// </example>
     public static Event? Poll()
     {
         SDL_Event sdlEvent;
@@ -110,7 +250,6 @@ public static unsafe class EventQueue
     /// </summary>
     /// <param name="event">The event to add.</param>
     /// <returns>True on success, false if the event was filtered or on failure.</returns>
-    /// <exception cref="SdlException">Thrown if there was an error pushing the event.</exception>
     public static bool Push(Event @event)
     {
         SDL_Event sdlEvent = @event.Native;

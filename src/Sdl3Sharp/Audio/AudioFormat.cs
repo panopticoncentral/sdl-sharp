@@ -59,70 +59,98 @@ public static class AudioFormatExtensions
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>The number of bits per sample.</returns>
-    public static int BitSize(this AudioFormat format) => (int)format & MaskBitSize;
+    public static int BitSize(this AudioFormat format)
+    {
+        return (int)format & MaskBitSize;
+    }
 
     /// <summary>
     /// Gets the size in bytes of audio samples in this format.
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>The number of bytes per sample.</returns>
-    public static int ByteSize(this AudioFormat format) => format.BitSize() / 8;
+    public static int ByteSize(this AudioFormat format)
+    {
+        return format.BitSize() / 8;
+    }
 
     /// <summary>
     /// Gets whether this format uses floating point samples.
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>True if the format uses floating point samples.</returns>
-    public static bool IsFloat(this AudioFormat format) => ((int)format & MaskFloat) != 0;
+    public static bool IsFloat(this AudioFormat format)
+    {
+        return ((int)format & MaskFloat) != 0;
+    }
 
     /// <summary>
     /// Gets whether this format uses integer samples.
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>True if the format uses integer samples.</returns>
-    public static bool IsInt(this AudioFormat format) => !format.IsFloat();
+    public static bool IsInt(this AudioFormat format)
+    {
+        return !format.IsFloat();
+    }
 
     /// <summary>
     /// Gets whether this format uses big-endian byte order.
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>True if the format uses big-endian byte order.</returns>
-    public static bool IsBigEndian(this AudioFormat format) => ((int)format & MaskBigEndian) != 0;
+    public static bool IsBigEndian(this AudioFormat format)
+    {
+        return ((int)format & MaskBigEndian) != 0;
+    }
 
     /// <summary>
     /// Gets whether this format uses little-endian byte order.
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>True if the format uses little-endian byte order.</returns>
-    public static bool IsLittleEndian(this AudioFormat format) => !format.IsBigEndian();
+    public static bool IsLittleEndian(this AudioFormat format)
+    {
+        return !format.IsBigEndian();
+    }
 
     /// <summary>
     /// Gets whether this format uses signed samples.
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>True if the format uses signed samples.</returns>
-    public static bool IsSigned(this AudioFormat format) => ((int)format & MaskSigned) != 0;
+    public static bool IsSigned(this AudioFormat format)
+    {
+        return ((int)format & MaskSigned) != 0;
+    }
 
     /// <summary>
     /// Gets whether this format uses unsigned samples.
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>True if the format uses unsigned samples.</returns>
-    public static bool IsUnsigned(this AudioFormat format) => !format.IsSigned();
+    public static bool IsUnsigned(this AudioFormat format)
+    {
+        return !format.IsSigned();
+    }
 
     /// <summary>
     /// Gets the human-readable name of this audio format.
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>A string describing the audio format.</returns>
-    public static string GetName(this AudioFormat format) =>
-        NativeAudio.SDL_GetAudioFormatName((NativeAudio.SDL_AudioFormat)format);
+    public static string GetName(this AudioFormat format)
+    {
+        return NativeAudio.SDL_GetAudioFormatName((NativeAudio.SDL_AudioFormat)format);
+    }
 
     /// <summary>
     /// Gets the silence value for this audio format.
     /// </summary>
     /// <param name="format">The audio format.</param>
     /// <returns>A byte value that represents silence in this format.</returns>
-    public static int GetSilenceValue(this AudioFormat format) =>
-        NativeAudio.SDL_GetSilenceValueForFormat((NativeAudio.SDL_AudioFormat)format);
+    public static int GetSilenceValue(this AudioFormat format)
+    {
+        return NativeAudio.SDL_GetSilenceValueForFormat((NativeAudio.SDL_AudioFormat)format);
+    }
 }
