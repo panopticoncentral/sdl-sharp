@@ -9,15 +9,5 @@ Application.Quitting += (sender, e) => quit = true;
 
 while (!quit)
 {
-    while (true)
-    {
-        Event? e = EventQueue.Poll();
-
-        if (e == null)
-        {
-            break;
-        }
-
-        EventQueue.DispatchEvent(e.Value);
-    }
+    EventQueue.DispatchAllEvents();
 }

@@ -1,6 +1,7 @@
 using Sdl3Sharp.Audio;
 using Sdl3Sharp.Graphics;
 using Sdl3Sharp.Input;
+using System.Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -201,6 +202,23 @@ public static unsafe class EventQueue
     {
         SDL_Event sdlEvent;
         return SDL_PollEvent(&sdlEvent) ? new Event(sdlEvent) : null;
+    }
+
+    /// <summary>
+    /// Processes and dispatches all pending events until no more events are available.
+    /// </summary>
+    public static void DispatchAllEvents()
+    {
+        while (true)
+        {
+            Event? e = Poll();
+            if (e == null)
+            {
+                break;
+            }
+
+            DispatchEvent(e.Value);
+        }
     }
 
     /// <summary>
