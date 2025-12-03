@@ -26,6 +26,5 @@ public enum ImGuiDragDropFlags
     AcceptNoDrawDefaultRect = 1 << 11, // Do not draw the default highlight rectangle when hovering over target.
     AcceptNoPreviewTooltip = 1 << 12, // Request hiding the BeginDragDropSource tooltip from the BeginDragDropTarget site.
     AcceptDrawAsHovered = 1 << 13, // Accepting item will render as if hovered. Useful for e.g. a Button() used as a drop target.
-    AcceptPeekOnly = 3072, // For peeking ahead and inspecting the payload before delivery.
-    SourceAutoExpirePayload = 1 << 5 // Renamed in 1.90.9
+    AcceptPeekOnly = 3072 // For peeking ahead and inspecting the payload before delivery.
 }

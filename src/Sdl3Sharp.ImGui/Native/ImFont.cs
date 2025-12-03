@@ -19,10 +19,29 @@ namespace Sdl3Sharp.ImGui.Native;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe partial struct ImFont
 {
-    /// <summary>
-    /// 4     // in  // Legacy base font scale (~1.0f), multiplied by the per-window font scale which you can adjust with SetWindowFontScale()
-    /// </summary>
-    public float Scale;
+    private ImFontBaked* _internal0; // LastBaked
+
+    private ImFontAtlas* _internal1; // OwnerAtlas
+
+    private ImFontFlags _internal2; // Flags
+
+    private float _internal3; // CurrentRasterizerDensity
+
+    private ImGuiID _internal4; // FontId
+
+    private float _internal5; // LegacySize
+
+    private ImVector_ImFontConfigPtr _internal6; // Sources
+
+    private ushort _internal7; // EllipsisChar
+
+    private ushort _internal8; // FallbackChar
+
+    private fixed byte _internal9[(0x10FFFF +1)/8192/8]; // Used8kPagesMap
+
+    private bool _internal10; // EllipsisAutoBake
+
+    private ImGuiStorage _internal11; // RemapPairs
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_IsGlyphInFont")]
     [return: MarshalAs(UnmanagedType.U1)]
@@ -37,8 +56,5 @@ public unsafe partial struct ImFont
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_GetDebugName")]
     public static partial nint GetDebugName(ImFont* self);
-
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_CalcWordWrapPositionA")]
-    public static partial nint CalcWordWrapPositionA(ImFont* self, float scale, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_end, float wrap_width);
 
 }

@@ -43,6 +43,10 @@ public sealed class StructGenerator(TypeMapper typeMapper)
 
     private void GenerateStruct(CodeWriter writer, StructInfo structInfo, List<FunctionInfo> methods, string? structName = null)
     {
+        // Reset counters for each struct
+        _bitfieldCounter = 0;
+        _internalCounter = 0;
+
         structName ??= structInfo.Name;
 
         // Write documentation
@@ -58,16 +62,31 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         writer.AppendLine($"public {unsafeModifier}partial struct {structName}");
         writer.OpenBrace();
 
+        // Filter out obsolete fields
         var fields = structInfo.Fields
-            .Where(f => !f.IsInternal && !f.IsAnonymous)
+            .Where(f => !Conditional.IsObsolete(f.Conditionals))
             .ToList();
 
-        for (var i = 0; i < fields.Count; i++)
-        {
-            FieldInfo field = fields[i];
-            GenerateField(writer, field, structInfo);
+        // Group fields into regular fields and bitfield groups
+        List<FieldGroup> fieldGroups = GroupFields(fields);
 
-            if (i < fields.Count - 1 || methods.Count > 0)
+        for (var groupIndex = 0; groupIndex < fieldGroups.Count; groupIndex++)
+        {
+            FieldGroup group = fieldGroups[groupIndex];
+
+            if (group.IsBitfieldGroup)
+            {
+                GenerateBitfieldGroup(writer, group.Fields);
+            }
+            else
+            {
+                foreach (FieldInfo field in group.Fields)
+                {
+                    GenerateField(writer, field, structInfo);
+                }
+            }
+
+            if (groupIndex < fieldGroups.Count - 1 || methods.Count > 0)
             {
                 writer.AppendLine();
             }
@@ -81,6 +100,189 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         }
 
         writer.CloseBrace();
+    }
+
+    /// <summary>
+    /// Represents a group of fields (either a single regular field or consecutive bitfields).
+    /// </summary>
+    private sealed class FieldGroup
+    {
+        public List<FieldInfo> Fields { get; } = [];
+        public bool IsBitfieldGroup { get; set; }
+    }
+
+    /// <summary>
+    /// Groups fields into regular fields and consecutive bitfield groups.
+    /// </summary>
+    private static List<FieldGroup> GroupFields(List<FieldInfo> fields)
+    {
+        var groups = new List<FieldGroup>();
+        FieldGroup? currentBitfieldGroup = null;
+
+        foreach (FieldInfo field in fields)
+        {
+            if (field.Width.HasValue)
+            {
+                // This is a bitfield
+                currentBitfieldGroup ??= new FieldGroup { IsBitfieldGroup = true };
+                currentBitfieldGroup.Fields.Add(field);
+            }
+            else
+            {
+                // This is a regular field
+                if (currentBitfieldGroup != null)
+                {
+                    groups.Add(currentBitfieldGroup);
+                    currentBitfieldGroup = null;
+                }
+
+                groups.Add(new FieldGroup { IsBitfieldGroup = false, Fields = { field } });
+            }
+        }
+
+        // Don't forget the last bitfield group
+        if (currentBitfieldGroup != null)
+        {
+            groups.Add(currentBitfieldGroup);
+        }
+
+        return groups;
+    }
+
+    /// <summary>
+    /// Generates a packed bitfield group with a backing field and accessor properties.
+    /// </summary>
+    private void GenerateBitfieldGroup(CodeWriter writer, List<FieldInfo> bitfields)
+    {
+        // Calculate total bits and determine storage type
+        var totalBits = bitfields.Sum(f => f.Width!.Value);
+        var storageType = GetStorageType(totalBits);
+
+        // Generate private backing field
+        var backingFieldName = $"_bitfield{GetBitfieldIndex()}";
+        writer.AppendLine($"private {storageType} {backingFieldName};");
+        writer.AppendLine();
+
+        // Generate accessor properties for each bitfield
+        var bitOffset = 0;
+        for (var i = 0; i < bitfields.Count; i++)
+        {
+            FieldInfo field = bitfields[i];
+            var width = field.Width!.Value;
+            var isInternal = field.IsInternal || field.IsAnonymous;
+            var visibility = isInternal ? "private" : "public";
+            var propertyType = GetBitfieldPropertyType(field, width);
+
+            // For internal/anonymous fields, use generated name with original name in comment
+            string fieldName;
+            string? inlineComment = null;
+            if (isInternal)
+            {
+                fieldName = $"_internal{GetInternalIndex()}";
+                inlineComment = field.Name;
+            }
+            else
+            {
+                // Write documentation for public fields
+                writer.WriteDocComment(field.Comments);
+                fieldName = NamingConventions.ToPascalCase(field.Name);
+            }
+
+            // Generate the mask for this bitfield
+            var mask = (1UL << width) - 1;
+            var shiftedMask = mask << bitOffset;
+
+            // Generate property with getter and setter
+            var commentSuffix = inlineComment != null ? $" // {inlineComment}" : "";
+            writer.AppendLine($"{visibility} {propertyType} {fieldName}{commentSuffix}");
+            writer.OpenBrace();
+
+            // Getter: extract bits from backing field
+            if (propertyType == "bool")
+            {
+                writer.AppendLine($"readonly get => ({backingFieldName} & 0x{shiftedMask:X}U) != 0;");
+                writer.AppendLine($"set => {backingFieldName} = ({storageType})(({backingFieldName} & ~0x{shiftedMask:X}U) | (value ? 0x{shiftedMask:X}U : 0));");
+            }
+            else
+            {
+                if (bitOffset == 0)
+                {
+                    writer.AppendLine($"readonly get => ({propertyType})({backingFieldName} & 0x{mask:X}U);");
+                }
+                else
+                {
+                    writer.AppendLine($"readonly get => ({propertyType})(({backingFieldName} >> {bitOffset}) & 0x{mask:X}U);");
+                }
+
+                if (bitOffset == 0)
+                {
+                    writer.AppendLine($"set => {backingFieldName} = ({storageType})(({backingFieldName} & ~0x{mask:X}U) | (({storageType})value & 0x{mask:X}U));");
+                }
+                else
+                {
+                    writer.AppendLine($"set => {backingFieldName} = ({storageType})(({backingFieldName} & ~0x{shiftedMask:X}U) | ((({storageType})value & 0x{mask:X}U) << {bitOffset}));");
+                }
+            }
+
+            writer.CloseBrace();
+
+            bitOffset += width;
+
+            if (i < bitfields.Count - 1)
+            {
+                writer.AppendLine();
+            }
+        }
+    }
+
+    private int _bitfieldCounter;
+    private int _internalCounter;
+
+    private int GetBitfieldIndex() => _bitfieldCounter++;
+    private int GetInternalIndex() => _internalCounter++;
+
+    /// <summary>
+    /// Determines the storage type needed for a bitfield group based on total bits.
+    /// </summary>
+    private static string GetStorageType(int totalBits)
+    {
+        return totalBits switch
+        {
+            <= 8 => "byte",
+            <= 16 => "ushort",
+            <= 32 => "uint",
+            _ => "ulong"
+        };
+    }
+
+    /// <summary>
+    /// Determines the appropriate property type for a bitfield.
+    /// </summary>
+    private string GetBitfieldPropertyType(FieldInfo field, int width)
+    {
+        // For 1-bit fields, use bool
+        if (width == 1)
+        {
+            return "bool";
+        }
+
+        // For larger fields, use the smallest unsigned type that fits
+        if (width <= 8)
+        {
+            return "byte";
+        }
+        else if (width <= 16)
+        {
+            return "ushort";
+        }
+        else if (width <= 32)
+        {
+            return "uint";
+        }
+        else
+        {
+            return "ulong";
+        }
     }
 
     private void GenerateMethod(CodeWriter writer, FunctionInfo func, string structName)
@@ -171,11 +373,26 @@ public sealed class StructGenerator(TypeMapper typeMapper)
 
     private void GenerateField(CodeWriter writer, FieldInfo field, StructInfo structInfo)
     {
-        // Write documentation
-        writer.WriteDocComment(field.Comments);
+        var isInternal = field.IsInternal || field.IsAnonymous;
+        var visibility = isInternal ? "private" : "public";
 
-        var fieldName = NamingConventions.ToPascalCase(field.Name);
+        // For internal/anonymous fields, use generated name with original name in comment
+        string fieldName;
+        string? inlineComment = null;
+        if (isInternal)
+        {
+            fieldName = $"_internal{GetInternalIndex()}";
+            inlineComment = field.Name;
+        }
+        else
+        {
+            // Write documentation for public fields
+            writer.WriteDocComment(field.Comments);
+            fieldName = NamingConventions.ToPascalCase(field.Name);
+        }
+
         var fieldType = MapFieldType(field);
+        var commentSuffix = inlineComment != null ? $" // {inlineComment}" : "";
 
         // Handle fixed-size arrays
         if (field.IsArray && field.Type?.Description?.Kind == "Array")
@@ -186,30 +403,33 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             if (bounds != null && CanBeFixedBuffer(elementType))
             {
                 // Fixed buffer for primitive types
-                writer.AppendLine($"public fixed {elementType} {fieldName}[{bounds}];");
+                writer.AppendLine($"{visibility} fixed {elementType} {fieldName}[{bounds}];{commentSuffix}");
             }
             else if (bounds != null)
             {
                 // For non-primitive types, we need a different approach
                 // Generate individual fields or use InlineArray (.NET 8+)
                 writer.AppendLine($"// TODO: Fixed array of {elementType}[{bounds}]");
-                writer.AppendLine($"private {elementType} _{fieldName}_0;");
+                writer.AppendLine($"private {elementType} _{fieldName}_0;{commentSuffix}");
             }
             else
             {
                 // Unknown bounds - use pointer
-                writer.AppendLine($"public nint {fieldName};");
+                writer.AppendLine($"{visibility} nint {fieldName};{commentSuffix}");
             }
         }
         else
         {
-            writer.AppendLine($"public {fieldType} {fieldName};");
+            writer.AppendLine($"{visibility} {fieldType} {fieldName};{commentSuffix}");
         }
     }
 
     private string MapFieldType(FieldInfo field)
     {
-        return field.Type == null ? "nint" : _typeMapper.MapType(field.Type);
+        // If the field's type is null or refers to an internal struct, use nint
+        return field.Type == null || _typeMapper.IsInternalType(field.Type)
+            ? "nint"
+            : _typeMapper.MapType(field.Type);
     }
 
     private string GetArrayElementType(TypeDescriptionDetail desc)
@@ -225,7 +445,11 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             Declaration = desc.InnerType.Name ?? "",
             Description = desc.InnerType
         };
-        return _typeMapper.MapType(innerType);
+
+        // If the element type refers to an internal struct, use nint
+        return _typeMapper.IsInternalType(innerType)
+            ? "nint"
+            : _typeMapper.MapType(innerType);
     }
 
     private static bool CanBeFixedBuffer(string elementType)

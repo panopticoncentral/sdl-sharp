@@ -84,11 +84,46 @@ public unsafe partial struct ImFontAtlas
     /// </summary>
     public ImTextureData* TexData;
 
-    /// <summary>
-    /// Legacy: You can request your rectangles to be mapped as font glyph (given a font + Unicode point), so you can render e.g. custom colorful icons and use them as regular glyphs. --&gt; Prefer using a custom ImFontLoader.
-    /// For old GetCustomRectByIndex() API
-    /// </summary>
-    public ImFontAtlasRect TempRect;
+    private ImVector_ImTextureDataPtr _internal0; // TexList
+
+    private bool _internal1; // Locked
+
+    private bool _internal2; // RendererHasTextures
+
+    private bool _internal3; // TexIsBuilt
+
+    private bool _internal4; // TexPixelsUseColors
+
+    private ImVec2 _internal5; // TexUvScale
+
+    private ImVec2 _internal6; // TexUvWhitePixel
+
+    private ImVector_ImFontPtr _internal7; // Fonts
+
+    private ImVector_ImFontConfig _internal8; // Sources
+
+    // TODO: Fixed array of ImVec4[IM_DRAWLIST_TEX_LINES_WIDTH_MAX+1]
+    private ImVec4 __internal9_0; // TexUvLines
+
+    private int _internal10; // TexNextUniqueID
+
+    private int _internal11; // FontNextUniqueID
+
+    private ImVector_ImDrawListSharedDataPtr _internal12; // DrawListSharedDatas
+
+    private ImFontAtlasBuilder _internal13; // Builder
+
+    private ImFontLoader _internal14; // FontLoader
+
+    private nint _internal15; // FontLoaderName
+
+    private nint _internal16; // FontLoaderData
+
+    private uint _internal17; // FontLoaderFlags
+
+    private int _internal18; // RefCount
+
+    private ImGuiContext _internal19; // OwnerContext
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddFont")]
     public static partial ImFont* AddFont(ImFontAtlas* self, ImFontConfig* font_cfg);
@@ -97,7 +132,7 @@ public unsafe partial struct ImFontAtlas
     public static partial ImFont* AddFontDefault(ImFontAtlas* self, ImFontConfig* font_cfg);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddFontFromFileTTF")]
-    public static partial ImFont* AddFontFromFileTTF(ImFontAtlas* self, [MarshalAs(UnmanagedType.LPUTF8Str)] string filename, float size_pixels, ImFontConfig* font_cfg, ushort* glyph_ranges);
+    public static partial ImFont* AddFontFromFileTTF(ImFontAtlas* self, byte* filename, float size_pixels, ImFontConfig* font_cfg, ushort* glyph_ranges);
 
     /// <summary>
     /// Note: Transfer ownership of 'ttf_data' to ImFontAtlas! Will be deleted after destruction of the atlas. Set font_cfg-&gt;FontDataOwnedByAtlas=false to keep ownership of your data and it won't be freed.
@@ -115,7 +150,7 @@ public unsafe partial struct ImFontAtlas
     /// 'compressed_font_data_base85' still owned by caller. Compress with binary_to_compressed_c.cpp with -base85 parameter.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddFontFromMemoryCompressedBase85TTF")]
-    public static partial ImFont* AddFontFromMemoryCompressedBase85TTF(ImFontAtlas* self, [MarshalAs(UnmanagedType.LPUTF8Str)] string compressed_font_data_base85, float size_pixels, ImFontConfig* font_cfg, ushort* glyph_ranges);
+    public static partial ImFont* AddFontFromMemoryCompressedBase85TTF(ImFontAtlas* self, byte* compressed_font_data_base85, float size_pixels, ImFontConfig* font_cfg, ushort* glyph_ranges);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_RemoveFont")]
     public static partial void RemoveFont(ImFontAtlas* self, ImFont* font);
@@ -158,109 +193,11 @@ public unsafe partial struct ImFontAtlas
     public static partial void ClearTexData(ImFontAtlas* self);
 
     /// <summary>
-    /// Legacy path for build atlas + retrieving pixel data.
-    /// - User is in charge of copying the pixels into graphics memory (e.g. create a texture with your engine). Then store your texture handle with SetTexID().
-    /// - The pitch is always = Width * BytesPerPixels (1 or 4)
-    /// - Building in RGBA32 format is provided for convenience and compatibility, but note that unless you manually manipulate or copy color data into
-    /// the texture (e.g. when using the AddCustomRect*** api), then the RGB pixels emitted will always be white (~75% of memory/bandwidth waste).
-    /// - From 1.92 with backends supporting ImGuiBackendFlags_RendererHasTextures:
-    /// - Calling Build(), GetTexDataAsAlpha8(), GetTexDataAsRGBA32() is not needed.
-    /// - In backend: replace calls to ImFontAtlas::SetTexID() with calls to ImTextureData::SetTexID() after honoring texture creation.
-    /// Build pixels data. This is called automatically for you by the GetTexData*** functions.
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_Build")]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool Build(ImFontAtlas* self);
-
-    /// <summary>
-    /// 1 byte per-pixel
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetTexDataAsAlpha8")]
-    public static partial void GetTexDataAsAlpha8(ImFontAtlas* self, nint out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel);
-
-    /// <summary>
-    /// 4 bytes-per-pixel
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetTexDataAsRGBA32")]
-    public static partial void GetTexDataAsRGBA32(ImFontAtlas* self, nint out_pixels, int* out_width, int* out_height, int* out_bytes_per_pixel);
-
-    /// <summary>
-    /// Called by legacy backends. May be called before texture creation.
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_SetTexID")]
-    public static partial void SetTexID(ImFontAtlas* self, ImTextureID id);
-
-    /// <summary>
-    /// Called by legacy backends.
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_SetTexIDImTextureRef")]
-    public static partial void SetTexID(ImFontAtlas* self, ImTextureRef id);
-
-    /// <summary>
-    /// Bit ambiguous: used to detect when user didn't build texture but effectively we should check TexID != 0 except that would be backend dependent..
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_IsBuilt")]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsBuilt(ImFontAtlas* self);
-
-    /// <summary>
     /// Since 1.92: specifying glyph ranges is only useful/necessary if your backend doesn't support ImGuiBackendFlags_RendererHasTextures!
     /// Basic Latin, Extended Latin
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetGlyphRangesDefault")]
     public static partial ushort* GetGlyphRangesDefault(ImFontAtlas* self);
-
-    /// <summary>
-    /// Helpers to retrieve list of common Unicode ranges (2 value per range, values are inclusive, zero-terminated list)
-    /// NB: Make sure that your string are UTF-8 and NOT in your local code page.
-    /// Read https://github.com/ocornut/imgui/blob/master/docs/FONTS.md/#about-utf-8-encoding for details.
-    /// NB: Consider using ImFontGlyphRangesBuilder to build glyph ranges from textual data.
-    /// Default + Greek and Coptic
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetGlyphRangesGreek")]
-    public static partial ushort* GetGlyphRangesGreek(ImFontAtlas* self);
-
-    /// <summary>
-    /// Default + Korean characters
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetGlyphRangesKorean")]
-    public static partial ushort* GetGlyphRangesKorean(ImFontAtlas* self);
-
-    /// <summary>
-    /// Default + Hiragana, Katakana, Half-Width, Selection of 2999 Ideographs
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetGlyphRangesJapanese")]
-    public static partial ushort* GetGlyphRangesJapanese(ImFontAtlas* self);
-
-    /// <summary>
-    /// Default + Half-Width + Japanese Hiragana/Katakana + full set of about 21000 CJK Unified Ideographs
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetGlyphRangesChineseFull")]
-    public static partial ushort* GetGlyphRangesChineseFull(ImFontAtlas* self);
-
-    /// <summary>
-    /// Default + Half-Width + Japanese Hiragana/Katakana + set of 2500 CJK Unified Ideographs for common simplified Chinese
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon")]
-    public static partial ushort* GetGlyphRangesChineseSimplifiedCommon(ImFontAtlas* self);
-
-    /// <summary>
-    /// Default + about 400 Cyrillic characters
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetGlyphRangesCyrillic")]
-    public static partial ushort* GetGlyphRangesCyrillic(ImFontAtlas* self);
-
-    /// <summary>
-    /// Default + Thai characters
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetGlyphRangesThai")]
-    public static partial ushort* GetGlyphRangesThai(ImFontAtlas* self);
-
-    /// <summary>
-    /// Default + Vietnamese characters
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetGlyphRangesVietnamese")]
-    public static partial ushort* GetGlyphRangesVietnamese(ImFontAtlas* self);
 
     /// <summary>
     /// Register and retrieve custom rectangles
@@ -297,35 +234,5 @@ public unsafe partial struct ImFontAtlas
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetCustomRect")]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool GetCustomRect(ImFontAtlas* self, ImFontAtlasRectId id, ImFontAtlasRect* out_r);
-
-    /// <summary>
-    /// RENAMED in 1.92.0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddCustomRectRegular")]
-    public static partial ImFontAtlasRectId AddCustomRectRegular(ImFontAtlas* self, int w, int h);
-
-    /// <summary>
-    /// OBSOLETED in 1.92.0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_GetCustomRectByIndex")]
-    public static partial ImFontAtlasRect* GetCustomRectByIndex(ImFontAtlas* self, ImFontAtlasRectId id);
-
-    /// <summary>
-    /// OBSOLETED in 1.92.0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_CalcCustomRectUV")]
-    public static partial void CalcCustomRectUV(ImFontAtlas* self, ImFontAtlasRect* r, ImVec2* out_uv_min, ImVec2* out_uv_max);
-
-    /// <summary>
-    /// OBSOLETED in 1.92.0: Use custom ImFontLoader in ImFontConfig
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddCustomRectFontGlyph")]
-    public static partial ImFontAtlasRectId AddCustomRectFontGlyph(ImFontAtlas* self, ImFont* font, ushort codepoint, int w, int h, float advance_x, ImVec2 offset);
-
-    /// <summary>
-    /// ADDED AND OBSOLETED in 1.92.0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddCustomRectFontGlyphForSize")]
-    public static partial ImFontAtlasRectId AddCustomRectFontGlyphForSize(ImFontAtlas* self, ImFont* font, float font_size, ushort codepoint, int w, int h, float advance_x, ImVec2 offset);
 
 }

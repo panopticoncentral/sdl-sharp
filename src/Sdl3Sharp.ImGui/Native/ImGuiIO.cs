@@ -370,20 +370,75 @@ public unsafe partial struct ImGuiIO
     /// </summary>
     public ImVec2 MouseDelta;
 
-    /// <summary>
-    /// Moved io.FontGlobalScale to style.FontScaleMain in 1.92 (June 2025)
-    /// </summary>
-    public float FontGlobalScale;
+    private ImGuiContext _internal0; // Ctx
 
-    /// <summary>
-    /// Legacy: before 1.91.1, clipboard functions were stored in ImGuiIO instead of ImGuiPlatformIO.
-    /// As this is will affect all users of custom engines/backends, we are providing proper legacy redirection (will obsolete).
-    /// </summary>
-    public nint GetClipboardTextFn;
+    private ImVec2 _internal1; // MousePos
 
-    public nint SetClipboardTextFn;
+    private fixed bool _internal2[5]; // MouseDown
 
-    public nint ClipboardUserData;
+    private float _internal3; // MouseWheel
+
+    private float _internal4; // MouseWheelH
+
+    private ImGuiMouseSource _internal5; // MouseSource
+
+    private bool _internal6; // KeyCtrl
+
+    private bool _internal7; // KeyShift
+
+    private bool _internal8; // KeyAlt
+
+    private bool _internal9; // KeySuper
+
+    private ImGuiKeyChord _internal10; // KeyMods
+
+    // TODO: Fixed array of nint[ImGuiKey_NamedKey_COUNT]
+    private nint __internal11_0; // KeysData
+
+    private bool _internal12; // WantCaptureMouseUnlessPopupClose
+
+    private ImVec2 _internal13; // MousePosPrev
+
+    // TODO: Fixed array of ImVec2[5]
+    private ImVec2 __internal14_0; // MouseClickedPos
+
+    private fixed double _internal15[5]; // MouseClickedTime
+
+    private fixed bool _internal16[5]; // MouseClicked
+
+    private fixed bool _internal17[5]; // MouseDoubleClicked
+
+    private fixed ushort _internal18[5]; // MouseClickedCount
+
+    private fixed ushort _internal19[5]; // MouseClickedLastCount
+
+    private fixed bool _internal20[5]; // MouseReleased
+
+    private fixed double _internal21[5]; // MouseReleasedTime
+
+    private fixed bool _internal22[5]; // MouseDownOwned
+
+    private fixed bool _internal23[5]; // MouseDownOwnedUnlessPopupClose
+
+    private bool _internal24; // MouseWheelRequestAxisSwap
+
+    private bool _internal25; // MouseCtrlLeftAsRightClick
+
+    private fixed float _internal26[5]; // MouseDownDuration
+
+    private fixed float _internal27[5]; // MouseDownDurationPrev
+
+    private fixed float _internal28[5]; // MouseDragMaxDistanceSqr
+
+    private float _internal29; // PenPressure
+
+    private bool _internal30; // AppFocusLost
+
+    private bool _internal31; // AppAcceptingEvents
+
+    private ushort _internal32; // InputQueueSurrogate
+
+    private ImVector_ImWchar _internal33; // InputQueueCharacters
 
     /// <summary>
     /// Input Functions

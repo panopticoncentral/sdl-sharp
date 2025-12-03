@@ -20,6 +20,5 @@ public enum ImGuiSelectableFlags
     Disabled = 1 << 3, // Cannot be selected, display grayed out text
     AllowOverlap = 1 << 4, // (WIP) Hit testing to allow subsequent widgets to overlap this one
     Highlight = 1 << 5, // Make the item be displayed as if it is hovered
-    SelectOnNav = 1 << 6, // Auto-select when moved into, unless Ctrl is held. Automatic when in a BeginMultiSelect() block.
-    DontClosePopups = 1 << 0 // Renamed in 1.91.0
+    SelectOnNav = 1 << 6 // Auto-select when moved into, unless Ctrl is held. Automatic when in a BeginMultiSelect() block.
 }

@@ -186,7 +186,8 @@ List<FunctionInfo> allFunctions = [.. mainRoot.Functions
     .Where(f => !f.IsImstrHelper)
     .Where(f => !f.Name.Contains("__"))
     .Where(f => !f.Arguments.Any(a => a.IsVarargs))
-    .Where(f => !TypeMapper.FunctionHasUnsupportedTypes(f))];
+    .Where(f => !TypeMapper.FunctionHasUnsupportedTypes(f))
+    .Where(f => !Conditional.IsObsolete(f.Conditionals))];
 
 // Group struct methods by their original class
 var structMethodsByClass = allFunctions
@@ -293,6 +294,7 @@ static void GenerateBackendFunctions(DearBindingsRoot root, FunctionGenerator fu
         .Where(f => !f.Name.Contains("__"))
         .Where(f => !f.Arguments.Any(a => a.IsVarargs))
         .Where(f => !TypeMapper.FunctionHasUnsupportedTypes(f))
+        .Where(f => !Conditional.IsObsolete(f.Conditionals))
         .Where(f => !excludedSdl3InitMethods.Contains(f.Name))];
 
     GenerateFunctions(functions, functionGenerator, outputDir, ns, name);

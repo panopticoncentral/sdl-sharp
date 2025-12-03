@@ -49,6 +49,18 @@ public unsafe partial struct ImGuiListClipper
     /// </summary>
     public int DisplayEnd;
 
+    private int _internal0; // ItemsCount
+
+    private float _internal1; // ItemsHeight
+
+    private double _internal2; // StartPosY
+
+    private double _internal3; // StartSeekOffsetY
+
+    private nint _internal4; // TempData
+
+    private ImGuiListClipperFlags _internal5; // Flags
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiListClipper_Begin")]
     public static partial void Begin(ImGuiListClipper* self, int items_count, float items_height);
 

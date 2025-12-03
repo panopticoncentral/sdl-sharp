@@ -23,6 +23,5 @@ public enum ImGuiTabBarFlags
     DrawSelectedOverline = 1 << 6, // Draw selected overline markers over selected tab
     FittingPolicyMixed = 1 << 7, // Shrink down tabs when they don't fit, until width is style.TabMinWidthShrink, then enable scrolling buttons.
     FittingPolicyShrink = 1 << 8, // Shrink down tabs when they don't fit
-    FittingPolicyScroll = 1 << 9, // Enable scrolling buttons when tabs don't fit
-    FittingPolicyResizeDown = 1 << 8 // Renamed in 1.92.2
+    FittingPolicyScroll = 1 << 9 // Enable scrolling buttons when tabs don't fit
 }

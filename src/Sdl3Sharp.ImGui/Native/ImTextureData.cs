@@ -97,6 +97,8 @@ public unsafe partial struct ImTextureData
     /// </summary>
     public bool UseColors;
 
+    private bool _internal0; // WantDestroyNextFrame
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImTextureData_Create")]
     public static partial void Create(ImTextureData* self, ImTextureFormat format, int w, int h);
 

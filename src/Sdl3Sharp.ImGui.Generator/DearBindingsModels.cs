@@ -48,6 +48,22 @@ public sealed class Conditional
 
     [JsonPropertyName("expression")]
     public string? Expression { get; set; }
+
+    /// <summary>
+    /// Checks if a list of conditionals indicates an obsolete item.
+    /// An item is obsolete if it has an ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS conditional.
+    /// </summary>
+    public static bool IsObsolete(List<Conditional>? conditionals)
+    {
+        if (conditionals == null)
+        {
+            return false;
+        }
+
+        return conditionals.Any(c =>
+            c.Condition == "ifndef" &&
+            c.Expression == "IMGUI_DISABLE_OBSOLETE_FUNCTIONS");
+    }
 }
 
 // ============ Defines ============
@@ -118,6 +134,9 @@ public sealed class EnumElement
 
     [JsonPropertyName("comments")]
     public Comments? Comments { get; set; }
+
+    [JsonPropertyName("conditionals")]
+    public List<Conditional>? Conditionals { get; set; }
 
     [JsonPropertyName("source_location")]
     public SourceLocation? SourceLocation { get; set; }
@@ -245,6 +264,9 @@ public sealed class FieldInfo
     [JsonPropertyName("is_array")]
     public bool IsArray { get; set; }
 
+    [JsonPropertyName("width")]
+    public int? Width { get; set; }
+
     [JsonPropertyName("is_anonymous")]
     public bool IsAnonymous { get; set; }
 
@@ -253,6 +275,9 @@ public sealed class FieldInfo
 
     [JsonPropertyName("comments")]
     public Comments? Comments { get; set; }
+
+    [JsonPropertyName("conditionals")]
+    public List<Conditional>? Conditionals { get; set; }
 
     [JsonPropertyName("is_internal")]
     public bool IsInternal { get; set; }
@@ -300,6 +325,9 @@ public sealed class FunctionInfo
 
     [JsonPropertyName("comments")]
     public Comments? Comments { get; set; }
+
+    [JsonPropertyName("conditionals")]
+    public List<Conditional>? Conditionals { get; set; }
 
     [JsonPropertyName("is_internal")]
     public bool IsInternal { get; set; }

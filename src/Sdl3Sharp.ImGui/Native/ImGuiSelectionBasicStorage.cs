@@ -51,6 +51,10 @@ public unsafe partial struct ImGuiSelectionBasicStorage
     /// </summary>
     public nint AdapterIndexToStorageId;
 
+    private int _internal0; // _SelectionOrder
+
+    private ImGuiStorage _internal1; // _Storage
+
     /// <summary>
     /// Apply selection requests coming from BeginMultiSelect() and EndMultiSelect() functions. It uses 'items_count' passed to BeginMultiSelect()
     /// </summary>

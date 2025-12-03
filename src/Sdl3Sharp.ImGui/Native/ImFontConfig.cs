@@ -123,4 +123,12 @@ public unsafe partial struct ImFontConfig
     /// 1.0f     // [LEGACY: this only makes sense when ImGuiBackendFlags_RendererHasTextures is not supported] DPI scale multiplier for rasterization. Not altering other font metrics: makes it easy to swap between e.g. a 100% and a 400% fonts for a zooming display, or handle Retina screen. IMPORTANT: If you change this it is expected that you increase/decrease font scale roughly to the inverse of this, otherwise quality may look lowered.
     /// </summary>
     public float RasterizerDensity;
+
+    private ImFontFlags _internal0; // Flags
+
+    private ImFont* _internal1; // DstFont
+
+    private ImFontLoader _internal2; // FontLoader
+
+    private nint _internal3; // FontLoaderData
 }

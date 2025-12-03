@@ -175,6 +175,5 @@ public enum ImGuiKey
     ImGuiMod_Ctrl = 1 << 12, // Ctrl (non-macOS), Cmd (macOS)
     ImGuiMod_Shift = 1 << 13, // Shift
     ImGuiMod_Alt = 1 << 14, // Option/Menu
-    ImGuiMod_Super = 1 << 15, // Windows/Super (non-macOS), Ctrl (macOS)
-    ImGuiMod_Shortcut = 4096 // Removed in 1.90.7, you can now simply use ImGuiMod_Ctrl
+    ImGuiMod_Super = 1 << 15 // Windows/Super (non-macOS), Ctrl (macOS)
 }

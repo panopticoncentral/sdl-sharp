@@ -16,6 +16,58 @@ namespace Sdl3Sharp.ImGui.Native;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe partial struct ImFontBaked
 {
+    private ImVector_float _internal0; // IndexAdvanceX
+
+    private float _internal1; // FallbackAdvanceX
+
+    private float _internal2; // Size
+
+    private float _internal3; // RasterizerDensity
+
+    private ImVector_ImU16 _internal4; // IndexLookup
+
+    private ImVector_ImFontGlyph _internal5; // Glyphs
+
+    private int _internal6; // FallbackGlyphIndex
+
+    private float _internal7; // Ascent
+
+    private float _internal8; // Descent
+
+    private uint _bitfield0;
+
+    private uint _internal9 // MetricsTotalSurface
+    {
+        readonly get => (uint)(_bitfield0 & 0x3FFFFFFU);
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x3FFFFFFU) | ((uint)value & 0x3FFFFFFU));
+    }
+
+    private bool _internal10 // WantDestroy
+    {
+        readonly get => (_bitfield0 & 0x4000000U) != 0;
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x4000000U) | (value ? 0x4000000U : 0));
+    }
+
+    private bool _internal11 // LoadNoFallback
+    {
+        readonly get => (_bitfield0 & 0x8000000U) != 0;
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x8000000U) | (value ? 0x8000000U : 0));
+    }
+
+    private bool _internal12 // LoadNoRenderOnLayout
+    {
+        readonly get => (_bitfield0 & 0x10000000U) != 0;
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x10000000U) | (value ? 0x10000000U : 0));
+    }
+
+    private int _internal13; // LastUsedFrame
+
+    private ImGuiID _internal14; // BakedId
+
+    private ImFont* _internal15; // OwnerFont
+
+    private nint _internal16; // FontLoaderDatas
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontBaked_ClearOutputData")]
     public static partial void ClearOutputData(ImFontBaked* self);
 

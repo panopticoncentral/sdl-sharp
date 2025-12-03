@@ -71,9 +71,5 @@ public enum ImGuiCol
     NavCursor = 56, // Color of keyboard/gamepad navigation cursor/rectangle, when visible
     NavWindowingHighlight = 57, // Highlight window when using Ctrl+Tab
     NavWindowingDimBg = 58, // Darken/colorize entire screen behind the Ctrl+Tab window list, when active
-    ModalWindowDimBg = 59, // Darken/colorize entire screen behind a modal window, when one is active
-    TabActive = 36, // [renamed in 1.90.9]
-    TabUnfocused = 38, // [renamed in 1.90.9]
-    TabUnfocusedActive = 39, // [renamed in 1.90.9]
-    NavHighlight = 56 // [renamed in 1.91.4]
+    ModalWindowDimBg = 59 // Darken/colorize entire screen behind a modal window, when one is active
 }

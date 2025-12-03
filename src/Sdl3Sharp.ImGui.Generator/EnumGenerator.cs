@@ -32,7 +32,7 @@ public sealed class EnumGenerator
         writer.OpenBrace();
 
         var elements = enumInfo.Elements
-            .Where(e => !e.IsInternal && !e.IsCount)
+            .Where(e => !e.IsInternal && !e.IsCount && !Conditional.IsObsolete(e.Conditionals))
             .ToList();
 
         for (var i = 0; i < elements.Count; i++)

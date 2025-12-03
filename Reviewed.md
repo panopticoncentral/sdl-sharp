@@ -40,3 +40,35 @@ PowerInfo
 PowerState
 Subsystems
 Version
+
+# Sdl3Sharp.ImGui
+
+## Native
+
+ImFont
+ImFontAtlas
+ImFontAtlasFlags
+ImFontAtlasRect
+ImFontAtlasRectId
+ImFontBaked
+ImFontConfig
+ImFontGlyph
+ImTextureData
+ImTextureFormat
+ImTextureRect
+ImTextureStatus
+
+## Managed
+
+Font
+FontAtlas
+FontAtlasFlags
+FontAtlasRect
+FontAtlasRectId
+FontBaked
+FontConfig
+FontGlyph
+TextureData
+TextureFormat
+TextureRect
+TextureStatus

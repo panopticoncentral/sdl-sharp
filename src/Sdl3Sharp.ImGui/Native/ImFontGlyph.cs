@@ -16,25 +16,43 @@ namespace Sdl3Sharp.ImGui.Native;
 [StructLayout(LayoutKind.Sequential)]
 public partial struct ImFontGlyph
 {
+    private uint _bitfield0;
+
     /// <summary>
     /// Flag to indicate glyph is colored and should generally ignore tinting (make it usable with no shift on little-endian as this is used in loops)
     /// </summary>
-    public uint Colored;
+    public bool Colored
+    {
+        readonly get => (_bitfield0 & 0x1U) != 0;
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x1U) | (value ? 0x1U : 0));
+    }
 
     /// <summary>
     /// Flag to indicate glyph has no visible pixels (e.g. space). Allow early out when rendering.
     /// </summary>
-    public uint Visible;
+    public bool Visible
+    {
+        readonly get => (_bitfield0 & 0x2U) != 0;
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x2U) | (value ? 0x2U : 0));
+    }
 
     /// <summary>
     /// Index of source in parent font
     /// </summary>
-    public uint SourceIdx;
+    public byte SourceIdx
+    {
+        readonly get => (byte)((_bitfield0 >> 2) & 0xFU);
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x3CU) | (((uint)value & 0xFU) << 2));
+    }
 
     /// <summary>
     /// 0x0000..0x10FFFF
     /// </summary>
-    public uint Codepoint;
+    public uint Codepoint
+    {
+        readonly get => (uint)((_bitfield0 >> 6) & 0x3FFFFFFU);
+        set => _bitfield0 = (uint)((_bitfield0 & ~0xFFFFFFC0U) | (((uint)value & 0x3FFFFFFU) << 6));
+    }
 
     /// <summary>
     /// Horizontal distance to advance cursor/layout position.
@@ -80,4 +98,6 @@ public partial struct ImFontGlyph
     /// Texture coordinates for the current value of ImFontAtlas-&gt;TexRef. Cached equivalent of calling GetCustomRect() with PackId.
     /// </summary>
     public float V1;
+
+    private int _internal0; // PackId
 }

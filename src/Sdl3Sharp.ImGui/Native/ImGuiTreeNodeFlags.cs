@@ -34,7 +34,5 @@ public enum ImGuiTreeNodeFlags
     CollapsingHeader = 26,
     DrawLinesNone = 1 << 18, // No lines drawn
     DrawLinesFull = 1 << 19, // Horizontal lines to child nodes. Vertical line drawn down to TreePop() position: cover full contents. Faster (for large trees).
-    DrawLinesToNodes = 1 << 20, // Horizontal lines to child nodes. Vertical line drawn down to bottom-most child node. Slower (for large trees).
-    NavLeftJumpsBackHere = 1 << 17, // Renamed in 1.92.0
-    SpanTextWidth = 1 << 13 // Renamed in 1.90.7
+    DrawLinesToNodes = 1 << 20 // Horizontal lines to child nodes. Vertical line drawn down to bottom-most child node. Slower (for large trees).
 }

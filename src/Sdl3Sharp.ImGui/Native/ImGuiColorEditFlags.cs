@@ -37,6 +37,5 @@ public enum ImGuiColorEditFlags
     PickerHueBar = 1 << 25, // [Picker]     // ColorPicker: bar for Hue, rectangle for Sat/Value.
     PickerHueWheel = 1 << 26, // [Picker]     // ColorPicker: wheel for Hue, triangle for Sat/Value.
     InputRGB = 1 << 27, // [Input]      // ColorEdit, ColorPicker: input and output data in RGB format.
-    InputHSV = 1 << 28, // [Input]      // ColorEdit, ColorPicker: input and output data in HSV format.
-    AlphaPreview = 0 // Removed in 1.91.8. This is the default now. Will display a checkerboard unless ImGuiColorEditFlags_AlphaNoBg is set.
+    InputHSV = 1 << 28 // [Input]      // ColorEdit, ColorPicker: input and output data in HSV format.
 }

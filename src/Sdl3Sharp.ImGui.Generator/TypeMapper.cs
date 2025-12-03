@@ -6,6 +6,7 @@ namespace Sdl3Sharp.ImGui.Generator;
 public sealed class TypeMapper
 {
     private readonly HashSet<string> _structs = [];
+    private readonly HashSet<string> _internalStructs = [];
     private readonly HashSet<string> _opaqueStructs = [];
     private readonly HashSet<string> _enumTypes = [];
     private readonly Dictionary<string, string> _typedefs = [];
@@ -15,6 +16,11 @@ public sealed class TypeMapper
     /// Gets the set of opaque struct names (forward-declared structs with no exposed fields).
     /// </summary>
     public IReadOnlySet<string> OpaqueStructs => _opaqueStructs;
+
+    /// <summary>
+    /// Gets the set of internal struct names (not exposed publicly).
+    /// </summary>
+    public IReadOnlySet<string> InternalStructs => _internalStructs;
 
     /// <summary>
     /// Builtin C type to C# type mapping.
@@ -105,7 +111,7 @@ public sealed class TypeMapper
 
     public void Initialize(DearBindingsRoot root)
     {
-        // Collect structs (internal/anonymous structs are filtered out at generation sites)
+        // Collect public structs (internal/anonymous structs are filtered out at generation sites)
         foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous))
         {
             _ = _structs.Add(s.Name);
@@ -116,6 +122,12 @@ public sealed class TypeMapper
             {
                 _backendStructRenames[s.Name] = cleanName;
             }
+        }
+
+        // Collect internal/anonymous structs (for mapping their pointers to nint)
+        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && (s.IsInternal || s.IsAnonymous)))
+        {
+            _ = _internalStructs.Add(s.Name);
         }
 
         // Collect opaque types (forward-declared structs with no exposed fields)
@@ -226,6 +238,26 @@ public sealed class TypeMapper
     public static bool IsUnsupportedType(StructInfo structInfo)
     {
         return UnsupportedTypes.Contains(structInfo.Name);
+    }
+
+    /// <summary>
+    /// Checks if a type refers to an internal struct (should be mapped to nint).
+    /// </summary>
+    public bool IsInternalType(TypeDescription? type)
+    {
+        return type?.Description != null && IsInternalTypeDetail(type.Description);
+    }
+
+    private bool IsInternalTypeDetail(TypeDescriptionDetail desc)
+    {
+        // Check direct user type
+        if (desc.Kind == "User" && desc.Name != null)
+        {
+            return _internalStructs.Contains(desc.Name);
+        }
+
+        // Check inner type for pointers/arrays
+        return desc.InnerType != null && IsInternalTypeDetail(desc.InnerType);
     }
 
     /// <summary>

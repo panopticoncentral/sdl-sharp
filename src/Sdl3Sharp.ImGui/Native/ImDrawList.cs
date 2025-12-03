@@ -44,6 +44,30 @@ public unsafe partial struct ImDrawList
     /// </summary>
     public ImDrawListFlags Flags;
 
+    private uint _internal0; // _VtxCurrentIdx
+
+    private ImDrawListSharedData _internal1; // _Data
+
+    private ImDrawVert* _internal2; // _VtxWritePtr
+
+    private ImDrawIdx* _internal3; // _IdxWritePtr
+
+    private ImVector_ImVec2 _internal4; // _Path
+
+    private nint _internal5; // _CmdHeader
+
+    private ImDrawListSplitter _internal6; // _Splitter
+
+    private ImVector_ImVec4 _internal7; // _ClipRectStack
+
+    private ImVector_ImTextureRef _internal8; // _TextureStack
+
+    private ImVector_ImU8 _internal9; // _CallbacksDataBuf
+
+    private float _internal10; // _FringeScale
+
+    private nint _internal11; // _OwnerName
+
     /// <summary>
     /// Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
     /// </summary>
@@ -277,17 +301,5 @@ public unsafe partial struct ImDrawList
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_PrimVtx")]
     public static partial void PrimVtx(ImDrawList* self, ImVec2 pos, ImVec2 uv, uint col);
-
-    /// <summary>
-    /// RENAMED in 1.92.0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_PushTextureID")]
-    public static partial void PushTextureID(ImDrawList* self, ImTextureRef tex_ref);
-
-    /// <summary>
-    /// RENAMED in 1.92.0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_PopTextureID")]
-    public static partial void PopTextureID(ImDrawList* self);
 
 }

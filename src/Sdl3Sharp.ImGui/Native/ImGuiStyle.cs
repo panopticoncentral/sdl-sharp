@@ -357,6 +357,10 @@ public unsafe partial struct ImGuiStyle
     /// </summary>
     public ImGuiHoveredFlags HoverFlagsForTooltipNav;
 
+    private float _internal0; // _MainScale
+
+    private float _internal1; // _NextFrameFontSizeBase
+
     /// <summary>
     /// Scale all spacing/padding/thickness values. Do not scale fonts.
     /// </summary>

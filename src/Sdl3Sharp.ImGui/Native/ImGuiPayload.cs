@@ -26,6 +26,18 @@ public unsafe partial struct ImGuiPayload
     /// </summary>
     public int DataSize;
 
+    private ImGuiID _internal0; // SourceId
+
+    private ImGuiID _internal1; // SourceParentId
+
+    private int _internal2; // DataFrameCount
+
+    private fixed byte _internal3[32+1]; // DataType
+
+    private bool _internal4; // Preview
+
+    private bool _internal5; // Delivery
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiPayload_Clear")]
     public static partial void Clear(ImGuiPayload* self);
 
