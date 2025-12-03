@@ -8,17 +8,4 @@
 namespace Sdl3Sharp.ImGui.Native;
 
 /// <summary>Opaque handle to an internal ImGui ImGuiContext structure.</summary>
-/// <param name="value">The underlying native pointer.</param>
-public readonly struct ImGuiContext(nint value)
-{
-    /// <summary>The underlying native pointer.</summary>
-    public readonly nint Value = value;
-
-    /// <summary>Implicitly converts a ImGuiContext to nint.</summary>
-    /// <param name="handle">The ImGuiContext to convert.</param>
-    public static implicit operator nint(ImGuiContext handle) => handle.Value;
-
-    /// <summary>Implicitly converts a nint to ImGuiContext.</summary>
-    /// <param name="value">The value to convert.</param>
-    public static implicit operator ImGuiContext(nint value) => new(value);
-}
+public readonly struct ImGuiContext;

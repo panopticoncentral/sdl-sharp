@@ -8,17 +8,4 @@
 namespace Sdl3Sharp.ImGui.Native;
 
 /// <summary>Opaque handle to an internal ImGui ImFontAtlasBuilder structure.</summary>
-/// <param name="value">The underlying native pointer.</param>
-public readonly struct ImFontAtlasBuilder(nint value)
-{
-    /// <summary>The underlying native pointer.</summary>
-    public readonly nint Value = value;
-
-    /// <summary>Implicitly converts a ImFontAtlasBuilder to nint.</summary>
-    /// <param name="handle">The ImFontAtlasBuilder to convert.</param>
-    public static implicit operator nint(ImFontAtlasBuilder handle) => handle.Value;
-
-    /// <summary>Implicitly converts a nint to ImFontAtlasBuilder.</summary>
-    /// <param name="value">The value to convert.</param>
-    public static implicit operator ImFontAtlasBuilder(nint value) => new(value);
-}
+public readonly struct ImFontAtlasBuilder;

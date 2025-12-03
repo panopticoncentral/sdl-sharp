@@ -61,7 +61,7 @@ public unsafe partial struct ImGuiInputTextCallbackData
     /// <summary>
     /// Text buffer                          // Read-write   // [Resize] Can replace pointer / [Completion,History,Always] Only write to pointed data, don't replace the actual pointer!
     /// </summary>
-    public nint Buf;
+    public byte* Buf;
 
     /// <summary>
     /// Text length (in bytes)               // Read-write   // [Resize,Completion,History,Always] Exclude zero-terminator storage. In C land: == strlen(some_text), in C++ land: string.length()
@@ -97,7 +97,7 @@ public unsafe partial struct ImGuiInputTextCallbackData
     public static partial void DeleteChars(ImGuiInputTextCallbackData* self, int pos, int bytes_count);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiInputTextCallbackData_InsertChars")]
-    public static partial void InsertChars(ImGuiInputTextCallbackData* self, int pos, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_end);
+    public static partial void InsertChars(ImGuiInputTextCallbackData* self, int pos, byte* text, byte* text_end);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiInputTextCallbackData_SelectAll")]
     public static partial void SelectAll(ImGuiInputTextCallbackData* self);

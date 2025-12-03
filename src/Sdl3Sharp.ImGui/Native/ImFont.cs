@@ -37,7 +37,7 @@ public unsafe partial struct ImFont
 
     private ushort _internal8; // FallbackChar
 
-    private fixed byte _internal9[(0x10FFFF +1)/8192/8]; // Used8kPagesMap
+    private fixed byte _internal9[(IM_UNICODE_CODEPOINT_MAX +1)/8192/8]; // Used8kPagesMap
 
     private bool _internal10; // EllipsisAutoBake
 
@@ -55,6 +55,6 @@ public unsafe partial struct ImFont
     /// Fill ImFontConfig::Name.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_GetDebugName")]
-    public static partial nint GetDebugName(ImFont* self);
+    public static partial byte* GetDebugName(ImFont* self);
 
 }

@@ -82,7 +82,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             {
                 foreach (FieldInfo field in group.Fields)
                 {
-                    GenerateField(writer, field, structInfo);
+                    GenerateField(writer, field);
                 }
             }
 
@@ -171,7 +171,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             var width = field.Width!.Value;
             var isInternal = field.IsInternal || field.IsAnonymous;
             var visibility = isInternal ? "private" : "public";
-            var propertyType = GetBitfieldPropertyType(field, width);
+            var propertyType = GetBitfieldPropertyType(width);
 
             // For internal/anonymous fields, use generated name with original name in comment
             string fieldName;
@@ -238,8 +238,15 @@ public sealed class StructGenerator(TypeMapper typeMapper)
     private int _bitfieldCounter;
     private int _internalCounter;
 
-    private int GetBitfieldIndex() => _bitfieldCounter++;
-    private int GetInternalIndex() => _internalCounter++;
+    private int GetBitfieldIndex()
+    {
+        return _bitfieldCounter++;
+    }
+
+    private int GetInternalIndex()
+    {
+        return _internalCounter++;
+    }
 
     /// <summary>
     /// Determines the storage type needed for a bitfield group based on total bits.
@@ -258,7 +265,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
     /// <summary>
     /// Determines the appropriate property type for a bitfield.
     /// </summary>
-    private string GetBitfieldPropertyType(FieldInfo field, int width)
+    private static string GetBitfieldPropertyType(int width)
     {
         // For 1-bit fields, use bool
         if (width == 1)
@@ -267,22 +274,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         }
 
         // For larger fields, use the smallest unsigned type that fits
-        if (width <= 8)
-        {
-            return "byte";
-        }
-        else if (width <= 16)
-        {
-            return "ushort";
-        }
-        else if (width <= 32)
-        {
-            return "uint";
-        }
-        else
-        {
-            return "ulong";
-        }
+        return width <= 8 ? "byte" : width <= 16 ? "ushort" : width <= 32 ? "uint" : "ulong";
     }
 
     private void GenerateMethod(CodeWriter writer, FunctionInfo func, string structName)
@@ -345,7 +337,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             var paramName = NamingConventions.ToParameterName(arg.Name);
 
             // Get marshaling attribute
-            var marshalAttr = TypeMapper.GetMarshalAsAttribute(arg.Type, forParameter: true);
+            var marshalAttr = TypeMapper.GetMarshalAsAttribute(arg.Type);
 
             if (marshalAttr != null)
             {
@@ -371,7 +363,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         return desc.Kind == "Builtin" && desc.BuiltinType == "bool" ? "[return: MarshalAs(UnmanagedType.U1)]" : null;
     }
 
-    private void GenerateField(CodeWriter writer, FieldInfo field, StructInfo structInfo)
+    private void GenerateField(CodeWriter writer, FieldInfo field)
     {
         var isInternal = field.IsInternal || field.IsAnonymous;
         var visibility = isInternal ? "private" : "public";

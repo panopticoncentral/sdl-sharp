@@ -13,11 +13,11 @@ namespace Sdl3Sharp.ImGui.Native;
 /// Instantiation of ImVector&lt;char&gt;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct ImVector_char
+public unsafe partial struct ImVector_char
 {
     public int Size;
 
     public int Capacity;
 
-    public nint Data;
+    public byte* Data;
 }

@@ -47,7 +47,7 @@ public unsafe partial struct ImFontGlyphRangesBuilder
     /// Add string (each character of the UTF-8 string are added)
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontGlyphRangesBuilder_AddText")]
-    public static partial void AddText(ImFontGlyphRangesBuilder* self, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_end);
+    public static partial void AddText(ImFontGlyphRangesBuilder* self, byte* text, byte* text_end);
 
     /// <summary>
     /// Add ranges, e.g. builder.AddRanges(ImFontAtlas::GetGlyphRangesDefault()) to force add all of ASCII/Latin+Ext

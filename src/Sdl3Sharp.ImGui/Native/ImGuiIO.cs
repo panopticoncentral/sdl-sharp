@@ -45,12 +45,12 @@ public unsafe partial struct ImGuiIO
     /// <summary>
     /// = "imgui.ini"    // Path to .ini file (important: default "imgui.ini" is relative to current working dir!). Set NULL to disable automatic .ini loading/saving or if you want to manually call LoadIniSettingsXXX() / SaveIniSettingsXXX() functions.
     /// </summary>
-    public nint IniFilename;
+    public byte* IniFilename;
 
     /// <summary>
     /// = "imgui_log.txt"// Path to .log file (default parameter to ImGui::LogToFile when no file is specified).
     /// </summary>
-    public nint LogFilename;
+    public byte* LogFilename;
 
     /// <summary>
     /// = NULL           // Store your own data.
@@ -283,12 +283,12 @@ public unsafe partial struct ImGuiIO
     /// Optional: Platform/Renderer backend name (informational only! will be displayed in About Window) + User data for backend/wrappers to store their own stuff.
     /// = NULL
     /// </summary>
-    public nint BackendPlatformName;
+    public byte* BackendPlatformName;
 
     /// <summary>
     /// = NULL
     /// </summary>
-    public nint BackendRendererName;
+    public byte* BackendRendererName;
 
     /// <summary>
     /// = NULL           // User data for platform backend
@@ -499,7 +499,7 @@ public unsafe partial struct ImGuiIO
     /// Queue a new characters input from a UTF-8 string
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiIO_AddInputCharactersUTF8")]
-    public static partial void AddInputCharactersUTF8(ImGuiIO* self, [MarshalAs(UnmanagedType.LPUTF8Str)] string str);
+    public static partial void AddInputCharactersUTF8(ImGuiIO* self, byte* str);
 
     /// <summary>
     /// [Optional] Specify index for legacy &lt;1.87 IsKeyXXX() functions with native indices + specify native keycode, scancode.

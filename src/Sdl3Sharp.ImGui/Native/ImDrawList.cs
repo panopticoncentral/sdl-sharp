@@ -66,7 +66,7 @@ public unsafe partial struct ImDrawList
 
     private float _internal10; // _FringeScale
 
-    private nint _internal11; // _OwnerName
+    private byte* _internal11; // _OwnerName
 
     /// <summary>
     /// Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
@@ -141,10 +141,10 @@ public unsafe partial struct ImDrawList
     public static partial void AddEllipseFilled(ImDrawList* self, ImVec2 center, ImVec2 radius, uint col, float rot, int num_segments);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddTextEx")]
-    public static partial void AddText(ImDrawList* self, ImVec2 pos, uint col, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_begin, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_end);
+    public static partial void AddText(ImDrawList* self, ImVec2 pos, uint col, byte* text_begin, byte* text_end);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddTextImFontPtrEx")]
-    public static partial void AddText(ImDrawList* self, ImFont* font, float font_size, ImVec2 pos, uint col, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_begin, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_end, float wrap_width, ImVec4* cpu_fine_clip_rect);
+    public static partial void AddText(ImDrawList* self, ImFont* font, float font_size, ImVec2 pos, uint col, byte* text_begin, byte* text_end, float wrap_width, ImVec4* cpu_fine_clip_rect);
 
     /// <summary>
     /// Cubic Bezier (4 control points)

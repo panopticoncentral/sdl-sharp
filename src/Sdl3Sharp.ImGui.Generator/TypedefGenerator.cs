@@ -185,30 +185,8 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
 
     private static void GenerateOpaqueHandle(CodeWriter writer, string name)
     {
-        // Write documentation
+        // Write documentation - empty struct, pointer wrapping happens at managed level
         writer.AppendLine($"/// <summary>Opaque handle to an internal ImGui {name} structure.</summary>");
-        writer.AppendLine($"/// <param name=\"value\">The underlying native pointer.</param>");
-
-        // Write struct with primary constructor
-        writer.AppendLine($"public readonly struct {name}(nint value)");
-        writer.OpenBrace();
-
-        // Value property
-        writer.AppendLine($"/// <summary>The underlying native pointer.</summary>");
-        writer.AppendLine($"public readonly nint Value = value;");
-        writer.AppendLine();
-
-        // Implicit conversion to nint
-        writer.AppendLine($"/// <summary>Implicitly converts a {name} to nint.</summary>");
-        writer.AppendLine($"/// <param name=\"handle\">The {name} to convert.</param>");
-        writer.AppendLine($"public static implicit operator nint({name} handle) => handle.Value;");
-        writer.AppendLine();
-
-        // Implicit conversion from nint
-        writer.AppendLine($"/// <summary>Implicitly converts a nint to {name}.</summary>");
-        writer.AppendLine($"/// <param name=\"value\">The value to convert.</param>");
-        writer.AppendLine($"public static implicit operator {name}(nint value) => new(value);");
-
-        writer.CloseBrace();
+        writer.AppendLine($"public readonly struct {name};");
     }
 }

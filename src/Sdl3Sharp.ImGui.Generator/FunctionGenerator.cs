@@ -139,7 +139,7 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
             var paramName = NamingConventions.ToParameterName(arg.Name);
 
             // Get marshaling attribute
-            var marshalAttr = TypeMapper.GetMarshalAsAttribute(arg.Type, forParameter: true);
+            var marshalAttr = TypeMapper.GetMarshalAsAttribute(arg.Type);
 
             if (marshalAttr != null)
             {

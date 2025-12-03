@@ -320,7 +320,7 @@ public sealed class TypeMapper
         {
             "Builtin" => MapBuiltinType(desc.BuiltinType ?? "void"),
             "User" => MapUserType(desc.Name ?? "void"),
-            "Pointer" => MapPointerType(desc, forParameter),
+            "Pointer" => MapPointerType(desc),
             "Array" => MapArrayType(desc),
             "Type" => MapTypeDescription(desc.InnerType!, forParameter, forReturn),
             _ => "nint" // Unknown types default to native int
@@ -380,7 +380,7 @@ public sealed class TypeMapper
         return name;
     }
 
-    private string MapPointerType(TypeDescriptionDetail desc, bool forParameter)
+    private string MapPointerType(TypeDescriptionDetail desc)
     {
         TypeDescriptionDetail? innerType = desc.InnerType;
         if (innerType == null)
@@ -388,24 +388,16 @@ public sealed class TypeMapper
             return "nint";
         }
 
-        // Check for const
-        var isConst = innerType.StorageClasses?.Contains("const") ?? false;
-
         // void* -> nint
         if (innerType.Kind == "Builtin" && innerType.BuiltinType == "void")
         {
             return "nint";
         }
 
-        // char* -> string for parameters, nint for return
+        // char* -> byte* (marshalling handled at managed wrapper level)
         if (innerType.Kind == "Builtin" && innerType.BuiltinType == "char")
         {
-            if (forParameter && isConst)
-            {
-                return "string"; // Will need [MarshalAs(UnmanagedType.LPUTF8Str)]
-            }
-
-            return "nint"; // byte* essentially
+            return "byte*";
         }
 
         // Pointer to builtin type
@@ -480,7 +472,6 @@ public sealed class TypeMapper
             return "nint";
         }
 
-        var bounds = desc.Bounds;
         var elementType = MapTypeDescription(innerType, false, false);
 
         // For fixed buffers, we return the element type and handle bounds elsewhere
@@ -490,7 +481,7 @@ public sealed class TypeMapper
     /// <summary>
     /// Gets the appropriate marshaling attribute for a parameter type.
     /// </summary>
-    public static string? GetMarshalAsAttribute(TypeDescription? type, bool forParameter)
+    public static string? GetMarshalAsAttribute(TypeDescription? type)
     {
         if (type?.Description == null)
         {
@@ -500,21 +491,6 @@ public sealed class TypeMapper
         TypeDescriptionDetail desc = type.Description;
 
         // bool needs MarshalAs for LibraryImport
-        if (desc.Kind == "Builtin" && desc.BuiltinType == "bool")
-        {
-            return "[MarshalAs(UnmanagedType.U1)]";
-        }
-
-        // const char* for parameters -> LPUTF8Str
-        if (desc.Kind == "Pointer" && desc.InnerType?.Kind == "Builtin" && desc.InnerType.BuiltinType == "char")
-        {
-            var isConst = desc.InnerType.StorageClasses?.Contains("const") ?? false;
-            if (forParameter && isConst)
-            {
-                return "[MarshalAs(UnmanagedType.LPUTF8Str)]";
-            }
-        }
-
-        return null;
+        return desc.Kind == "Builtin" && desc.BuiltinType == "bool" ? "[MarshalAs(UnmanagedType.U1)]" : null;
     }
 }

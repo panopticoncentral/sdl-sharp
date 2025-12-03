@@ -115,7 +115,7 @@ public unsafe partial struct ImFontAtlas
 
     private ImFontLoader _internal14; // FontLoader
 
-    private nint _internal15; // FontLoaderName
+    private byte* _internal15; // FontLoaderName
 
     private nint _internal16; // FontLoaderData
 

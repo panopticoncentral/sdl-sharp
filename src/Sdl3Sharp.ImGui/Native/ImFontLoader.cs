@@ -8,17 +8,4 @@
 namespace Sdl3Sharp.ImGui.Native;
 
 /// <summary>Opaque handle to an internal ImGui ImFontLoader structure.</summary>
-/// <param name="value">The underlying native pointer.</param>
-public readonly struct ImFontLoader(nint value)
-{
-    /// <summary>The underlying native pointer.</summary>
-    public readonly nint Value = value;
-
-    /// <summary>Implicitly converts a ImFontLoader to nint.</summary>
-    /// <param name="handle">The ImFontLoader to convert.</param>
-    public static implicit operator nint(ImFontLoader handle) => handle.Value;
-
-    /// <summary>Implicitly converts a nint to ImFontLoader.</summary>
-    /// <param name="value">The value to convert.</param>
-    public static implicit operator ImFontLoader(nint value) => new(value);
-}
+public readonly struct ImFontLoader;

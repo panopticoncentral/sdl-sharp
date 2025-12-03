@@ -43,7 +43,7 @@ public unsafe partial struct ImGuiPayload
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiPayload_IsDataType")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsDataType(ImGuiPayload* self, [MarshalAs(UnmanagedType.LPUTF8Str)] string type);
+    public static partial bool IsDataType(ImGuiPayload* self, byte* type);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiPayload_IsPreview")]
     [return: MarshalAs(UnmanagedType.U1)]

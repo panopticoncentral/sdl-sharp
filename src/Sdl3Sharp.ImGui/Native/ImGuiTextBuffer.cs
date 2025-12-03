@@ -19,13 +19,13 @@ public unsafe partial struct ImGuiTextBuffer
     public ImVector_char Buf;
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiTextBuffer_begin")]
-    public static partial nint begin(ImGuiTextBuffer* self);
+    public static partial byte* begin(ImGuiTextBuffer* self);
 
     /// <summary>
     /// Buf is zero-terminated, so end() will point on the zero-terminator
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiTextBuffer_end")]
-    public static partial nint end(ImGuiTextBuffer* self);
+    public static partial byte* end(ImGuiTextBuffer* self);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiTextBuffer_size")]
     public static partial int size(ImGuiTextBuffer* self);
@@ -47,9 +47,9 @@ public unsafe partial struct ImGuiTextBuffer
     public static partial void reserve(ImGuiTextBuffer* self, int capacity);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiTextBuffer_c_str")]
-    public static partial nint c_str(ImGuiTextBuffer* self);
+    public static partial byte* c_str(ImGuiTextBuffer* self);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiTextBuffer_append")]
-    public static partial void append(ImGuiTextBuffer* self, [MarshalAs(UnmanagedType.LPUTF8Str)] string str, [MarshalAs(UnmanagedType.LPUTF8Str)] string str_end);
+    public static partial void append(ImGuiTextBuffer* self, byte* str, byte* str_end);
 
 }

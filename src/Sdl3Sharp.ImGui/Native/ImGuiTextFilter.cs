@@ -26,11 +26,11 @@ public unsafe partial struct ImGuiTextFilter
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiTextFilter_Draw")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool Draw(ImGuiTextFilter* self, [MarshalAs(UnmanagedType.LPUTF8Str)] string label, float width);
+    public static partial bool Draw(ImGuiTextFilter* self, byte* label, float width);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiTextFilter_PassFilter")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool PassFilter(ImGuiTextFilter* self, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_end);
+    public static partial bool PassFilter(ImGuiTextFilter* self, byte* text, byte* text_end);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiTextFilter_Build")]
     public static partial void Build(ImGuiTextFilter* self);

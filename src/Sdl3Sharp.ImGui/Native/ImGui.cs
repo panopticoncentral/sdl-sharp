@@ -127,13 +127,13 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowStyleSelector")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ShowStyleSelector([MarshalAs(UnmanagedType.LPUTF8Str)] string label);
+    public static partial bool ShowStyleSelector(byte* label);
 
     /// <summary>
     /// add font selector block (not a window), essentially a combo listing the loaded fonts.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowFontSelector")]
-    public static partial void ShowFontSelector([MarshalAs(UnmanagedType.LPUTF8Str)] string label);
+    public static partial void ShowFontSelector(byte* label);
 
     /// <summary>
     /// add basic help/info block (not a window): how to manipulate ImGui as an end-user (mouse/keyboard controls).
@@ -145,7 +145,7 @@ internal static unsafe partial class ImGui
     /// get the compiled version string e.g. "1.80 WIP" (essentially the value for IMGUI_VERSION from the compiled version of imgui.cpp)
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetVersion")]
-    public static partial nint GetVersion();
+    public static partial byte* GetVersion();
 
     #endregion
 
@@ -190,7 +190,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Begin")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool Begin([MarshalAs(UnmanagedType.LPUTF8Str)] string name, bool* p_open, ImGuiWindowFlags flags);
+    public static partial bool Begin(byte* name, bool* p_open, ImGuiWindowFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_End")]
     public static partial void End();
@@ -221,7 +221,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginChild")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginChild([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImVec2 size, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags);
+    public static partial bool BeginChild(byte* str_id, ImVec2 size, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginChildID")]
     [return: MarshalAs(UnmanagedType.U1)]
@@ -366,25 +366,25 @@ internal static unsafe partial class ImGui
     /// set named window position.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowPosStr")]
-    public static partial void SetWindowPosStr([MarshalAs(UnmanagedType.LPUTF8Str)] string name, ImVec2 pos, ImGuiCond cond);
+    public static partial void SetWindowPosStr(byte* name, ImVec2 pos, ImGuiCond cond);
 
     /// <summary>
     /// set named window size. set axis to 0.0f to force an auto-fit on this axis.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowSizeStr")]
-    public static partial void SetWindowSizeStr([MarshalAs(UnmanagedType.LPUTF8Str)] string name, ImVec2 size, ImGuiCond cond);
+    public static partial void SetWindowSizeStr(byte* name, ImVec2 size, ImGuiCond cond);
 
     /// <summary>
     /// set named window collapsed state
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowCollapsedStr")]
-    public static partial void SetWindowCollapsedStr([MarshalAs(UnmanagedType.LPUTF8Str)] string name, [MarshalAs(UnmanagedType.U1)] bool collapsed, ImGuiCond cond);
+    public static partial void SetWindowCollapsedStr(byte* name, [MarshalAs(UnmanagedType.U1)] bool collapsed, ImGuiCond cond);
 
     /// <summary>
     /// set named window to be focused / top-most. use NULL to remove focus.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowFocusStr")]
-    public static partial void SetWindowFocusStr([MarshalAs(UnmanagedType.LPUTF8Str)] string name);
+    public static partial void SetWindowFocusStr(byte* name);
 
     #endregion
 
@@ -806,13 +806,13 @@ internal static unsafe partial class ImGui
     /// push string into the ID stack (will hash string).
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushID")]
-    public static partial void PushID([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id);
+    public static partial void PushID(byte* str_id);
 
     /// <summary>
     /// push string into the ID stack (will hash string).
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushIDStr")]
-    public static partial void PushIDStr([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id_begin, [MarshalAs(UnmanagedType.LPUTF8Str)] string str_id_end);
+    public static partial void PushIDStr(byte* str_id_begin, byte* str_id_end);
 
     /// <summary>
     /// push pointer into the ID stack (will hash pointer).
@@ -836,10 +836,10 @@ internal static unsafe partial class ImGui
     /// calculate unique ID (hash of whole ID stack + given parameter). e.g. if you want to query into ImGuiStorage yourself
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetID")]
-    public static partial ImGuiID GetID([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id);
+    public static partial ImGuiID GetID(byte* str_id);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetIDStr")]
-    public static partial ImGuiID GetIDStr([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id_begin, [MarshalAs(UnmanagedType.LPUTF8Str)] string str_id_end);
+    public static partial ImGuiID GetIDStr(byte* str_id_begin, byte* str_id_end);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetIDPtr")]
     public static partial ImGuiID GetIDPtr(nint ptr_id);
@@ -851,70 +851,70 @@ internal static unsafe partial class ImGui
     /// raw text without formatting. Roughly equivalent to Text("%s", text) but: A) doesn't require null terminated string if 'text_end' is specified, B) it's faster, no memory copy is done, no buffer size limits, recommended for long chunks of text.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TextUnformattedEx")]
-    public static partial void TextUnformattedEx([MarshalAs(UnmanagedType.LPUTF8Str)] string text, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_end);
+    public static partial void TextUnformattedEx(byte* text, byte* text_end);
 
     /// <summary>
     /// currently: formatted text with a horizontal line
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SeparatorText")]
-    public static partial void SeparatorText([MarshalAs(UnmanagedType.LPUTF8Str)] string label);
+    public static partial void SeparatorText(byte* label);
 
     /// <summary>
     /// button
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ButtonEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ButtonEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImVec2 size);
+    public static partial bool ButtonEx(byte* label, ImVec2 size);
 
     /// <summary>
     /// button with (FramePadding.y == 0) to easily embed within text
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SmallButton")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SmallButton([MarshalAs(UnmanagedType.LPUTF8Str)] string label);
+    public static partial bool SmallButton(byte* label);
 
     /// <summary>
     /// flexible button behavior without the visuals, frequently useful to build custom behaviors using the public api (along with IsItemActive, IsItemHovered, etc.)
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InvisibleButton")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InvisibleButton([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImVec2 size, ImGuiButtonFlags flags);
+    public static partial bool InvisibleButton(byte* str_id, ImVec2 size, ImGuiButtonFlags flags);
 
     /// <summary>
     /// square button with an arrow shape
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ArrowButton")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ArrowButton([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImGuiDir dir);
+    public static partial bool ArrowButton(byte* str_id, ImGuiDir dir);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Checkbox")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool Checkbox([MarshalAs(UnmanagedType.LPUTF8Str)] string label, bool* v);
+    public static partial bool Checkbox(byte* label, bool* v);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CheckboxFlagsIntPtr")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool CheckboxFlagsIntPtr([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* flags, int flags_value);
+    public static partial bool CheckboxFlagsIntPtr(byte* label, int* flags, int flags_value);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CheckboxFlagsUintPtr")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool CheckboxFlagsUintPtr([MarshalAs(UnmanagedType.LPUTF8Str)] string label, uint* flags, uint flags_value);
+    public static partial bool CheckboxFlagsUintPtr(byte* label, uint* flags, uint flags_value);
 
     /// <summary>
     /// use with e.g. if (RadioButton("one", my_value==1)) { my_value = 1; }
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_RadioButton")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool RadioButton([MarshalAs(UnmanagedType.LPUTF8Str)] string label, [MarshalAs(UnmanagedType.U1)] bool active);
+    public static partial bool RadioButton(byte* label, [MarshalAs(UnmanagedType.U1)] bool active);
 
     /// <summary>
     /// shortcut to handle the above pattern when value is an integer
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_RadioButtonIntPtr")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool RadioButtonIntPtr([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* v, int v_button);
+    public static partial bool RadioButtonIntPtr(byte* label, int* v, int v_button);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ProgressBar")]
-    public static partial void ProgressBar(float fraction, ImVec2 size_arg, [MarshalAs(UnmanagedType.LPUTF8Str)] string overlay);
+    public static partial void ProgressBar(float fraction, ImVec2 size_arg, byte* overlay);
 
     /// <summary>
     /// draw a small circle + keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses
@@ -927,14 +927,14 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TextLink")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TextLink([MarshalAs(UnmanagedType.LPUTF8Str)] string label);
+    public static partial bool TextLink(byte* label);
 
     /// <summary>
     /// hyperlink text button, automatically open file/url when clicked
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TextLinkOpenURLEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TextLinkOpenURLEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, [MarshalAs(UnmanagedType.LPUTF8Str)] string url);
+    public static partial bool TextLinkOpenURLEx(byte* label, byte* url);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ImageEx")]
     public static partial void ImageEx(ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1);
@@ -944,7 +944,7 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ImageButtonEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImageButtonEx([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1, ImVec4 bg_col, ImVec4 tint_col);
+    public static partial bool ImageButtonEx(byte* str_id, ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1, ImVec4 bg_col, ImVec4 tint_col);
 
     #endregion
 
@@ -957,7 +957,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginCombo")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginCombo([MarshalAs(UnmanagedType.LPUTF8Str)] string label, [MarshalAs(UnmanagedType.LPUTF8Str)] string preview_value, ImGuiComboFlags flags);
+    public static partial bool BeginCombo(byte* label, byte* preview_value, ImGuiComboFlags flags);
 
     /// <summary>
     /// only call EndCombo() if BeginCombo() returns true!
@@ -967,187 +967,187 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ComboCharEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ComboCharEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* current_item, nint items, int items_count, int popup_max_height_in_items);
+    public static partial bool ComboCharEx(byte* label, int* current_item, byte* items, int items_count, int popup_max_height_in_items);
 
     /// <summary>
     /// Separate items with \0 within a string, end item-list with \0\0. e.g. "One\0Two\0Three\0"
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ComboEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ComboEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* current_item, [MarshalAs(UnmanagedType.LPUTF8Str)] string items_separated_by_zeros, int popup_max_height_in_items);
+    public static partial bool ComboEx(byte* label, int* current_item, byte* items_separated_by_zeros, int popup_max_height_in_items);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ComboCallbackEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ComboCallbackEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* current_item, nint getter, nint user_data, int items_count, int popup_max_height_in_items);
+    public static partial bool ComboCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int popup_max_height_in_items);
 
     /// <summary>
     /// If v_min &gt;= v_max we have no bound
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloatEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloatEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float* v, float v_speed, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragFloatEx(byte* label, float* v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloat2Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloat2Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float v, float v_speed, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragFloat2Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloat3Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloat3Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float v, float v_speed, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragFloat3Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloat4Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloat4Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float v, float v_speed, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragFloat4Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloatRange2Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloatRange2Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, [MarshalAs(UnmanagedType.LPUTF8Str)] string format_max, ImGuiSliderFlags flags);
+    public static partial bool DragFloatRange2Ex(byte* label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, byte* format, byte* format_max, ImGuiSliderFlags flags);
 
     /// <summary>
     /// If v_min &gt;= v_max we have no bound
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragIntEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragIntEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* v, float v_speed, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragIntEx(byte* label, int* v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragInt2Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragInt2Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int v, float v_speed, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragInt2Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragInt3Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragInt3Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int v, float v_speed, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragInt3Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragInt4Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragInt4Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int v, float v_speed, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragInt4Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragIntRange2Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragIntRange2Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, [MarshalAs(UnmanagedType.LPUTF8Str)] string format_max, ImGuiSliderFlags flags);
+    public static partial bool DragIntRange2Ex(byte* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, byte* format, byte* format_max, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragScalarEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragScalarEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiDataType data_type, nint p_data, float v_speed, nint p_min, nint p_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragScalarEx(byte* label, ImGuiDataType data_type, nint p_data, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragScalarNEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragScalarNEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiDataType data_type, nint p_data, int components, float v_speed, nint p_min, nint p_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool DragScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// adjust format to decorate the value with a prefix or a suffix for in-slider labels or unit display.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderFloatEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderFloatEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float* v, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderFloatEx(byte* label, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderFloat2Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderFloat2Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float v, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderFloat2Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderFloat3Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderFloat3Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float v, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderFloat3Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderFloat4Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderFloat4Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float v, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderFloat4Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderAngleEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderAngleEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float* v_rad, float v_degrees_min, float v_degrees_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderAngleEx(byte* label, float* v_rad, float v_degrees_min, float v_degrees_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderIntEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderIntEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* v, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderIntEx(byte* label, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderInt2Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderInt2Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int v, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderInt2Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderInt3Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderInt3Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int v, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderInt3Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderInt4Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderInt4Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int v, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderInt4Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderScalarEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderScalarEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderScalarNEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderScalarNEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiDataType data_type, nint p_data, int components, nint p_min, nint p_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool SliderScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_VSliderFloatEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool VSliderFloatEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImVec2 size, float* v, float v_min, float v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool VSliderFloatEx(byte* label, ImVec2 size, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_VSliderIntEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool VSliderIntEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImVec2 size, int* v, int v_min, int v_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool VSliderIntEx(byte* label, ImVec2 size, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_VSliderScalarEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool VSliderScalarEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImVec2 size, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiSliderFlags flags);
+    public static partial bool VSliderScalarEx(byte* label, ImVec2 size, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputTextEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputTextEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, nint buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
+    public static partial bool InputTextEx(byte* label, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputTextMultilineEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputTextMultilineEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, nint buf, nuint buf_size, ImVec2 size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
+    public static partial bool InputTextMultilineEx(byte* label, byte* buf, nuint buf_size, ImVec2 size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputTextWithHintEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputTextWithHintEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, [MarshalAs(UnmanagedType.LPUTF8Str)] string hint, nint buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
+    public static partial bool InputTextWithHintEx(byte* label, byte* hint, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputFloatEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputFloatEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float* v, float step, float step_fast, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiInputTextFlags flags);
+    public static partial bool InputFloatEx(byte* label, float* v, float step, float step_fast, byte* format, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputFloat2Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputFloat2Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float v, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiInputTextFlags flags);
+    public static partial bool InputFloat2Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputFloat3Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputFloat3Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float v, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiInputTextFlags flags);
+    public static partial bool InputFloat3Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputFloat4Ex")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputFloat4Ex([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float v, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiInputTextFlags flags);
+    public static partial bool InputFloat4Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputIntEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputIntEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* v, int step, int step_fast, ImGuiInputTextFlags flags);
+    public static partial bool InputIntEx(byte* label, int* v, int step, int step_fast, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputInt2")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputInt2([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int v, ImGuiInputTextFlags flags);
+    public static partial bool InputInt2(byte* label, int v, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputInt3")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputInt3([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int v, ImGuiInputTextFlags flags);
+    public static partial bool InputInt3(byte* label, int v, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputInt4")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputInt4([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int v, ImGuiInputTextFlags flags);
+    public static partial bool InputInt4(byte* label, int v, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputDoubleEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputDoubleEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, double* v, double step, double step_fast, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiInputTextFlags flags);
+    public static partial bool InputDoubleEx(byte* label, double* v, double step, double step_fast, byte* format, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputScalarEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputScalarEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiDataType data_type, nint p_data, nint p_step, nint p_step_fast, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiInputTextFlags flags);
+    public static partial bool InputScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_step, nint p_step_fast, byte* format, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputScalarNEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputScalarNEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiDataType data_type, nint p_data, int components, nint p_step, nint p_step_fast, [MarshalAs(UnmanagedType.LPUTF8Str)] string format, ImGuiInputTextFlags flags);
+    public static partial bool InputScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_step, nint p_step_fast, byte* format, ImGuiInputTextFlags flags);
 
     /// <summary>
     /// Widgets: Color Editor/Picker (tip: the ColorEdit* functions have a little color square that can be left-clicked to open a picker, and right-clicked to open an option menu.)
@@ -1156,26 +1156,26 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorEdit3")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorEdit3([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float col, ImGuiColorEditFlags flags);
+    public static partial bool ColorEdit3(byte* label, float col, ImGuiColorEditFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorEdit4")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorEdit4([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float col, ImGuiColorEditFlags flags);
+    public static partial bool ColorEdit4(byte* label, float col, ImGuiColorEditFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorPicker3")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorPicker3([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float col, ImGuiColorEditFlags flags);
+    public static partial bool ColorPicker3(byte* label, float col, ImGuiColorEditFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorPicker4")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorPicker4([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float col, ImGuiColorEditFlags flags, float* ref_col);
+    public static partial bool ColorPicker4(byte* label, float col, ImGuiColorEditFlags flags, float* ref_col);
 
     /// <summary>
     /// display a color square/button, hover for details, return true when pressed.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorButtonEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorButtonEx([MarshalAs(UnmanagedType.LPUTF8Str)] string desc_id, ImVec4 col, ImGuiColorEditFlags flags, ImVec2 size);
+    public static partial bool ColorButtonEx(byte* desc_id, ImVec4 col, ImGuiColorEditFlags flags, ImVec2 size);
 
     /// <summary>
     /// initialize current options (generally on application startup) if you want to select a default format, picker type, etc. User will be able to change many settings, unless you pass the _NoOptions flag to your calls.
@@ -1193,17 +1193,17 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TreeNode")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TreeNode([MarshalAs(UnmanagedType.LPUTF8Str)] string label);
+    public static partial bool TreeNode(byte* label);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TreeNodeEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TreeNodeEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiTreeNodeFlags flags);
+    public static partial bool TreeNodeEx(byte* label, ImGuiTreeNodeFlags flags);
 
     /// <summary>
     /// ~ Indent()+PushID(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TreePush")]
-    public static partial void TreePush([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id);
+    public static partial void TreePush(byte* str_id);
 
     /// <summary>
     /// "
@@ -1228,14 +1228,14 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CollapsingHeader")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool CollapsingHeader([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiTreeNodeFlags flags);
+    public static partial bool CollapsingHeader(byte* label, ImGuiTreeNodeFlags flags);
 
     /// <summary>
     /// when 'p_visible != NULL': if '*p_visible==true' display an additional small close button on upper right of the header which will set the bool to false when clicked, if '*p_visible==false' don't display the header.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CollapsingHeaderBoolPtr")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool CollapsingHeaderBoolPtr([MarshalAs(UnmanagedType.LPUTF8Str)] string label, bool* p_visible, ImGuiTreeNodeFlags flags);
+    public static partial bool CollapsingHeaderBoolPtr(byte* label, bool* p_visible, ImGuiTreeNodeFlags flags);
 
     /// <summary>
     /// set next TreeNode/CollapsingHeader open state.
@@ -1254,14 +1254,14 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SelectableEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SelectableEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, [MarshalAs(UnmanagedType.U1)] bool selected, ImGuiSelectableFlags flags, ImVec2 size);
+    public static partial bool SelectableEx(byte* label, [MarshalAs(UnmanagedType.U1)] bool selected, ImGuiSelectableFlags flags, ImVec2 size);
 
     /// <summary>
     /// "bool* p_selected" point to the selection state (read-write), as a convenient helper.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SelectableBoolPtrEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SelectableBoolPtrEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, bool* p_selected, ImGuiSelectableFlags flags, ImVec2 size);
+    public static partial bool SelectableBoolPtrEx(byte* label, bool* p_selected, ImGuiSelectableFlags flags, ImVec2 size);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginMultiSelectEx")]
     public static partial ImGuiMultiSelectIO* BeginMultiSelectEx(ImGuiMultiSelectFlags flags, int selection_size, int items_count);
@@ -1295,7 +1295,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginListBox")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginListBox([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImVec2 size);
+    public static partial bool BeginListBox(byte* label, ImVec2 size);
 
     /// <summary>
     /// only call EndListBox() if BeginListBox() returned true!
@@ -1305,23 +1305,23 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ListBox")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ListBox([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* current_item, nint items, int items_count, int height_in_items);
+    public static partial bool ListBox(byte* label, int* current_item, byte* items, int items_count, int height_in_items);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ListBoxCallbackEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ListBoxCallbackEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, int* current_item, nint getter, nint user_data, int items_count, int height_in_items);
+    public static partial bool ListBoxCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int height_in_items);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PlotLinesEx")]
-    public static partial void PlotLinesEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float* values, int values_count, int values_offset, [MarshalAs(UnmanagedType.LPUTF8Str)] string overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
+    public static partial void PlotLinesEx(byte* label, float* values, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PlotLinesCallbackEx")]
-    public static partial void PlotLinesCallbackEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, nint values_getter, nint data, int values_count, int values_offset, [MarshalAs(UnmanagedType.LPUTF8Str)] string overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
+    public static partial void PlotLinesCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PlotHistogramEx")]
-    public static partial void PlotHistogramEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, float* values, int values_count, int values_offset, [MarshalAs(UnmanagedType.LPUTF8Str)] string overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
+    public static partial void PlotHistogramEx(byte* label, float* values, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PlotHistogramCallbackEx")]
-    public static partial void PlotHistogramCallbackEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, nint values_getter, nint data, int values_count, int values_offset, [MarshalAs(UnmanagedType.LPUTF8Str)] string overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
+    public static partial void PlotHistogramCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
 
     #endregion
 
@@ -1363,7 +1363,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginMenuEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginMenuEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, [MarshalAs(UnmanagedType.U1)] bool enabled);
+    public static partial bool BeginMenuEx(byte* label, [MarshalAs(UnmanagedType.U1)] bool enabled);
 
     /// <summary>
     /// only call EndMenu() if BeginMenu() returns true!
@@ -1376,14 +1376,14 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_MenuItemEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool MenuItemEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, [MarshalAs(UnmanagedType.LPUTF8Str)] string shortcut, [MarshalAs(UnmanagedType.U1)] bool selected, [MarshalAs(UnmanagedType.U1)] bool enabled);
+    public static partial bool MenuItemEx(byte* label, byte* shortcut, [MarshalAs(UnmanagedType.U1)] bool selected, [MarshalAs(UnmanagedType.U1)] bool enabled);
 
     /// <summary>
     /// return true when activated + toggle (*p_selected) if p_selected != NULL
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_MenuItemBoolPtr")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool MenuItemBoolPtr([MarshalAs(UnmanagedType.LPUTF8Str)] string label, [MarshalAs(UnmanagedType.LPUTF8Str)] string shortcut, bool* p_selected, [MarshalAs(UnmanagedType.U1)] bool enabled);
+    public static partial bool MenuItemBoolPtr(byte* label, byte* shortcut, bool* p_selected, [MarshalAs(UnmanagedType.U1)] bool enabled);
 
     #endregion
 
@@ -1440,14 +1440,14 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopup")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopup([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImGuiWindowFlags flags);
+    public static partial bool BeginPopup(byte* str_id, ImGuiWindowFlags flags);
 
     /// <summary>
     /// return true if the modal is open, and you can start outputting to it.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopupModal")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopupModal([MarshalAs(UnmanagedType.LPUTF8Str)] string name, bool* p_open, ImGuiWindowFlags flags);
+    public static partial bool BeginPopupModal(byte* name, bool* p_open, ImGuiWindowFlags flags);
 
     /// <summary>
     /// only call EndPopup() if BeginPopupXXX() returns true!
@@ -1471,7 +1471,7 @@ internal static unsafe partial class ImGui
     /// call to mark popup as open (don't call every frame!).
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_OpenPopup")]
-    public static partial void OpenPopup([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImGuiPopupFlags popup_flags);
+    public static partial void OpenPopup(byte* str_id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
     /// id overload to facilitate calling from nested stacks
@@ -1483,7 +1483,7 @@ internal static unsafe partial class ImGui
     /// helper to open popup when clicked on last item. Default to ImGuiPopupFlags_MouseButtonRight == 1. (note: actually triggers on the mouse _released_ event to be consistent with popup behaviors)
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_OpenPopupOnItemClick")]
-    public static partial void OpenPopupOnItemClick([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImGuiPopupFlags popup_flags);
+    public static partial void OpenPopupOnItemClick(byte* str_id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
     /// manually close the popup we have begin-ed into.
@@ -1496,21 +1496,21 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopupContextItemEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopupContextItemEx([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImGuiPopupFlags popup_flags);
+    public static partial bool BeginPopupContextItemEx(byte* str_id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
     /// open+begin popup when clicked on current window.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopupContextWindowEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopupContextWindowEx([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImGuiPopupFlags popup_flags);
+    public static partial bool BeginPopupContextWindowEx(byte* str_id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
     /// open+begin popup when clicked in void (where there are no windows).
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopupContextVoidEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopupContextVoidEx([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImGuiPopupFlags popup_flags);
+    public static partial bool BeginPopupContextVoidEx(byte* str_id, ImGuiPopupFlags popup_flags);
 
     #endregion
 
@@ -1525,11 +1525,11 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsPopupOpen")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsPopupOpen([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImGuiPopupFlags flags);
+    public static partial bool IsPopupOpen(byte* str_id, ImGuiPopupFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginTableEx")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginTableEx([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, int columns, ImGuiTableFlags flags, ImVec2 outer_size, float inner_width);
+    public static partial bool BeginTableEx(byte* str_id, int columns, ImGuiTableFlags flags, ImVec2 outer_size, float inner_width);
 
     /// <summary>
     /// only call EndTable() if BeginTable() returns true!
@@ -1558,7 +1558,7 @@ internal static unsafe partial class ImGui
     public static partial bool TableSetColumnIndex(int column_n);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableSetupColumnEx")]
-    public static partial void TableSetupColumnEx([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiTableColumnFlags flags, float init_width_or_weight, ImGuiID user_id);
+    public static partial void TableSetupColumnEx(byte* label, ImGuiTableColumnFlags flags, float init_width_or_weight, ImGuiID user_id);
 
     /// <summary>
     /// lock columns/rows so they stay visible when scrolled.
@@ -1570,7 +1570,7 @@ internal static unsafe partial class ImGui
     /// submit one header cell manually (rarely used)
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableHeader")]
-    public static partial void TableHeader([MarshalAs(UnmanagedType.LPUTF8Str)] string label);
+    public static partial void TableHeader(byte* label);
 
     /// <summary>
     /// submit a row with headers cells based on data provided to TableSetupColumn() + submit context menu
@@ -1622,7 +1622,7 @@ internal static unsafe partial class ImGui
     /// return "" if column didn't have a name declared by TableSetupColumn(). Pass -1 to use current column.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableGetColumnName")]
-    public static partial nint TableGetColumnName(int column_n);
+    public static partial byte* TableGetColumnName(int column_n);
 
     /// <summary>
     /// return column flags so you can query their Enabled/Visible/Sorted/Hovered status flags. Pass -1 to use current column.
@@ -1649,7 +1649,7 @@ internal static unsafe partial class ImGui
     public static partial void TableSetBgColor(ImGuiTableBgTarget target, uint color, int column_n);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColumnsEx")]
-    public static partial void ColumnsEx(int count, [MarshalAs(UnmanagedType.LPUTF8Str)] string id, [MarshalAs(UnmanagedType.U1)] bool borders);
+    public static partial void ColumnsEx(int count, byte* id, [MarshalAs(UnmanagedType.U1)] bool borders);
 
     /// <summary>
     /// next column, defaults to current row or next row if the current row is finished
@@ -1701,7 +1701,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginTabBar")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginTabBar([MarshalAs(UnmanagedType.LPUTF8Str)] string str_id, ImGuiTabBarFlags flags);
+    public static partial bool BeginTabBar(byte* str_id, ImGuiTabBarFlags flags);
 
     /// <summary>
     /// only call EndTabBar() if BeginTabBar() returns true!
@@ -1714,7 +1714,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginTabItem")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginTabItem([MarshalAs(UnmanagedType.LPUTF8Str)] string label, bool* p_open, ImGuiTabItemFlags flags);
+    public static partial bool BeginTabItem(byte* label, bool* p_open, ImGuiTabItemFlags flags);
 
     /// <summary>
     /// only call EndTabItem() if BeginTabItem() returns true!
@@ -1727,13 +1727,13 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TabItemButton")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TabItemButton([MarshalAs(UnmanagedType.LPUTF8Str)] string label, ImGuiTabItemFlags flags);
+    public static partial bool TabItemButton(byte* label, ImGuiTabItemFlags flags);
 
     /// <summary>
     /// notify TabBar or Docking system of a closed tab/window ahead (useful to reduce visual flicker on reorderable tab bars). For tab-bar: call after BeginTabBar() and before Tab submissions. Otherwise call with a window name.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetTabItemClosed")]
-    public static partial void SetTabItemClosed([MarshalAs(UnmanagedType.LPUTF8Str)] string tab_or_docked_window_label);
+    public static partial void SetTabItemClosed(byte* tab_or_docked_window_label);
 
     #endregion
 
@@ -1751,7 +1751,7 @@ internal static unsafe partial class ImGui
     /// start logging to file
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LogToFile")]
-    public static partial void LogToFile(int auto_open_depth, [MarshalAs(UnmanagedType.LPUTF8Str)] string filename);
+    public static partial void LogToFile(int auto_open_depth, byte* filename);
 
     /// <summary>
     /// start logging to OS clipboard
@@ -1792,7 +1792,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetDragDropPayload")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SetDragDropPayload([MarshalAs(UnmanagedType.LPUTF8Str)] string type, nint data, nuint sz, ImGuiCond cond);
+    public static partial bool SetDragDropPayload(byte* type, nint data, nuint sz, ImGuiCond cond);
 
     /// <summary>
     /// only call EndDragDropSource() if BeginDragDropSource() returns true!
@@ -1811,7 +1811,7 @@ internal static unsafe partial class ImGui
     /// accept contents of a given type. If ImGuiDragDropFlags_AcceptBeforeDelivery is set you can peek into the payload before the mouse button is released.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_AcceptDragDropPayload")]
-    public static partial ImGuiPayload* AcceptDragDropPayload([MarshalAs(UnmanagedType.LPUTF8Str)] string type, ImGuiDragDropFlags flags);
+    public static partial ImGuiPayload* AcceptDragDropPayload(byte* type, ImGuiDragDropFlags flags);
 
     /// <summary>
     /// only call EndDragDropTarget() if BeginDragDropTarget() returns true!
@@ -2089,7 +2089,7 @@ internal static unsafe partial class ImGui
     /// get a string corresponding to the enum value (for display, saving, etc.).
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetStyleColorName")]
-    public static partial nint GetStyleColorName(ImGuiCol idx);
+    public static partial byte* GetStyleColorName(ImGuiCol idx);
 
     /// <summary>
     /// replace current window storage with our own (if you want to manipulate it yourself, typically clear subsection of it)
@@ -2101,7 +2101,7 @@ internal static unsafe partial class ImGui
     public static partial ImGuiStorage* GetStateStorage();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CalcTextSizeEx")]
-    public static partial ImVec2 CalcTextSizeEx([MarshalAs(UnmanagedType.LPUTF8Str)] string text, [MarshalAs(UnmanagedType.LPUTF8Str)] string text_end, [MarshalAs(UnmanagedType.U1)] bool hide_text_after_double_hash, float wrap_width);
+    public static partial ImVec2 CalcTextSizeEx(byte* text, byte* text_end, [MarshalAs(UnmanagedType.U1)] bool hide_text_after_double_hash, float wrap_width);
 
     #endregion
 
@@ -2168,7 +2168,7 @@ internal static unsafe partial class ImGui
     /// [DEBUG] returns English name of the key. Those names are provided for debugging purpose and are not meant to be saved persistently nor compared.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetKeyName")]
-    public static partial nint GetKeyName(ImGuiKey key);
+    public static partial byte* GetKeyName(ImGuiKey key);
 
     /// <summary>
     /// Override io.WantCaptureKeyboard flag next frame (said flag is left for your application to handle, typically when true it instructs your app to ignore inputs). e.g. force capture keyboard when your widget is being hovered. This is equivalent to setting "io.WantCaptureKeyboard = want_capture_keyboard"; after the next NewFrame() call.
@@ -2345,10 +2345,10 @@ internal static unsafe partial class ImGui
     /// - Also see the LogToClipboard() function to capture GUI into clipboard, or easily output text data to the clipboard.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetClipboardText")]
-    public static partial nint GetClipboardText();
+    public static partial byte* GetClipboardText();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetClipboardText")]
-    public static partial void SetClipboardText([MarshalAs(UnmanagedType.LPUTF8Str)] string text);
+    public static partial void SetClipboardText(byte* text);
 
     #endregion
 
@@ -2362,25 +2362,25 @@ internal static unsafe partial class ImGui
     /// call after CreateContext() and before the first call to NewFrame(). NewFrame() automatically calls LoadIniSettingsFromDisk(io.IniFilename).
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LoadIniSettingsFromDisk")]
-    public static partial void LoadIniSettingsFromDisk([MarshalAs(UnmanagedType.LPUTF8Str)] string ini_filename);
+    public static partial void LoadIniSettingsFromDisk(byte* ini_filename);
 
     /// <summary>
     /// call after CreateContext() and before the first call to NewFrame() to provide .ini data from your own data source.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LoadIniSettingsFromMemory")]
-    public static partial void LoadIniSettingsFromMemory([MarshalAs(UnmanagedType.LPUTF8Str)] string ini_data, nuint ini_size);
+    public static partial void LoadIniSettingsFromMemory(byte* ini_data, nuint ini_size);
 
     /// <summary>
     /// this is automatically called (if io.IniFilename is not empty) a few seconds after any modification that should be reflected in the .ini file (and also by DestroyContext).
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SaveIniSettingsToDisk")]
-    public static partial void SaveIniSettingsToDisk([MarshalAs(UnmanagedType.LPUTF8Str)] string ini_filename);
+    public static partial void SaveIniSettingsToDisk(byte* ini_filename);
 
     /// <summary>
     /// return a zero-terminated string with the .ini data which you can save by your own mean. call when io.WantSaveIniSettings is set, then save data by your own mean and clear io.WantSaveIniSettings.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SaveIniSettingsToMemory")]
-    public static partial nint SaveIniSettingsToMemory(nuint* out_ini_size);
+    public static partial byte* SaveIniSettingsToMemory(nuint* out_ini_size);
 
     #endregion
 
@@ -2391,7 +2391,7 @@ internal static unsafe partial class ImGui
     /// - Your main debugging friend is the ShowMetricsWindow() function, which is also accessible from Demo-&gt;Tools-&gt;Metrics Debugger
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DebugTextEncoding")]
-    public static partial void DebugTextEncoding([MarshalAs(UnmanagedType.LPUTF8Str)] string text);
+    public static partial void DebugTextEncoding(byte* text);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DebugFlashStyleColor")]
     public static partial void DebugFlashStyleColor(ImGuiCol idx);
@@ -2404,7 +2404,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DebugCheckVersionAndDataLayout")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DebugCheckVersionAndDataLayout([MarshalAs(UnmanagedType.LPUTF8Str)] string version_str, nuint sz_io, nuint sz_style, nuint sz_vec2, nuint sz_vec4, nuint sz_drawvert, nuint sz_drawidx);
+    public static partial bool DebugCheckVersionAndDataLayout(byte* version_str, nuint sz_io, nuint sz_style, nuint sz_vec2, nuint sz_vec4, nuint sz_drawvert, nuint sz_drawidx);
 
     #endregion
 
