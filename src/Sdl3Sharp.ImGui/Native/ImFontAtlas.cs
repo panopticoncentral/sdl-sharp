@@ -111,9 +111,9 @@ public unsafe partial struct ImFontAtlas
 
     private ImVector_ImDrawListSharedDataPtr _internal12; // DrawListSharedDatas
 
-    private ImFontAtlasBuilder _internal13; // Builder
+    private ImFontAtlasBuilder* _internal13; // Builder
 
-    private ImFontLoader _internal14; // FontLoader
+    private ImFontLoader* _internal14; // FontLoader
 
     private byte* _internal15; // FontLoaderName
 
@@ -123,7 +123,7 @@ public unsafe partial struct ImFontAtlas
 
     private int _internal18; // RefCount
 
-    private ImGuiContext _internal19; // OwnerContext
+    private ImGuiContext* _internal19; // OwnerContext
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddFont")]
     public static partial ImFont* AddFont(ImFontAtlas* self, ImFontConfig* font_cfg);
@@ -171,7 +171,7 @@ public unsafe partial struct ImFontAtlas
     /// Change font loader at runtime.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_SetFontLoader")]
-    public static partial void SetFontLoader(ImFontAtlas* self, ImFontLoader font_loader);
+    public static partial void SetFontLoader(ImFontAtlas* self, ImFontLoader* font_loader);
 
     /// <summary>
     /// As we are transitioning toward a new font system, we expect to obsolete those soon:

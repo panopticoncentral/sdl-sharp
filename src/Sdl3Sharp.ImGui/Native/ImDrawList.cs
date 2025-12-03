@@ -46,7 +46,7 @@ public unsafe partial struct ImDrawList
 
     private uint _internal0; // _VtxCurrentIdx
 
-    private ImDrawListSharedData _internal1; // _Data
+    private ImDrawListSharedData* _internal1; // _Data
 
     private ImDrawVert* _internal2; // _VtxWritePtr
 

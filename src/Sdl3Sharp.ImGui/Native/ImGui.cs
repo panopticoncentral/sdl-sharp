@@ -20,19 +20,19 @@ internal static unsafe partial class ImGui
     /// for each static/DLL boundary you are calling from. Read "Context and Memory Allocators" section of imgui.cpp for details.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CreateContext")]
-    public static partial ImGuiContext CreateContext(ImFontAtlas* shared_font_atlas);
+    public static partial ImGuiContext* CreateContext(ImFontAtlas* shared_font_atlas);
 
     /// <summary>
     /// NULL = destroy current context
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DestroyContext")]
-    public static partial void DestroyContext(ImGuiContext ctx);
+    public static partial void DestroyContext(ImGuiContext* ctx);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetCurrentContext")]
-    public static partial ImGuiContext GetCurrentContext();
+    public static partial ImGuiContext* GetCurrentContext();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetCurrentContext")]
-    public static partial void SetCurrentContext(ImGuiContext ctx);
+    public static partial void SetCurrentContext(ImGuiContext* ctx);
 
     #endregion
 
@@ -2083,7 +2083,7 @@ internal static unsafe partial class ImGui
     /// you may use this when creating your own ImDrawList instances.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetDrawListSharedData")]
-    public static partial ImDrawListSharedData GetDrawListSharedData();
+    public static partial ImDrawListSharedData* GetDrawListSharedData();
 
     /// <summary>
     /// get a string corresponding to the enum value (for display, saving, etc.).

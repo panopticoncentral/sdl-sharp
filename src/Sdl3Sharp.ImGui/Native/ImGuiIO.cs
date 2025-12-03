@@ -370,7 +370,7 @@ public unsafe partial struct ImGuiIO
     /// </summary>
     public ImVec2 MouseDelta;
 
-    private ImGuiContext _internal0; // Ctx
+    private ImGuiContext* _internal0; // Ctx
 
     private ImVec2 _internal1; // MousePos
 

@@ -37,7 +37,7 @@ public unsafe partial struct ImGuiListClipper
     /// <summary>
     /// Parent UI context
     /// </summary>
-    public ImGuiContext Ctx;
+    public ImGuiContext* Ctx;
 
     /// <summary>
     /// First item to display, updated by each call to Step()

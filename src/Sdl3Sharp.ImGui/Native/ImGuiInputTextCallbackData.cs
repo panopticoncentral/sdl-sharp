@@ -26,7 +26,7 @@ public unsafe partial struct ImGuiInputTextCallbackData
     /// <summary>
     /// Parent UI context
     /// </summary>
-    public ImGuiContext Ctx;
+    public ImGuiContext* Ctx;
 
     /// <summary>
     /// One ImGuiInputTextFlags_Callback*    // Read-only

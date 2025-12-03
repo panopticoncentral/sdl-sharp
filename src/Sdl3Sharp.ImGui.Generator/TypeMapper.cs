@@ -444,10 +444,10 @@ public sealed class TypeMapper
                 return $"{userName}*";
             }
 
-            // Opaque struct pointer -> return wrapper type (these are already pointers conceptually)
+            // Opaque struct pointer -> return typed pointer
             if (_opaqueStructs.Contains(userName))
             {
-                return userName;
+                return $"{userName}*";
             }
 
             // Unknown user type - treat as opaque pointer

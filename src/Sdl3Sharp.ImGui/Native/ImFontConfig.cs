@@ -128,7 +128,7 @@ public unsafe partial struct ImFontConfig
 
     private ImFont* _internal1; // DstFont
 
-    private ImFontLoader _internal2; // FontLoader
+    private ImFontLoader* _internal2; // FontLoader
 
     private nint _internal3; // FontLoaderData
 }
