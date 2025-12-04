@@ -29,6 +29,24 @@ This solution provides support for the Simple DirectMedia Layer 3 (SDL3) and the
 - For string constants (especially SDL property names), include XML documentation explaining what the constant represents and how it's used
 - Use clear, concise descriptions that help developers understand the purpose and usage of each member
 
+## Building the Solution
+
+The solution contains both C# managed projects and a C++ native project (`Sdl3Sharp.ImGui.Native`). Due to the C++ project, you must use MSBuild from Visual Studio rather than `dotnet build`.
+
+To build:
+
+```powershell
+powershell.exe -Command "& 'C:\Program Files\Microsoft Visual Studio\18\Professional\MSBuild\Current\Bin\MSBuild.exe' 'c:\Users\paulv\source\repos\sdl-sharp\sdl-sharp.sln' /t:Build /p:Configuration=Debug /v:minimal"
+```
+
+To build a specific project:
+
+```powershell
+powershell.exe -Command "& 'C:\Program Files\Microsoft Visual Studio\18\Professional\MSBuild\Current\Bin\MSBuild.exe' 'c:\Users\paulv\source\repos\sdl-sharp\src\Sdl3Sharp.ImGui\Sdl3Sharp.ImGui.csproj' /t:Build /p:Configuration=Debug /v:minimal"
+```
+
+Note: `dotnet build` will fail with error MSB4278 because the C++ project requires Visual Studio's MSBuild tooling.
+
 ## Code Style and Formatting Rules
 
 See .editorconfig for detailed formatting and style rules.

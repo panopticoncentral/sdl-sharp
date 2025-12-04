@@ -8,15 +8,6 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents a Dear ImGui context that manages the state for a single ImGui instance.
 /// </summary>
-/// <remarks>
-/// <para>
-/// Each context creates its own <see cref="FontAtlas"/> by default. You may create one yourself
-/// and pass it to the constructor to share a font atlas between contexts.
-/// </para>
-/// <para>
-/// A context must be set as current using <see cref="MakeCurrent"/> before calling any ImGui functions.
-/// </para>
-/// </remarks>
 public unsafe struct Context : IDisposable
 {
     private bool _ownsPointer;
@@ -62,15 +53,9 @@ public unsafe struct Context : IDisposable
     /// <remarks>
     /// This context must be current before calling this method.
     /// </remarks>
-    public static ImGuiIO* IO => GetIO();
+    public static IO IO => new(GetIO());
 
-    /// <summary>
-    /// Gets the platform IO configuration for this context.
-    /// </summary>
-    /// <remarks>
-    /// This context must be current before calling this method.
-    /// </remarks>
-    public static ImGuiPlatformIO* PlatformIO => GetPlatformIO();
+    // For the moment, we are not supporting the platform IO since Windows is handled.
 
     /// <summary>
     /// Gets the style configuration for this context.
@@ -78,7 +63,7 @@ public unsafe struct Context : IDisposable
     /// <remarks>
     /// This context must be current before calling this method.
     /// </remarks>
-    public static ImGuiStyle* Style => GetStyle();
+    public static Style Style => new(GetStyle());
 
     /// <summary>
     /// Starts a new Dear ImGui frame.
@@ -118,17 +103,7 @@ public unsafe struct Context : IDisposable
         Render();
     }
 
-    /// <summary>
-    /// Gets the draw data for rendering.
-    /// </summary>
-    /// <returns>A pointer to the draw data, valid after <see cref="Render"/> and until the next call to <see cref="NewFrame"/>.</returns>
-    /// <remarks>
-    /// This context must be current before calling this method.
-    /// </remarks>
-    public static ImDrawData* GetDrawData()
-    {
-        return GetDrawData();
-    }
+    // For now, we don't expose draw data since it's mainly used by the backend.
 
     /// <summary>
     /// Gets the compiled ImGui version string.
@@ -150,9 +125,9 @@ public unsafe struct Context : IDisposable
     /// <remarks>
     /// This context must be current before calling this method.
     /// </remarks>
-    public static void StyleColorsDark(ImGuiStyle* style = null)
+    public static void StyleDark(Style? style = null)
     {
-        StyleColorsDark(style);
+        StyleColorsDark(style.HasValue ? style.Value.Native : null);
     }
 
     /// <summary>
@@ -163,9 +138,9 @@ public unsafe struct Context : IDisposable
     /// Best used with borders and a custom, thicker font.
     /// This context must be current before calling this method.
     /// </remarks>
-    public static void StyleColorsLight(ImGuiStyle* style = null)
+    public static void StyleLight(Style? style = null)
     {
-        StyleColorsLight(style);
+        StyleColorsLight(style.HasValue ? style.Value.Native : null);
     }
 
     /// <summary>
@@ -175,9 +150,9 @@ public unsafe struct Context : IDisposable
     /// <remarks>
     /// This context must be current before calling this method.
     /// </remarks>
-    public static void StyleColorsClassic(ImGuiStyle* style = null)
+    public static void StyleClassic(Style? style = null)
     {
-        StyleColorsClassic(style);
+        StyleColorsClassic(style.HasValue ? style.Value.Native : null);
     }
 
     /// <summary>
