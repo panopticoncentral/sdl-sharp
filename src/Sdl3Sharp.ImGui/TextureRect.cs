@@ -10,15 +10,10 @@ namespace Sdl3Sharp.ImGui;
 /// When a texture is in WantUpdates state, a list of individual rectangles is provided
 /// to copy to the graphics system.
 /// </remarks>
-[StructLayout(LayoutKind.Sequential)]
 public struct TextureRect
 {
     private ImTextureRect _native;
 
-    /// <summary>
-    /// Creates a new TextureRect wrapper from a native ImTextureRect value.
-    /// </summary>
-    /// <param name="native">The native ImTextureRect value.</param>
     internal TextureRect(ImTextureRect native)
     {
         _native = native;
@@ -76,23 +71,5 @@ public struct TextureRect
     {
         readonly get => _native.H;
         set => _native.H = value;
-    }
-
-    /// <summary>
-    /// Implicitly converts a native ImTextureRect to a managed TextureRect.
-    /// </summary>
-    /// <param name="native">The native ImTextureRect.</param>
-    public static implicit operator TextureRect(ImTextureRect native)
-    {
-        return new(native);
-    }
-
-    /// <summary>
-    /// Implicitly converts a managed TextureRect to a native ImTextureRect.
-    /// </summary>
-    /// <param name="textureRect">The managed TextureRect.</param>
-    public static implicit operator ImTextureRect(TextureRect textureRect)
-    {
-        return textureRect._native;
     }
 }

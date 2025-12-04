@@ -32,7 +32,7 @@ public unsafe partial struct ImGuiPayload
 
     private int _internal2; // DataFrameCount
 
-    private fixed byte _internal3[32+1]; // DataType
+    private fixed byte _internal3[33]; // DataType
 
     private bool _internal4; // Preview
 

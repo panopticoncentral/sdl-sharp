@@ -1,37 +1,26 @@
 using Sdl3Sharp.ImGui.Native;
-using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui;
 
 /// <summary>
 /// Represents specs and pixel storage for a texture used by Dear ImGui.
 /// </summary>
-/// <remarks>
-/// This is primarily useful for core library and backends. End-user/applications typically do not need to interact with this directly.
-/// </remarks>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe struct TextureData : IDisposable
+public readonly unsafe struct TextureData
 {
-    private ImTextureData _native;
+    internal readonly ImTextureData* Native { get; }
 
     /// <summary>
     /// Gets the unique identifier for this texture. Unique per atlas.
     /// </summary>
-    public readonly int UniqueId => _native.UniqueID;
+    public readonly int UniqueId => Native->UniqueID;
 
     /// <summary>
     /// The current status of the texture.
     /// </summary>
     public TextureStatus Status
     {
-        readonly get => (TextureStatus)_native.Status;
-        set
-        {
-            fixed (ImTextureData* ptr = &_native)
-            {
-                ImTextureData.SetStatus(ptr, (ImTextureStatus)value);
-            }
-        }
+        readonly get => (TextureStatus)Native->Status;
+        set => ImTextureData.SetStatus(Native, (ImTextureStatus)value);
     }
 
     /// <summary>
@@ -39,8 +28,8 @@ public unsafe struct TextureData : IDisposable
     /// </summary>
     public nint BackendUserData
     {
-        readonly get => _native.BackendUserData;
-        set => _native.BackendUserData = value;
+        readonly get => Native->BackendUserData;
+        set => Native->BackendUserData = value;
     }
 
     /// <summary>
@@ -48,51 +37,39 @@ public unsafe struct TextureData : IDisposable
     /// </summary>
     public ImTextureID TexId
     {
-        readonly get
-        {
-            fixed (ImTextureData* ptr = &_native)
-            {
-                return ImTextureData.GetTexID(ptr);
-            }
-        }
-        set
-        {
-            fixed (ImTextureData* ptr = &_native)
-            {
-                ImTextureData.SetTexID(ptr, value);
-            }
-        }
+        readonly get => ImTextureData.GetTexID(Native);
+        set => ImTextureData.SetTexID(Native, value);
     }
 
     /// <summary>
     /// Gets the texture format (RGBA32 or Alpha8).
     /// </summary>
-    public readonly TextureFormat Format => (TextureFormat)_native.Format;
+    public readonly TextureFormat Format => (TextureFormat)Native->Format;
 
     /// <summary>
     /// The texture width in pixels.
     /// </summary>
-    public readonly int Width => _native.Width;
+    public readonly int Width => Native->Width;
 
     /// <summary>
     /// The texture height in pixels.
     /// </summary>
-    public readonly int Height => _native.Height;
+    public readonly int Height => Native->Height;
 
     /// <summary>
     /// The bytes per pixel (1 or 4).
     /// </summary>
-    public readonly int BytesPerPixel => _native.BytesPerPixel;
+    public readonly int BytesPerPixel => Native->BytesPerPixel;
 
     /// <summary>
     /// Gets the total size of the pixel buffer in bytes.
     /// </summary>
-    public readonly int SizeInBytes => _native.Width * _native.Height * _native.BytesPerPixel;
+    public readonly int SizeInBytes => Native->Width * Native->Height * Native->BytesPerPixel;
 
     /// <summary>
     /// Gets the pitch (bytes per row) of the texture.
     /// </summary>
-    public readonly int Pitch => _native.Width * _native.BytesPerPixel;
+    public readonly int Pitch => Native->Width * Native->BytesPerPixel;
 
     /// <summary>
     /// A pointer to the pixel buffer.
@@ -101,75 +78,39 @@ public unsafe struct TextureData : IDisposable
     {
         get
         {
-            fixed (ImTextureData* ptr = &_native)
-            {
-                var pixels = (byte*)ImTextureData.GetPixels(ptr);
-                return new Span<byte>(pixels, _native.Width * _native.Height * _native.BytesPerPixel);
-            }
+            var pixels = (byte*)ImTextureData.GetPixels(Native);
+            return new Span<byte>(pixels, Native->Width * Native->Height * Native->BytesPerPixel);
         }
     }
 
     /// <summary>
     /// The number of successive frames where the texture was not used.
     /// </summary>
-    public readonly int UnusedFrames => _native.UnusedFrames;
+    public readonly int UnusedFrames => Native->UnusedFrames;
 
     /// <summary>
     /// The number of contexts using this texture.
     /// </summary>
-    public readonly ushort RefCount => _native.RefCount;
+    public readonly ushort RefCount => Native->RefCount;
 
     /// <summary>
     /// Whether the texture data uses colors (rather than just white + alpha).
     /// </summary>
-    public readonly bool UseColors => _native.UseColors;
+    public readonly bool UseColors => Native->UseColors;
 
     /// <summary>
     /// The bounding box encompassing all past and queued updates.
     /// </summary>
-    public readonly TextureRect UsedRect => new(_native.UsedRect);
+    public readonly TextureRect UsedRect => new(Native->UsedRect);
 
     /// <summary>
     /// The bounding box encompassing all queued updates.
     /// </summary>
-    public readonly TextureRect UpdateRect => new(_native.UpdateRect);
-
-    /// <summary>
-    /// Creates the texture with the specified format and dimensions.
-    /// </summary>
-    /// <param name="format">The texture format.</param>
-    /// <param name="width">The texture width.</param>
-    /// <param name="height">The texture height.</param>
-    public TextureData(TextureFormat format, int width, int height)
-    {
-        fixed (ImTextureData* ptr = &_native)
-        {
-            ImTextureData.Create(ptr, (ImTextureFormat)format, width, height);
-        }
-    }
+    public readonly TextureRect UpdateRect => new(Native->UpdateRect);
 
     internal TextureData(ImTextureData* native)
     {
-        _native = *native;
-    }
-
-    /// <summary>
-    /// Destroys the pixel data.
-    /// </summary>
-    public readonly void DestroyPixels()
-    {
-        fixed (ImTextureData* ptr = &_native)
-        {
-            ImTextureData.DestroyPixels(ptr);
-        }
-    }
-
-    /// <summary>
-    /// Disposes the texture data by destroying the pixel data.
-    /// </summary>
-    public readonly void Dispose()
-    {
-        DestroyPixels();
+        Native = native;
     }
 
     /// <summary>
@@ -180,43 +121,8 @@ public unsafe struct TextureData : IDisposable
     /// <returns>A pointer to the pixel at the specified position.</returns>
     public readonly Span<byte> GetPixelsAt(int x, int y)
     {
-        fixed (ImTextureData* ptr = &_native)
-        {
-            var pixels = (byte*)ImTextureData.GetPixelsAt(ptr, x, y);
-            var size = ((_native.Width * (_native.Height - y)) - x) * _native.BytesPerPixel;
-            return new Span<byte>(pixels, size);
-        }
-    }
-
-    /// <summary>
-    /// Gets a texture reference.
-    /// </summary>
-    /// <returns>The texture reference.</returns>
-    public readonly TextureRef GetTexRef()
-    {
-        fixed (ImTextureData* ptr = &_native)
-        {
-            return new TextureRef(ImTextureData.GetTexRef(ptr));
-        }
-    }
-
-    /// <summary>
-    /// Casts a pointer to a native ImTextureData to a pointer to a TextureData.
-    /// </summary>
-    /// <param name="native">The native ImTextureData pointer.</param>
-    /// <returns>A pointer to a TextureData.</returns>
-    public static TextureData FromNative(ImTextureData* native)
-    {
-        return new(native);
-    }
-
-    /// <summary>
-    /// Casts a pointer to a TextureData to a pointer to a native ImTextureData.
-    /// </summary>
-    /// <param name="textureData">The TextureData pointer.</param>
-    /// <returns>A pointer to an ImTextureData.</returns>
-    public static ImTextureData* ToNative(TextureData* textureData)
-    {
-        return (ImTextureData*)textureData;
+        var pixels = (byte*)ImTextureData.GetPixelsAt(Native, x, y);
+        var size = ((Native->Width * (Native->Height - y)) - x) * Native->BytesPerPixel;
+        return new Span<byte>(pixels, size);
     }
 }

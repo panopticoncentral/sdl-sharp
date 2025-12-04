@@ -392,12 +392,15 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             var bounds = field.Type.Description.Bounds;
             var elementType = GetArrayElementType(field.Type.Description);
 
-            if (bounds != null && CanBeFixedBuffer(elementType))
+            // Evaluate bounds expression if it contains known macros
+            var evaluatedBounds = EvaluateBoundsExpression(bounds);
+
+            if (evaluatedBounds != null && CanBeFixedBuffer(elementType))
             {
                 // Fixed buffer for primitive types
-                writer.AppendLine($"{visibility} fixed {elementType} {fieldName}[{bounds}];{commentSuffix}");
+                writer.AppendLine($"{visibility} fixed {elementType} {fieldName}[{evaluatedBounds}];{commentSuffix}");
             }
-            else if (bounds != null)
+            else if (evaluatedBounds != null)
             {
                 // For non-primitive types, we need a different approach
                 // Generate individual fields or use InlineArray (.NET 8+)
@@ -460,7 +463,8 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             {
                 var bounds = field.Type.Description.Bounds;
                 var elementType = GetArrayElementType(field.Type.Description);
-                if (bounds != null && CanBeFixedBuffer(elementType))
+                var evaluatedBounds = EvaluateBoundsExpression(bounds);
+                if (evaluatedBounds != null && CanBeFixedBuffer(elementType))
                 {
                     return true;
                 }
@@ -475,5 +479,88 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Evaluates a C bounds expression, replacing known macros with their values.
+    /// </summary>
+    /// <param name="bounds">The bounds expression from the JSON.</param>
+    /// <returns>The evaluated bounds as a string, or null if the expression cannot be evaluated.</returns>
+    private static string? EvaluateBoundsExpression(string? bounds)
+    {
+        if (bounds == null)
+        {
+            return null;
+        }
+
+        // Dictionary of known C macros and their values
+        // Using the WCHAR32 variant (0x10FFFF) as it's what the json appears to use
+        var knownMacros = new Dictionary<string, long>
+        {
+            ["IM_UNICODE_CODEPOINT_MAX"] = 0x10FFFF,
+            ["IM_DRAWLIST_TEX_LINES_WIDTH_MAX"] = 63
+        };
+
+        // Try to replace macros and evaluate the expression
+        var expression = bounds;
+        foreach (var (macro, value) in knownMacros)
+        {
+            expression = expression.Replace(macro, value.ToString());
+        }
+
+        // If the expression is just a number, return it directly
+        if (int.TryParse(expression.Trim(), out _))
+        {
+            return expression.Trim();
+        }
+
+        // Try to evaluate simple arithmetic expressions like "(0x10FFFF +1)/8192/8"
+        try
+        {
+            // Remove spaces and handle hex numbers
+            expression = expression.Replace(" ", "");
+
+            // Convert hex numbers to decimal
+            while (expression.Contains("0x", StringComparison.OrdinalIgnoreCase))
+            {
+                var idx = expression.IndexOf("0x", StringComparison.OrdinalIgnoreCase);
+                var endIdx = idx + 2;
+                while (endIdx < expression.Length && Uri.IsHexDigit(expression[endIdx]))
+                {
+                    endIdx++;
+                }
+
+                var hexStr = expression.Substring(idx + 2, endIdx - idx - 2);
+                var decValue = Convert.ToInt64(hexStr, 16);
+                expression = string.Concat(expression.AsSpan(0, idx), decValue.ToString(), expression.AsSpan(endIdx));
+            }
+
+            // Simple evaluation using DataTable for basic arithmetic
+            var dt = new System.Data.DataTable();
+            var result = dt.Compute(expression, null);
+            if (result is int intResult)
+            {
+                return intResult.ToString();
+            }
+            else if (result is long longResult)
+            {
+                return longResult.ToString();
+            }
+            else if (result is double doubleResult)
+            {
+                return ((int)doubleResult).ToString();
+            }
+            else if (result is decimal decimalResult)
+            {
+                return ((int)decimalResult).ToString();
+            }
+        }
+        catch
+        {
+            // If evaluation fails, return the original expression
+            // This might still fail at compile time if it contains unknown macros
+        }
+
+        return bounds;
     }
 }

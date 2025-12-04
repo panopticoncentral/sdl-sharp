@@ -55,7 +55,9 @@ ImFontConfig
 ImFontGlyph
 ImTextureData
 ImTextureFormat
+ImTextureID
 ImTextureRect
+ImTextureRef
 ImTextureStatus
 
 ## Managed
@@ -70,5 +72,7 @@ FontConfig
 FontGlyph
 TextureData
 TextureFormat
+TextureId
 TextureRect
+TextureRef
 TextureStatus

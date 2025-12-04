@@ -6,18 +6,13 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents font runtime data and rendering information.
 /// </summary>
-/// <remarks>
-/// Since ImGui 1.92.0, a font may be rendered at any size. Use GetFontBaked(size) to retrieve
-/// the FontBaked corresponding to a given size.
-/// </remarks>
-[StructLayout(LayoutKind.Sequential)]
-public unsafe readonly struct Font
+public readonly unsafe struct Font
 {
-    private readonly ImFont* _native;
+    internal ImFont* Native { get; }
 
     internal Font(ImFont* native)
     {
-        _native = native;
+        Native = native;
     }
 
     /// <summary>
@@ -27,7 +22,7 @@ public unsafe readonly struct Font
     /// <returns>True if the glyph exists; otherwise, false.</returns>
     public readonly bool IsGlyphInFont(ushort c)
     {
-        return ImFont.IsGlyphInFont(_native, c);
+        return ImFont.IsGlyphInFont(Native, c);
     }
 
     /// <summary>
@@ -36,7 +31,7 @@ public unsafe readonly struct Font
     /// <returns>True if the font is loaded; otherwise, false.</returns>
     public readonly bool IsLoaded()
     {
-        return ImFont.IsLoaded(_native);
+        return ImFont.IsLoaded(Native);
     }
 
     /// <summary>
@@ -45,12 +40,7 @@ public unsafe readonly struct Font
     /// <returns>The debug name string.</returns>
     public readonly string GetDebugName()
     {
-        var namePtr = ImFont.GetDebugName(_native);
-        return Marshal.PtrToStringUTF8(namePtr) ?? string.Empty;
-    }
-
-    internal ImFont* ToNative()
-    {
-        return _native;
+        var namePtr = ImFont.GetDebugName(Native);
+        return Marshal.PtrToStringUTF8((nint)namePtr) ?? string.Empty;
     }
 }

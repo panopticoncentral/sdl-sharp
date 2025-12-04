@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Sdl3Sharp.ImGui.Native;
 
 namespace Sdl3Sharp.ImGui;
@@ -6,7 +5,6 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents font input/source configuration for loading fonts into a font atlas.
 /// </summary>
-[StructLayout(LayoutKind.Sequential)]
 public unsafe struct FontConfig
 {
     private ImFontConfig _native;
@@ -169,25 +167,5 @@ public unsafe struct FontConfig
         RasterizerMultiply = 1.0f;
         RasterizerDensity = 1.0f;
         EllipsisChar = '\0';
-    }
-
-    /// <summary>
-    /// Casts a pointer to a native ImFontConfig to a pointer to a FontConfig.
-    /// </summary>
-    /// <param name="native">The native ImFontConfig pointer.</param>
-    /// <returns>A pointer to a FontConfig.</returns>
-    public static FontConfig* FromNative(ImFontConfig* native)
-    {
-        return (FontConfig*)native;
-    }
-
-    /// <summary>
-    /// Casts a pointer to a FontConfig to a pointer to a native ImFontConfig.
-    /// </summary>
-    /// <param name="fontConfig">The FontConfig pointer.</param>
-    /// <returns>A pointer to an ImFontConfig.</returns>
-    public static ImFontConfig* ToNative(FontConfig* fontConfig)
-    {
-        return (ImFontConfig*)fontConfig;
     }
 }

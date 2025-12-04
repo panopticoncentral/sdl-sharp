@@ -37,7 +37,7 @@ public unsafe partial struct ImFont
 
     private ushort _internal8; // FallbackChar
 
-    private fixed byte _internal9[(IM_UNICODE_CODEPOINT_MAX +1)/8192/8]; // Used8kPagesMap
+    private fixed byte _internal9[17]; // Used8kPagesMap
 
     private bool _internal10; // EllipsisAutoBake
 
