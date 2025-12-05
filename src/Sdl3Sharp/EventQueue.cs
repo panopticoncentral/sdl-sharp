@@ -436,12 +436,12 @@ public static unsafe class EventQueue
     }
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-    private static bool EventFilterHandler(nuint userdata, SDL_Event* sdlEvent)
+    private static byte EventFilterHandler(nuint userdata, SDL_Event* sdlEvent)
     {
         var handle = GCHandle.FromIntPtr((nint)userdata);
         var callback = (Func<Event, bool>)handle.Target!;
         var e = new Event(*sdlEvent);
-        return callback(e);
+        return callback(e) ? (byte)1 : (byte)0;
     }
 
     private static readonly List<EventWatchRegistration> _eventWatches = [];
@@ -504,13 +504,13 @@ public static unsafe class EventQueue
     }
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-    private static bool EventWatchHandler(nuint userdata, SDL_Event* sdlEvent)
+    private static byte EventWatchHandler(nuint userdata, SDL_Event* sdlEvent)
     {
         var handle = GCHandle.FromIntPtr((nint)userdata);
         var registration = (EventWatchRegistration)handle.Target!;
         var e = new Event(*sdlEvent);
         registration.Callback(e);
-        return true; // Event watches always return true
+        return 1; // Event watches always return true
     }
 
     /// <summary>

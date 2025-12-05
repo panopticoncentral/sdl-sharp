@@ -27,16 +27,9 @@ Application.Quitting += (sender, e) => quit = true;
 // Demo state
 StateRef<bool> showDemoWindow = state.Get("show_demo", true);
 
-while (!quit)
+// Handle live resize: render during window resize on Windows
+void DoFrame()
 {
-    // Process events
-    Event? e;
-    while ((e = EventQueue.Poll()) != null)
-    {
-        _ = SDL3Backend.ProcessEvent(e.Value);
-        EventQueue.DispatchEvent(e.Value);
-    }
-
     // Start the ImGui frame
     SDL3Backend.NewFrame();
     SDLRenderer3Backend.NewFrame();
@@ -53,13 +46,33 @@ while (!quit)
 
     renderer.DrawColor = new Color(45, 55, 60, 255);
     renderer.Clear();
-
     SDLRenderer3Backend.RenderDrawData(renderer);
-
     renderer.Present();
 }
 
+EventWatchHandle watchHandle = EventQueue.AddWatch(e =>
+{
+    if (e.Type == EventType.WindowPixelSizeChanged)
+    {
+        DoFrame();
+    }
+});
+
+while (!quit)
+{
+    // Process events
+    Event? e;
+    while ((e = EventQueue.Poll()) != null)
+    {
+        _ = SDL3Backend.ProcessEvent(e.Value);
+        EventQueue.DispatchEvent(e.Value);
+    }
+
+    DoFrame();
+}
+
 // Cleanup
+EventQueue.RemoveWatch(watchHandle);
 SDLRenderer3Backend.Shutdown();
 SDL3Backend.Shutdown();
 
