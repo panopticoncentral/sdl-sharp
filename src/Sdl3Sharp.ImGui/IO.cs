@@ -6,7 +6,7 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents the ImGui IO configuration and state wrapper.
 /// </summary>
-public readonly unsafe struct IO
+public unsafe sealed class IO
 {
     internal ImGuiIO* Native { get; }
 

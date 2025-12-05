@@ -17,7 +17,7 @@ namespace Sdl3Sharp.ImGui;
 /// If you don't call any AddFont*** methods, the default font embedded in the code will be loaded for you.
 /// </para>
 /// </remarks>
-public unsafe struct FontAtlas : IDisposable
+public unsafe sealed class FontAtlas : IDisposable
 {
     private bool _ownsPointer;
 
@@ -57,7 +57,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Gets or sets the build flags for the atlas.
     /// </summary>
-    public readonly FontAtlasFlags Flags
+    public FontAtlasFlags Flags
     {
         get => (FontAtlasFlags)Native->Flags;
         set => Native->Flags = (ImFontAtlasFlags)value;
@@ -66,7 +66,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Gets or sets the desired texture format (default is RGBA32).
     /// </summary>
-    public readonly TextureFormat TexDesiredFormat
+    public TextureFormat TexDesiredFormat
     {
         get => (TextureFormat)Native->TexDesiredFormat;
         set => Native->TexDesiredFormat = (ImTextureFormat)value;
@@ -75,7 +75,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Gets or sets the padding between glyphs within the texture in pixels (default is 1).
     /// </summary>
-    public readonly int TexGlyphPadding
+    public int TexGlyphPadding
     {
         get => Native->TexGlyphPadding;
         set => Native->TexGlyphPadding = value;
@@ -84,7 +84,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Gets or sets the minimum desired texture width. Must be a power of two (default is 512).
     /// </summary>
-    public readonly int TexMinWidth
+    public int TexMinWidth
     {
         get => Native->TexMinWidth;
         set => Native->TexMinWidth = value;
@@ -93,7 +93,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Gets or sets the minimum desired texture height. Must be a power of two (default is 128).
     /// </summary>
-    public readonly int TexMinHeight
+    public int TexMinHeight
     {
         get => Native->TexMinHeight;
         set => Native->TexMinHeight = value;
@@ -102,7 +102,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Gets or sets the maximum desired texture width. Must be a power of two (default is 8192).
     /// </summary>
-    public readonly int TexMaxWidth
+    public int TexMaxWidth
     {
         get => Native->TexMaxWidth;
         set => Native->TexMaxWidth = value;
@@ -111,7 +111,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Gets or sets the maximum desired texture height. Must be a power of two (default is 8192).
     /// </summary>
-    public readonly int TexMaxHeight
+    public int TexMaxHeight
     {
         get => Native->TexMaxHeight;
         set => Native->TexMaxHeight = value;
@@ -120,7 +120,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Gets or sets custom user data for the atlas.
     /// </summary>
-    public readonly nint UserData
+    public nint UserData
     {
         get => Native->UserData;
         set => Native->UserData = value;
@@ -129,19 +129,19 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Gets the latest texture reference.
     /// </summary>
-    public readonly TextureRef TexRef => new(Native->TexRef);
+    public TextureRef TexRef => new(Native->TexRef);
 
     /// <summary>
     /// Gets the latest texture data.
     /// </summary>
-    public readonly TextureData TexData => new(Native->TexData);
+    public TextureData TexData => new(Native->TexData);
 
     /// <summary>
     /// Adds a font from a font configuration.
     /// </summary>
     /// <param name="fontConfig">The font configuration.</param>
     /// <returns>The newly added font.</returns>
-    public readonly Font AddFont(FontConfig fontConfig)
+    public Font AddFont(FontConfig fontConfig)
     {
         return new(ImFontAtlas.AddFont(Native, (ImFontConfig*)&fontConfig));
     }
@@ -151,7 +151,7 @@ public unsafe struct FontAtlas : IDisposable
     /// </summary>
     /// <param name="fontConfig">Optional font configuration (can pass null to use defaults).</param>
     /// <returns>The newly added font.</returns>
-    public readonly Font AddFontDefault(FontConfig? fontConfig = null)
+    public Font AddFontDefault(FontConfig? fontConfig = null)
     {
         if (fontConfig is null)
         {
@@ -169,7 +169,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <param name="sizePixels">The font size in pixels.</param>
     /// <param name="fontConfig">Optional font configuration.</param>
     /// <returns>The newly added font.</returns>
-    public readonly Font AddFontFromFileTtf(string filename, float sizePixels, FontConfig? fontConfig = null)
+    public Font AddFontFromFileTtf(string filename, float sizePixels, FontConfig? fontConfig = null)
     {
         fixed (byte* filenamePtr = Encoding.UTF8.GetBytes(filename + '\0'))
         {
@@ -192,7 +192,7 @@ public unsafe struct FontAtlas : IDisposable
     /// the data will be copied into ImGui-allocated memory. If false, the caller must ensure the data
     /// remains valid for the lifetime of the font atlas.</param>
     /// <returns>The newly added font.</returns>
-    public readonly Font AddFontFromMemoryTtf(ReadOnlySpan<byte> fontData, float sizePixels, FontConfig? fontConfig = null)
+    public Font AddFontFromMemoryTtf(ReadOnlySpan<byte> fontData, float sizePixels, FontConfig? fontConfig = null)
     {
         var ownedByAtlas = fontConfig is null || fontConfig.Value.FontDataOwnedByAtlas;
 
@@ -228,7 +228,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <param name="sizePixels">The font size in pixels.</param>
     /// <param name="fontConfig">Optional font configuration.</param>
     /// <returns>The newly added font.</returns>
-    public readonly Font AddFontFromMemoryCompressedTtf(ReadOnlySpan<byte> compressedFontData, float sizePixels, FontConfig? fontConfig = null)
+    public Font AddFontFromMemoryCompressedTtf(ReadOnlySpan<byte> compressedFontData, float sizePixels, FontConfig? fontConfig = null)
     {
         fixed (byte* dataPtr = compressedFontData)
         {
@@ -249,7 +249,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <param name="sizePixels">The font size in pixels.</param>
     /// <param name="fontConfig">Optional font configuration.</param>
     /// <returns>The newly added font.</returns>
-    public readonly Font AddFontFromMemoryCompressedBase85Ttf(Span<byte> compressedFontDataBase85, float sizePixels, FontConfig? fontConfig = null)
+    public Font AddFontFromMemoryCompressedBase85Ttf(Span<byte> compressedFontDataBase85, float sizePixels, FontConfig? fontConfig = null)
     {
         fixed (byte* dataPtr = compressedFontDataBase85)
         {
@@ -267,7 +267,7 @@ public unsafe struct FontAtlas : IDisposable
     /// Removes a font from the atlas.
     /// </summary>
     /// <param name="font">The font to remove.</param>
-    public readonly void RemoveFont(Font font)
+    public void RemoveFont(Font font)
     {
         ImFontAtlas.RemoveFont(Native, font.Native);
     }
@@ -275,7 +275,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Clears everything (input fonts, output glyphs/textures).
     /// </summary>
-    public readonly void Clear()
+    public void Clear()
     {
         ImFontAtlas.Clear(Native);
     }
@@ -283,7 +283,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <summary>
     /// Compacts cached glyphs and texture.
     /// </summary>
-    public readonly void CompactCache()
+    public void CompactCache()
     {
         ImFontAtlas.CompactCache(Native);
     }
@@ -295,7 +295,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <param name="height">The height of the rectangle.</param>
     /// <param name="outRect">Receives the rectangle information.</param>
     /// <returns>The rectangle ID, or <see cref="FontAtlasRectId.Invalid"/> on error.</returns>
-    public readonly FontAtlasRectId AddCustomRect(int width, int height, out FontAtlasRect outRect)
+    public FontAtlasRectId AddCustomRect(int width, int height, out FontAtlasRect outRect)
     {
         ImFontAtlasRect nativeRect;
         FontAtlasRectId id = new(ImFontAtlas.AddCustomRect(Native, width, height, &nativeRect));
@@ -307,7 +307,7 @@ public unsafe struct FontAtlas : IDisposable
     /// Unregisters a custom rectangle. Existing pixels stay in texture until resized/garbage collected.
     /// </summary>
     /// <param name="id">The rectangle ID to remove.</param>
-    public readonly void RemoveCustomRect(FontAtlasRectId id)
+    public void RemoveCustomRect(FontAtlasRectId id)
     {
         ImFontAtlas.RemoveCustomRect(Native, id.Native);
     }
@@ -318,7 +318,7 @@ public unsafe struct FontAtlas : IDisposable
     /// <param name="id">The rectangle ID.</param>
     /// <param name="outRect">Receives the rectangle information.</param>
     /// <returns>True if the rectangle exists; otherwise, false.</returns>
-    public readonly bool GetCustomRect(FontAtlasRectId id, out FontAtlasRect outRect)
+    public bool GetCustomRect(FontAtlasRectId id, out FontAtlasRect outRect)
     {
         ImFontAtlasRect nativeRect;
         var result = ImFontAtlas.GetCustomRect(Native, id.Native, &nativeRect);

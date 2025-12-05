@@ -11,6 +11,7 @@ using Application app = new(Subsystems.Video);
 
 // Create ImGui context
 using var ctx = Context.CreateContext();
+Context.Style.FontSizeBase = 24.0f;
 Context.Current = ctx;
 
 // Initialize ImGui backends

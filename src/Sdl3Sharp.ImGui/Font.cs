@@ -6,7 +6,7 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents font runtime data and rendering information.
 /// </summary>
-public readonly unsafe struct Font
+public unsafe sealed class Font
 {
     internal ImFont* Native { get; }
 
@@ -20,7 +20,7 @@ public readonly unsafe struct Font
     /// </summary>
     /// <param name="c">The Unicode codepoint to check.</param>
     /// <returns>True if the glyph exists; otherwise, false.</returns>
-    public readonly bool IsGlyphInFont(ushort c)
+    public bool IsGlyphInFont(ushort c)
     {
         return ImFont.IsGlyphInFont(Native, c);
     }
@@ -29,7 +29,7 @@ public readonly unsafe struct Font
     /// Checks whether this font has been loaded.
     /// </summary>
     /// <returns>True if the font is loaded; otherwise, false.</returns>
-    public readonly bool IsLoaded()
+    public bool IsLoaded()
     {
         return ImFont.IsLoaded(Native);
     }
@@ -38,7 +38,7 @@ public readonly unsafe struct Font
     /// Gets the debug name of this font (from FontConfig.Name).
     /// </summary>
     /// <returns>The debug name string.</returns>
-    public readonly string GetDebugName()
+    public string GetDebugName()
     {
         var namePtr = ImFont.GetDebugName(Native);
         return Marshal.PtrToStringUTF8((nint)namePtr) ?? string.Empty;

@@ -10,14 +10,14 @@ namespace Sdl3Sharp.ImGui;
 /// Pointers to FontBaked are only valid for the current frame.
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe readonly struct FontBaked
+public unsafe sealed class FontBaked
 {
     private readonly ImFontBaked* _native;
 
     /// <summary>
     /// Clears the output data for this baked font.
     /// </summary>
-    public readonly void ClearOutputData()
+    public void ClearOutputData()
     {
         ImFontBaked.ClearOutputData(_native);
     }
@@ -27,7 +27,7 @@ public unsafe readonly struct FontBaked
     /// </summary>
     /// <param name="c">The Unicode codepoint to find.</param>
     /// <returns>The glyph data, or the fallback glyph if not found.</returns>
-    public readonly FontGlyph FindGlyph(char c)
+    public FontGlyph FindGlyph(char c)
     {
         return new(ImFontBaked.FindGlyph(_native, c));
     }
@@ -37,7 +37,7 @@ public unsafe readonly struct FontBaked
     /// </summary>
     /// <param name="c">The Unicode codepoint to find.</param>
     /// <returns>The glyph data, or null if not found.</returns>
-    public readonly FontGlyph FindGlyphNoFallback(char c)
+    public FontGlyph FindGlyphNoFallback(char c)
     {
         return new(ImFontBaked.FindGlyphNoFallback(_native, c));
     }
@@ -47,7 +47,7 @@ public unsafe readonly struct FontBaked
     /// </summary>
     /// <param name="c">The Unicode codepoint.</param>
     /// <returns>The horizontal advance distance for the character.</returns>
-    public readonly float GetCharAdvance(ushort c)
+    public float GetCharAdvance(ushort c)
     {
         return ImFontBaked.GetCharAdvance(_native, c);
     }
@@ -57,7 +57,7 @@ public unsafe readonly struct FontBaked
     /// </summary>
     /// <param name="c">The Unicode codepoint.</param>
     /// <returns>True if the glyph is loaded; otherwise, false.</returns>
-    public readonly bool IsGlyphLoaded(ushort c)
+    public bool IsGlyphLoaded(ushort c)
     {
         return ImFontBaked.IsGlyphLoaded(_native, c);
     }

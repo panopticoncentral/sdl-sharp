@@ -351,6 +351,9 @@
     <ClInclude Include="sdl3\include\SDL3\SDL_vulkan.h">
       <Filter>Header Files\sdl3</Filter>
     </ClInclude>
+    <ClInclude Include="my_imgui_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

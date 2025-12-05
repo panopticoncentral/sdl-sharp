@@ -28,10 +28,6 @@
 //#define IMGUI_API __declspec(dllimport)                   // MSVC Windows: DLL import
 //#define IMGUI_API __attribute__((visibility("default")))  // GCC/Clang: override visibility when set is hidden
 
-// CIMGUI_API exports for dear_bindings C wrapper
-#define CIMGUI_API extern "C" __declspec(dllexport)
-#define CIMGUI_IMPL_API extern "C" __declspec(dllexport)
-
 //---- Don't define obsolete functions/enums/behaviors. Consider enabling from time to time after updating to clean your code of obsolete function/names.
 //#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 

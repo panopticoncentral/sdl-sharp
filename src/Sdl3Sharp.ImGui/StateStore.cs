@@ -25,7 +25,7 @@ namespace Sdl3Sharp.ImGui;
 /// ImGui.ShowDemoWindow(state.Get("demo_open", true));
 /// </code>
 /// </example>
-public unsafe class StateStore : IDisposable
+public unsafe sealed class StateStore : IDisposable
 {
     private Dictionary<string, nint>? _storage = [];
     private bool _disposed;

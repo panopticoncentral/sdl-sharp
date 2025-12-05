@@ -11,7 +11,7 @@ namespace Sdl3Sharp.ImGui;
 /// This wrapper provides access to style settings that control the visual appearance of Dear ImGui.
 /// Access the current context's style via <see cref="Context.Style"/>.
 /// </remarks>
-public readonly unsafe struct Style
+public unsafe sealed class Style
 {
     internal ImGuiStyle* Native { get; }
 

@@ -8,7 +8,7 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents a Dear ImGui context that manages the state for a single ImGui instance.
 /// </summary>
-public unsafe struct Context : IDisposable
+public unsafe sealed class Context : IDisposable
 {
     private bool _ownsPointer;
 
@@ -27,7 +27,7 @@ public unsafe struct Context : IDisposable
     /// </remarks>
     public static Context CreateContext(FontAtlas? sharedFontAtlas = null)
     {
-        return new(ImGuiNative.CreateContext(sharedFontAtlas == null ? null : sharedFontAtlas.Value.Native), true);
+        return new(ImGuiNative.CreateContext(sharedFontAtlas == null ? null : sharedFontAtlas.Native), true);
     }
 
     internal ImGuiContext* Native { get; private set; }
