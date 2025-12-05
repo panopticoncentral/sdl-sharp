@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Sdl3Sharp.ImGui.Native;
 
-using static Sdl3Sharp.ImGui.Native.ImGui;
+using ImGuiNative = Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
 
@@ -12,10 +12,10 @@ public unsafe struct Context : IDisposable
 {
     private bool _ownsPointer;
 
-    internal Context(ImGuiContext* native)
+    internal Context(ImGuiContext* native, bool ownsPointer)
     {
         Native = native;
-        _ownsPointer = false;
+        _ownsPointer = ownsPointer;
     }
 
     /// <summary>
@@ -25,10 +25,9 @@ public unsafe struct Context : IDisposable
     /// <remarks>
     /// The created context will be destroyed when <see cref="Dispose"/> is called.
     /// </remarks>
-    public Context(FontAtlas? sharedFontAtlas = null)
+    public static Context CreateContext(FontAtlas? sharedFontAtlas = null)
     {
-        Native = CreateContext(sharedFontAtlas == null ? null : sharedFontAtlas.Value.Native);
-        _ownsPointer = true;
+        return new(ImGuiNative.CreateContext(sharedFontAtlas == null ? null : sharedFontAtlas.Value.Native), true);
     }
 
     internal ImGuiContext* Native { get; private set; }
@@ -37,14 +36,10 @@ public unsafe struct Context : IDisposable
     /// Gets the current ImGui context.
     /// </summary>
     /// <returns>A <see cref="Context"/> wrapping the current context, or a default context if none is set.</returns>
-    public static Context Current => new(GetCurrentContext());
-
-    /// <summary>
-    /// Makes this context the current context for ImGui operations.
-    /// </summary>
-    public readonly void MakeCurrent()
+    public static Context Current
     {
-        SetCurrentContext(Native);
+        get => new(ImGuiNative.GetCurrentContext(), false);
+        set => ImGuiNative.SetCurrentContext(value.Native);
     }
 
     /// <summary>
@@ -53,7 +48,7 @@ public unsafe struct Context : IDisposable
     /// <remarks>
     /// This context must be current before calling this method.
     /// </remarks>
-    public static IO IO => new(GetIO());
+    public static IO IO => new(ImGuiNative.GetIO());
 
     // For the moment, we are not supporting the platform IO since Windows is handled.
 
@@ -63,7 +58,7 @@ public unsafe struct Context : IDisposable
     /// <remarks>
     /// This context must be current before calling this method.
     /// </remarks>
-    public static Style Style => new(GetStyle());
+    public static Style Style => new(ImGuiNative.GetStyle());
 
     /// <summary>
     /// Starts a new Dear ImGui frame.
@@ -74,7 +69,7 @@ public unsafe struct Context : IDisposable
     /// </remarks>
     public static void NewFrame()
     {
-        NewFrame();
+        ImGuiNative.NewFrame();
     }
 
     /// <summary>
@@ -88,7 +83,7 @@ public unsafe struct Context : IDisposable
     /// </remarks>
     public static void EndFrame()
     {
-        EndFrame();
+        ImGuiNative.EndFrame();
     }
 
     /// <summary>
@@ -100,7 +95,7 @@ public unsafe struct Context : IDisposable
     /// </remarks>
     public static void Render()
     {
-        Render();
+        ImGuiNative.Render();
     }
 
     // For now, we don't expose draw data since it's mainly used by the backend.
@@ -113,7 +108,7 @@ public unsafe struct Context : IDisposable
     {
         get
         {
-            var versionPtr = GetVersion();
+            var versionPtr = ImGuiNative.GetVersion();
             return Marshal.PtrToStringUTF8((nint)versionPtr) ?? string.Empty;
         }
     }
@@ -121,38 +116,25 @@ public unsafe struct Context : IDisposable
     /// <summary>
     /// Applies the dark color style (default).
     /// </summary>
-    /// <param name="style">Optional style to modify. If null, modifies the current context's style.</param>
-    /// <remarks>
-    /// This context must be current before calling this method.
-    /// </remarks>
-    public static void StyleDark(Style? style = null)
+    public static void StyleColorsDark()
     {
-        StyleColorsDark(style.HasValue ? style.Value.Native : null);
+        ImGuiNative.StyleColorsDark(null);
     }
 
     /// <summary>
     /// Applies the light color style.
     /// </summary>
-    /// <param name="style">Optional style to modify. If null, modifies the current context's style.</param>
-    /// <remarks>
-    /// Best used with borders and a custom, thicker font.
-    /// This context must be current before calling this method.
-    /// </remarks>
-    public static void StyleLight(Style? style = null)
+    public static void StyleColorsLight()
     {
-        StyleColorsLight(style.HasValue ? style.Value.Native : null);
+        ImGuiNative.StyleColorsLight(null);
     }
 
     /// <summary>
     /// Applies the classic ImGui color style.
     /// </summary>
-    /// <param name="style">Optional style to modify. If null, modifies the current context's style.</param>
-    /// <remarks>
-    /// This context must be current before calling this method.
-    /// </remarks>
-    public static void StyleClassic(Style? style = null)
+    public static void StyleColorsClassic()
     {
-        StyleColorsClassic(style.HasValue ? style.Value.Native : null);
+        ImGuiNative.StyleColorsClassic(null);
     }
 
     /// <summary>
@@ -163,9 +145,9 @@ public unsafe struct Context : IDisposable
     /// Demonstrates most ImGui features. Call this to learn about the library!
     /// This context must be current before calling this method.
     /// </remarks>
-    public static void ShowDemoWindow(bool* open = null)
+    public static void ShowDemoWindow(StateRef<bool>? open = null)
     {
-        ShowDemoWindow(open);
+        ImGuiNative.ShowDemoWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
@@ -176,9 +158,9 @@ public unsafe struct Context : IDisposable
     /// Displays Dear ImGui internals: windows, draw commands, various internal state, etc.
     /// This context must be current before calling this method.
     /// </remarks>
-    public static void ShowMetricsWindow(bool* open = null)
+    public static void ShowMetricsWindow(StateRef<bool>? open = null)
     {
-        ShowMetricsWindow(open);
+        ImGuiNative.ShowMetricsWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
@@ -189,9 +171,9 @@ public unsafe struct Context : IDisposable
     /// Displays a simplified log of important Dear ImGui events.
     /// This context must be current before calling this method.
     /// </remarks>
-    public static void ShowDebugLogWindow(bool* open = null)
+    public static void ShowDebugLogWindow(StateRef<bool>? open = null)
     {
-        ShowDebugLogWindow(open);
+        ImGuiNative.ShowDebugLogWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
@@ -202,9 +184,9 @@ public unsafe struct Context : IDisposable
     /// Displays Dear ImGui version, credits, and build/system information.
     /// This context must be current before calling this method.
     /// </remarks>
-    public static void ShowAboutWindow(bool* open = null)
+    public static void ShowAboutWindow(StateRef<bool>? open = null)
     {
-        ShowAboutWindow(open);
+        ImGuiNative.ShowAboutWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
@@ -218,7 +200,7 @@ public unsafe struct Context : IDisposable
     {
         if (_ownsPointer && Native != null)
         {
-            DestroyContext(Native);
+            ImGuiNative.DestroyContext(Native);
             Native = null;
             _ownsPointer = false;
         }

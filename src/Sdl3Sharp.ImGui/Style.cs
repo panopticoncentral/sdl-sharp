@@ -1,5 +1,7 @@
 using Sdl3Sharp.ImGui.Native;
 
+using ImGuiNative = Sdl3Sharp.ImGui.Native.ImGui;
+
 namespace Sdl3Sharp.ImGui;
 
 /// <summary>
@@ -766,5 +768,29 @@ public readonly unsafe struct Style
     public void ScaleAllSizes(float scaleFactor)
     {
         ImGuiStyle.ScaleAllSizes(Native, scaleFactor);
+    }
+
+    /// <summary>
+    /// Applies the dark color style (default).
+    /// </summary>
+    public void StyleColorsDark()
+    {
+        ImGuiNative.StyleColorsDark(Native);
+    }
+
+    /// <summary>
+    /// Applies the light color style.
+    /// </summary>
+    public void StyleColorsLight()
+    {
+        ImGuiNative.StyleColorsLight(Native);
+    }
+
+    /// <summary>
+    /// Applies the classic ImGui color style.
+    /// </summary>
+    public void StyleColorsClassic()
+    {
+        ImGuiNative.StyleColorsClassic(Native);
     }
 }
