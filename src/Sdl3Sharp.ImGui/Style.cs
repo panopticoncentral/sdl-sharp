@@ -775,7 +775,7 @@ public unsafe sealed class Style
     /// </summary>
     public void StyleColorsDark()
     {
-        ImGuiNative.StyleColorsDark(Native);
+        ImGuiNative.ImGui_StyleColorsDark(Native);
     }
 
     /// <summary>
@@ -783,7 +783,7 @@ public unsafe sealed class Style
     /// </summary>
     public void StyleColorsLight()
     {
-        ImGuiNative.StyleColorsLight(Native);
+        ImGuiNative.ImGui_StyleColorsLight(Native);
     }
 
     /// <summary>
@@ -791,6 +791,6 @@ public unsafe sealed class Style
     /// </summary>
     public void StyleColorsClassic()
     {
-        ImGuiNative.StyleColorsClassic(Native);
+        ImGuiNative.ImGui_StyleColorsClassic(Native);
     }
 }

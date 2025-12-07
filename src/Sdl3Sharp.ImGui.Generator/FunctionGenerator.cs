@@ -62,7 +62,7 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         writer.WriteDocComment(func.Comments);
 
         // Build method signature
-        var methodName = GetMethodName(func);
+        var methodName = NamingConventions.CleanFunctionName(func.Name);
 
         // Generate LibraryImport attribute (only include EntryPoint if it differs from method name)
         if (methodName == func.Name)
@@ -85,43 +85,6 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         var parameters = GenerateParameters(func.Arguments);
 
         writer.AppendLine($"public static partial {returnType} {methodName}({parameters});");
-    }
-
-    /// <summary>
-    /// Backend prefixes to strip from method names (after removing ImGui_/cImGui_).
-    /// </summary>
-    private static readonly string[] BackendPrefixes =
-    [
-        "ImplSDL3_",
-        "ImplSDLRenderer3_",
-        "ImplSDLGPU3_",
-    ];
-
-    private static string GetMethodName(FunctionInfo func)
-    {
-        var name = func.Name;
-
-        // Remove common prefixes for cleaner names
-        if (name.StartsWith("ImGui_"))
-        {
-            name = name[6..]; // Remove "ImGui_"
-        }
-        else if (name.StartsWith("cImGui_"))
-        {
-            name = name[7..]; // Remove "cImGui_"
-        }
-
-        // Remove backend prefixes (e.g., ImplSDL3_InitForOpenGL -> InitForOpenGL)
-        foreach (var prefix in BackendPrefixes)
-        {
-            if (name.StartsWith(prefix))
-            {
-                return name[prefix.Length..];
-            }
-        }
-
-        // For member functions like ImVec2_Add, keep the full name
-        return name;
     }
 
     private string GenerateParameters(List<ArgumentInfo> arguments)
@@ -167,18 +130,13 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         return desc.Kind == "Builtin" && desc.BuiltinType == "bool" ? "[return: MarshalAs(UnmanagedType.U1)]" : null;
     }
 
-    private static bool IsVarargs(FunctionInfo func)
-    {
-        return func.Arguments.Any(a => a.IsVarargs);
-    }
-
     /// <summary>
     /// Groups functions by category based on preceding comments, preserving original order.
     /// </summary>
     private static List<FunctionGroup> GroupFunctions(List<FunctionInfo> functions)
     {
         var groups = new List<FunctionGroup>();
-        string currentCategory = "General";
+        var currentCategory = "General";
         var currentFunctions = new List<FunctionInfo>();
 
         foreach (FunctionInfo func in functions)

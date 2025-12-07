@@ -55,12 +55,7 @@ public sealed class Conditional
     /// </summary>
     public static bool IsObsolete(List<Conditional>? conditionals)
     {
-        if (conditionals == null)
-        {
-            return false;
-        }
-
-        return conditionals.Any(c =>
+        return conditionals != null && conditionals.Any(c =>
             c.Condition == "ifndef" &&
             c.Expression == "IMGUI_DISABLE_OBSOLETE_FUNCTIONS");
     }

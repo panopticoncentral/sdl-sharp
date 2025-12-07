@@ -14,7 +14,7 @@ namespace Sdl3Sharp.ImGui.Native.Backends;
 /// - Remember to set ColorTargetFormat to the correct format. If you're rendering to the swapchain, call SDL_GetGPUSwapchainTextureFormat() to query the right value
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct GpuInitInfo
+public unsafe partial struct ImGuiSdl3GpuInitInfo
 {
     public SDL_GPUDevice* Device;
 

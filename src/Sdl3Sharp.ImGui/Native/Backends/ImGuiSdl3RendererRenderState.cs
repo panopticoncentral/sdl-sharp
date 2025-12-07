@@ -16,7 +16,7 @@ namespace Sdl3Sharp.ImGui.Native.Backends;
 /// (Please open an issue if you feel you need access to more data)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct RendererRenderState
+public unsafe partial struct ImGuiSdl3RendererRenderState
 {
     public SDL_Renderer* Renderer;
 }

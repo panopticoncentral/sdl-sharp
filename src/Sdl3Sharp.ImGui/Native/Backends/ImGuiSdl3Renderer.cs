@@ -10,7 +10,7 @@ using static Sdl3Sharp.Native.Render;
 
 namespace Sdl3Sharp.ImGui.Native.Backends;
 
-internal static unsafe partial class SDLRenderer3
+internal static unsafe partial class ImGuiSdl3Renderer
 {
     #region General
 
@@ -19,16 +19,16 @@ internal static unsafe partial class SDLRenderer3
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_Init")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool Init(SDL_Renderer* renderer);
+    public static partial bool ImGuiSdl3RendererInit(SDL_Renderer* renderer);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_Shutdown")]
-    public static partial void Shutdown();
+    public static partial void ImGuiSdl3RendererShutdown();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_NewFrame")]
-    public static partial void NewFrame();
+    public static partial void ImGuiSdl3RendererNewFrame();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_RenderDrawData")]
-    public static partial void RenderDrawData(ImDrawData* draw_data, SDL_Renderer* renderer);
+    public static partial void ImGuiSdl3RendererRenderDrawData(ImDrawData* draw_data, SDL_Renderer* renderer);
 
     #endregion
 
@@ -38,16 +38,16 @@ internal static unsafe partial class SDLRenderer3
     /// Called by Init/NewFrame/Shutdown
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_CreateDeviceObjects")]
-    public static partial void CreateDeviceObjects();
+    public static partial void ImGuiSdl3RendererCreateDeviceObjects();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_DestroyDeviceObjects")]
-    public static partial void DestroyDeviceObjects();
+    public static partial void ImGuiSdl3RendererDestroyDeviceObjects();
 
     /// <summary>
     /// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_UpdateTexture")]
-    public static partial void UpdateTexture(ImTextureData* tex);
+    public static partial void ImGuiSdl3RendererUpdateTexture(ImTextureData* tex);
 
     #endregion
 

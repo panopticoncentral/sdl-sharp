@@ -16,7 +16,7 @@ namespace Sdl3Sharp.ImGui.Native.Backends;
 /// (Please open an issue if you feel you need access to more data)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct GpuRenderState
+public unsafe partial struct ImGuiSdl3GpuRenderState
 {
     public SDL_GPUDevice* Device;
 

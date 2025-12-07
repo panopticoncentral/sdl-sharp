@@ -37,4 +37,9 @@ public readonly unsafe struct StateRef<T> where T : unmanaged
     /// has not been disposed.
     /// </remarks>
     internal T* Ptr { get; }
+
+    public static implicit operator T(StateRef<T> stateRef)
+    {
+        return stateRef.Value;
+    }
 }

@@ -1,8 +1,8 @@
-using Sdl3Sharp;
 using Sdl3Sharp.Graphics;
 using Sdl3Sharp.ImGui.Native.Backends;
-
 using static Sdl3Sharp.Native.Events;
+
+using SdlWindow = Sdl3Sharp.Graphics.Window;
 
 namespace Sdl3Sharp.ImGui.Backends;
 
@@ -24,11 +24,11 @@ public static unsafe class SDL3Backend
     /// <remarks>
     /// Call this after creating your ImGui context and before the main loop.
     /// </remarks>
-    public static bool InitForSDLRenderer(Window window, Renderer renderer)
+    public static bool InitForSDLRenderer(SdlWindow window, Renderer renderer)
     {
         ArgumentNullException.ThrowIfNull(window);
         ArgumentNullException.ThrowIfNull(renderer);
-        return SDL3.InitForSDLRenderer(window.Handle, renderer.Handle);
+        return ImGuiSdl3.ImGuiSdl3InitForSDLRenderer(window.Handle, renderer.Handle);
     }
 
     /// <summary>
@@ -39,10 +39,10 @@ public static unsafe class SDL3Backend
     /// <remarks>
     /// Call this after creating your ImGui context and before the main loop.
     /// </remarks>
-    public static bool InitForSDLGPU(Window window)
+    public static bool InitForSDLGPU(SdlWindow window)
     {
         ArgumentNullException.ThrowIfNull(window);
-        return SDL3.InitForSDLGPU(window.Handle);
+        return ImGuiSdl3.ImGuiSdl3InitForSDLGPU(window.Handle);
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public static unsafe class SDL3Backend
     /// </remarks>
     public static void Shutdown()
     {
-        SDL3.Shutdown();
+        ImGuiSdl3.ImGuiSdl3Shutdown();
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public static unsafe class SDL3Backend
     /// </remarks>
     public static void NewFrame()
     {
-        SDL3.NewFrame();
+        ImGuiSdl3.ImGuiSdl3NewFrame();
     }
 
     /// <summary>
@@ -79,8 +79,8 @@ public static unsafe class SDL3Backend
     /// </remarks>
     public static bool ProcessEvent(Event sdlEvent)
     {
-        var nativeEvent = sdlEvent.Native;
-        return SDL3.ProcessEvent(&nativeEvent);
+        SDL_Event nativeEvent = sdlEvent.Native;
+        return ImGuiSdl3.ImGuiSdl3ProcessEvent(&nativeEvent);
     }
 
     /// <summary>
@@ -91,9 +91,9 @@ public static unsafe class SDL3Backend
     /// Gamepad selection automatically starts in <see cref="GamepadMode.AutoFirst"/> mode,
     /// picking the first available SDL_Gamepad. Use this method to override this behavior.
     /// </remarks>
-    public static void SetGamepadMode(GamepadMode mode)
+    public static void SetGamepadMode(ImGuiSdl3GamepadMode mode)
     {
-        SDL3.SetGamepadModeEx(mode, 0, 0);
+        ImGuiSdl3.ImGuiSdl3SetGamepadModeEx(mode, 0, 0);
     }
 
     /// <summary>
@@ -106,12 +106,12 @@ public static unsafe class SDL3Backend
     /// and closing gamepads. The <paramref name="gamepads"/> array contains pointers to
     /// SDL_Gamepad objects that ImGui should use for input.
     /// </remarks>
-    public static void SetGamepadMode(GamepadMode mode, nint[] gamepads)
+    public static void SetGamepadMode(ImGuiSdl3GamepadMode mode, nint[] gamepads)
     {
         ArgumentNullException.ThrowIfNull(gamepads);
         fixed (nint* gamepadsPtr = gamepads)
         {
-            SDL3.SetGamepadModeEx(mode, (nint)gamepadsPtr, gamepads.Length);
+            ImGuiSdl3.ImGuiSdl3SetGamepadModeEx(mode, (nint)gamepadsPtr, gamepads.Length);
         }
     }
 }

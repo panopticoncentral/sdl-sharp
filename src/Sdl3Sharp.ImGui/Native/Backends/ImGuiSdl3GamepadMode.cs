@@ -11,7 +11,7 @@ namespace Sdl3Sharp.ImGui.Native.Backends;
 /// Gamepad selection automatically starts in AutoFirst mode, picking first available SDL_Gamepad. You may override this.
 /// When using manual mode, caller is responsible for opening/closing gamepad.
 /// </summary>
-public enum GamepadMode
+public enum ImGuiSdl3GamepadMode
 {
     AutoFirst = 0,
     AutoAll = 1,

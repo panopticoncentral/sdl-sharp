@@ -45,34 +45,4 @@ Version
 
 ## Native
 
-ImFont
-ImFontAtlas
-ImFontAtlasFlags
-ImFontAtlasRect
-ImFontAtlasRectId
-ImFontBaked
-ImFontConfig
-ImFontGlyph
-ImTextureData
-ImTextureFormat
-ImTextureID
-ImTextureRect
-ImTextureRef
-ImTextureStatus
-
 ## Managed
-
-Font
-FontAtlas
-FontAtlasFlags
-FontAtlasRect
-FontAtlasRectId
-FontBaked
-FontConfig
-FontGlyph
-TextureData
-TextureFormat
-TextureId
-TextureRect
-TextureRef
-TextureStatus

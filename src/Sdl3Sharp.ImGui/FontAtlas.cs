@@ -36,7 +36,7 @@ public unsafe sealed class FontAtlas : IDisposable
     /// </remarks>
     public FontAtlas()
     {
-        Native = (ImFontAtlas*)MemAlloc((nuint)Unsafe.SizeOf<ImFontAtlas>());
+        Native = (ImFontAtlas*)ImGui_MemAlloc((nuint)Unsafe.SizeOf<ImFontAtlas>());
         _ownsPointer = true;
 
         // Zero-initialize the memory
@@ -199,7 +199,7 @@ public unsafe sealed class FontAtlas : IDisposable
         if (ownedByAtlas)
         {
             // ImGui will free this memory, so we must use ImGui's allocator
-            var imguiMemory = MemAlloc((nuint)fontData.Length);
+            var imguiMemory = ImGui_MemAlloc((nuint)fontData.Length);
             fontData.CopyTo(new Span<byte>((void*)imguiMemory, fontData.Length));
 
             if (fontConfig is null)
@@ -340,7 +340,7 @@ public unsafe sealed class FontAtlas : IDisposable
         {
             // Call Clear to clean up ImGui-managed resources (like ClearFonts and ClearTexData in destructor)
             ImFontAtlas.Clear(Native);
-            MemFree((nint)Native);
+            ImGui_MemFree((nint)Native);
             Native = null;
             _ownsPointer = false;
         }

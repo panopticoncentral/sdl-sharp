@@ -19,20 +19,20 @@ internal static unsafe partial class ImGui
     /// - DLL users: heaps and globals are not shared across DLL boundaries! You will need to call SetCurrentContext() + SetAllocatorFunctions()
     /// for each static/DLL boundary you are calling from. Read "Context and Memory Allocators" section of imgui.cpp for details.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CreateContext")]
-    public static partial ImGuiContext* CreateContext(ImFontAtlas* shared_font_atlas);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiContext* ImGui_CreateContext(ImFontAtlas* shared_font_atlas);
 
     /// <summary>
     /// NULL = destroy current context
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DestroyContext")]
-    public static partial void DestroyContext(ImGuiContext* ctx);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_DestroyContext(ImGuiContext* ctx);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetCurrentContext")]
-    public static partial ImGuiContext* GetCurrentContext();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiContext* ImGui_GetCurrentContext();
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetCurrentContext")]
-    public static partial void SetCurrentContext(ImGuiContext* ctx);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetCurrentContext(ImGuiContext* ctx);
 
     #endregion
 
@@ -42,44 +42,44 @@ internal static unsafe partial class ImGui
     /// Main
     /// access the ImGuiIO structure (mouse/keyboard/gamepad inputs, time, various configuration options/flags)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetIO")]
-    public static partial ImGuiIO* GetIO();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiIO* ImGui_GetIO();
 
     /// <summary>
     /// access the ImGuiPlatformIO structure (mostly hooks/functions to connect to platform/renderer and OS Clipboard, IME etc.)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetPlatformIO")]
-    public static partial ImGuiPlatformIO* GetPlatformIO();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiPlatformIO* ImGui_GetPlatformIO();
 
     /// <summary>
     /// access the Style structure (colors, sizes). Always use PushStyleColor(), PushStyleVar() to modify style mid-frame!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetStyle")]
-    public static partial ImGuiStyle* GetStyle();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiStyle* ImGui_GetStyle();
 
     /// <summary>
     /// start a new Dear ImGui frame, you can submit any command from this point until Render()/EndFrame().
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_NewFrame")]
-    public static partial void NewFrame();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_NewFrame();
 
     /// <summary>
     /// ends the Dear ImGui frame. automatically called by Render(). If you don't need to render data (skipping rendering) you may call EndFrame() without Render()... but you'll have wasted CPU already! If you don't need to render, better to not create any windows and not call NewFrame() at all!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndFrame")]
-    public static partial void EndFrame();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndFrame();
 
     /// <summary>
     /// ends the Dear ImGui frame, finalize the draw data. You can then get call GetDrawData().
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Render")]
-    public static partial void Render();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Render();
 
     /// <summary>
     /// valid after Render() and until the next call to NewFrame(). Call ImGui_ImplXXXX_RenderDrawData() function in your Renderer Backend to render.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetDrawData")]
-    public static partial ImDrawData* GetDrawData();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImDrawData* ImGui_GetDrawData();
 
     #endregion
 
@@ -89,63 +89,63 @@ internal static unsafe partial class ImGui
     /// Demo, Debug, Information
     /// create Demo window. demonstrate most ImGui features. call this to learn about the library! try to make it always available in your application!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowDemoWindow")]
-    public static partial void ShowDemoWindow(bool* p_open);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ShowDemoWindow(bool* p_open);
 
     /// <summary>
     /// create Metrics/Debugger window. display Dear ImGui internals: windows, draw commands, various internal state, etc.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowMetricsWindow")]
-    public static partial void ShowMetricsWindow(bool* p_open);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ShowMetricsWindow(bool* p_open);
 
     /// <summary>
     /// create Debug Log window. display a simplified log of important dear imgui events.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowDebugLogWindow")]
-    public static partial void ShowDebugLogWindow(bool* p_open);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ShowDebugLogWindow(bool* p_open);
 
     /// <summary>
     /// create Stack Tool window. hover items with mouse to query information about the source of their unique ID.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowIDStackToolWindowEx")]
-    public static partial void ShowIDStackToolWindowEx(bool* p_open);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ShowIDStackToolWindowEx(bool* p_open);
 
     /// <summary>
     /// create About window. display Dear ImGui version, credits and build/system information.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowAboutWindow")]
-    public static partial void ShowAboutWindow(bool* p_open);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ShowAboutWindow(bool* p_open);
 
     /// <summary>
     /// add style editor block (not a window). you can pass in a reference ImGuiStyle structure to compare to, revert to and save to (else it uses the default style)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowStyleEditor")]
-    public static partial void ShowStyleEditor(ImGuiStyle* @ref);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ShowStyleEditor(ImGuiStyle* @ref);
 
     /// <summary>
     /// add style selector block (not a window), essentially a combo listing the default styles.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowStyleSelector")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ShowStyleSelector(byte* label);
+    public static partial bool ImGui_ShowStyleSelector(byte* label);
 
     /// <summary>
     /// add font selector block (not a window), essentially a combo listing the loaded fonts.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowFontSelector")]
-    public static partial void ShowFontSelector(byte* label);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ShowFontSelector(byte* label);
 
     /// <summary>
     /// add basic help/info block (not a window): how to manipulate ImGui as an end-user (mouse/keyboard controls).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ShowUserGuide")]
-    public static partial void ShowUserGuide();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ShowUserGuide();
 
     /// <summary>
     /// get the compiled version string e.g. "1.80 WIP" (essentially the value for IMGUI_VERSION from the compiled version of imgui.cpp)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetVersion")]
-    public static partial byte* GetVersion();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial byte* ImGui_GetVersion();
 
     #endregion
 
@@ -155,20 +155,20 @@ internal static unsafe partial class ImGui
     /// Styles
     /// new, recommended style (default)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_StyleColorsDark")]
-    public static partial void StyleColorsDark(ImGuiStyle* dst);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_StyleColorsDark(ImGuiStyle* dst);
 
     /// <summary>
     /// best used with borders and a custom, thicker font
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_StyleColorsLight")]
-    public static partial void StyleColorsLight(ImGuiStyle* dst);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_StyleColorsLight(ImGuiStyle* dst);
 
     /// <summary>
     /// classic imgui style
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_StyleColorsClassic")]
-    public static partial void StyleColorsClassic(ImGuiStyle* dst);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_StyleColorsClassic(ImGuiStyle* dst);
 
     #endregion
 
@@ -188,12 +188,12 @@ internal static unsafe partial class ImGui
     /// BeginXXX function returned true. Begin and BeginChild are the only odd ones out. Will be fixed in a future update.]
     /// - Note that the bottom of window stack always contains a window called "Debug".
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Begin")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool Begin(byte* name, bool* p_open, ImGuiWindowFlags flags);
+    public static partial bool ImGui_Begin(byte* name, bool* p_open, ImGuiWindowFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_End")]
-    public static partial void End();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_End();
 
     #endregion
 
@@ -219,16 +219,16 @@ internal static unsafe partial class ImGui
     /// such as BeginMenu/EndMenu, BeginPopup/EndPopup, etc. where the EndXXX call should only be called if the corresponding
     /// BeginXXX function returned true. Begin and BeginChild are the only odd ones out. Will be fixed in a future update.]
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginChild")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginChild(byte* str_id, ImVec2 size, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags);
+    public static partial bool ImGui_BeginChild(byte* str_id, ImVec2 size, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginChildID")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginChildID(ImGuiID id, ImVec2 size, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags);
+    public static partial bool ImGui_BeginChildID(ImGuiID id, ImVec2 size, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndChild")]
-    public static partial void EndChild();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndChild();
 
     #endregion
 
@@ -238,153 +238,153 @@ internal static unsafe partial class ImGui
     /// Windows Utilities
     /// - 'current window' = the window we are appending into while inside a Begin()/End() block. 'next window' = next window we will Begin() into.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsWindowAppearing")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsWindowAppearing();
+    public static partial bool ImGui_IsWindowAppearing();
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsWindowCollapsed")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsWindowCollapsed();
+    public static partial bool ImGui_IsWindowCollapsed();
 
     /// <summary>
     /// is current window focused? or its root/child, depending on flags. see flags for options.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsWindowFocused")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsWindowFocused(ImGuiFocusedFlags flags);
+    public static partial bool ImGui_IsWindowFocused(ImGuiFocusedFlags flags);
 
     /// <summary>
     /// is current window hovered and hoverable (e.g. not blocked by a popup/modal)? See ImGuiHoveredFlags_ for options. IMPORTANT: If you are trying to check whether your mouse should be dispatched to Dear ImGui or to your underlying app, you should not use this function! Use the 'io.WantCaptureMouse' boolean for that! Refer to FAQ entry "How can I tell whether to dispatch mouse/keyboard to Dear ImGui or my application?" for details.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsWindowHovered")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsWindowHovered(ImGuiHoveredFlags flags);
+    public static partial bool ImGui_IsWindowHovered(ImGuiHoveredFlags flags);
 
     /// <summary>
     /// get draw list associated to the current window, to append your own drawing primitives
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetWindowDrawList")]
-    public static partial ImDrawList* GetWindowDrawList();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImDrawList* ImGui_GetWindowDrawList();
 
     /// <summary>
     /// get current window position in screen space (IT IS UNLIKELY YOU EVER NEED TO USE THIS. Consider always using GetCursorScreenPos() and GetContentRegionAvail() instead)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetWindowPos")]
-    public static partial ImVec2 GetWindowPos();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetWindowPos();
 
     /// <summary>
     /// get current window size (IT IS UNLIKELY YOU EVER NEED TO USE THIS. Consider always using GetCursorScreenPos() and GetContentRegionAvail() instead)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetWindowSize")]
-    public static partial ImVec2 GetWindowSize();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetWindowSize();
 
     /// <summary>
     /// get current window width (IT IS UNLIKELY YOU EVER NEED TO USE THIS). Shortcut for GetWindowSize().x.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetWindowWidth")]
-    public static partial float GetWindowWidth();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetWindowWidth();
 
     /// <summary>
     /// get current window height (IT IS UNLIKELY YOU EVER NEED TO USE THIS). Shortcut for GetWindowSize().y.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetWindowHeight")]
-    public static partial float GetWindowHeight();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetWindowHeight();
 
     /// <summary>
     /// set next window position. call before Begin(). use pivot=(0.5f,0.5f) to center on given point, etc.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextWindowPosEx")]
-    public static partial void SetNextWindowPosEx(ImVec2 pos, ImGuiCond cond, ImVec2 pivot);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextWindowPosEx(ImVec2 pos, ImGuiCond cond, ImVec2 pivot);
 
     /// <summary>
     /// set next window size. set axis to 0.0f to force an auto-fit on this axis. call before Begin()
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextWindowSize")]
-    public static partial void SetNextWindowSize(ImVec2 size, ImGuiCond cond);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextWindowSize(ImVec2 size, ImGuiCond cond);
 
     /// <summary>
     /// set next window size limits. use 0.0f or FLT_MAX if you don't want limits. Use -1 for both min and max of same axis to preserve current size (which itself is a constraint). Use callback to apply non-trivial programmatic constraints.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextWindowSizeConstraints")]
-    public static partial void SetNextWindowSizeConstraints(ImVec2 size_min, ImVec2 size_max, ImGuiSizeCallback custom_callback, nint custom_callback_data);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextWindowSizeConstraints(ImVec2 size_min, ImVec2 size_max, ImGuiSizeCallback custom_callback, nint custom_callback_data);
 
     /// <summary>
     /// set next window content size (~ scrollable client area, which enforce the range of scrollbars). Not including window decorations (title bar, menu bar, etc.) nor WindowPadding. set an axis to 0.0f to leave it automatic. call before Begin()
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextWindowContentSize")]
-    public static partial void SetNextWindowContentSize(ImVec2 size);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextWindowContentSize(ImVec2 size);
 
     /// <summary>
     /// set next window collapsed state. call before Begin()
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextWindowCollapsed")]
-    public static partial void SetNextWindowCollapsed([MarshalAs(UnmanagedType.U1)] bool collapsed, ImGuiCond cond);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextWindowCollapsed([MarshalAs(UnmanagedType.U1)] bool collapsed, ImGuiCond cond);
 
     /// <summary>
     /// set next window to be focused / top-most. call before Begin()
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextWindowFocus")]
-    public static partial void SetNextWindowFocus();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextWindowFocus();
 
     /// <summary>
     /// set next window scrolling value (use &lt; 0.0f to not affect a given axis).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextWindowScroll")]
-    public static partial void SetNextWindowScroll(ImVec2 scroll);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextWindowScroll(ImVec2 scroll);
 
     /// <summary>
     /// set next window background color alpha. helper to easily override the Alpha component of ImGuiCol_WindowBg/ChildBg/PopupBg. you may also use ImGuiWindowFlags_NoBackground.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextWindowBgAlpha")]
-    public static partial void SetNextWindowBgAlpha(float alpha);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextWindowBgAlpha(float alpha);
 
     /// <summary>
     /// (not recommended) set current window position - call within Begin()/End(). prefer using SetNextWindowPos(), as this may incur tearing and side-effects.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowPos")]
-    public static partial void SetWindowPos(ImVec2 pos, ImGuiCond cond);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetWindowPos(ImVec2 pos, ImGuiCond cond);
 
     /// <summary>
     /// (not recommended) set current window size - call within Begin()/End(). set to ImVec2(0, 0) to force an auto-fit. prefer using SetNextWindowSize(), as this may incur tearing and minor side-effects.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowSize")]
-    public static partial void SetWindowSize(ImVec2 size, ImGuiCond cond);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetWindowSize(ImVec2 size, ImGuiCond cond);
 
     /// <summary>
     /// (not recommended) set current window collapsed state. prefer using SetNextWindowCollapsed().
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowCollapsed")]
-    public static partial void SetWindowCollapsed([MarshalAs(UnmanagedType.U1)] bool collapsed, ImGuiCond cond);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetWindowCollapsed([MarshalAs(UnmanagedType.U1)] bool collapsed, ImGuiCond cond);
 
     /// <summary>
     /// (not recommended) set current window to be focused / top-most. prefer using SetNextWindowFocus().
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowFocus")]
-    public static partial void SetWindowFocus();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetWindowFocus();
 
     /// <summary>
     /// set named window position.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowPosStr")]
-    public static partial void SetWindowPosStr(byte* name, ImVec2 pos, ImGuiCond cond);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetWindowPosStr(byte* name, ImVec2 pos, ImGuiCond cond);
 
     /// <summary>
     /// set named window size. set axis to 0.0f to force an auto-fit on this axis.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowSizeStr")]
-    public static partial void SetWindowSizeStr(byte* name, ImVec2 size, ImGuiCond cond);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetWindowSizeStr(byte* name, ImVec2 size, ImGuiCond cond);
 
     /// <summary>
     /// set named window collapsed state
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowCollapsedStr")]
-    public static partial void SetWindowCollapsedStr(byte* name, [MarshalAs(UnmanagedType.U1)] bool collapsed, ImGuiCond cond);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetWindowCollapsedStr(byte* name, [MarshalAs(UnmanagedType.U1)] bool collapsed, ImGuiCond cond);
 
     /// <summary>
     /// set named window to be focused / top-most. use NULL to remove focus.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetWindowFocusStr")]
-    public static partial void SetWindowFocusStr(byte* name);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetWindowFocusStr(byte* name);
 
     #endregion
 
@@ -396,62 +396,62 @@ internal static unsafe partial class ImGui
     /// - You may instead use SetNextWindowScroll() prior to calling Begin() to avoid this delay, as an alternative to using SetScrollX()/SetScrollY().
     /// get scrolling amount [0 .. GetScrollMaxX()]
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetScrollX")]
-    public static partial float GetScrollX();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetScrollX();
 
     /// <summary>
     /// get scrolling amount [0 .. GetScrollMaxY()]
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetScrollY")]
-    public static partial float GetScrollY();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetScrollY();
 
     /// <summary>
     /// set scrolling amount [0 .. GetScrollMaxX()]
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetScrollX")]
-    public static partial void SetScrollX(float scroll_x);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetScrollX(float scroll_x);
 
     /// <summary>
     /// set scrolling amount [0 .. GetScrollMaxY()]
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetScrollY")]
-    public static partial void SetScrollY(float scroll_y);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetScrollY(float scroll_y);
 
     /// <summary>
     /// get maximum scrolling amount ~~ ContentSize.x - WindowSize.x - DecorationsSize.x
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetScrollMaxX")]
-    public static partial float GetScrollMaxX();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetScrollMaxX();
 
     /// <summary>
     /// get maximum scrolling amount ~~ ContentSize.y - WindowSize.y - DecorationsSize.y
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetScrollMaxY")]
-    public static partial float GetScrollMaxY();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetScrollMaxY();
 
     /// <summary>
     /// adjust scrolling amount to make current cursor position visible. center_x_ratio=0.0: left, 0.5: center, 1.0: right. When using to make a "default/current item" visible, consider using SetItemDefaultFocus() instead.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetScrollHereX")]
-    public static partial void SetScrollHereX(float center_x_ratio);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetScrollHereX(float center_x_ratio);
 
     /// <summary>
     /// adjust scrolling amount to make current cursor position visible. center_y_ratio=0.0: top, 0.5: center, 1.0: bottom. When using to make a "default/current item" visible, consider using SetItemDefaultFocus() instead.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetScrollHereY")]
-    public static partial void SetScrollHereY(float center_y_ratio);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetScrollHereY(float center_y_ratio);
 
     /// <summary>
     /// adjust scrolling amount to make given position visible. Generally GetCursorStartPos() + offset to compute a valid position.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetScrollFromPosX")]
-    public static partial void SetScrollFromPosX(float local_x, float center_x_ratio);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetScrollFromPosX(float local_x, float center_x_ratio);
 
     /// <summary>
     /// adjust scrolling amount to make given position visible. Generally GetCursorStartPos() + offset to compute a valid position.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetScrollFromPosY")]
-    public static partial void SetScrollFromPosY(float local_y, float center_y_ratio);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetScrollFromPosY(float local_y, float center_y_ratio);
 
     #endregion
 
@@ -476,29 +476,29 @@ internal static unsafe partial class ImGui
     /// - INCORRECT: PushFont(NULL, GetFontSize() * 2.0f)       // INCORRECT! using size after global factors already applied == GLOBAL SCALING FACTORS WILL APPLY TWICE!
     /// Use NULL as a shortcut to keep current font. Use 0.0f to keep current size.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushFontFloat")]
-    public static partial void PushFontFloat(ImFont* font, float font_size_base_unscaled);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushFontFloat(ImFont* font, float font_size_base_unscaled);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PopFont")]
-    public static partial void PopFont();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopFont();
 
     /// <summary>
     /// get current font
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetFont")]
-    public static partial ImFont* GetFont();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImFont* ImGui_GetFont();
 
     /// <summary>
     /// get current scaled font size (= height in pixels). AFTER global scale factors applied. *IMPORTANT* DO NOT PASS THIS VALUE TO PushFont()! Use ImGui::GetStyle().FontSizeBase to get value before global scale factors.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetFontSize")]
-    public static partial float GetFontSize();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetFontSize();
 
     /// <summary>
     /// get current font bound at current size // == GetFont()-&gt;GetFontBaked(GetFontSize())
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetFontBaked")]
-    public static partial ImFontBaked* GetFontBaked();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImFontBaked* ImGui_GetFontBaked();
 
     #endregion
 
@@ -508,50 +508,50 @@ internal static unsafe partial class ImGui
     /// Parameters stacks (shared)
     /// modify a style color. always use this if you modify the style after NewFrame().
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushStyleColor")]
-    public static partial void PushStyleColor(ImGuiCol idx, uint col);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushStyleColor(ImGuiCol idx, uint col);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushStyleColorImVec4")]
-    public static partial void PushStyleColorImVec4(ImGuiCol idx, ImVec4 col);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushStyleColorImVec4(ImGuiCol idx, ImVec4 col);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PopStyleColorEx")]
-    public static partial void PopStyleColorEx(int count);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopStyleColorEx(int count);
 
     /// <summary>
     /// modify a style float variable. always use this if you modify the style after NewFrame()!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushStyleVar")]
-    public static partial void PushStyleVar(ImGuiStyleVar idx, float val);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushStyleVar(ImGuiStyleVar idx, float val);
 
     /// <summary>
     /// modify a style ImVec2 variable. "
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushStyleVarImVec2")]
-    public static partial void PushStyleVarImVec2(ImGuiStyleVar idx, ImVec2 val);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushStyleVarImVec2(ImGuiStyleVar idx, ImVec2 val);
 
     /// <summary>
     /// modify X component of a style ImVec2 variable. "
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushStyleVarX")]
-    public static partial void PushStyleVarX(ImGuiStyleVar idx, float val_x);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushStyleVarX(ImGuiStyleVar idx, float val_x);
 
     /// <summary>
     /// modify Y component of a style ImVec2 variable. "
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushStyleVarY")]
-    public static partial void PushStyleVarY(ImGuiStyleVar idx, float val_y);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushStyleVarY(ImGuiStyleVar idx, float val_y);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PopStyleVarEx")]
-    public static partial void PopStyleVarEx(int count);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopStyleVarEx(int count);
 
     /// <summary>
     /// modify specified shared item flag, e.g. PushItemFlag(ImGuiItemFlags_NoTabStop, true)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushItemFlag")]
-    public static partial void PushItemFlag(ImGuiItemFlags option, [MarshalAs(UnmanagedType.U1)] bool enabled);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushItemFlag(ImGuiItemFlags option, [MarshalAs(UnmanagedType.U1)] bool enabled);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PopItemFlag")]
-    public static partial void PopItemFlag();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopItemFlag();
 
     #endregion
 
@@ -561,32 +561,32 @@ internal static unsafe partial class ImGui
     /// Parameters stacks (current window)
     /// push width of items for common large "item+label" widgets. &gt;0.0f: width in pixels, &lt;0.0f align xx pixels to the right of window (so -FLT_MIN always align width to the right side).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushItemWidth")]
-    public static partial void PushItemWidth(float item_width);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushItemWidth(float item_width);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PopItemWidth")]
-    public static partial void PopItemWidth();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopItemWidth();
 
     /// <summary>
     /// set width of the _next_ common large "item+label" widget. &gt;0.0f: width in pixels, &lt;0.0f align xx pixels to the right of window (so -FLT_MIN always align width to the right side)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextItemWidth")]
-    public static partial void SetNextItemWidth(float item_width);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextItemWidth(float item_width);
 
     /// <summary>
     /// width of item given pushed settings and current cursor position. NOT necessarily the width of last item unlike most 'Item' functions.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CalcItemWidth")]
-    public static partial float CalcItemWidth();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_CalcItemWidth();
 
     /// <summary>
     /// push word-wrapping position for Text*() commands. &lt; 0.0f: no wrapping; 0.0f: wrap to end of window (or column); &gt; 0.0f: wrap at 'wrap_pos_x' position in window local space
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushTextWrapPos")]
-    public static partial void PushTextWrapPos(float wrap_local_pos_x);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushTextWrapPos(float wrap_local_pos_x);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PopTextWrapPos")]
-    public static partial void PopTextWrapPos();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopTextWrapPos();
 
     #endregion
 
@@ -597,32 +597,32 @@ internal static unsafe partial class ImGui
     /// - Use the ShowStyleEditor() function to interactively see/edit the colors.
     /// get UV coordinate for a white pixel, useful to draw custom shapes via the ImDrawList API
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetFontTexUvWhitePixel")]
-    public static partial ImVec2 GetFontTexUvWhitePixel();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetFontTexUvWhitePixel();
 
     /// <summary>
     /// retrieve given style color with style alpha applied and optional extra alpha multiplier, packed as a 32-bit value suitable for ImDrawList
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetColorU32Ex")]
-    public static partial uint GetColorU32Ex(ImGuiCol idx, float alpha_mul);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial uint ImGui_GetColorU32Ex(ImGuiCol idx, float alpha_mul);
 
     /// <summary>
     /// retrieve given color with style alpha applied, packed as a 32-bit value suitable for ImDrawList
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetColorU32ImVec4")]
-    public static partial uint GetColorU32ImVec4(ImVec4 col);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial uint ImGui_GetColorU32ImVec4(ImVec4 col);
 
     /// <summary>
     /// retrieve given color with style alpha applied, packed as a 32-bit value suitable for ImDrawList
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetColorU32ImU32Ex")]
-    public static partial uint GetColorU32ImU32Ex(uint col, float alpha_mul);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial uint ImGui_GetColorU32ImU32Ex(uint col, float alpha_mul);
 
     /// <summary>
     /// retrieve style color as stored in ImGuiStyle structure. use to feed back into PushStyleColor(), otherwise use GetColorU32() to get style color with style alpha baked in.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetStyleColorVec4")]
-    public static partial ImVec4* GetStyleColorVec4(ImGuiCol idx);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec4* ImGui_GetStyleColorVec4(ImGuiCol idx);
 
     #endregion
 
@@ -641,62 +641,62 @@ internal static unsafe partial class ImGui
     /// - GetCursorScreenPos() = GetCursorPos() + GetWindowPos(). GetWindowPos() is almost only ever useful to convert from window-local to absolute coordinates. Try not to use it.
     /// cursor position, absolute coordinates. THIS IS YOUR BEST FRIEND (prefer using this rather than GetCursorPos(), also more useful to work with ImDrawList API).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetCursorScreenPos")]
-    public static partial ImVec2 GetCursorScreenPos();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetCursorScreenPos();
 
     /// <summary>
     /// cursor position, absolute coordinates. THIS IS YOUR BEST FRIEND.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetCursorScreenPos")]
-    public static partial void SetCursorScreenPos(ImVec2 pos);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetCursorScreenPos(ImVec2 pos);
 
     /// <summary>
     /// available space from current position. THIS IS YOUR BEST FRIEND.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetContentRegionAvail")]
-    public static partial ImVec2 GetContentRegionAvail();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetContentRegionAvail();
 
     /// <summary>
     /// [window-local] cursor position in window-local coordinates. This is not your best friend.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetCursorPos")]
-    public static partial ImVec2 GetCursorPos();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetCursorPos();
 
     /// <summary>
     /// [window-local] "
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetCursorPosX")]
-    public static partial float GetCursorPosX();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetCursorPosX();
 
     /// <summary>
     /// [window-local] "
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetCursorPosY")]
-    public static partial float GetCursorPosY();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetCursorPosY();
 
     /// <summary>
     /// [window-local] "
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetCursorPos")]
-    public static partial void SetCursorPos(ImVec2 local_pos);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetCursorPos(ImVec2 local_pos);
 
     /// <summary>
     /// [window-local] "
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetCursorPosX")]
-    public static partial void SetCursorPosX(float local_x);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetCursorPosX(float local_x);
 
     /// <summary>
     /// [window-local] "
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetCursorPosY")]
-    public static partial void SetCursorPosY(float local_y);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetCursorPosY(float local_y);
 
     /// <summary>
     /// [window-local] initial cursor position, in window-local coordinates. Call GetCursorScreenPos() after Begin() to get the absolute coordinates version.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetCursorStartPos")]
-    public static partial ImVec2 GetCursorStartPos();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetCursorStartPos();
 
     #endregion
 
@@ -706,86 +706,86 @@ internal static unsafe partial class ImGui
     /// Other layout functions
     /// separator, generally horizontal. inside a menu bar or in horizontal layout mode, this becomes a vertical separator.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Separator")]
-    public static partial void Separator();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Separator();
 
     /// <summary>
     /// call between widgets or groups to layout them horizontally. X position given in window coordinates.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SameLineEx")]
-    public static partial void SameLineEx(float offset_from_start_x, float spacing);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SameLineEx(float offset_from_start_x, float spacing);
 
     /// <summary>
     /// undo a SameLine() or force a new line when in a horizontal-layout context.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_NewLine")]
-    public static partial void NewLine();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_NewLine();
 
     /// <summary>
     /// add vertical spacing.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Spacing")]
-    public static partial void Spacing();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Spacing();
 
     /// <summary>
     /// add a dummy item of given size. unlike InvisibleButton(), Dummy() won't take the mouse click or be navigable into.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Dummy")]
-    public static partial void Dummy(ImVec2 size);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Dummy(ImVec2 size);
 
     /// <summary>
     /// move content position toward the right, by indent_w, or style.IndentSpacing if indent_w &lt;= 0
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IndentEx")]
-    public static partial void IndentEx(float indent_w);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_IndentEx(float indent_w);
 
     /// <summary>
     /// move content position back to the left, by indent_w, or style.IndentSpacing if indent_w &lt;= 0
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_UnindentEx")]
-    public static partial void UnindentEx(float indent_w);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_UnindentEx(float indent_w);
 
     /// <summary>
     /// lock horizontal starting position
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginGroup")]
-    public static partial void BeginGroup();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_BeginGroup();
 
     /// <summary>
     /// unlock horizontal starting position + capture the whole group bounding box into one "item" (so you can use IsItemHovered() or layout primitives such as SameLine() on whole group, etc.)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndGroup")]
-    public static partial void EndGroup();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndGroup();
 
     /// <summary>
     /// vertically align upcoming text baseline to FramePadding.y so that it will align properly to regularly framed items (call if you have text on a line before a framed item)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_AlignTextToFramePadding")]
-    public static partial void AlignTextToFramePadding();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_AlignTextToFramePadding();
 
     /// <summary>
     /// ~ FontSize
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetTextLineHeight")]
-    public static partial float GetTextLineHeight();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetTextLineHeight();
 
     /// <summary>
     /// ~ FontSize + style.ItemSpacing.y (distance in pixels between 2 consecutive lines of text)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetTextLineHeightWithSpacing")]
-    public static partial float GetTextLineHeightWithSpacing();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetTextLineHeightWithSpacing();
 
     /// <summary>
     /// ~ FontSize + style.FramePadding.y * 2
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetFrameHeight")]
-    public static partial float GetFrameHeight();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetFrameHeight();
 
     /// <summary>
     /// ~ FontSize + style.FramePadding.y * 2 + style.ItemSpacing.y (distance in pixels between 2 consecutive lines of framed widgets)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetFrameHeightWithSpacing")]
-    public static partial float GetFrameHeightWithSpacing();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetFrameHeightWithSpacing();
 
     #endregion
 
@@ -805,146 +805,146 @@ internal static unsafe partial class ImGui
     /// whereas "str_id" denote a string that is only used as an ID and not normally displayed.
     /// push string into the ID stack (will hash string).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushID")]
-    public static partial void PushID(byte* str_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushID(byte* str_id);
 
     /// <summary>
     /// push string into the ID stack (will hash string).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushIDStr")]
-    public static partial void PushIDStr(byte* str_id_begin, byte* str_id_end);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushIDStr(byte* str_id_begin, byte* str_id_end);
 
     /// <summary>
     /// push pointer into the ID stack (will hash pointer).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushIDPtr")]
-    public static partial void PushIDPtr(nint ptr_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushIDPtr(nint ptr_id);
 
     /// <summary>
     /// push integer into the ID stack (will hash integer).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushIDInt")]
-    public static partial void PushIDInt(int int_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushIDInt(int int_id);
 
     /// <summary>
     /// pop from the ID stack.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PopID")]
-    public static partial void PopID();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopID();
 
     /// <summary>
     /// calculate unique ID (hash of whole ID stack + given parameter). e.g. if you want to query into ImGuiStorage yourself
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetID")]
-    public static partial ImGuiID GetID(byte* str_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiID ImGui_GetID(byte* str_id);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetIDStr")]
-    public static partial ImGuiID GetIDStr(byte* str_id_begin, byte* str_id_end);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiID ImGui_GetIDStr(byte* str_id_begin, byte* str_id_end);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetIDPtr")]
-    public static partial ImGuiID GetIDPtr(nint ptr_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiID ImGui_GetIDPtr(nint ptr_id);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetIDInt")]
-    public static partial ImGuiID GetIDInt(int int_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiID ImGui_GetIDInt(int int_id);
 
     /// <summary>
     /// raw text without formatting. Roughly equivalent to Text("%s", text) but: A) doesn't require null terminated string if 'text_end' is specified, B) it's faster, no memory copy is done, no buffer size limits, recommended for long chunks of text.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TextUnformattedEx")]
-    public static partial void TextUnformattedEx(byte* text, byte* text_end);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TextUnformattedEx(byte* text, byte* text_end);
 
     /// <summary>
     /// currently: formatted text with a horizontal line
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SeparatorText")]
-    public static partial void SeparatorText(byte* label);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SeparatorText(byte* label);
 
     /// <summary>
     /// button
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ButtonEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ButtonEx(byte* label, ImVec2 size);
+    public static partial bool ImGui_ButtonEx(byte* label, ImVec2 size);
 
     /// <summary>
     /// button with (FramePadding.y == 0) to easily embed within text
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SmallButton")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SmallButton(byte* label);
+    public static partial bool ImGui_SmallButton(byte* label);
 
     /// <summary>
     /// flexible button behavior without the visuals, frequently useful to build custom behaviors using the public api (along with IsItemActive, IsItemHovered, etc.)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InvisibleButton")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InvisibleButton(byte* str_id, ImVec2 size, ImGuiButtonFlags flags);
+    public static partial bool ImGui_InvisibleButton(byte* str_id, ImVec2 size, ImGuiButtonFlags flags);
 
     /// <summary>
     /// square button with an arrow shape
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ArrowButton")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ArrowButton(byte* str_id, ImGuiDir dir);
+    public static partial bool ImGui_ArrowButton(byte* str_id, ImGuiDir dir);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Checkbox")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool Checkbox(byte* label, bool* v);
+    public static partial bool ImGui_Checkbox(byte* label, bool* v);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CheckboxFlagsIntPtr")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool CheckboxFlagsIntPtr(byte* label, int* flags, int flags_value);
+    public static partial bool ImGui_CheckboxFlagsIntPtr(byte* label, int* flags, int flags_value);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CheckboxFlagsUintPtr")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool CheckboxFlagsUintPtr(byte* label, uint* flags, uint flags_value);
+    public static partial bool ImGui_CheckboxFlagsUintPtr(byte* label, uint* flags, uint flags_value);
 
     /// <summary>
     /// use with e.g. if (RadioButton("one", my_value==1)) { my_value = 1; }
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_RadioButton")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool RadioButton(byte* label, [MarshalAs(UnmanagedType.U1)] bool active);
+    public static partial bool ImGui_RadioButton(byte* label, [MarshalAs(UnmanagedType.U1)] bool active);
 
     /// <summary>
     /// shortcut to handle the above pattern when value is an integer
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_RadioButtonIntPtr")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool RadioButtonIntPtr(byte* label, int* v, int v_button);
+    public static partial bool ImGui_RadioButtonIntPtr(byte* label, int* v, int v_button);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ProgressBar")]
-    public static partial void ProgressBar(float fraction, ImVec2 size_arg, byte* overlay);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ProgressBar(float fraction, ImVec2 size_arg, byte* overlay);
 
     /// <summary>
     /// draw a small circle + keep the cursor on the same line. advance cursor x position by GetTreeNodeToLabelSpacing(), same distance that TreeNode() uses
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Bullet")]
-    public static partial void Bullet();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Bullet();
 
     /// <summary>
     /// hyperlink text button, return true when clicked
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TextLink")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TextLink(byte* label);
+    public static partial bool ImGui_TextLink(byte* label);
 
     /// <summary>
     /// hyperlink text button, automatically open file/url when clicked
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TextLinkOpenURLEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TextLinkOpenURLEx(byte* label, byte* url);
+    public static partial bool ImGui_TextLinkOpenURLEx(byte* label, byte* url);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ImageEx")]
-    public static partial void ImageEx(ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ImageEx(ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ImageWithBgEx")]
-    public static partial void ImageWithBgEx(ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1, ImVec4 bg_col, ImVec4 tint_col);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ImageWithBgEx(ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1, ImVec4 bg_col, ImVec4 tint_col);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ImageButtonEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImageButtonEx(byte* str_id, ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1, ImVec4 bg_col, ImVec4 tint_col);
+    public static partial bool ImGui_ImageButtonEx(byte* str_id, ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1, ImVec4 bg_col, ImVec4 tint_col);
 
     #endregion
 
@@ -955,233 +955,233 @@ internal static unsafe partial class ImGui
     /// - The BeginCombo()/EndCombo() api allows you to manage your contents and selection state however you want it, by creating e.g. Selectable() items.
     /// - The old Combo() api are helpers over BeginCombo()/EndCombo() which are kept available for convenience purpose. This is analogous to how ListBox are created.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginCombo")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginCombo(byte* label, byte* preview_value, ImGuiComboFlags flags);
+    public static partial bool ImGui_BeginCombo(byte* label, byte* preview_value, ImGuiComboFlags flags);
 
     /// <summary>
     /// only call EndCombo() if BeginCombo() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndCombo")]
-    public static partial void EndCombo();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndCombo();
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ComboCharEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ComboCharEx(byte* label, int* current_item, byte* items, int items_count, int popup_max_height_in_items);
+    public static partial bool ImGui_ComboCharEx(byte* label, int* current_item, byte* items, int items_count, int popup_max_height_in_items);
 
     /// <summary>
     /// Separate items with \0 within a string, end item-list with \0\0. e.g. "One\0Two\0Three\0"
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ComboEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ComboEx(byte* label, int* current_item, byte* items_separated_by_zeros, int popup_max_height_in_items);
+    public static partial bool ImGui_ComboEx(byte* label, int* current_item, byte* items_separated_by_zeros, int popup_max_height_in_items);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ComboCallbackEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ComboCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int popup_max_height_in_items);
-
-    /// <summary>
-    /// If v_min &gt;= v_max we have no bound
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloatEx")]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloatEx(byte* label, float* v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
-
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloat2Ex")]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloat2Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
-
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloat3Ex")]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloat3Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
-
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloat4Ex")]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloat4Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
-
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragFloatRange2Ex")]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragFloatRange2Ex(byte* label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, byte* format, byte* format_max, ImGuiSliderFlags flags);
+    public static partial bool ImGui_ComboCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int popup_max_height_in_items);
 
     /// <summary>
     /// If v_min &gt;= v_max we have no bound
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragIntEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragIntEx(byte* label, int* v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragFloatEx(byte* label, float* v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragInt2Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragInt2Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragFloat2Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragInt3Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragInt3Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragFloat3Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragInt4Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragInt4Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragFloat4Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragIntRange2Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragIntRange2Ex(byte* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, byte* format, byte* format_max, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragFloatRange2Ex(byte* label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, byte* format, byte* format_max, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragScalarEx")]
+    /// <summary>
+    /// If v_min &gt;= v_max we have no bound
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragScalarEx(byte* label, ImGuiDataType data_type, nint p_data, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragIntEx(byte* label, int* v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DragScalarNEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DragScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragInt2Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragInt3Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragInt4Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragIntRange2Ex(byte* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, byte* format, byte* format_max, ImGuiSliderFlags flags);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragScalarEx(byte* label, ImGuiDataType data_type, nint p_data, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// adjust format to decorate the value with a prefix or a suffix for in-slider labels or unit display.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderFloatEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderFloatEx(byte* label, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderFloatEx(byte* label, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderFloat2Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderFloat2Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderFloat2Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderFloat3Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderFloat3Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderFloat3Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderFloat4Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderFloat4Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderFloat4Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderAngleEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderAngleEx(byte* label, float* v_rad, float v_degrees_min, float v_degrees_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderAngleEx(byte* label, float* v_rad, float v_degrees_min, float v_degrees_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderIntEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderIntEx(byte* label, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderIntEx(byte* label, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderInt2Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderInt2Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderInt2Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderInt3Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderInt3Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderInt3Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderInt4Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderInt4Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderInt4Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderScalarEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SliderScalarNEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SliderScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_VSliderFloatEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool VSliderFloatEx(byte* label, ImVec2 size, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_VSliderFloatEx(byte* label, ImVec2 size, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_VSliderIntEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool VSliderIntEx(byte* label, ImVec2 size, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_VSliderIntEx(byte* label, ImVec2 size, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_VSliderScalarEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool VSliderScalarEx(byte* label, ImVec2 size, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_VSliderScalarEx(byte* label, ImVec2 size, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputTextEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputTextEx(byte* label, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
+    public static partial bool ImGui_InputTextEx(byte* label, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputTextMultilineEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputTextMultilineEx(byte* label, byte* buf, nuint buf_size, ImVec2 size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
+    public static partial bool ImGui_InputTextMultilineEx(byte* label, byte* buf, nuint buf_size, ImVec2 size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputTextWithHintEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputTextWithHintEx(byte* label, byte* hint, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
+    public static partial bool ImGui_InputTextWithHintEx(byte* label, byte* hint, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputFloatEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputFloatEx(byte* label, float* v, float step, float step_fast, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputFloatEx(byte* label, float* v, float step, float step_fast, byte* format, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputFloat2Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputFloat2Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputFloat2Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputFloat3Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputFloat3Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputFloat3Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputFloat4Ex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputFloat4Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputFloat4Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputIntEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputIntEx(byte* label, int* v, int step, int step_fast, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputIntEx(byte* label, int* v, int step, int step_fast, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputInt2")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputInt2(byte* label, int v, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputInt2(byte* label, int v, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputInt3")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputInt3(byte* label, int v, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputInt3(byte* label, int v, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputInt4")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputInt4(byte* label, int v, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputInt4(byte* label, int v, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputDoubleEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputDoubleEx(byte* label, double* v, double step, double step_fast, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputDoubleEx(byte* label, double* v, double step, double step_fast, byte* format, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputScalarEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_step, nint p_step_fast, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_step, nint p_step_fast, byte* format, ImGuiInputTextFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_InputScalarNEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool InputScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_step, nint p_step_fast, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_step, nint p_step_fast, byte* format, ImGuiInputTextFlags flags);
 
     /// <summary>
     /// Widgets: Color Editor/Picker (tip: the ColorEdit* functions have a little color square that can be left-clicked to open a picker, and right-clicked to open an option menu.)
     /// - Note that in C++ a 'float v[X]' function argument is the _same_ as 'float* v', the array syntax is just a way to document the number of elements that are expected to be accessible.
     /// - You can pass the address of a first float element out of a contiguous structure, e.g. &amp;myvector.x
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorEdit3")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorEdit3(byte* label, float col, ImGuiColorEditFlags flags);
+    public static partial bool ImGui_ColorEdit3(byte* label, float col, ImGuiColorEditFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorEdit4")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorEdit4(byte* label, float col, ImGuiColorEditFlags flags);
+    public static partial bool ImGui_ColorEdit4(byte* label, float col, ImGuiColorEditFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorPicker3")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorPicker3(byte* label, float col, ImGuiColorEditFlags flags);
+    public static partial bool ImGui_ColorPicker3(byte* label, float col, ImGuiColorEditFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorPicker4")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorPicker4(byte* label, float col, ImGuiColorEditFlags flags, float* ref_col);
+    public static partial bool ImGui_ColorPicker4(byte* label, float col, ImGuiColorEditFlags flags, float* ref_col);
 
     /// <summary>
     /// display a color square/button, hover for details, return true when pressed.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorButtonEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ColorButtonEx(byte* desc_id, ImVec4 col, ImGuiColorEditFlags flags, ImVec2 size);
+    public static partial bool ImGui_ColorButtonEx(byte* desc_id, ImVec4 col, ImGuiColorEditFlags flags, ImVec2 size);
 
     /// <summary>
     /// initialize current options (generally on application startup) if you want to select a default format, picker type, etc. User will be able to change many settings, unless you pass the _NoOptions flag to your calls.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetColorEditOptions")]
-    public static partial void SetColorEditOptions(ImGuiColorEditFlags flags);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetColorEditOptions(ImGuiColorEditFlags flags);
 
     #endregion
 
@@ -1191,93 +1191,93 @@ internal static unsafe partial class ImGui
     /// Widgets: Trees
     /// - TreeNode functions return true when the node is open, in which case you need to also call TreePop() when you are finished displaying the tree node contents.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TreeNode")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TreeNode(byte* label);
+    public static partial bool ImGui_TreeNode(byte* label);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TreeNodeEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TreeNodeEx(byte* label, ImGuiTreeNodeFlags flags);
+    public static partial bool ImGui_TreeNodeEx(byte* label, ImGuiTreeNodeFlags flags);
 
     /// <summary>
     /// ~ Indent()+PushID(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TreePush")]
-    public static partial void TreePush(byte* str_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TreePush(byte* str_id);
 
     /// <summary>
     /// "
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TreePushPtr")]
-    public static partial void TreePushPtr(nint ptr_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TreePushPtr(nint ptr_id);
 
     /// <summary>
     /// ~ Unindent()+PopID()
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TreePop")]
-    public static partial void TreePop();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TreePop();
 
     /// <summary>
     /// horizontal distance preceding label when using TreeNode*() or Bullet() == (g.FontSize + style.FramePadding.x*2) for a regular unframed TreeNode
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetTreeNodeToLabelSpacing")]
-    public static partial float GetTreeNodeToLabelSpacing();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetTreeNodeToLabelSpacing();
 
     /// <summary>
     /// if returning 'true' the header is open. doesn't indent nor push on ID stack. user doesn't have to call TreePop().
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CollapsingHeader")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool CollapsingHeader(byte* label, ImGuiTreeNodeFlags flags);
+    public static partial bool ImGui_CollapsingHeader(byte* label, ImGuiTreeNodeFlags flags);
 
     /// <summary>
     /// when 'p_visible != NULL': if '*p_visible==true' display an additional small close button on upper right of the header which will set the bool to false when clicked, if '*p_visible==false' don't display the header.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CollapsingHeaderBoolPtr")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool CollapsingHeaderBoolPtr(byte* label, bool* p_visible, ImGuiTreeNodeFlags flags);
+    public static partial bool ImGui_CollapsingHeaderBoolPtr(byte* label, bool* p_visible, ImGuiTreeNodeFlags flags);
 
     /// <summary>
     /// set next TreeNode/CollapsingHeader open state.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextItemOpen")]
-    public static partial void SetNextItemOpen([MarshalAs(UnmanagedType.U1)] bool is_open, ImGuiCond cond);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextItemOpen([MarshalAs(UnmanagedType.U1)] bool is_open, ImGuiCond cond);
 
     /// <summary>
     /// set id to use for open/close storage (default to same as item id).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextItemStorageID")]
-    public static partial void SetNextItemStorageID(ImGuiID storage_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextItemStorageID(ImGuiID storage_id);
 
     /// <summary>
     /// "bool selected" carry the selection state (read-only). Selectable() is clicked is returns true so you can modify your selection state. size.x==0.0: use remaining width, size.x&gt;0.0: specify width. size.y==0.0: use label height, size.y&gt;0.0: specify height
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SelectableEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SelectableEx(byte* label, [MarshalAs(UnmanagedType.U1)] bool selected, ImGuiSelectableFlags flags, ImVec2 size);
+    public static partial bool ImGui_SelectableEx(byte* label, [MarshalAs(UnmanagedType.U1)] bool selected, ImGuiSelectableFlags flags, ImVec2 size);
 
     /// <summary>
     /// "bool* p_selected" point to the selection state (read-write), as a convenient helper.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SelectableBoolPtrEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SelectableBoolPtrEx(byte* label, bool* p_selected, ImGuiSelectableFlags flags, ImVec2 size);
+    public static partial bool ImGui_SelectableBoolPtrEx(byte* label, bool* p_selected, ImGuiSelectableFlags flags, ImVec2 size);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginMultiSelectEx")]
-    public static partial ImGuiMultiSelectIO* BeginMultiSelectEx(ImGuiMultiSelectFlags flags, int selection_size, int items_count);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiMultiSelectIO* ImGui_BeginMultiSelectEx(ImGuiMultiSelectFlags flags, int selection_size, int items_count);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndMultiSelect")]
-    public static partial ImGuiMultiSelectIO* EndMultiSelect();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiMultiSelectIO* ImGui_EndMultiSelect();
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextItemSelectionUserData")]
-    public static partial void SetNextItemSelectionUserData(ImGuiSelectionUserData selection_user_data);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextItemSelectionUserData(ImGuiSelectionUserData selection_user_data);
 
     /// <summary>
     /// Was the last item selection state toggled? Useful if you need the per-item information _before_ reaching EndMultiSelect(). We only returns toggle _event_ in order to handle clipping correctly.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemToggledSelection")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemToggledSelection();
+    public static partial bool ImGui_IsItemToggledSelection();
 
     #endregion
 
@@ -1293,35 +1293,35 @@ internal static unsafe partial class ImGui
     /// - Choose frame height:  size.y &gt; 0.0f: custom  /  size.y &lt; 0.0f or -FLT_MIN: bottom-align  /  size.y = 0.0f (default): arbitrary default height which can fit ~7 items
     /// open a framed scrolling region
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginListBox")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginListBox(byte* label, ImVec2 size);
+    public static partial bool ImGui_BeginListBox(byte* label, ImVec2 size);
 
     /// <summary>
     /// only call EndListBox() if BeginListBox() returned true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndListBox")]
-    public static partial void EndListBox();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndListBox();
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ListBox")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ListBox(byte* label, int* current_item, byte* items, int items_count, int height_in_items);
+    public static partial bool ImGui_ListBox(byte* label, int* current_item, byte* items, int items_count, int height_in_items);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ListBoxCallbackEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ListBoxCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int height_in_items);
+    public static partial bool ImGui_ListBoxCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int height_in_items);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PlotLinesEx")]
-    public static partial void PlotLinesEx(byte* label, float* values, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PlotLinesEx(byte* label, float* values, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PlotLinesCallbackEx")]
-    public static partial void PlotLinesCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PlotLinesCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PlotHistogramEx")]
-    public static partial void PlotHistogramEx(byte* label, float* values, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PlotHistogramEx(byte* label, float* values, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PlotHistogramCallbackEx")]
-    public static partial void PlotHistogramCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PlotHistogramCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
 
     #endregion
 
@@ -1335,55 +1335,55 @@ internal static unsafe partial class ImGui
     /// - Not that MenuItem() keyboardshortcuts are displayed as a convenience but _not processed_ by Dear ImGui at the moment.
     /// append to menu-bar of current window (requires ImGuiWindowFlags_MenuBar flag set on parent window).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginMenuBar")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginMenuBar();
+    public static partial bool ImGui_BeginMenuBar();
 
     /// <summary>
     /// only call EndMenuBar() if BeginMenuBar() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndMenuBar")]
-    public static partial void EndMenuBar();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndMenuBar();
 
     /// <summary>
     /// create and append to a full screen menu-bar.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginMainMenuBar")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginMainMenuBar();
+    public static partial bool ImGui_BeginMainMenuBar();
 
     /// <summary>
     /// only call EndMainMenuBar() if BeginMainMenuBar() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndMainMenuBar")]
-    public static partial void EndMainMenuBar();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndMainMenuBar();
 
     /// <summary>
     /// create a sub-menu entry. only call EndMenu() if this returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginMenuEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginMenuEx(byte* label, [MarshalAs(UnmanagedType.U1)] bool enabled);
+    public static partial bool ImGui_BeginMenuEx(byte* label, [MarshalAs(UnmanagedType.U1)] bool enabled);
 
     /// <summary>
     /// only call EndMenu() if BeginMenu() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndMenu")]
-    public static partial void EndMenu();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndMenu();
 
     /// <summary>
     /// return true when activated.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_MenuItemEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool MenuItemEx(byte* label, byte* shortcut, [MarshalAs(UnmanagedType.U1)] bool selected, [MarshalAs(UnmanagedType.U1)] bool enabled);
+    public static partial bool ImGui_MenuItemEx(byte* label, byte* shortcut, [MarshalAs(UnmanagedType.U1)] bool selected, [MarshalAs(UnmanagedType.U1)] bool enabled);
 
     /// <summary>
     /// return true when activated + toggle (*p_selected) if p_selected != NULL
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_MenuItemBoolPtr")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool MenuItemBoolPtr(byte* label, byte* shortcut, bool* p_selected, [MarshalAs(UnmanagedType.U1)] bool enabled);
+    public static partial bool ImGui_MenuItemBoolPtr(byte* label, byte* shortcut, bool* p_selected, [MarshalAs(UnmanagedType.U1)] bool enabled);
 
     #endregion
 
@@ -1396,15 +1396,15 @@ internal static unsafe partial class ImGui
     /// - SetTooltip() is more or less a shortcut for the 'if (BeginTooltip()) { Text(...); EndTooltip(); }' idiom (with a subtlety that it discard any previously submitted tooltip)
     /// begin/append a tooltip window.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginTooltip")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginTooltip();
+    public static partial bool ImGui_BeginTooltip();
 
     /// <summary>
     /// only call EndTooltip() if BeginTooltip()/BeginItemTooltip() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndTooltip")]
-    public static partial void EndTooltip();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndTooltip();
 
     #endregion
 
@@ -1417,9 +1417,9 @@ internal static unsafe partial class ImGui
     /// - Where 'ImGuiHoveredFlags_ForTooltip' itself is a shortcut to use 'style.HoverFlagsForTooltipMouse' or 'style.HoverFlagsForTooltipNav' depending on active input type. For mouse it defaults to 'ImGuiHoveredFlags_Stationary | ImGuiHoveredFlags_DelayShort'.
     /// begin/append a tooltip window if preceding item was hovered.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginItemTooltip")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginItemTooltip();
+    public static partial bool ImGui_BeginItemTooltip();
 
     #endregion
 
@@ -1438,22 +1438,22 @@ internal static unsafe partial class ImGui
     /// - BeginPopupModal(): block every interaction behind the window, cannot be closed by user, add a dimming background, has a title bar.
     /// return true if the popup is open, and you can start outputting to it.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopup")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopup(byte* str_id, ImGuiWindowFlags flags);
+    public static partial bool ImGui_BeginPopup(byte* str_id, ImGuiWindowFlags flags);
 
     /// <summary>
     /// return true if the modal is open, and you can start outputting to it.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopupModal")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopupModal(byte* name, bool* p_open, ImGuiWindowFlags flags);
+    public static partial bool ImGui_BeginPopupModal(byte* name, bool* p_open, ImGuiWindowFlags flags);
 
     /// <summary>
     /// only call EndPopup() if BeginPopupXXX() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndPopup")]
-    public static partial void EndPopup();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndPopup();
 
     #endregion
 
@@ -1470,47 +1470,47 @@ internal static unsafe partial class ImGui
     /// - IMPORTANT: Notice that for OpenPopupOnItemClick() we exceptionally default flags to 1 (== ImGuiPopupFlags_MouseButtonRight) for backward compatibility with older API taking 'int mouse_button = 1' parameter
     /// call to mark popup as open (don't call every frame!).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_OpenPopup")]
-    public static partial void OpenPopup(byte* str_id, ImGuiPopupFlags popup_flags);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_OpenPopup(byte* str_id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
     /// id overload to facilitate calling from nested stacks
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_OpenPopupID")]
-    public static partial void OpenPopupID(ImGuiID id, ImGuiPopupFlags popup_flags);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_OpenPopupID(ImGuiID id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
     /// helper to open popup when clicked on last item. Default to ImGuiPopupFlags_MouseButtonRight == 1. (note: actually triggers on the mouse _released_ event to be consistent with popup behaviors)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_OpenPopupOnItemClick")]
-    public static partial void OpenPopupOnItemClick(byte* str_id, ImGuiPopupFlags popup_flags);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_OpenPopupOnItemClick(byte* str_id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
     /// manually close the popup we have begin-ed into.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CloseCurrentPopup")]
-    public static partial void CloseCurrentPopup();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_CloseCurrentPopup();
 
     /// <summary>
     /// open+begin popup when clicked on last item. Use str_id==NULL to associate the popup to previous item. If you want to use that on a non-interactive item such as Text() you need to pass in an explicit ID here. read comments in .cpp!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopupContextItemEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopupContextItemEx(byte* str_id, ImGuiPopupFlags popup_flags);
+    public static partial bool ImGui_BeginPopupContextItemEx(byte* str_id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
     /// open+begin popup when clicked on current window.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopupContextWindowEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopupContextWindowEx(byte* str_id, ImGuiPopupFlags popup_flags);
+    public static partial bool ImGui_BeginPopupContextWindowEx(byte* str_id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
     /// open+begin popup when clicked in void (where there are no windows).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginPopupContextVoidEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginPopupContextVoidEx(byte* str_id, ImGuiPopupFlags popup_flags);
+    public static partial bool ImGui_BeginPopupContextVoidEx(byte* str_id, ImGuiPopupFlags popup_flags);
 
     #endregion
 
@@ -1523,66 +1523,66 @@ internal static unsafe partial class ImGui
     /// - IsPopupOpen() with ImGuiPopupFlags_AnyPopupId + ImGuiPopupFlags_AnyPopupLevel: return true if any popup is open.
     /// return true if the popup is open.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsPopupOpen")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsPopupOpen(byte* str_id, ImGuiPopupFlags flags);
+    public static partial bool ImGui_IsPopupOpen(byte* str_id, ImGuiPopupFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginTableEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginTableEx(byte* str_id, int columns, ImGuiTableFlags flags, ImVec2 outer_size, float inner_width);
+    public static partial bool ImGui_BeginTableEx(byte* str_id, int columns, ImGuiTableFlags flags, ImVec2 outer_size, float inner_width);
 
     /// <summary>
     /// only call EndTable() if BeginTable() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndTable")]
-    public static partial void EndTable();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndTable();
 
     /// <summary>
     /// append into the first cell of a new row.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableNextRowEx")]
-    public static partial void TableNextRowEx(ImGuiTableRowFlags row_flags, float min_row_height);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableNextRowEx(ImGuiTableRowFlags row_flags, float min_row_height);
 
     /// <summary>
     /// append into the next column (or first column of next row if currently in last column). Return true when column is visible.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableNextColumn")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TableNextColumn();
+    public static partial bool ImGui_TableNextColumn();
 
     /// <summary>
     /// append into the specified column. Return true when column is visible.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableSetColumnIndex")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TableSetColumnIndex(int column_n);
+    public static partial bool ImGui_TableSetColumnIndex(int column_n);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableSetupColumnEx")]
-    public static partial void TableSetupColumnEx(byte* label, ImGuiTableColumnFlags flags, float init_width_or_weight, ImGuiID user_id);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableSetupColumnEx(byte* label, ImGuiTableColumnFlags flags, float init_width_or_weight, ImGuiID user_id);
 
     /// <summary>
     /// lock columns/rows so they stay visible when scrolled.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableSetupScrollFreeze")]
-    public static partial void TableSetupScrollFreeze(int cols, int rows);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableSetupScrollFreeze(int cols, int rows);
 
     /// <summary>
     /// submit one header cell manually (rarely used)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableHeader")]
-    public static partial void TableHeader(byte* label);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableHeader(byte* label);
 
     /// <summary>
     /// submit a row with headers cells based on data provided to TableSetupColumn() + submit context menu
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableHeadersRow")]
-    public static partial void TableHeadersRow();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableHeadersRow();
 
     /// <summary>
     /// submit a row with angled headers for every column with the ImGuiTableColumnFlags_AngledHeader flag. MUST BE FIRST ROW.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableAngledHeadersRow")]
-    public static partial void TableAngledHeadersRow();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableAngledHeadersRow();
 
     #endregion
 
@@ -1597,98 +1597,98 @@ internal static unsafe partial class ImGui
     /// - Functions args 'int column_n' treat the default value of -1 as the same as passing the current column index.
     /// get latest sort specs for the table (NULL if not sorting).  Lifetime: don't hold on this pointer over multiple frames or past any subsequent call to BeginTable().
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableGetSortSpecs")]
-    public static partial ImGuiTableSortSpecs* TableGetSortSpecs();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiTableSortSpecs* ImGui_TableGetSortSpecs();
 
     /// <summary>
     /// return number of columns (value passed to BeginTable)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableGetColumnCount")]
-    public static partial int TableGetColumnCount();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial int ImGui_TableGetColumnCount();
 
     /// <summary>
     /// return current column index.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableGetColumnIndex")]
-    public static partial int TableGetColumnIndex();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial int ImGui_TableGetColumnIndex();
 
     /// <summary>
     /// return current row index (header rows are accounted for)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableGetRowIndex")]
-    public static partial int TableGetRowIndex();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial int ImGui_TableGetRowIndex();
 
     /// <summary>
     /// return "" if column didn't have a name declared by TableSetupColumn(). Pass -1 to use current column.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableGetColumnName")]
-    public static partial byte* TableGetColumnName(int column_n);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial byte* ImGui_TableGetColumnName(int column_n);
 
     /// <summary>
     /// return column flags so you can query their Enabled/Visible/Sorted/Hovered status flags. Pass -1 to use current column.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableGetColumnFlags")]
-    public static partial ImGuiTableColumnFlags TableGetColumnFlags(int column_n);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiTableColumnFlags ImGui_TableGetColumnFlags(int column_n);
 
     /// <summary>
     /// change user accessible enabled/disabled state of a column. Set to false to hide the column. User can use the context menu to change this themselves (right-click in headers, or right-click in columns body with ImGuiTableFlags_ContextMenuInBody)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableSetColumnEnabled")]
-    public static partial void TableSetColumnEnabled(int column_n, [MarshalAs(UnmanagedType.U1)] bool v);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableSetColumnEnabled(int column_n, [MarshalAs(UnmanagedType.U1)] bool v);
 
     /// <summary>
     /// return hovered column. return -1 when table is not hovered. return columns_count if the unused space at the right of visible columns is hovered. Can also use (TableGetColumnFlags() &amp; ImGuiTableColumnFlags_IsHovered) instead.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableGetHoveredColumn")]
-    public static partial int TableGetHoveredColumn();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial int ImGui_TableGetHoveredColumn();
 
     /// <summary>
     /// change the color of a cell, row, or column. See ImGuiTableBgTarget_ flags for details.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TableSetBgColor")]
-    public static partial void TableSetBgColor(ImGuiTableBgTarget target, uint color, int column_n);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableSetBgColor(ImGuiTableBgTarget target, uint color, int column_n);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColumnsEx")]
-    public static partial void ColumnsEx(int count, byte* id, [MarshalAs(UnmanagedType.U1)] bool borders);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ColumnsEx(int count, byte* id, [MarshalAs(UnmanagedType.U1)] bool borders);
 
     /// <summary>
     /// next column, defaults to current row or next row if the current row is finished
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_NextColumn")]
-    public static partial void NextColumn();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_NextColumn();
 
     /// <summary>
     /// get current column index
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetColumnIndex")]
-    public static partial int GetColumnIndex();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial int ImGui_GetColumnIndex();
 
     /// <summary>
     /// get column width (in pixels). pass -1 to use current column
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetColumnWidth")]
-    public static partial float GetColumnWidth(int column_index);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetColumnWidth(int column_index);
 
     /// <summary>
     /// set column width (in pixels). pass -1 to use current column
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetColumnWidth")]
-    public static partial void SetColumnWidth(int column_index, float width);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetColumnWidth(int column_index, float width);
 
     /// <summary>
     /// get position of column line (in pixels, from the left side of the contents region). pass -1 to use current column, otherwise 0..GetColumnsCount() inclusive. column 0 is typically 0.0f
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetColumnOffset")]
-    public static partial float GetColumnOffset(int column_index);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial float ImGui_GetColumnOffset(int column_index);
 
     /// <summary>
     /// set position of column line (in pixels, from the left side of the contents region). pass -1 to use current column
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetColumnOffset")]
-    public static partial void SetColumnOffset(int column_index, float offset_x);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetColumnOffset(int column_index, float offset_x);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetColumnsCount")]
-    public static partial int GetColumnsCount();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial int ImGui_GetColumnsCount();
 
     #endregion
 
@@ -1699,41 +1699,41 @@ internal static unsafe partial class ImGui
     /// - Note: Tabs are automatically created by the docking system (when in 'docking' branch). Use this to create tab bars/tabs yourself.
     /// create and append into a TabBar
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginTabBar")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginTabBar(byte* str_id, ImGuiTabBarFlags flags);
+    public static partial bool ImGui_BeginTabBar(byte* str_id, ImGuiTabBarFlags flags);
 
     /// <summary>
     /// only call EndTabBar() if BeginTabBar() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndTabBar")]
-    public static partial void EndTabBar();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndTabBar();
 
     /// <summary>
     /// create a Tab. Returns true if the Tab is selected.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginTabItem")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginTabItem(byte* label, bool* p_open, ImGuiTabItemFlags flags);
+    public static partial bool ImGui_BeginTabItem(byte* label, bool* p_open, ImGuiTabItemFlags flags);
 
     /// <summary>
     /// only call EndTabItem() if BeginTabItem() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndTabItem")]
-    public static partial void EndTabItem();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndTabItem();
 
     /// <summary>
     /// create a Tab behaving like a button. return true when clicked. cannot be selected in the tab bar.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_TabItemButton")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool TabItemButton(byte* label, ImGuiTabItemFlags flags);
+    public static partial bool ImGui_TabItemButton(byte* label, ImGuiTabItemFlags flags);
 
     /// <summary>
     /// notify TabBar or Docking system of a closed tab/window ahead (useful to reduce visual flicker on reorderable tab bars). For tab-bar: call after BeginTabBar() and before Tab submissions. Otherwise call with a window name.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetTabItemClosed")]
-    public static partial void SetTabItemClosed(byte* tab_or_docked_window_label);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetTabItemClosed(byte* tab_or_docked_window_label);
 
     #endregion
 
@@ -1744,32 +1744,32 @@ internal static unsafe partial class ImGui
     /// - All text output from the interface can be captured into tty/file/clipboard. By default, tree nodes are automatically opened during logging.
     /// start logging to tty (stdout)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LogToTTY")]
-    public static partial void LogToTTY(int auto_open_depth);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_LogToTTY(int auto_open_depth);
 
     /// <summary>
     /// start logging to file
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LogToFile")]
-    public static partial void LogToFile(int auto_open_depth, byte* filename);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_LogToFile(int auto_open_depth, byte* filename);
 
     /// <summary>
     /// start logging to OS clipboard
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LogToClipboard")]
-    public static partial void LogToClipboard(int auto_open_depth);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_LogToClipboard(int auto_open_depth);
 
     /// <summary>
     /// stop logging (close file, etc.)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LogFinish")]
-    public static partial void LogFinish();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_LogFinish();
 
     /// <summary>
     /// helper to display buttons for logging to tty/file/clipboard
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LogButtons")]
-    public static partial void LogButtons();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_LogButtons();
 
     #endregion
 
@@ -1783,47 +1783,47 @@ internal static unsafe partial class ImGui
     /// - An item can be both drag source and drop target.
     /// call after submitting an item which may be dragged. when this return true, you can call SetDragDropPayload() + EndDragDropSource()
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginDragDropSource")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginDragDropSource(ImGuiDragDropFlags flags);
+    public static partial bool ImGui_BeginDragDropSource(ImGuiDragDropFlags flags);
 
     /// <summary>
     /// type is a user defined string of maximum 32 characters. Strings starting with '_' are reserved for dear imgui internal types. Data is copied and held by imgui. Return true when payload has been accepted.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetDragDropPayload")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool SetDragDropPayload(byte* type, nint data, nuint sz, ImGuiCond cond);
+    public static partial bool ImGui_SetDragDropPayload(byte* type, nint data, nuint sz, ImGuiCond cond);
 
     /// <summary>
     /// only call EndDragDropSource() if BeginDragDropSource() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndDragDropSource")]
-    public static partial void EndDragDropSource();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndDragDropSource();
 
     /// <summary>
     /// call after submitting an item that may receive a payload. If this returns true, you can call AcceptDragDropPayload() + EndDragDropTarget()
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginDragDropTarget")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool BeginDragDropTarget();
+    public static partial bool ImGui_BeginDragDropTarget();
 
     /// <summary>
     /// accept contents of a given type. If ImGuiDragDropFlags_AcceptBeforeDelivery is set you can peek into the payload before the mouse button is released.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_AcceptDragDropPayload")]
-    public static partial ImGuiPayload* AcceptDragDropPayload(byte* type, ImGuiDragDropFlags flags);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiPayload* ImGui_AcceptDragDropPayload(byte* type, ImGuiDragDropFlags flags);
 
     /// <summary>
     /// only call EndDragDropTarget() if BeginDragDropTarget() returns true!
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndDragDropTarget")]
-    public static partial void EndDragDropTarget();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndDragDropTarget();
 
     /// <summary>
     /// peek directly into the current payload from anywhere. returns NULL when drag and drop is finished or inactive. use ImGuiPayload::IsDataType() to test for the payload type.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetDragDropPayload")]
-    public static partial ImGuiPayload* GetDragDropPayload();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiPayload* ImGui_GetDragDropPayload();
 
     #endregion
 
@@ -1836,11 +1836,11 @@ internal static unsafe partial class ImGui
     /// - Tooltips windows are automatically opted out of disabling. Note that IsItemHovered() by default returns false on disabled items, unless using ImGuiHoveredFlags_AllowWhenDisabled.
     /// - BeginDisabled(false)/EndDisabled() essentially does nothing but is provided to facilitate use of boolean expressions (as a micro-optimization: if you have tens of thousands of BeginDisabled(false)/EndDisabled() pairs, you might want to reformulate your code to avoid making those calls)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_BeginDisabled")]
-    public static partial void BeginDisabled([MarshalAs(UnmanagedType.U1)] bool disabled);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_BeginDisabled([MarshalAs(UnmanagedType.U1)] bool disabled);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_EndDisabled")]
-    public static partial void EndDisabled();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_EndDisabled();
 
     #endregion
 
@@ -1850,11 +1850,11 @@ internal static unsafe partial class ImGui
     /// Clipping
     /// - Mouse hovering is affected by ImGui::PushClipRect() calls, unlike direct calls to ImDrawList::PushClipRect() which are render only.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PushClipRect")]
-    public static partial void PushClipRect(ImVec2 clip_rect_min, ImVec2 clip_rect_max, [MarshalAs(UnmanagedType.U1)] bool intersect_with_current_clip_rect);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PushClipRect(ImVec2 clip_rect_min, ImVec2 clip_rect_max, [MarshalAs(UnmanagedType.U1)] bool intersect_with_current_clip_rect);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_PopClipRect")]
-    public static partial void PopClipRect();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopClipRect();
 
     #endregion
 
@@ -1864,14 +1864,14 @@ internal static unsafe partial class ImGui
     /// Focus, Activation
     /// make last item the default focused item of a newly appearing window.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetItemDefaultFocus")]
-    public static partial void SetItemDefaultFocus();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetItemDefaultFocus();
 
     /// <summary>
     /// focus keyboard on the next widget. Use positive 'offset' to access sub components of a multiple component widget. Use -1 to access previous widget.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetKeyboardFocusHereEx")]
-    public static partial void SetKeyboardFocusHereEx(int offset);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetKeyboardFocusHereEx(int offset);
 
     #endregion
 
@@ -1881,8 +1881,8 @@ internal static unsafe partial class ImGui
     /// Keyboard/Gamepad Navigation
     /// alter visibility of keyboard/gamepad cursor. by default: show when using an arrow key, hide when clicking with mouse.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNavCursorVisible")]
-    public static partial void SetNavCursorVisible([MarshalAs(UnmanagedType.U1)] bool visible);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNavCursorVisible([MarshalAs(UnmanagedType.U1)] bool visible);
 
     #endregion
 
@@ -1892,8 +1892,8 @@ internal static unsafe partial class ImGui
     /// Overlapping mode
     /// allow next item to be overlapped by a subsequent item. Useful with invisible buttons, selectable, treenode covering an area where subsequent items may need to be added. Note that both Selectable() and TreeNode() have dedicated flags doing this.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextItemAllowOverlap")]
-    public static partial void SetNextItemAllowOverlap();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextItemAllowOverlap();
 
     #endregion
 
@@ -1905,117 +1905,117 @@ internal static unsafe partial class ImGui
     /// - See Demo Window under "Widgets-&gt;Querying Status" for an interactive visualization of most of those functions.
     /// is the last item hovered? (and usable, aka not blocked by a popup, etc.). See ImGuiHoveredFlags for more options.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemHovered")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemHovered(ImGuiHoveredFlags flags);
+    public static partial bool ImGui_IsItemHovered(ImGuiHoveredFlags flags);
 
     /// <summary>
     /// is the last item active? (e.g. button being held, text field being edited. This will continuously return true while holding mouse button on an item. Items that don't interact will always return false)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemActive")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemActive();
+    public static partial bool ImGui_IsItemActive();
 
     /// <summary>
     /// is the last item focused for keyboard/gamepad navigation?
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemFocused")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemFocused();
+    public static partial bool ImGui_IsItemFocused();
 
     /// <summary>
     /// is the last item hovered and mouse clicked on? (**)  == IsMouseClicked(mouse_button) &amp;&amp; IsItemHovered()Important. (**) this is NOT equivalent to the behavior of e.g. Button(). Read comments in function definition.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemClickedEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemClickedEx(ImGuiMouseButton mouse_button);
+    public static partial bool ImGui_IsItemClickedEx(ImGuiMouseButton mouse_button);
 
     /// <summary>
     /// is the last item visible? (items may be out of sight because of clipping/scrolling)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemVisible")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemVisible();
+    public static partial bool ImGui_IsItemVisible();
 
     /// <summary>
     /// did the last item modify its underlying value this frame? or was pressed? This is generally the same as the "bool" return value of many widgets.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemEdited")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemEdited();
+    public static partial bool ImGui_IsItemEdited();
 
     /// <summary>
     /// was the last item just made active (item was previously inactive).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemActivated")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemActivated();
+    public static partial bool ImGui_IsItemActivated();
 
     /// <summary>
     /// was the last item just made inactive (item was previously active). Useful for Undo/Redo patterns with widgets that require continuous editing.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemDeactivated")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemDeactivated();
+    public static partial bool ImGui_IsItemDeactivated();
 
     /// <summary>
     /// was the last item just made inactive and made a value change when it was active? (e.g. Slider/Drag moved). Useful for Undo/Redo patterns with widgets that require continuous editing. Note that you may get false positives (some widgets such as Combo()/ListBox()/Selectable() will return true even when clicking an already selected item).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemDeactivatedAfterEdit")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemDeactivatedAfterEdit();
+    public static partial bool ImGui_IsItemDeactivatedAfterEdit();
 
     /// <summary>
     /// was the last item open state toggled? set by TreeNode().
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsItemToggledOpen")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsItemToggledOpen();
+    public static partial bool ImGui_IsItemToggledOpen();
 
     /// <summary>
     /// is any item hovered?
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsAnyItemHovered")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsAnyItemHovered();
+    public static partial bool ImGui_IsAnyItemHovered();
 
     /// <summary>
     /// is any item active?
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsAnyItemActive")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsAnyItemActive();
+    public static partial bool ImGui_IsAnyItemActive();
 
     /// <summary>
     /// is any item focused?
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsAnyItemFocused")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsAnyItemFocused();
+    public static partial bool ImGui_IsAnyItemFocused();
 
     /// <summary>
     /// get ID of last item (~~ often same ImGui::GetID(label) beforehand)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetItemID")]
-    public static partial ImGuiID GetItemID();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiID ImGui_GetItemID();
 
     /// <summary>
     /// get upper-left bounding rectangle of the last item (screen space)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetItemRectMin")]
-    public static partial ImVec2 GetItemRectMin();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetItemRectMin();
 
     /// <summary>
     /// get lower-right bounding rectangle of the last item (screen space)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetItemRectMax")]
-    public static partial ImVec2 GetItemRectMax();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetItemRectMax();
 
     /// <summary>
     /// get size of last item
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetItemRectSize")]
-    public static partial ImVec2 GetItemRectSize();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetItemRectSize();
 
     #endregion
 
@@ -2028,8 +2028,8 @@ internal static unsafe partial class ImGui
     /// - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
     /// return primary/default viewport. This can never be NULL.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetMainViewport")]
-    public static partial ImGuiViewport* GetMainViewport();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiViewport* ImGui_GetMainViewport();
 
     #endregion
 
@@ -2039,14 +2039,14 @@ internal static unsafe partial class ImGui
     /// Background/Foreground Draw Lists
     /// this draw list will be the first rendered one. Useful to quickly draw shapes/text behind dear imgui contents.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetBackgroundDrawList")]
-    public static partial ImDrawList* GetBackgroundDrawList();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImDrawList* ImGui_GetBackgroundDrawList();
 
     /// <summary>
     /// this draw list will be the last rendered one. Useful to quickly draw shapes/text over dear imgui contents.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetForegroundDrawList")]
-    public static partial ImDrawList* GetForegroundDrawList();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImDrawList* ImGui_GetForegroundDrawList();
 
     #endregion
 
@@ -2056,52 +2056,52 @@ internal static unsafe partial class ImGui
     /// Miscellaneous Utilities
     /// test if rectangle (of given size, starting from cursor position) is visible / not clipped.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsRectVisibleBySize")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsRectVisibleBySize(ImVec2 size);
+    public static partial bool ImGui_IsRectVisibleBySize(ImVec2 size);
 
     /// <summary>
     /// test if rectangle (in screen space) is visible / not clipped. to perform coarse clipping on user's side.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsRectVisible")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsRectVisible(ImVec2 rect_min, ImVec2 rect_max);
+    public static partial bool ImGui_IsRectVisible(ImVec2 rect_min, ImVec2 rect_max);
 
     /// <summary>
     /// get global imgui time. incremented by io.DeltaTime every frame.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetTime")]
-    public static partial double GetTime();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial double ImGui_GetTime();
 
     /// <summary>
     /// get global imgui frame count. incremented by 1 every frame.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetFrameCount")]
-    public static partial int GetFrameCount();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial int ImGui_GetFrameCount();
 
     /// <summary>
     /// you may use this when creating your own ImDrawList instances.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetDrawListSharedData")]
-    public static partial ImDrawListSharedData* GetDrawListSharedData();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImDrawListSharedData* ImGui_GetDrawListSharedData();
 
     /// <summary>
     /// get a string corresponding to the enum value (for display, saving, etc.).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetStyleColorName")]
-    public static partial byte* GetStyleColorName(ImGuiCol idx);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial byte* ImGui_GetStyleColorName(ImGuiCol idx);
 
     /// <summary>
     /// replace current window storage with our own (if you want to manipulate it yourself, typically clear subsection of it)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetStateStorage")]
-    public static partial void SetStateStorage(ImGuiStorage* storage);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetStateStorage(ImGuiStorage* storage);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetStateStorage")]
-    public static partial ImGuiStorage* GetStateStorage();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiStorage* ImGui_GetStateStorage();
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_CalcTextSizeEx")]
-    public static partial ImVec2 CalcTextSizeEx(byte* text, byte* text_end, [MarshalAs(UnmanagedType.U1)] bool hide_text_after_double_hash, float wrap_width);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_CalcTextSizeEx(byte* text, byte* text_end, [MarshalAs(UnmanagedType.U1)] bool hide_text_after_double_hash, float wrap_width);
 
     #endregion
 
@@ -2110,17 +2110,17 @@ internal static unsafe partial class ImGui
     /// <summary>
     /// Color Utilities
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorConvertU32ToFloat4")]
-    public static partial ImVec4 ColorConvertU32ToFloat4(uint @in);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec4 ImGui_ColorConvertU32ToFloat4(uint @in);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorConvertFloat4ToU32")]
-    public static partial uint ColorConvertFloat4ToU32(ImVec4 @in);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial uint ImGui_ColorConvertFloat4ToU32(ImVec4 @in);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorConvertRGBtoHSV")]
-    public static partial void ColorConvertRGBtoHSV(float r, float g, float b, float* out_h, float* out_s, float* out_v);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ColorConvertRGBtoHSV(float r, float g, float b, float* out_h, float* out_s, float* out_v);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ColorConvertHSVtoRGB")]
-    public static partial void ColorConvertHSVtoRGB(float h, float s, float v, float* out_r, float* out_g, float* out_b);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ColorConvertHSVtoRGB(float h, float s, float v, float* out_r, float* out_g, float* out_b);
 
     #endregion
 
@@ -2133,48 +2133,48 @@ internal static unsafe partial class ImGui
     /// - (legacy: any use of ImGuiKey will assert when key &lt; 512 to detect passing legacy native/user indices)
     /// is key being held.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsKeyDown")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsKeyDown(ImGuiKey key);
+    public static partial bool ImGui_IsKeyDown(ImGuiKey key);
 
     /// <summary>
     /// was key pressed (went from !Down to Down)? if repeat=true, uses io.KeyRepeatDelay / KeyRepeatRate
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsKeyPressedEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsKeyPressedEx(ImGuiKey key, [MarshalAs(UnmanagedType.U1)] bool repeat);
+    public static partial bool ImGui_IsKeyPressedEx(ImGuiKey key, [MarshalAs(UnmanagedType.U1)] bool repeat);
 
     /// <summary>
     /// was key released (went from Down to !Down)?
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsKeyReleased")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsKeyReleased(ImGuiKey key);
+    public static partial bool ImGui_IsKeyReleased(ImGuiKey key);
 
     /// <summary>
     /// was key chord (mods + key) pressed, e.g. you can pass 'ImGuiMod_Ctrl | ImGuiKey_S' as a key-chord. This doesn't do any routing or focus check, please consider using Shortcut() function instead.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsKeyChordPressed")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsKeyChordPressed(ImGuiKeyChord key_chord);
+    public static partial bool ImGui_IsKeyChordPressed(ImGuiKeyChord key_chord);
 
     /// <summary>
     /// uses provided repeat rate/delay. return a count, most often 0 or 1 but might be &gt;1 if RepeatRate is small enough that DeltaTime &gt; RepeatRate
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetKeyPressedAmount")]
-    public static partial int GetKeyPressedAmount(ImGuiKey key, float repeat_delay, float rate);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial int ImGui_GetKeyPressedAmount(ImGuiKey key, float repeat_delay, float rate);
 
     /// <summary>
     /// [DEBUG] returns English name of the key. Those names are provided for debugging purpose and are not meant to be saved persistently nor compared.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetKeyName")]
-    public static partial byte* GetKeyName(ImGuiKey key);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial byte* ImGui_GetKeyName(ImGuiKey key);
 
     /// <summary>
     /// Override io.WantCaptureKeyboard flag next frame (said flag is left for your application to handle, typically when true it instructs your app to ignore inputs). e.g. force capture keyboard when your widget is being hovered. This is equivalent to setting "io.WantCaptureKeyboard = want_capture_keyboard"; after the next NewFrame() call.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextFrameWantCaptureKeyboard")]
-    public static partial void SetNextFrameWantCaptureKeyboard([MarshalAs(UnmanagedType.U1)] bool want_capture_keyboard);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextFrameWantCaptureKeyboard([MarshalAs(UnmanagedType.U1)] bool want_capture_keyboard);
 
     #endregion
 
@@ -2197,12 +2197,12 @@ internal static unsafe partial class ImGui
     /// - Shortcut() submits a route, routes are resolved, if it currently can be routed it calls IsKeyChordPressed() -&gt; function has (desirable) side-effects as it can prevents another call from getting the route.
     /// - Visualize registered routes in 'Metrics/Debugger-&gt;Inputs'.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_Shortcut")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool Shortcut(ImGuiKeyChord key_chord, ImGuiInputFlags flags);
+    public static partial bool ImGui_Shortcut(ImGuiKeyChord key_chord, ImGuiInputFlags flags);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextItemShortcut")]
-    public static partial void SetNextItemShortcut(ImGuiKeyChord key_chord, ImGuiInputFlags flags);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextItemShortcut(ImGuiKeyChord key_chord, ImGuiInputFlags flags);
 
     #endregion
 
@@ -2217,8 +2217,8 @@ internal static unsafe partial class ImGui
     /// - Many related features are still in imgui_internal.h. For instance, most IsKeyXXX()/IsMouseXXX() functions have an owner-id-aware version.
     /// Set key owner to last item ID if it is hovered or active. Equivalent to 'if (IsItemHovered() || IsItemActive()) { SetKeyOwner(key, GetItemID());'.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetItemKeyOwner")]
-    public static partial void SetItemKeyOwner(ImGuiKey key);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetItemKeyOwner(ImGuiKey key);
 
     #endregion
 
@@ -2231,110 +2231,110 @@ internal static unsafe partial class ImGui
     /// - Dragging operations are only reported after mouse has moved a certain distance away from the initial clicking position (see 'lock_threshold' and 'io.MouseDraggingThreshold')
     /// is mouse button held?
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsMouseDown")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsMouseDown(ImGuiMouseButton button);
+    public static partial bool ImGui_IsMouseDown(ImGuiMouseButton button);
 
     /// <summary>
     /// did mouse button clicked? (went from !Down to Down). Same as GetMouseClickedCount() == 1.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsMouseClickedEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsMouseClickedEx(ImGuiMouseButton button, [MarshalAs(UnmanagedType.U1)] bool repeat);
+    public static partial bool ImGui_IsMouseClickedEx(ImGuiMouseButton button, [MarshalAs(UnmanagedType.U1)] bool repeat);
 
     /// <summary>
     /// did mouse button released? (went from Down to !Down)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsMouseReleased")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsMouseReleased(ImGuiMouseButton button);
+    public static partial bool ImGui_IsMouseReleased(ImGuiMouseButton button);
 
     /// <summary>
     /// did mouse button double-clicked? Same as GetMouseClickedCount() == 2. (note that a double-click will also report IsMouseClicked() == true)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsMouseDoubleClicked")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsMouseDoubleClicked(ImGuiMouseButton button);
+    public static partial bool ImGui_IsMouseDoubleClicked(ImGuiMouseButton button);
 
     /// <summary>
     /// delayed mouse release (use very sparingly!). Generally used with 'delay &gt;= io.MouseDoubleClickTime' + combined with a 'io.MouseClickedLastCount==1' test. This is a very rarely used UI idiom, but some apps use this: e.g. MS Explorer single click on an icon to rename.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsMouseReleasedWithDelay")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsMouseReleasedWithDelay(ImGuiMouseButton button, float delay);
+    public static partial bool ImGui_IsMouseReleasedWithDelay(ImGuiMouseButton button, float delay);
 
     /// <summary>
     /// return the number of successive mouse-clicks at the time where a click happen (otherwise 0).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetMouseClickedCount")]
-    public static partial int GetMouseClickedCount(ImGuiMouseButton button);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial int ImGui_GetMouseClickedCount(ImGuiMouseButton button);
 
     /// <summary>
     /// is mouse hovering given bounding rect (in screen space). clipped by current clipping settings, but disregarding of other consideration of focus/window ordering/popup-block.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsMouseHoveringRectEx")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsMouseHoveringRectEx(ImVec2 r_min, ImVec2 r_max, [MarshalAs(UnmanagedType.U1)] bool clip);
+    public static partial bool ImGui_IsMouseHoveringRectEx(ImVec2 r_min, ImVec2 r_max, [MarshalAs(UnmanagedType.U1)] bool clip);
 
     /// <summary>
     /// by convention we use (-FLT_MAX,-FLT_MAX) to denote that there is no mouse available
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsMousePosValid")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsMousePosValid(ImVec2* mouse_pos);
+    public static partial bool ImGui_IsMousePosValid(ImVec2* mouse_pos);
 
     /// <summary>
     /// [WILL OBSOLETE] is any mouse button held? This was designed for backends, but prefer having backend maintain a mask of held mouse buttons, because upcoming input queue system will make this invalid.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsAnyMouseDown")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsAnyMouseDown();
+    public static partial bool ImGui_IsAnyMouseDown();
 
     /// <summary>
     /// shortcut to ImGui::GetIO().MousePos provided by user, to be consistent with other calls
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetMousePos")]
-    public static partial ImVec2 GetMousePos();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetMousePos();
 
     /// <summary>
     /// retrieve mouse position at the time of opening popup we have BeginPopup() into (helper to avoid user backing that value themselves)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetMousePosOnOpeningCurrentPopup")]
-    public static partial ImVec2 GetMousePosOnOpeningCurrentPopup();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetMousePosOnOpeningCurrentPopup();
 
     /// <summary>
     /// is mouse dragging? (uses io.MouseDraggingThreshold if lock_threshold &lt; 0.0f)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_IsMouseDragging")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool IsMouseDragging(ImGuiMouseButton button, float lock_threshold);
+    public static partial bool ImGui_IsMouseDragging(ImGuiMouseButton button, float lock_threshold);
 
     /// <summary>
     /// return the delta from the initial clicking position while the mouse button is pressed or was just released. This is locked and return 0.0f until the mouse moves past a distance threshold at least once (uses io.MouseDraggingThreshold if lock_threshold &lt; 0.0f)
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetMouseDragDelta")]
-    public static partial ImVec2 GetMouseDragDelta(ImGuiMouseButton button, float lock_threshold);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_GetMouseDragDelta(ImGuiMouseButton button, float lock_threshold);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_ResetMouseDragDeltaEx")]
-    public static partial void ResetMouseDragDeltaEx(ImGuiMouseButton button);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ResetMouseDragDeltaEx(ImGuiMouseButton button);
 
     /// <summary>
     /// get desired mouse cursor shape. Important: reset in ImGui::NewFrame(), this is updated during the frame. valid before Render(). If you use software rendering by setting io.MouseDrawCursor ImGui will render those for you
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetMouseCursor")]
-    public static partial ImGuiMouseCursor GetMouseCursor();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiMouseCursor ImGui_GetMouseCursor();
 
     /// <summary>
     /// set desired mouse cursor shape
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetMouseCursor")]
-    public static partial void SetMouseCursor(ImGuiMouseCursor cursor_type);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetMouseCursor(ImGuiMouseCursor cursor_type);
 
     /// <summary>
     /// Override io.WantCaptureMouse flag next frame (said flag is left for your application to handle, typical when true it instructs your app to ignore inputs). This is equivalent to setting "io.WantCaptureMouse = want_capture_mouse;" after the next NewFrame() call.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetNextFrameWantCaptureMouse")]
-    public static partial void SetNextFrameWantCaptureMouse([MarshalAs(UnmanagedType.U1)] bool want_capture_mouse);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextFrameWantCaptureMouse([MarshalAs(UnmanagedType.U1)] bool want_capture_mouse);
 
     #endregion
 
@@ -2344,11 +2344,11 @@ internal static unsafe partial class ImGui
     /// Clipboard Utilities
     /// - Also see the LogToClipboard() function to capture GUI into clipboard, or easily output text data to the clipboard.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetClipboardText")]
-    public static partial byte* GetClipboardText();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial byte* ImGui_GetClipboardText();
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetClipboardText")]
-    public static partial void SetClipboardText(byte* text);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetClipboardText(byte* text);
 
     #endregion
 
@@ -2361,26 +2361,26 @@ internal static unsafe partial class ImGui
     /// - Important: default value "imgui.ini" is relative to current working dir! Most apps will want to lock this to an absolute path (e.g. same path as executables).
     /// call after CreateContext() and before the first call to NewFrame(). NewFrame() automatically calls LoadIniSettingsFromDisk(io.IniFilename).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LoadIniSettingsFromDisk")]
-    public static partial void LoadIniSettingsFromDisk(byte* ini_filename);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_LoadIniSettingsFromDisk(byte* ini_filename);
 
     /// <summary>
     /// call after CreateContext() and before the first call to NewFrame() to provide .ini data from your own data source.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_LoadIniSettingsFromMemory")]
-    public static partial void LoadIniSettingsFromMemory(byte* ini_data, nuint ini_size);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_LoadIniSettingsFromMemory(byte* ini_data, nuint ini_size);
 
     /// <summary>
     /// this is automatically called (if io.IniFilename is not empty) a few seconds after any modification that should be reflected in the .ini file (and also by DestroyContext).
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SaveIniSettingsToDisk")]
-    public static partial void SaveIniSettingsToDisk(byte* ini_filename);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SaveIniSettingsToDisk(byte* ini_filename);
 
     /// <summary>
     /// return a zero-terminated string with the .ini data which you can save by your own mean. call when io.WantSaveIniSettings is set, then save data by your own mean and clear io.WantSaveIniSettings.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SaveIniSettingsToMemory")]
-    public static partial byte* SaveIniSettingsToMemory(nuint* out_ini_size);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial byte* ImGui_SaveIniSettingsToMemory(nuint* out_ini_size);
 
     #endregion
 
@@ -2390,21 +2390,21 @@ internal static unsafe partial class ImGui
     /// Debug Utilities
     /// - Your main debugging friend is the ShowMetricsWindow() function, which is also accessible from Demo-&gt;Tools-&gt;Metrics Debugger
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DebugTextEncoding")]
-    public static partial void DebugTextEncoding(byte* text);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_DebugTextEncoding(byte* text);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DebugFlashStyleColor")]
-    public static partial void DebugFlashStyleColor(ImGuiCol idx);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_DebugFlashStyleColor(ImGuiCol idx);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DebugStartItemPicker")]
-    public static partial void DebugStartItemPicker();
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_DebugStartItemPicker();
 
     /// <summary>
     /// This is called by IMGUI_CHECKVERSION() macro.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_DebugCheckVersionAndDataLayout")]
+    [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool DebugCheckVersionAndDataLayout(byte* version_str, nuint sz_io, nuint sz_style, nuint sz_vec2, nuint sz_vec4, nuint sz_drawvert, nuint sz_drawidx);
+    public static partial bool ImGui_DebugCheckVersionAndDataLayout(byte* version_str, nuint sz_io, nuint sz_style, nuint sz_vec2, nuint sz_vec4, nuint sz_drawvert, nuint sz_drawidx);
 
     #endregion
 
@@ -2416,17 +2416,17 @@ internal static unsafe partial class ImGui
     /// - DLL users: heaps and globals are not shared across DLL boundaries! You will need to call SetCurrentContext() + SetAllocatorFunctions()
     /// for each static/DLL boundary you are calling from. Read "Context and Memory Allocators" section of imgui.cpp for more details.
     /// </summary>
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_SetAllocatorFunctions")]
-    public static partial void SetAllocatorFunctions(ImGuiMemAllocFunc alloc_func, ImGuiMemFreeFunc free_func, nint user_data);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetAllocatorFunctions(ImGuiMemAllocFunc alloc_func, ImGuiMemFreeFunc free_func, nint user_data);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_GetAllocatorFunctions")]
-    public static partial void GetAllocatorFunctions(nint p_alloc_func, nint p_free_func, nint p_user_data);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_GetAllocatorFunctions(nint p_alloc_func, nint p_free_func, nint p_user_data);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_MemAlloc")]
-    public static partial nint MemAlloc(nuint size);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial nint ImGui_MemAlloc(nuint size);
 
-    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGui_MemFree")]
-    public static partial void MemFree(nint ptr);
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_MemFree(nint ptr);
 
     /// <summary>
     /// Construct a zero-size ImVector&lt;&gt; (of any type). This is primarily useful when calling ImFontGlyphRangesBuilder_BuildRanges()

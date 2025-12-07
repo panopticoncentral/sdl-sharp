@@ -26,7 +26,7 @@ public static unsafe class SDLRenderer3Backend
     public static bool Init(Renderer renderer)
     {
         ArgumentNullException.ThrowIfNull(renderer);
-        return SDLRenderer3.Init(renderer.Handle);
+        return ImGuiSdl3Renderer.ImGuiSdl3RendererInit(renderer.Handle);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void Shutdown()
     {
-        SDLRenderer3.Shutdown();
+        ImGuiSdl3Renderer.ImGuiSdl3RendererShutdown();
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void NewFrame()
     {
-        SDLRenderer3.NewFrame();
+        ImGuiSdl3Renderer.ImGuiSdl3RendererNewFrame();
     }
 
     /// <summary>
@@ -63,8 +63,8 @@ public static unsafe class SDLRenderer3Backend
     public static void RenderDrawData(Renderer renderer)
     {
         ArgumentNullException.ThrowIfNull(renderer);
-        var drawData = ImGuiNative.GetDrawData();
-        SDLRenderer3.RenderDrawData(drawData, renderer.Handle);
+        ImDrawData* drawData = ImGuiNative.ImGui_GetDrawData();
+        ImGuiSdl3Renderer.ImGuiSdl3RendererRenderDrawData(drawData, renderer.Handle);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void CreateDeviceObjects()
     {
-        SDLRenderer3.CreateDeviceObjects();
+        ImGuiSdl3Renderer.ImGuiSdl3RendererCreateDeviceObjects();
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void DestroyDeviceObjects()
     {
-        SDLRenderer3.DestroyDeviceObjects();
+        ImGuiSdl3Renderer.ImGuiSdl3RendererDestroyDeviceObjects();
     }
 
     /// <summary>
@@ -103,6 +103,6 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void UpdateTexture(ImTextureData* textureData)
     {
-        SDLRenderer3.UpdateTexture(textureData);
+        ImGuiSdl3Renderer.ImGuiSdl3RendererUpdateTexture(textureData);
     }
 }

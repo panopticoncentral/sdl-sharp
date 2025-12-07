@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Text;
 using Sdl3Sharp.ImGui.Native;
 
 using ImGuiNative = Sdl3Sharp.ImGui.Native.ImGui;
@@ -27,7 +28,7 @@ public unsafe sealed class Context : IDisposable
     /// </remarks>
     public static Context CreateContext(FontAtlas? sharedFontAtlas = null)
     {
-        return new(ImGuiNative.CreateContext(sharedFontAtlas == null ? null : sharedFontAtlas.Native), true);
+        return new(ImGuiNative.ImGui_CreateContext(sharedFontAtlas == null ? null : sharedFontAtlas.Native), true);
     }
 
     internal ImGuiContext* Native { get; private set; }
@@ -38,8 +39,8 @@ public unsafe sealed class Context : IDisposable
     /// <returns>A <see cref="Context"/> wrapping the current context, or a default context if none is set.</returns>
     public static Context Current
     {
-        get => new(ImGuiNative.GetCurrentContext(), false);
-        set => ImGuiNative.SetCurrentContext(value.Native);
+        get => new(ImGuiNative.ImGui_GetCurrentContext(), false);
+        set => ImGuiNative.ImGui_SetCurrentContext(value.Native);
     }
 
     /// <summary>
@@ -48,7 +49,7 @@ public unsafe sealed class Context : IDisposable
     /// <remarks>
     /// This context must be current before calling this method.
     /// </remarks>
-    public static IO IO => new(ImGuiNative.GetIO());
+    public static IO IO => new(ImGuiNative.ImGui_GetIO());
 
     // For the moment, we are not supporting the platform IO since Windows is handled.
 
@@ -58,7 +59,7 @@ public unsafe sealed class Context : IDisposable
     /// <remarks>
     /// This context must be current before calling this method.
     /// </remarks>
-    public static Style Style => new(ImGuiNative.GetStyle());
+    public static Style Style => new(ImGuiNative.ImGui_GetStyle());
 
     /// <summary>
     /// Starts a new Dear ImGui frame.
@@ -69,7 +70,7 @@ public unsafe sealed class Context : IDisposable
     /// </remarks>
     public static void NewFrame()
     {
-        ImGuiNative.NewFrame();
+        ImGuiNative.ImGui_NewFrame();
     }
 
     /// <summary>
@@ -83,7 +84,7 @@ public unsafe sealed class Context : IDisposable
     /// </remarks>
     public static void EndFrame()
     {
-        ImGuiNative.EndFrame();
+        ImGuiNative.ImGui_EndFrame();
     }
 
     /// <summary>
@@ -95,7 +96,7 @@ public unsafe sealed class Context : IDisposable
     /// </remarks>
     public static void Render()
     {
-        ImGuiNative.Render();
+        ImGuiNative.ImGui_Render();
     }
 
     // For now, we don't expose draw data since it's mainly used by the backend.
@@ -108,7 +109,7 @@ public unsafe sealed class Context : IDisposable
     {
         get
         {
-            var versionPtr = ImGuiNative.GetVersion();
+            var versionPtr = ImGuiNative.ImGui_GetVersion();
             return Marshal.PtrToStringUTF8((nint)versionPtr) ?? string.Empty;
         }
     }
@@ -118,7 +119,7 @@ public unsafe sealed class Context : IDisposable
     /// </summary>
     public static void StyleColorsDark()
     {
-        ImGuiNative.StyleColorsDark(null);
+        ImGuiNative.ImGui_StyleColorsDark(null);
     }
 
     /// <summary>
@@ -126,7 +127,7 @@ public unsafe sealed class Context : IDisposable
     /// </summary>
     public static void StyleColorsLight()
     {
-        ImGuiNative.StyleColorsLight(null);
+        ImGuiNative.ImGui_StyleColorsLight(null);
     }
 
     /// <summary>
@@ -134,7 +135,7 @@ public unsafe sealed class Context : IDisposable
     /// </summary>
     public static void StyleColorsClassic()
     {
-        ImGuiNative.StyleColorsClassic(null);
+        ImGuiNative.ImGui_StyleColorsClassic(null);
     }
 
     /// <summary>
@@ -147,7 +148,7 @@ public unsafe sealed class Context : IDisposable
     /// </remarks>
     public static void ShowDemoWindow(StateRef<bool>? open = null)
     {
-        ImGuiNative.ShowDemoWindow(open == null ? null : open.Value.Ptr);
+        ImGuiNative.ImGui_ShowDemoWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
@@ -160,7 +161,7 @@ public unsafe sealed class Context : IDisposable
     /// </remarks>
     public static void ShowMetricsWindow(StateRef<bool>? open = null)
     {
-        ImGuiNative.ShowMetricsWindow(open == null ? null : open.Value.Ptr);
+        ImGuiNative.ImGui_ShowMetricsWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
@@ -173,7 +174,7 @@ public unsafe sealed class Context : IDisposable
     /// </remarks>
     public static void ShowDebugLogWindow(StateRef<bool>? open = null)
     {
-        ImGuiNative.ShowDebugLogWindow(open == null ? null : open.Value.Ptr);
+        ImGuiNative.ImGui_ShowDebugLogWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
@@ -186,7 +187,66 @@ public unsafe sealed class Context : IDisposable
     /// </remarks>
     public static void ShowAboutWindow(StateRef<bool>? open = null)
     {
-        ImGuiNative.ShowAboutWindow(open == null ? null : open.Value.Ptr);
+        ImGuiNative.ImGui_ShowAboutWindow(open == null ? null : open.Value.Ptr);
+    }
+
+    /// <summary>
+    /// Adds a style editor block (not a window).
+    /// </summary>
+    /// <remarks>
+    /// Use the style editor to interactively see and edit the colors.
+    /// This context must be current before calling this method.
+    /// </remarks>
+    public static void ShowStyleEditor(Style? style = null)
+    {
+        ImGuiNative.ImGui_ShowStyleEditor(style == null ? null : style.Native);
+    }
+
+    /// <summary>
+    /// Adds a style selector block (not a window).
+    /// </summary>
+    /// <param name="label">The label for the combo box.</param>
+    /// <returns>True if a new style was selected.</returns>
+    /// <remarks>
+    /// Essentially a combo listing the default styles.
+    /// This context must be current before calling this method.
+    /// </remarks>
+    public static bool ShowStyleSelector(string label)
+    {
+        var bytes = Encoding.UTF8.GetBytes(label + '\0');
+        fixed (byte* ptr = bytes)
+        {
+            return ImGuiNative.ImGui_ShowStyleSelector(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Adds a font selector block (not a window).
+    /// </summary>
+    /// <param name="label">The label for the combo box.</param>
+    /// <remarks>
+    /// Essentially a combo listing the loaded fonts.
+    /// This context must be current before calling this method.
+    /// </remarks>
+    public static void ShowFontSelector(string label)
+    {
+        var bytes = Encoding.UTF8.GetBytes(label + '\0');
+        fixed (byte* ptr = bytes)
+        {
+            ImGuiNative.ImGui_ShowFontSelector(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Adds a basic help/info block (not a window).
+    /// </summary>
+    /// <remarks>
+    /// Displays how to manipulate ImGui as an end-user (mouse/keyboard controls).
+    /// This context must be current before calling this method.
+    /// </remarks>
+    public static void ShowUserGuide()
+    {
+        ImGuiNative.ImGui_ShowUserGuide();
     }
 
     /// <summary>
@@ -200,7 +260,7 @@ public unsafe sealed class Context : IDisposable
     {
         if (_ownsPointer && Native != null)
         {
-            ImGuiNative.DestroyContext(Native);
+            ImGuiNative.ImGui_DestroyContext(Native);
             Native = null;
             _ownsPointer = false;
         }

@@ -25,7 +25,7 @@ var quit = false;
 Application.Quitting += (sender, e) => quit = true;
 
 // Demo state
-StateRef<bool> showDemoWindow = state.Get("show_demo", true);
+StateRef<bool> showDemoWindow = state.Create(true);
 
 // Handle live resize: render during window resize on Windows
 void DoFrame()
@@ -36,10 +36,7 @@ void DoFrame()
     Context.NewFrame();
 
     // Show the ImGui demo window
-    if (showDemoWindow.Value)
-    {
-        Context.ShowDemoWindow(showDemoWindow);
-    }
+    Context.ShowDemoWindow(showDemoWindow);
 
     // Rendering
     Context.Render();

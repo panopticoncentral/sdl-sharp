@@ -59,9 +59,9 @@ DearBindingsRoot mainRoot = JsonSerializer.Deserialize<DearBindingsRoot>(
 // Load backend JSONs
 var backendFiles = new Dictionary<string, string>
 {
-    ["SDL3"] = Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdl3.json"),
-    ["SDLGpu3"] = Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlgpu3.json"),
-    ["SDLRenderer3"] = Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlrenderer3.json"),
+    ["ImGuiSdl3"] = Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdl3.json"),
+    ["ImGuiSdl3Gpu"] = Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlgpu3.json"),
+    ["ImGuiSdl3Renderer"] = Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlrenderer3.json"),
 };
 
 var backends = new Dictionary<string, DearBindingsRoot>();
