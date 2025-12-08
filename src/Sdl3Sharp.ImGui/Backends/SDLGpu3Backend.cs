@@ -34,7 +34,7 @@ public static unsafe class SDLGpu3Backend
             ColorTargetFormat = (Sdl3Sharp.Native.Gpu.SDL_GPUTextureFormat)colorTargetFormat,
             MSAASamples = (Sdl3Sharp.Native.Gpu.SDL_GPUSampleCount)msaaSamples
         };
-        return ImGuiSdl3Gpu.ImGuiSdl3GpuInit(&info);
+        return ImGuiSdl3Gpu.Init(&info);
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ public static unsafe class SDLGpu3Backend
             SwapchainComposition = (Sdl3Sharp.Native.Gpu.SDL_GPUSwapchainComposition)swapchainComposition,
             PresentMode = (Sdl3Sharp.Native.Gpu.SDL_GPUPresentMode)presentMode
         };
-        return ImGuiSdl3Gpu.ImGuiSdl3GpuInit(&info);
+        return ImGuiSdl3Gpu.Init(&info);
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public static unsafe class SDLGpu3Backend
     /// </remarks>
     public static void Shutdown()
     {
-        ImGuiSdl3Gpu.ImGuiSdl3GpuShutdown();
+        ImGuiSdl3Gpu.Shutdown();
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public static unsafe class SDLGpu3Backend
     /// </remarks>
     public static void NewFrame()
     {
-        ImGuiSdl3Gpu.ImGuiSdl3GpuNewFrame();
+        ImGuiSdl3Gpu.NewFrame();
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public static unsafe class SDLGpu3Backend
     {
         ArgumentNullException.ThrowIfNull(commandBuffer);
         ImDrawData* drawData = ImGuiNative.ImGui_GetDrawData();
-        ImGuiSdl3Gpu.ImGuiSdl3GpuPrepareDrawData(drawData, commandBuffer.Handle);
+        ImGuiSdl3Gpu.PrepareDrawData(drawData, commandBuffer.Handle);
     }
 
     /// <summary>
@@ -116,7 +116,7 @@ public static unsafe class SDLGpu3Backend
         ArgumentNullException.ThrowIfNull(commandBuffer);
         ArgumentNullException.ThrowIfNull(renderPass);
         ImDrawData* drawData = ImGuiNative.ImGui_GetDrawData();
-        ImGuiSdl3Gpu.ImGuiSdl3GpuRenderDrawDataEx(drawData, commandBuffer.Handle, renderPass.Handle, null);
+        ImGuiSdl3Gpu.RenderDrawDataEx(drawData, commandBuffer.Handle, renderPass.Handle, null);
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public static unsafe class SDLGpu3Backend
         ArgumentNullException.ThrowIfNull(commandBuffer);
         ArgumentNullException.ThrowIfNull(renderPass);
         ImDrawData* drawData = ImGuiNative.ImGui_GetDrawData();
-        ImGuiSdl3Gpu.ImGuiSdl3GpuRenderDrawDataEx(drawData, commandBuffer.Handle, renderPass.Handle, pipeline != null ? pipeline.Handle : null);
+        ImGuiSdl3Gpu.RenderDrawDataEx(drawData, commandBuffer.Handle, renderPass.Handle, pipeline != null ? pipeline.Handle : null);
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ public static unsafe class SDLGpu3Backend
     /// </remarks>
     public static void CreateDeviceObjects()
     {
-        ImGuiSdl3Gpu.ImGuiSdl3GpuCreateDeviceObjects();
+        ImGuiSdl3Gpu.CreateDeviceObjects();
     }
 
     /// <summary>
@@ -158,7 +158,7 @@ public static unsafe class SDLGpu3Backend
     /// </remarks>
     public static void DestroyDeviceObjects()
     {
-        ImGuiSdl3Gpu.ImGuiSdl3GpuDestroyDeviceObjects();
+        ImGuiSdl3Gpu.DestroyDeviceObjects();
     }
 
     /// <summary>
@@ -172,6 +172,6 @@ public static unsafe class SDLGpu3Backend
     /// </remarks>
     public static void UpdateTexture(ImTextureData* textureData)
     {
-        ImGuiSdl3Gpu.ImGuiSdl3GpuUpdateTexture(textureData);
+        ImGuiSdl3Gpu.UpdateTexture(textureData);
     }
 }

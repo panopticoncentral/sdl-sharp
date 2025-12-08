@@ -43,7 +43,9 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
         writer.AppendLine($"namespace {namespaceName};");
         writer.AppendLine();
 
-        GenerateOpaqueHandle(writer, name);
+        // Write documentation - empty struct, pointer wrapping happens at managed level
+        writer.AppendLine($"/// <summary>Opaque handle to an internal ImGui {name} structure.</summary>");
+        writer.AppendLine($"public readonly struct {name};");
 
         return writer.ToString();
     }
@@ -58,42 +60,6 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
         writer.AppendLine($"namespace {namespaceName};");
         writer.AppendLine();
 
-        GenerateTypedef(writer, typedefInfo, underlyingType);
-
-        return writer.ToString();
-    }
-
-    /// <summary>
-    /// Generates a function pointer wrapper struct for a callback typedef.
-    /// </summary>
-    public string GenerateCallbackTypedef(TypedefInfo typedefInfo, string namespaceName)
-    {
-        var writer = new CodeWriter();
-        writer.WriteFileHeader();
-        writer.AppendLine($"namespace {namespaceName};");
-        writer.AppendLine();
-
-        GenerateCallbackType(writer, typedefInfo);
-
-        return writer.ToString();
-    }
-
-    /// <summary>
-    /// Gets the function pointer type string for a callback typedef.
-    /// </summary>
-    public string? GetCallbackFunctionPointerType(TypedefInfo typedefInfo)
-    {
-        FunctionPointerDetails? details = typedefInfo.Type?.TypeDetails;
-        if (details == null || details.Flavour != "function_pointer")
-        {
-            return null;
-        }
-
-        return BuildFunctionPointerSignature(details);
-    }
-
-    private static void GenerateTypedef(CodeWriter writer, TypedefInfo typedefInfo, string underlyingType)
-    {
         var name = typedefInfo.Name;
 
         // Write documentation
@@ -123,14 +89,24 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
         writer.AppendLine($"public static implicit operator {name}({underlyingType} value) => new(value);");
 
         writer.CloseBrace();
+
+        return writer.ToString();
     }
 
-    private void GenerateCallbackType(CodeWriter writer, TypedefInfo typedefInfo)
+    /// <summary>
+    /// Generates a function pointer wrapper struct for a callback typedef.
+    /// </summary>
+    public string GenerateCallbackTypedef(TypedefInfo typedefInfo, string namespaceName)
     {
+        var writer = new CodeWriter();
+        writer.WriteFileHeader();
+        writer.AppendLine($"namespace {namespaceName};");
+        writer.AppendLine();
+
         FunctionPointerDetails? details = typedefInfo.Type?.TypeDetails;
         if (details == null || details.Flavour != "function_pointer")
         {
-            return;
+            throw new InvalidOperationException();
         }
 
         var name = typedefInfo.Name;
@@ -163,6 +139,8 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
         writer.AppendLine($"public static implicit operator {name}({fpType} value) => new(value);");
 
         writer.CloseBrace();
+
+        return writer.ToString();
     }
 
     private string BuildFunctionPointerSignature(FunctionPointerDetails details)
@@ -181,12 +159,5 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
 
         var signature = string.Join(", ", paramTypes);
         return $"delegate* unmanaged[Cdecl]<{signature}>";
-    }
-
-    private static void GenerateOpaqueHandle(CodeWriter writer, string name)
-    {
-        // Write documentation - empty struct, pointer wrapping happens at managed level
-        writer.AppendLine($"/// <summary>Opaque handle to an internal ImGui {name} structure.</summary>");
-        writer.AppendLine($"public readonly struct {name};");
     }
 }

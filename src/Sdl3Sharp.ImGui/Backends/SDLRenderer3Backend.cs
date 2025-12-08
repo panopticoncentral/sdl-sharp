@@ -26,7 +26,7 @@ public static unsafe class SDLRenderer3Backend
     public static bool Init(Renderer renderer)
     {
         ArgumentNullException.ThrowIfNull(renderer);
-        return ImGuiSdl3Renderer.ImGuiSdl3RendererInit(renderer.Handle);
+        return ImGuiSdl3Renderer.Init(renderer.Handle);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void Shutdown()
     {
-        ImGuiSdl3Renderer.ImGuiSdl3RendererShutdown();
+        ImGuiSdl3Renderer.Shutdown();
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void NewFrame()
     {
-        ImGuiSdl3Renderer.ImGuiSdl3RendererNewFrame();
+        ImGuiSdl3Renderer.NewFrame();
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public static unsafe class SDLRenderer3Backend
     {
         ArgumentNullException.ThrowIfNull(renderer);
         ImDrawData* drawData = ImGuiNative.ImGui_GetDrawData();
-        ImGuiSdl3Renderer.ImGuiSdl3RendererRenderDrawData(drawData, renderer.Handle);
+        ImGuiSdl3Renderer.RenderDrawData(drawData, renderer.Handle);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void CreateDeviceObjects()
     {
-        ImGuiSdl3Renderer.ImGuiSdl3RendererCreateDeviceObjects();
+        ImGuiSdl3Renderer.CreateDeviceObjects();
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void DestroyDeviceObjects()
     {
-        ImGuiSdl3Renderer.ImGuiSdl3RendererDestroyDeviceObjects();
+        ImGuiSdl3Renderer.DestroyDeviceObjects();
     }
 
     /// <summary>
@@ -103,6 +103,6 @@ public static unsafe class SDLRenderer3Backend
     /// </remarks>
     public static void UpdateTexture(ImTextureData* textureData)
     {
-        ImGuiSdl3Renderer.ImGuiSdl3RendererUpdateTexture(textureData);
+        ImGuiSdl3Renderer.UpdateTexture(textureData);
     }
 }

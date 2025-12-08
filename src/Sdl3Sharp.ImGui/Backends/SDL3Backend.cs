@@ -28,7 +28,7 @@ public static unsafe class SDL3Backend
     {
         ArgumentNullException.ThrowIfNull(window);
         ArgumentNullException.ThrowIfNull(renderer);
-        return ImGuiSdl3.ImGuiSdl3InitForSDLRenderer(window.Handle, renderer.Handle);
+        return ImGuiSdl3.InitForSDLRenderer(window.Handle, renderer.Handle);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public static unsafe class SDL3Backend
     public static bool InitForSDLGPU(SdlWindow window)
     {
         ArgumentNullException.ThrowIfNull(window);
-        return ImGuiSdl3.ImGuiSdl3InitForSDLGPU(window.Handle);
+        return ImGuiSdl3.InitForSDLGPU(window.Handle);
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public static unsafe class SDL3Backend
     /// </remarks>
     public static void Shutdown()
     {
-        ImGuiSdl3.ImGuiSdl3Shutdown();
+        ImGuiSdl3.Shutdown();
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public static unsafe class SDL3Backend
     /// </remarks>
     public static void NewFrame()
     {
-        ImGuiSdl3.ImGuiSdl3NewFrame();
+        ImGuiSdl3.NewFrame();
     }
 
     /// <summary>
@@ -80,7 +80,7 @@ public static unsafe class SDL3Backend
     public static bool ProcessEvent(Event sdlEvent)
     {
         SDL_Event nativeEvent = sdlEvent.Native;
-        return ImGuiSdl3.ImGuiSdl3ProcessEvent(&nativeEvent);
+        return ImGuiSdl3.ProcessEvent(&nativeEvent);
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ public static unsafe class SDL3Backend
     /// </remarks>
     public static void SetGamepadMode(ImGuiSdl3GamepadMode mode)
     {
-        ImGuiSdl3.ImGuiSdl3SetGamepadModeEx(mode, 0, 0);
+        ImGuiSdl3.SetGamepadModeEx(mode, 0, 0);
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public static unsafe class SDL3Backend
         ArgumentNullException.ThrowIfNull(gamepads);
         fixed (nint* gamepadsPtr = gamepads)
         {
-            ImGuiSdl3.ImGuiSdl3SetGamepadModeEx(mode, (nint)gamepadsPtr, gamepads.Length);
+            ImGuiSdl3.SetGamepadModeEx(mode, (nint)gamepadsPtr, gamepads.Length);
         }
     }
 }

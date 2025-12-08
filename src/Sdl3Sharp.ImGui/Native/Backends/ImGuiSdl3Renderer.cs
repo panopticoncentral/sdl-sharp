@@ -19,16 +19,16 @@ internal static unsafe partial class ImGuiSdl3Renderer
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_Init")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGuiSdl3RendererInit(SDL_Renderer* renderer);
+    public static partial bool Init(SDL_Renderer* renderer);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_Shutdown")]
-    public static partial void ImGuiSdl3RendererShutdown();
+    public static partial void Shutdown();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_NewFrame")]
-    public static partial void ImGuiSdl3RendererNewFrame();
+    public static partial void NewFrame();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_RenderDrawData")]
-    public static partial void ImGuiSdl3RendererRenderDrawData(ImDrawData* draw_data, SDL_Renderer* renderer);
+    public static partial void RenderDrawData(ImDrawData* draw_data, SDL_Renderer* renderer);
 
     #endregion
 
@@ -38,16 +38,16 @@ internal static unsafe partial class ImGuiSdl3Renderer
     /// Called by Init/NewFrame/Shutdown
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_CreateDeviceObjects")]
-    public static partial void ImGuiSdl3RendererCreateDeviceObjects();
+    public static partial void CreateDeviceObjects();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_DestroyDeviceObjects")]
-    public static partial void ImGuiSdl3RendererDestroyDeviceObjects();
+    public static partial void DestroyDeviceObjects();
 
     /// <summary>
     /// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLRenderer3_UpdateTexture")]
-    public static partial void ImGuiSdl3RendererUpdateTexture(ImTextureData* tex);
+    public static partial void UpdateTexture(ImTextureData* tex);
 
     #endregion
 

@@ -19,24 +19,24 @@ internal static unsafe partial class ImGuiSdl3
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDL3_InitForSDLRenderer")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGuiSdl3InitForSDLRenderer(SDL_Window* window, SDL_Renderer* renderer);
+    public static partial bool InitForSDLRenderer(SDL_Window* window, SDL_Renderer* renderer);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDL3_InitForSDLGPU")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGuiSdl3InitForSDLGPU(SDL_Window* window);
+    public static partial bool InitForSDLGPU(SDL_Window* window);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDL3_Shutdown")]
-    public static partial void ImGuiSdl3Shutdown();
+    public static partial void Shutdown();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDL3_NewFrame")]
-    public static partial void ImGuiSdl3NewFrame();
+    public static partial void NewFrame();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDL3_ProcessEvent")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGuiSdl3ProcessEvent(SDL_Event* @event);
+    public static partial bool ProcessEvent(SDL_Event* @event);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDL3_SetGamepadModeEx")]
-    public static partial void ImGuiSdl3SetGamepadModeEx(ImGuiSdl3GamepadMode mode, nint manual_gamepads_array, int manual_gamepads_count);
+    public static partial void SetGamepadModeEx(ImGuiSdl3GamepadMode mode, nint manual_gamepads_array, int manual_gamepads_count);
 
     #endregion
 

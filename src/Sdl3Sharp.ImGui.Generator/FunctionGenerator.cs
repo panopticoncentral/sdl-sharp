@@ -81,7 +81,7 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
             writer.AppendLine(returnMarshal);
         }
 
-        var returnType = _typeMapper.MapType(func.ReturnType, forReturn: true);
+        var returnType = _typeMapper.MapType(func.ReturnType);
         var parameters = GenerateParameters(func.Arguments);
 
         writer.AppendLine($"public static partial {returnType} {methodName}({parameters});");
@@ -98,7 +98,7 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
                 continue; // Skip varargs
             }
 
-            var paramType = _typeMapper.MapType(arg.Type, forParameter: true);
+            var paramType = _typeMapper.MapType(arg.Type);
             var paramName = NamingConventions.ToParameterName(arg.Name);
 
             // Get marshaling attribute

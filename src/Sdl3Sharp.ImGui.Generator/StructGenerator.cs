@@ -306,7 +306,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             writer.AppendLine(returnMarshal);
         }
 
-        var returnType = _typeMapper.MapType(func.ReturnType, forReturn: true);
+        var returnType = _typeMapper.MapType(func.ReturnType);
         var parameters = GenerateMethodParameters(func.Arguments, structName);
 
         writer.AppendLine($"public static partial {returnType} {methodName}({parameters});");
@@ -331,7 +331,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             }
             else
             {
-                paramType = _typeMapper.MapType(arg.Type, forParameter: true);
+                paramType = _typeMapper.MapType(arg.Type);
             }
 
             var paramName = NamingConventions.ToParameterName(arg.Name);
@@ -503,7 +503,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
 
         // Try to replace macros and evaluate the expression
         var expression = bounds;
-        foreach (var (macro, value) in knownMacros)
+        foreach ((var macro, var value) in knownMacros)
         {
             expression = expression.Replace(macro, value.ToString());
         }

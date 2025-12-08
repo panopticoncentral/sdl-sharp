@@ -72,7 +72,7 @@ public static class NamingConventions
         {
             if (name.StartsWith(prefix.Key))
             {
-                return prefix.Value + name[prefix.Key.Length..];
+                return name[prefix.Key.Length..];
             }
         }
 

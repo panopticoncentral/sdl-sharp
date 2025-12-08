@@ -19,34 +19,34 @@ internal static unsafe partial class ImGuiSdl3Gpu
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_Init")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGuiSdl3GpuInit(ImGuiSdl3GpuInitInfo* info);
+    public static partial bool Init(ImGuiSdl3GpuInitInfo* info);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_Shutdown")]
-    public static partial void ImGuiSdl3GpuShutdown();
+    public static partial void Shutdown();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_NewFrame")]
-    public static partial void ImGuiSdl3GpuNewFrame();
+    public static partial void NewFrame();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_PrepareDrawData")]
-    public static partial void ImGuiSdl3GpuPrepareDrawData(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer);
+    public static partial void PrepareDrawData(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_RenderDrawDataEx")]
-    public static partial void ImGuiSdl3GpuRenderDrawDataEx(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass, SDL_GPUGraphicsPipeline* pipeline);
+    public static partial void RenderDrawDataEx(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass, SDL_GPUGraphicsPipeline* pipeline);
 
     /// <summary>
     /// Use if you want to reset your rendering device without losing Dear ImGui state.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_CreateDeviceObjects")]
-    public static partial void ImGuiSdl3GpuCreateDeviceObjects();
+    public static partial void CreateDeviceObjects();
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_DestroyDeviceObjects")]
-    public static partial void ImGuiSdl3GpuDestroyDeviceObjects();
+    public static partial void DestroyDeviceObjects();
 
     /// <summary>
     /// (Advanced) Use e.g. if you need to precisely control the timing of texture updates (e.g. for staged rendering), by setting ImDrawData::Textures = NULL to handle this manually.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_UpdateTexture")]
-    public static partial void ImGuiSdl3GpuUpdateTexture(ImTextureData* tex);
+    public static partial void UpdateTexture(ImTextureData* tex);
 
     #endregion
 

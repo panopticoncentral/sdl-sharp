@@ -140,36 +140,13 @@ public sealed class TypeMapper
         foreach (EnumInfo e in root.Enums)
         {
             _ = _enumTypes.Add(e.Name);
-            // Also add without trailing underscore (ImGuiWindowFlags_ -> ImGuiWindowFlags)
-            if (e.Name.EndsWith('_'))
-            {
-                _ = _enumTypes.Add(e.Name[..^1]);
-            }
         }
 
         // Collect typedefs
-        foreach (TypedefInfo t in root.Typedefs)
+        foreach (TypedefInfo t in root.Typedefs.Where(t => t.Type?.Description != null))
         {
-            if (t.Type?.Description != null)
-            {
-                _typedefs[t.Name] = t.Type.Declaration;
-            }
+            _typedefs[t.Name] = t.Type!.Declaration;
         }
-    }
-
-    private static bool UsesSdlNativeTypesDetail(TypeDescriptionDetail desc)
-    {
-        // Check direct user type
-        if (desc.Kind == "User" && desc.Name != null)
-        {
-            if (SdlTypeToModule.ContainsKey(desc.Name))
-            {
-                return true;
-            }
-        }
-
-        // Check inner type for pointers/arrays
-        return desc.InnerType != null && UsesSdlNativeTypesDetail(desc.InnerType);
     }
 
     /// <summary>
@@ -197,7 +174,6 @@ public sealed class TypeMapper
     public static HashSet<string> GetSdlModulesUsedByStruct(StructInfo structInfo)
     {
         var modules = new HashSet<string>();
-
         foreach (FieldInfo field in structInfo.Fields)
         {
             CollectSdlModulesFromType(field.Type, modules);
@@ -309,12 +285,12 @@ public sealed class TypeMapper
     /// <summary>
     /// Maps a type description to a C# type string.
     /// </summary>
-    public string MapType(TypeDescription? type, bool forParameter = false, bool forReturn = false)
+    public string MapType(TypeDescription? type)
     {
-        return type?.Description == null ? "void" : MapTypeDescription(type.Description, forParameter, forReturn);
+        return type?.Description == null ? "void" : MapTypeDescription(type.Description);
     }
 
-    private string MapTypeDescription(TypeDescriptionDetail desc, bool forParameter, bool forReturn)
+    private string MapTypeDescription(TypeDescriptionDetail desc)
     {
         return desc.Kind switch
         {
@@ -322,7 +298,7 @@ public sealed class TypeMapper
             "User" => MapUserType(desc.Name ?? "void"),
             "Pointer" => MapPointerType(desc),
             "Array" => MapArrayType(desc),
-            "Type" => MapTypeDescription(desc.InnerType!, forParameter, forReturn),
+            "Type" => MapTypeDescription(desc.InnerType!),
             _ => "nint" // Unknown types default to native int
         };
     }
@@ -472,7 +448,7 @@ public sealed class TypeMapper
             return "nint";
         }
 
-        var elementType = MapTypeDescription(innerType, false, false);
+        var elementType = MapTypeDescription(innerType);
 
         // For fixed buffers, we return the element type and handle bounds elsewhere
         return elementType;
