@@ -121,29 +121,36 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
 
     public void Initialize(DearBindingsRoot root)
     {
-        // Collect public structs (internal/anonymous structs are filtered out at generation sites)
-        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous))
+        foreach (StructInfo? s in root.Structs)
         {
-            _ = _structs.Add(s.Name);
-
-            // Track backend struct renames (ImGui_ImplSDLGPU3_InitInfo -> GpuInitInfo)
-            var cleanName = NamingConventions.CleanBackendStructName(s.Name);
-            if (cleanName != s.Name)
+            if (s.ForwardDeclaration)
             {
-                _backendStructRenames[s.Name] = cleanName;
+                // Collect opaque types (forward-declared structs with no exposed fields)
+                if (!SdlTypeToModule.ContainsKey(s.Name))
+                {
+                    _ = _opaqueStructs.Add(s.Name);
+                }
             }
-        }
+            else
+            {
+                if (s.IsInternal || s.IsAnonymous)
+                {
+                    // Collect internal/anonymous structs (for mapping their pointers to nint)
+                    _ = _internalStructs.Add(s.Name);
+                }
+                else
+                {
+                    // Collect public structs (internal/anonymous structs are filtered out at generation sites)
+                    _ = _structs.Add(s.Name);
 
-        // Collect internal/anonymous structs (for mapping their pointers to nint)
-        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && (s.IsInternal || s.IsAnonymous)))
-        {
-            _ = _internalStructs.Add(s.Name);
-        }
-
-        // Collect opaque types (forward-declared structs with no exposed fields)
-        foreach (StructInfo? s in root.Structs.Where(s => s.ForwardDeclaration && !SdlTypeToModule.ContainsKey(s.Name)))
-        {
-            _ = _opaqueStructs.Add(s.Name);
+                    // Track backend struct renames (ImGui_ImplSDLGPU3_InitInfo -> GpuInitInfo)
+                    var cleanName = NamingConventions.CleanBackendStructName(s.Name);
+                    if (cleanName != s.Name)
+                    {
+                        _backendStructRenames[s.Name] = cleanName;
+                    }
+                }
+            }
         }
 
         // Collect enums

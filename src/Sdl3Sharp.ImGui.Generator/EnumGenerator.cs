@@ -3,7 +3,7 @@ namespace Sdl3Sharp.ImGui.Generator;
 /// <summary>
 /// Generates C# enum definitions from Dear Bindings enum data.
 /// </summary>
-public sealed class EnumGenerator
+public static class EnumGenerator
 {
     public static string GenerateSingleEnum(EnumInfo enumInfo, string namespaceName)
     {

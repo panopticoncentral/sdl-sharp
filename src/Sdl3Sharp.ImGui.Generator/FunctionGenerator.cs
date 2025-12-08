@@ -3,14 +3,12 @@ namespace Sdl3Sharp.ImGui.Generator;
 /// <summary>
 /// Generates C# P/Invoke declarations from Dear Bindings function data.
 /// </summary>
-public sealed class FunctionGenerator(TypeMapper typeMapper)
+public static class FunctionGenerator
 {
-    private readonly TypeMapper _typeMapper = typeMapper;
-
     /// <summary>
     /// Generates a native methods class for a pre-filtered list of functions.
     /// </summary>
-    public string GenerateForClass(IEnumerable<FunctionInfo> functions, string namespaceName, string className)
+    public static string GenerateForClass(TypeMapper typeMapper, IEnumerable<FunctionInfo> functions, string namespaceName, string className)
     {
         var functionList = functions.ToList();
 
@@ -43,7 +41,7 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
 
             foreach (FunctionInfo func in group.Functions)
             {
-                GenerateFunction(writer, func);
+                GenerateFunction(typeMapper, writer, func);
                 writer.AppendLine();
             }
 
@@ -56,7 +54,7 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
         return writer.ToString();
     }
 
-    private void GenerateFunction(CodeWriter writer, FunctionInfo func)
+    private static void GenerateFunction(TypeMapper typeMapper, CodeWriter writer, FunctionInfo func)
     {
         // Write documentation
         writer.WriteDocComment(func.Comments);
@@ -81,13 +79,13 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
             writer.AppendLine(returnMarshal);
         }
 
-        var returnType = _typeMapper.MapType(func.ReturnType);
-        var parameters = GenerateParameters(func.Arguments);
+        var returnType = typeMapper.MapType(func.ReturnType);
+        var parameters = GenerateParameters(typeMapper, func.Arguments);
 
         writer.AppendLine($"public static partial {returnType} {methodName}({parameters});");
     }
 
-    private string GenerateParameters(List<ArgumentInfo> arguments)
+    private static string GenerateParameters(TypeMapper typeMapper, List<ArgumentInfo> arguments)
     {
         var parts = new List<string>();
 
@@ -98,7 +96,7 @@ public sealed class FunctionGenerator(TypeMapper typeMapper)
                 continue; // Skip varargs
             }
 
-            var paramType = _typeMapper.MapType(arg.Type);
+            var paramType = typeMapper.MapType(arg.Type);
             var paramName = NamingConventions.ToParameterName(arg.Name);
 
             // Get marshaling attribute

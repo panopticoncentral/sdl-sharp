@@ -3,11 +3,9 @@ namespace Sdl3Sharp.ImGui.Generator;
 /// <summary>
 /// Generates C# struct definitions from Dear Bindings struct data.
 /// </summary>
-public sealed class StructGenerator(TypeMapper typeMapper)
+public static class StructGenerator
 {
-    private readonly TypeMapper _typeMapper = typeMapper;
-
-    public string GenerateSingleStruct(StructInfo structInfo, string namespaceName, IEnumerable<FunctionInfo>? methods = null, string? cleanName = null)
+    public static string GenerateSingleStruct(TypeMapper typeMapper, StructInfo structInfo, string namespaceName, IEnumerable<FunctionInfo>? methods = null, string? cleanName = null)
     {
         List<FunctionInfo> methodList = methods?.ToList() ?? [];
         var structName = cleanName ?? structInfo.Name;
@@ -36,16 +34,16 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         writer.AppendLine($"namespace {namespaceName};");
         writer.AppendLine();
 
-        GenerateStruct(writer, structInfo, methodList, structName);
+        GenerateStruct(typeMapper, writer, structInfo, methodList, structName);
 
         return writer.ToString();
     }
 
-    private void GenerateStruct(CodeWriter writer, StructInfo structInfo, List<FunctionInfo> methods, string? structName = null)
+    private static void GenerateStruct(TypeMapper typeMapper, CodeWriter writer, StructInfo structInfo, List<FunctionInfo> methods, string? structName = null)
     {
         // Reset counters for each struct
-        _bitfieldCounter = 0;
-        _internalCounter = 0;
+        var bitfieldCounter = 0;
+        var internalCounter = 0;
 
         structName ??= structInfo.Name;
 
@@ -56,7 +54,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         writer.AppendLine("[StructLayout(LayoutKind.Sequential)]");
 
         // Determine if we need unsafe context (fields with pointers, fixed buffers, or methods)
-        var needsUnsafe = NeedsUnsafeContext(structInfo) || methods.Count > 0;
+        var needsUnsafe = NeedsUnsafeContext(typeMapper, structInfo) || methods.Count > 0;
         var unsafeModifier = needsUnsafe ? "unsafe " : "";
 
         writer.AppendLine($"public {unsafeModifier}partial struct {structName}");
@@ -76,13 +74,13 @@ public sealed class StructGenerator(TypeMapper typeMapper)
 
             if (group.IsBitfieldGroup)
             {
-                GenerateBitfieldGroup(writer, group.Fields);
+                GenerateBitfieldGroup(writer, group.Fields, ref bitfieldCounter, ref internalCounter);
             }
             else
             {
                 foreach (FieldInfo field in group.Fields)
                 {
-                    GenerateField(writer, field);
+                    GenerateField(typeMapper, writer, field, ref internalCounter);
                 }
             }
 
@@ -95,7 +93,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         // Generate methods
         foreach (FunctionInfo method in methods)
         {
-            GenerateMethod(writer, method, structName);
+            GenerateMethod(typeMapper, writer, method, structName);
             writer.AppendLine();
         }
 
@@ -152,14 +150,14 @@ public sealed class StructGenerator(TypeMapper typeMapper)
     /// <summary>
     /// Generates a packed bitfield group with a backing field and accessor properties.
     /// </summary>
-    private void GenerateBitfieldGroup(CodeWriter writer, List<FieldInfo> bitfields)
+    private static void GenerateBitfieldGroup(CodeWriter writer, List<FieldInfo> bitfields, ref int bitFieldCounter, ref int internalCounter)
     {
         // Calculate total bits and determine storage type
         var totalBits = bitfields.Sum(f => f.Width!.Value);
         var storageType = GetStorageType(totalBits);
 
         // Generate private backing field
-        var backingFieldName = $"_bitfield{GetBitfieldIndex()}";
+        var backingFieldName = $"_bitfield{bitFieldCounter++}";
         writer.AppendLine($"private {storageType} {backingFieldName};");
         writer.AppendLine();
 
@@ -178,7 +176,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             string? inlineComment = null;
             if (isInternal)
             {
-                fieldName = $"_internal{GetInternalIndex()}";
+                fieldName = $"_internal{internalCounter++}";
                 inlineComment = field.Name;
             }
             else
@@ -235,19 +233,6 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         }
     }
 
-    private int _bitfieldCounter;
-    private int _internalCounter;
-
-    private int GetBitfieldIndex()
-    {
-        return _bitfieldCounter++;
-    }
-
-    private int GetInternalIndex()
-    {
-        return _internalCounter++;
-    }
-
     /// <summary>
     /// Determines the storage type needed for a bitfield group based on total bits.
     /// </summary>
@@ -277,7 +262,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         return width <= 8 ? "byte" : width <= 16 ? "ushort" : width <= 32 ? "uint" : "ulong";
     }
 
-    private void GenerateMethod(CodeWriter writer, FunctionInfo func, string structName)
+    private static void GenerateMethod(TypeMapper typeMapper, CodeWriter writer, FunctionInfo func, string structName)
     {
         // Write documentation
         writer.WriteDocComment(func.Comments);
@@ -306,13 +291,13 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             writer.AppendLine(returnMarshal);
         }
 
-        var returnType = _typeMapper.MapType(func.ReturnType);
-        var parameters = GenerateMethodParameters(func.Arguments, structName);
+        var returnType = typeMapper.MapType(func.ReturnType);
+        var parameters = GenerateMethodParameters(typeMapper, func.Arguments, structName);
 
         writer.AppendLine($"public static partial {returnType} {methodName}({parameters});");
     }
 
-    private string GenerateMethodParameters(List<ArgumentInfo> arguments, string structName)
+    private static string GenerateMethodParameters(TypeMapper typeMapper, List<ArgumentInfo> arguments, string structName)
     {
         var parts = new List<string>();
 
@@ -331,7 +316,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             }
             else
             {
-                paramType = _typeMapper.MapType(arg.Type);
+                paramType = typeMapper.MapType(arg.Type);
             }
 
             var paramName = NamingConventions.ToParameterName(arg.Name);
@@ -363,7 +348,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         return desc.Kind == "Builtin" && desc.BuiltinType == "bool" ? "[return: MarshalAs(UnmanagedType.U1)]" : null;
     }
 
-    private void GenerateField(CodeWriter writer, FieldInfo field)
+    private static void GenerateField(TypeMapper typeMapper, CodeWriter writer, FieldInfo field, ref int internalCounter)
     {
         var isInternal = field.IsInternal || field.IsAnonymous;
         var visibility = isInternal ? "private" : "public";
@@ -373,7 +358,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         string? inlineComment = null;
         if (isInternal)
         {
-            fieldName = $"_internal{GetInternalIndex()}";
+            fieldName = $"_internal{internalCounter++}";
             inlineComment = field.Name;
         }
         else
@@ -383,14 +368,14 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             fieldName = NamingConventions.ToPascalCase(field.Name);
         }
 
-        var fieldType = MapFieldType(field);
+        var fieldType = MapFieldType(typeMapper, field);
         var commentSuffix = inlineComment != null ? $" // {inlineComment}" : "";
 
         // Handle fixed-size arrays
         if (field.IsArray && field.Type?.Description?.Kind == "Array")
         {
             var bounds = field.Type.Description.Bounds;
-            var elementType = GetArrayElementType(field.Type.Description);
+            var elementType = GetArrayElementType(typeMapper, field.Type.Description);
 
             // Evaluate bounds expression if it contains known macros
             var evaluatedBounds = EvaluateBoundsExpression(bounds);
@@ -419,15 +404,15 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         }
     }
 
-    private string MapFieldType(FieldInfo field)
+    private static string MapFieldType(TypeMapper typeMapper, FieldInfo field)
     {
         // If the field's type is null or refers to an internal struct, use nint
-        return field.Type == null || _typeMapper.IsInternalType(field.Type)
+        return field.Type == null || typeMapper.IsInternalType(field.Type)
             ? "nint"
-            : _typeMapper.MapType(field.Type);
+            : typeMapper.MapType(field.Type);
     }
 
-    private string GetArrayElementType(TypeDescriptionDetail desc)
+    private static string GetArrayElementType(TypeMapper typeMapper, TypeDescriptionDetail desc)
     {
         if (desc.InnerType == null)
         {
@@ -442,9 +427,9 @@ public sealed class StructGenerator(TypeMapper typeMapper)
         };
 
         // If the element type refers to an internal struct, use nint
-        return _typeMapper.IsInternalType(innerType)
+        return typeMapper.IsInternalType(innerType)
             ? "nint"
-            : _typeMapper.MapType(innerType);
+            : typeMapper.MapType(innerType);
     }
 
     private static bool CanBeFixedBuffer(string elementType)
@@ -454,7 +439,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             or "int" or "uint" or "long" or "ulong" or "float" or "double" or "char";
     }
 
-    private bool NeedsUnsafeContext(StructInfo structInfo)
+    private static bool NeedsUnsafeContext(TypeMapper typeMapper, StructInfo structInfo)
     {
         foreach (FieldInfo field in structInfo.Fields)
         {
@@ -462,7 +447,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             if (field.IsArray && field.Type?.Description?.Kind == "Array")
             {
                 var bounds = field.Type.Description.Bounds;
-                var elementType = GetArrayElementType(field.Type.Description);
+                var elementType = GetArrayElementType(typeMapper, field.Type.Description);
                 var evaluatedBounds = EvaluateBoundsExpression(bounds);
                 if (evaluatedBounds != null && CanBeFixedBuffer(elementType))
                 {
@@ -471,7 +456,7 @@ public sealed class StructGenerator(TypeMapper typeMapper)
             }
 
             // Pointer types require unsafe
-            var fieldType = MapFieldType(field);
+            var fieldType = MapFieldType(typeMapper, field);
             if (fieldType.Contains('*'))
             {
                 return true;

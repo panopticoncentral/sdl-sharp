@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Sdl3Sharp.ImGui.Generator;
 
 // Determine paths

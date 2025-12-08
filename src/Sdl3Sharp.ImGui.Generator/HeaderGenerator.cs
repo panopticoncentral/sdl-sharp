@@ -21,12 +21,6 @@ public static class HeaderGenerator
         var typeMapper = new TypeMapper(mainTypes);
         typeMapper.Initialize(root);
 
-        // Generate code
-        var enumGenerator = new EnumGenerator();
-        var structGenerator = new StructGenerator(typeMapper);
-        var functionGenerator = new FunctionGenerator(typeMapper);
-        var typedefGenerator = new TypedefGenerator(typeMapper);
-
         // === Generate Enums (one file per enum) ===
         Console.WriteLine("\nGenerating enums...");
         var enumCount = 0;
@@ -66,7 +60,7 @@ public static class HeaderGenerator
         {
             if (TypedefGenerator.CallbackTypedefs.Contains(typedefInfo.Name))
             {
-                var content = typedefGenerator.GenerateCallbackTypedef(typedefInfo, ns);
+                var content = TypedefGenerator.GenerateCallbackTypedef(typeMapper, typedefInfo, ns);
                 var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
                 File.WriteAllText(filePath, content);
                 callbackCount++;
@@ -124,7 +118,7 @@ public static class HeaderGenerator
             // Get methods for this struct
             _ = structMethodsByClass.TryGetValue(structInfo.Name, out List<FunctionInfo>? methods);
             var name = NamingConventions.CleanBackendStructName(structInfo.Name);
-            var content = structGenerator.GenerateSingleStruct(structInfo, ns, methods, name);
+            var content = StructGenerator.GenerateSingleStruct(typeMapper, structInfo, ns, methods, name);
             var filePath = Path.Combine(outputDir, $"{name}.cs");
             File.WriteAllText(filePath, content);
             structCount++;
@@ -142,7 +136,7 @@ public static class HeaderGenerator
         Console.WriteLine("\nGenerating native methods...");
         if (nonStructFunctions.Count != 0)
         {
-            var content = functionGenerator.GenerateForClass(nonStructFunctions, ns, className);
+            var content = FunctionGenerator.GenerateForClass(typeMapper, nonStructFunctions, ns, className);
             var filePath = Path.Combine(outputDir, $"{className}.cs");
             File.WriteAllText(filePath, content);
 

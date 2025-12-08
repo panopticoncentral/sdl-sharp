@@ -3,7 +3,7 @@ namespace Sdl3Sharp.ImGui.Generator;
 /// <summary>
 /// Generates C# wrapper structs for ImGui typedefs.
 /// </summary>
-public sealed class TypedefGenerator(TypeMapper typeMapper)
+public static class TypedefGenerator
 {
     /// <summary>
     /// Typedefs that should be generated as wrapper structs.
@@ -96,7 +96,7 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
     /// <summary>
     /// Generates a function pointer wrapper struct for a callback typedef.
     /// </summary>
-    public string GenerateCallbackTypedef(TypedefInfo typedefInfo, string namespaceName)
+    public static string GenerateCallbackTypedef(TypeMapper typeMapper, TypedefInfo typedefInfo, string namespaceName)
     {
         var writer = new CodeWriter();
         writer.WriteFileHeader();
@@ -110,7 +110,7 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
         }
 
         var name = typedefInfo.Name;
-        var fpType = BuildFunctionPointerSignature(details);
+        var fpType = BuildFunctionPointerSignature(typeMapper, details);
 
         // Write documentation
         writer.WriteDocComment(typedefInfo.Comments);
@@ -143,7 +143,7 @@ public sealed class TypedefGenerator(TypeMapper typeMapper)
         return writer.ToString();
     }
 
-    private string BuildFunctionPointerSignature(FunctionPointerDetails details)
+    private static string BuildFunctionPointerSignature(TypeMapper typeMapper, FunctionPointerDetails details)
     {
         var returnType = typeMapper.MapType(details.ReturnType);
         var paramTypes = new List<string>();
