@@ -11,7 +11,7 @@ namespace Sdl3Sharp.ImGui.Native;
 /// A sorting direction
 /// Forward declared enum type ImGuiSortDirection
 /// </summary>
-public enum ImGuiSortDirection
+public enum ImGuiSortDirection : byte
 {
     None = 0,
     Ascending = 1, // Ascending = 0->9, A->Z etc.

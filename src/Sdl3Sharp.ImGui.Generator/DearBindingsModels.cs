@@ -94,6 +94,9 @@ public sealed class EnumInfo
     [JsonPropertyName("original_fully_qualified_name")]
     public string? OriginalFullyQualifiedName { get; set; }
 
+    [JsonPropertyName("storage_type")]
+    public TypeDescription? StorageType { get; set; }
+
     [JsonPropertyName("is_flags_enum")]
     public bool IsFlagsEnum { get; set; }
 
