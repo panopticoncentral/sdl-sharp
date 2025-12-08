@@ -1,9 +1,6 @@
 using System.Text.Json;
 using Sdl3Sharp.ImGui.Generator;
 
-const string Namespace = "Sdl3Sharp.ImGui.Native";
-const string BackendsNamespace = $"{Namespace}.Backends";
-
 // Determine paths
 var baseDir = FindSolutionRoot();
 var dearBindingsDir = Path.Combine(baseDir, "src", "Sdl3Sharp.ImGui.Native", "dear_bindings");
@@ -29,7 +26,7 @@ var commonContent = $$"""
     // Do not modify this file directly.
     // </auto-generated>
 
-    namespace {{Namespace}};
+    namespace Sdl3Sharp.ImGui.Native;
 
     /// <summary>
     /// Shared constants for native library interop.
@@ -44,200 +41,38 @@ var commonContent = $$"""
     """;
 File.WriteAllText(Path.Combine(outputDir, "Common.cs"), commonContent);
 
-// Load and parse JSON files
-var jsonOptions = new JsonSerializerOptions
-{
-    PropertyNameCaseInsensitive = true,
-    ReadCommentHandling = JsonCommentHandling.Skip
-};
-
-Console.WriteLine("\nLoading dcimgui.json...");
-var mainJsonPath = Path.Combine(dearBindingsDir, "dcimgui.json");
-DearBindingsRoot mainRoot = JsonSerializer.Deserialize<DearBindingsRoot>(
-    File.ReadAllText(mainJsonPath), jsonOptions)!;
+TypeMapper mainTypes = HeaderGenerator.Generate(
+    Path.Combine(dearBindingsDir, "dcimgui.json"),
+    "Sdl3Sharp.ImGui.Native",
+    outputDir,
+    "ImGui",
+    [],
+    null);
 
 // Load backend JSONs
-var backendFiles = new Dictionary<string, string>
+var backendFiles = new List<(string Name, string Path, HashSet<string> ExcludedFunctions)>
 {
-    ["ImGuiSdl3"] = Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdl3.json"),
-    ["ImGuiSdl3Gpu"] = Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlgpu3.json"),
-    ["ImGuiSdl3Renderer"] = Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlrenderer3.json"),
+    ("ImGuiSdl3", Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdl3.json"), [
+        "cImGui_ImplSDL3_InitForOpenGL",
+        "cImGui_ImplSDL3_InitForVulkan",
+        "cImGui_ImplSDL3_InitForD3D",
+        "cImGui_ImplSDL3_InitForMetal",
+        "cImGui_ImplSDL3_InitForOther",
+    ]),
+    ("ImGuiSdl3Gpu", Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlgpu3.json"), []),
+    ("ImGuiSdl3Renderer", Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlrenderer3.json"), []),
 };
 
-var backends = new Dictionary<string, DearBindingsRoot>();
-foreach ((var name, var path) in backendFiles)
+foreach ((var name, var path, HashSet<string> excludedFunctions) in backendFiles)
 {
-    Console.WriteLine($"Loading {name} backend...");
-    backends[name] = JsonSerializer.Deserialize<DearBindingsRoot>(
-        File.ReadAllText(path), jsonOptions)!;
+    _ = HeaderGenerator.Generate(
+        path,
+        "Sdl3Sharp.ImGui.Native.Backends",
+        Path.Combine(outputDir, "Backends"),
+        name,
+        excludedFunctions,
+        mainTypes);
 }
-
-// Initialize type mapper with all type information
-var typeMapper = new TypeMapper();
-typeMapper.Initialize(mainRoot);
-foreach (DearBindingsRoot backend in backends.Values)
-{
-    typeMapper.Initialize(backend);
-}
-
-// Generate code
-var enumGenerator = new EnumGenerator();
-var structGenerator = new StructGenerator(typeMapper);
-var functionGenerator = new FunctionGenerator(typeMapper);
-var typedefGenerator = new TypedefGenerator(typeMapper);
-
-// === Generate Enums (one file per enum) ===
-Console.WriteLine("\nGenerating enums...");
-var enumCount = 0;
-foreach (EnumInfo? enumInfo in mainRoot.Enums.Where(e => !e.IsInternal))
-{
-    var cleanName = NamingConventions.CleanEnumName(enumInfo.Name);
-    var content = EnumGenerator.GenerateSingleEnum(enumInfo, Namespace);
-    var filePath = Path.Combine(outputDir, $"{cleanName}.cs");
-    File.WriteAllText(filePath, content);
-    enumCount++;
-}
-
-Console.WriteLine($"  Generated {enumCount} enum files");
-
-// === Generate Typedef Wrapper Structs (one file per typedef) ===
-Console.WriteLine("\nGenerating typedef wrapper structs...");
-var typedefCount = 0;
-foreach (TypedefInfo typedefInfo in mainRoot.Typedefs.Where(t => !t.IsInternal))
-{
-    if (TypedefGenerator.WrapperTypedefs.TryGetValue(typedefInfo.Name, out var underlyingType))
-    {
-        var content = TypedefGenerator.GenerateSingleTypedef(typedefInfo, underlyingType, Namespace);
-        var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
-        File.WriteAllText(filePath, content);
-        typedefCount++;
-    }
-}
-
-Console.WriteLine($"  Generated {typedefCount} typedef wrapper struct files");
-
-// === Generate Callback Typedef Wrapper Structs (one file per callback) ===
-Console.WriteLine("\nGenerating callback typedef wrapper structs...");
-var callbackCount = 0;
-foreach (TypedefInfo typedefInfo in mainRoot.Typedefs.Where(t => !t.IsInternal))
-{
-    if (TypedefGenerator.CallbackTypedefs.Contains(typedefInfo.Name))
-    {
-        var content = typedefGenerator.GenerateCallbackTypedef(typedefInfo, Namespace);
-        var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
-        File.WriteAllText(filePath, content);
-        callbackCount++;
-    }
-}
-
-Console.WriteLine($"  Generated {callbackCount} callback typedef wrapper struct files");
-
-// === Generate Opaque Handle Wrapper Structs (one file per type) ===
-Console.WriteLine("\nGenerating opaque handle wrapper structs...");
-var opaqueHandleCount = 0;
-foreach (var handleName in typeMapper.OpaqueStructs)
-{
-    var content = TypedefGenerator.GenerateOpaqueHandleWrapper(handleName, Namespace);
-    var filePath = Path.Combine(outputDir, $"{handleName}.cs");
-    File.WriteAllText(filePath, content);
-    opaqueHandleCount++;
-}
-
-Console.WriteLine($"  Generated {opaqueHandleCount} opaque handle wrapper struct files");
-
-// Generate backend enums (one file per enum)
-foreach ((var name, DearBindingsRoot? backend) in backends)
-{
-    foreach (EnumInfo? enumInfo in backend.Enums.Where(e => !e.IsInternal))
-    {
-        var cleanName = NamingConventions.CleanEnumName(enumInfo.Name);
-        var content = EnumGenerator.GenerateSingleEnum(enumInfo, BackendsNamespace);
-        var filePath = Path.Combine(outputDir, "Backends", $"{cleanName}.cs");
-        File.WriteAllText(filePath, content);
-        enumCount++;
-    }
-}
-
-Console.WriteLine($"  Generated {backends.Sum(b => b.Value.Enums.Count(e => !e.IsInternal))} backend enum files");
-
-// Generate backend structs (one file per struct)
-var backendStructCount = 0;
-foreach ((var name, DearBindingsRoot? backend) in backends)
-{
-    foreach (StructInfo? structInfo in backend.Structs
-        .Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0)
-        .Where(s => !TypeMapper.IsUnsupportedType(s)))
-    {
-        var cleanName = NamingConventions.CleanBackendStructName(structInfo.Name);
-        var content = structGenerator.GenerateSingleStruct(structInfo, BackendsNamespace, cleanName: cleanName);
-        var filePath = Path.Combine(outputDir, "Backends", $"{cleanName}.cs");
-        File.WriteAllText(filePath, content);
-        backendStructCount++;
-    }
-}
-
-Console.WriteLine($"  Generated {backendStructCount} backend struct files");
-
-// === Collect and filter all functions ===
-// Get all valid functions (filtered by common criteria)
-List<FunctionInfo> allFunctions = [.. mainRoot.Functions
-    .Where(f => !f.IsInternal)
-    .Where(f => !f.IsDefaultArgumentHelper)
-    .Where(f => !f.IsImstrHelper)
-    .Where(f => !f.Name.Contains("__"))
-    .Where(f => !f.Arguments.Any(a => a.IsVarargs))
-    .Where(f => !TypeMapper.FunctionHasUnsupportedTypes(f))
-    .Where(f => !Conditional.IsObsolete(f.Conditionals))];
-
-// Group struct methods by their original class
-var structMethodsByClass = allFunctions
-    .Where(f => !string.IsNullOrEmpty(f.OriginalClass) && f.Arguments.Any(a => a.IsInstancePointer))
-    .GroupBy(f => f.OriginalClass!)
-    .ToDictionary(g => g.Key, g => g.ToList());
-
-// Get struct names for filtering
-var structNames = mainRoot.Structs
-    .Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0)
-    .Where(s => !TypeMapper.IsUnsupportedType(s))
-    .Select(s => s.Name)
-    .ToHashSet();
-
-// === Generate Structs (one file per struct) ===
-Console.WriteLine("\nGenerating structs...");
-var structCount = 0;
-var structMethodCount = 0;
-foreach (StructInfo? structInfo in mainRoot.Structs
-    .Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0)
-    .Where(s => !TypeMapper.IsUnsupportedType(s)))
-{
-    // Get methods for this struct
-    _ = structMethodsByClass.TryGetValue(structInfo.Name, out List<FunctionInfo>? methods);
-    var content = structGenerator.GenerateSingleStruct(structInfo, Namespace, methods);
-    var filePath = Path.Combine(outputDir, $"{structInfo.Name}.cs");
-    File.WriteAllText(filePath, content);
-    structCount++;
-    structMethodCount += methods?.Count ?? 0;
-}
-
-Console.WriteLine($"  Generated {structCount} struct files with {structMethodCount} methods");
-
-// === Generate Native Methods (one file per class grouping) ===
-// Filter out struct methods that were already generated in their structs
-var nonStructFunctions = allFunctions
-    .Where(f => string.IsNullOrEmpty(f.OriginalClass) || !structNames.Contains(f.OriginalClass) || !f.Arguments.Any(a => a.IsInstancePointer))
-    .ToList();
-
-Console.WriteLine("\nGenerating native methods...");
-GenerateFunctions(nonStructFunctions, functionGenerator, outputDir, Namespace, "ImGui");
-
-// Generate backend functions (one file per backend)
-foreach ((var name, DearBindingsRoot? backend) in backends)
-{
-    GenerateBackendFunctions(backend, functionGenerator, Path.Combine(outputDir, "Backends"), BackendsNamespace, name);
-}
-
-Console.WriteLine("\nGeneration complete!");
-Console.WriteLine($"Output written to: {outputDir}");
 
 // === Helper Functions ===
 
@@ -259,43 +94,4 @@ static string FindSolutionRoot()
 
     throw new InvalidOperationException(
         "Could not find solution root. Please run from the solution directory or a project directory.");
-}
-
-static void GenerateFunctions(List<FunctionInfo> functions, FunctionGenerator functionGenerator, string outputDir, string ns, string name)
-{
-    if (functions.Count == 0)
-    {
-        return;
-    }
-
-    var content = functionGenerator.GenerateForClass(functions, ns, name);
-    var filePath = Path.Combine(outputDir, $"{name}.cs");
-    File.WriteAllText(filePath, content);
-
-    Console.WriteLine($"  Generated {functions.Count} {name} functions");
-}
-
-static void GenerateBackendFunctions(DearBindingsRoot root, FunctionGenerator functionGenerator, string outputDir, string ns, string name)
-{
-    // SDL3 backend Init methods to exclude (only GPU and Renderer are supported)
-    HashSet<string> excludedSdl3InitMethods =
-    [
-        "cImGui_ImplSDL3_InitForOpenGL",
-        "cImGui_ImplSDL3_InitForVulkan",
-        "cImGui_ImplSDL3_InitForD3D",
-        "cImGui_ImplSDL3_InitForMetal",
-        "cImGui_ImplSDL3_InitForOther",
-    ];
-
-    List<FunctionInfo> functions = [.. root.Functions
-        .Where(f => !f.IsInternal)
-        .Where(f => !f.IsDefaultArgumentHelper)
-        .Where(f => !f.IsImstrHelper)
-        .Where(f => !f.Name.Contains("__"))
-        .Where(f => !f.Arguments.Any(a => a.IsVarargs))
-        .Where(f => !TypeMapper.FunctionHasUnsupportedTypes(f))
-        .Where(f => !Conditional.IsObsolete(f.Conditionals))
-        .Where(f => !excludedSdl3InitMethods.Contains(f.Name))];
-
-    GenerateFunctions(functions, functionGenerator, outputDir, ns, name);
 }

@@ -3,7 +3,7 @@ namespace Sdl3Sharp.ImGui.Generator;
 /// <summary>
 /// Maps C types from Dear Bindings to C# types.
 /// </summary>
-public sealed class TypeMapper
+public sealed class TypeMapper(TypeMapper? mainTypeMapper)
 {
     private readonly HashSet<string> _structs = [];
     private readonly HashSet<string> _internalStructs = [];
@@ -11,6 +11,11 @@ public sealed class TypeMapper
     private readonly HashSet<string> _enumTypes = [];
     private readonly Dictionary<string, string> _typedefs = [];
     private readonly Dictionary<string, string> _backendStructRenames = [];
+
+    /// <summary>
+    /// Gets the set of struct names (user-defined types).
+    /// </summary>
+    public IReadOnlySet<string> Structs => _structs;
 
     /// <summary>
     /// Gets the set of opaque struct names (forward-declared structs with no exposed fields).
@@ -21,6 +26,11 @@ public sealed class TypeMapper
     /// Gets the set of internal struct names (not exposed publicly).
     /// </summary>
     public IReadOnlySet<string> InternalStructs => _internalStructs;
+
+    /// <summary>
+    /// Gets the set of typedef names (type aliases).
+    /// </summary>
+    public IReadOnlySet<string> TypeDefs => new HashSet<string>(_typedefs.Keys);
 
     /// <summary>
     /// Builtin C type to C# type mapping.
@@ -408,7 +418,7 @@ public sealed class TypeMapper
             }
 
             // Struct -> typed pointer (use cleaned name for backend structs)
-            if (_structs.Contains(userName))
+            if (_structs.Contains(userName) || (mainTypeMapper != null && mainTypeMapper.Structs.Contains(userName)))
             {
                 var structName = _backendStructRenames.TryGetValue(userName, out var cleanName) ? cleanName : userName;
                 return $"{structName}*";
