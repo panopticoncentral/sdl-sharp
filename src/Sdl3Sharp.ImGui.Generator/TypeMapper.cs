@@ -6,11 +6,8 @@ namespace Sdl3Sharp.ImGui.Generator;
 public sealed class TypeMapper(TypeMapper? mainTypeMapper)
 {
     private readonly HashSet<string> _structs = [];
-    private readonly HashSet<string> _internalStructs = [];
-    private readonly HashSet<string> _opaqueStructs = [];
     private readonly HashSet<string> _enumTypes = [];
     private readonly Dictionary<string, string> _typedefs = [];
-    private readonly Dictionary<string, string> _backendStructRenames = [];
 
     /// <summary>
     /// Gets the set of struct names (user-defined types).
@@ -18,24 +15,22 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
     public IReadOnlySet<string> Structs => _structs;
 
     /// <summary>
-    /// Gets the set of opaque struct names (forward-declared structs with no exposed fields).
-    /// </summary>
-    public IReadOnlySet<string> OpaqueStructs => _opaqueStructs;
-
-    /// <summary>
-    /// Gets the set of internal struct names (not exposed publicly).
-    /// </summary>
-    public IReadOnlySet<string> InternalStructs => _internalStructs;
-
-    /// <summary>
     /// Gets the set of typedef names (type aliases).
     /// </summary>
     public IReadOnlySet<string> TypeDefs => new HashSet<string>(_typedefs.Keys);
 
+    public static readonly HashSet<string> KnownBadTypes =
+    [
+        "ImColor",
+        "ImDrawTextFlags",
+        "ImFontAtlasCustomRect",
+        "ImFontGlyphRangesBuilder"
+    ];
+
     /// <summary>
     /// Builtin C type to C# type mapping.
     /// </summary>
-    private static readonly Dictionary<string, string> BuiltinTypeMap = new()
+    public static readonly Dictionary<string, string> BuiltinTypeMap = new()
     {
         ["void"] = "void",
         ["bool"] = "bool",
@@ -62,7 +57,7 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
     /// they are handled by <see cref="TypedefGenerator.WrapperTypedefs"/> and
     /// <see cref="TypedefGenerator.CallbackTypedefs"/>.
     /// </summary>
-    private static readonly Dictionary<string, string> KnownTypedefs = new()
+    public static readonly Dictionary<string, string> KnownTypedefs = new()
     {
         ["ImU8"] = "byte",
         ["ImU16"] = "ushort",
@@ -94,7 +89,7 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
     /// SDL types mapped to their containing module class in Sdl3Sharp.Native.
     /// The types are nested within module classes (e.g., SDL_Window is Video.SDL_Window).
     /// </summary>
-    private static readonly Dictionary<string, string> SdlTypeToModule = new()
+    public static readonly Dictionary<string, string> SdlTypeToModule = new()
     {
         // Video module types
         ["SDL_Window"] = "Video",
@@ -123,33 +118,10 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
     {
         foreach (StructInfo? s in root.Structs)
         {
-            if (s.ForwardDeclaration)
+            if (!s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous)
             {
-                // Collect opaque types (forward-declared structs with no exposed fields)
-                if (!SdlTypeToModule.ContainsKey(s.Name))
-                {
-                    _ = _opaqueStructs.Add(s.Name);
-                }
-            }
-            else
-            {
-                if (s.IsInternal || s.IsAnonymous)
-                {
-                    // Collect internal/anonymous structs (for mapping their pointers to nint)
-                    _ = _internalStructs.Add(s.Name);
-                }
-                else
-                {
-                    // Collect public structs (internal/anonymous structs are filtered out at generation sites)
-                    _ = _structs.Add(s.Name);
-
-                    // Track backend struct renames (ImGui_ImplSDLGPU3_InitInfo -> GpuInitInfo)
-                    var cleanName = NamingConventions.CleanBackendStructName(s.Name);
-                    if (cleanName != s.Name)
-                    {
-                        _backendStructRenames[s.Name] = cleanName;
-                    }
-                }
+                // Collect public structs (internal/anonymous structs are filtered out at generation sites)
+                _ = _structs.Add(s.Name);
             }
         }
 
@@ -226,34 +198,6 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
     }
 
     /// <summary>
-    /// Checks if a type is an unsupported type.
-    /// </summary>
-    public static bool IsUnsupportedType(StructInfo structInfo)
-    {
-        return UnsupportedTypes.Contains(structInfo.Name);
-    }
-
-    /// <summary>
-    /// Checks if a type refers to an internal struct (should be mapped to nint).
-    /// </summary>
-    public bool IsInternalType(TypeDescription? type)
-    {
-        return type?.Description != null && IsInternalTypeDetail(type.Description);
-    }
-
-    private bool IsInternalTypeDetail(TypeDescriptionDetail desc)
-    {
-        // Check direct user type
-        if (desc.Kind == "User" && desc.Name != null)
-        {
-            return _internalStructs.Contains(desc.Name);
-        }
-
-        // Check inner type for pointers/arrays
-        return desc.InnerType != null && IsInternalTypeDetail(desc.InnerType);
-    }
-
-    /// <summary>
     /// Checks if a type contains unsupported types (va_list, ImStr, etc.)
     /// </summary>
     public static bool HasUnsupportedType(TypeDescription? type)
@@ -327,18 +271,6 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
 
     private string MapUserType(string name)
     {
-        // Check if it's a wrapper typedef (these become type-safe wrapper structs)
-        if (TypedefGenerator.WrapperTypedefs.ContainsKey(name))
-        {
-            return name;
-        }
-
-        // Check if it's a callback typedef (these become wrapper structs)
-        if (TypedefGenerator.CallbackTypedefs.Contains(name))
-        {
-            return name;
-        }
-
         // Check known typedefs that map directly to primitives
         if (KnownTypedefs.TryGetValue(name, out var known))
         {
@@ -354,17 +286,11 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
         // Check if it's a struct (use cleaned name for backend structs)
         if (_structs.Contains(name))
         {
-            return _backendStructRenames.TryGetValue(name, out var cleanName) ? cleanName : name;
+            return name;
         }
 
         // Check if it's an SDL type from Sdl3Sharp.Native - keep the type name
         if (SdlTypeToModule.ContainsKey(name))
-        {
-            return name;
-        }
-
-        // Check if it's an opaque struct - return wrapper struct name
-        if (_opaqueStructs.Contains(name))
         {
             return name;
         }
@@ -405,12 +331,6 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
         {
             var userName = innerType.Name ?? "";
 
-            // Wrapper typedef pointers
-            if (TypedefGenerator.WrapperTypedefs.ContainsKey(userName))
-            {
-                return $"{userName}*";
-            }
-
             // Known typedefs that map to primitive pointers
             if (KnownTypedefs.TryGetValue(userName, out var known))
             {
@@ -427,18 +347,11 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
             // Struct -> typed pointer (use cleaned name for backend structs)
             if (_structs.Contains(userName) || (mainTypeMapper != null && mainTypeMapper.Structs.Contains(userName)))
             {
-                var structName = _backendStructRenames.TryGetValue(userName, out var cleanName) ? cleanName : userName;
-                return $"{structName}*";
+                return $"{userName}*";
             }
 
             // SDL type pointer -> use the actual SDL type pointer for type safety
             if (SdlTypeToModule.ContainsKey(userName))
-            {
-                return $"{userName}*";
-            }
-
-            // Opaque struct pointer -> return typed pointer
-            if (_opaqueStructs.Contains(userName))
             {
                 return $"{userName}*";
             }

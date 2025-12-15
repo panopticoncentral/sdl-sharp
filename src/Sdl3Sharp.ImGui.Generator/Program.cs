@@ -3,7 +3,7 @@ using Sdl3Sharp.ImGui.Generator;
 // Determine paths
 var baseDir = FindSolutionRoot();
 var dearBindingsDir = Path.Combine(baseDir, "src", "Sdl3Sharp.ImGui.Native", "dear_bindings");
-var outputDir = Path.Combine(baseDir, "src", "Sdl3Sharp.ImGui", "Native");
+var outputDir = Path.Combine(baseDir, "src", "Sdl3Sharp.ImGui");
 
 Console.WriteLine($"Solution root: {baseDir}");
 Console.WriteLine($"Dear Bindings dir: {dearBindingsDir}");
@@ -12,7 +12,10 @@ Console.WriteLine($"Output dir: {outputDir}");
 // Clean and recreate output directories
 if (Directory.Exists(outputDir))
 {
-    Directory.Delete(outputDir, recursive: true);
+    foreach (var file in Directory.GetFiles(outputDir, "*.cs", SearchOption.AllDirectories))
+    {
+        File.Delete(file);
+    }
 }
 
 Directory.CreateDirectory(outputDir);
@@ -49,7 +52,7 @@ TypeMapper mainTypes = HeaderGenerator.Generate(
     null);
 
 // Load backend JSONs
-var backendFiles = new List<(string Name, string Path, HashSet<string> ExcludedFunctions)>
+var backendFiles = new List<(string Name, string HeaderPath, HashSet<string> ExcludedFunctions)>
 {
     ("ImGuiSdl3", Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdl3.json"), [
         "cImGui_ImplSDL3_InitForOpenGL",
@@ -62,10 +65,10 @@ var backendFiles = new List<(string Name, string Path, HashSet<string> ExcludedF
     ("ImGuiSdl3Renderer", Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlrenderer3.json"), []),
 };
 
-foreach ((var name, var path, HashSet<string> excludedFunctions) in backendFiles)
+foreach ((var name, var headerPath, HashSet<string> excludedFunctions) in backendFiles)
 {
     _ = HeaderGenerator.Generate(
-        path,
+        headerPath,
         "Sdl3Sharp.ImGui.Native.Backends",
         Path.Combine(outputDir, "Backends"),
         name,

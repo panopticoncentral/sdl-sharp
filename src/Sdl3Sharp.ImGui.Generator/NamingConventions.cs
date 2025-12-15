@@ -22,15 +22,6 @@ public static class NamingConventions
     /// </summary>
     public static string CleanEnumName(string name)
     {
-        foreach (KeyValuePair<string, string> prefix in BackendPrefixes)
-        {
-            if (name.StartsWith(prefix.Key))
-            {
-                name = prefix.Value + name[prefix.Key.Length..];
-                break;
-            }
-        }
-
         // Remove trailing underscore
         return name.EndsWith('_') ? name[..^1] : name;
     }

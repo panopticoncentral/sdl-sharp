@@ -6,51 +6,6 @@ namespace Sdl3Sharp.ImGui.Generator;
 public static class TypedefGenerator
 {
     /// <summary>
-    /// Typedefs that should be generated as wrapper structs.
-    /// Maps typedef name to underlying C# type.
-    /// </summary>
-    public static readonly Dictionary<string, string> WrapperTypedefs = new()
-    {
-        ["ImGuiID"] = "uint",
-        ["ImTextureID"] = "nint",
-        ["ImDrawIdx"] = "ushort",
-        ["ImGuiKeyChord"] = "int",
-        ["ImGuiSelectionUserData"] = "long",
-        ["ImPoolIdx"] = "int",
-        ["ImFileHandle"] = "nint",
-        ["ImFontAtlasRectId"] = "int",
-    };
-
-    /// <summary>
-    /// Callback typedefs that should be generated as function pointer wrapper structs.
-    /// </summary>
-    public static readonly HashSet<string> CallbackTypedefs =
-    [
-        "ImGuiInputTextCallback",
-        "ImGuiSizeCallback",
-        "ImGuiMemAllocFunc",
-        "ImGuiMemFreeFunc",
-        "ImDrawCallback",
-    ];
-
-    /// <summary>
-    /// Generates a wrapper struct for an opaque handle type.
-    /// </summary>
-    public static string GenerateOpaqueHandleWrapper(string name, string namespaceName)
-    {
-        var writer = new CodeWriter();
-        writer.WriteFileHeader();
-        writer.AppendLine($"namespace {namespaceName};");
-        writer.AppendLine();
-
-        // Write documentation - empty struct, pointer wrapping happens at managed level
-        writer.AppendLine($"/// <summary>Opaque handle to an internal ImGui {name} structure.</summary>");
-        writer.AppendLine($"public readonly struct {name};");
-
-        return writer.ToString();
-    }
-
-    /// <summary>
     /// Generates a single typedef wrapper struct.
     /// </summary>
     public static string GenerateSingleTypedef(TypedefInfo typedefInfo, string underlyingType, string namespaceName)

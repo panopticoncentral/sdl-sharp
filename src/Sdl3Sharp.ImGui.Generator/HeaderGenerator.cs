@@ -21,10 +21,52 @@ public static class HeaderGenerator
         var typeMapper = new TypeMapper(mainTypes);
         typeMapper.Initialize(root);
 
+        Dictionary<string, bool> referencedTypes = ReferenceCollector.CollectReferencedTypes(root);
+
+        var enums = root.Enums
+            .Where(e => !e.IsInternal
+                && !TypeMapper.KnownBadTypes.Contains(e.Name))
+            .Select(e => NamingConventions.CleanEnumName(e.Name))
+            .ToHashSet();
+
+        var structs = root.Structs
+            .Where(s => !s.IsInternal
+                && !s.IsAnonymous
+                && !TypeMapper.KnownBadTypes.Contains(s.Name)
+                && !TypeMapper.SdlTypeToModule.ContainsKey(s.Name)
+                && (mainTypes == null || !mainTypes.Structs.Contains(s.Name))
+                && referencedTypes.ContainsKey(s.Name))
+            .ToHashSet();
+
+        var functions = root.Functions
+            .Where(f => !f.IsInternal 
+                && !f.IsDefaultArgumentHelper 
+                && !f.IsImstrHelper 
+                && !f.Name.Contains("__") 
+                && !f.Arguments.Any(a => a.IsVarargs) 
+                && !TypeMapper.FunctionHasUnsupportedTypes(f) 
+                && !Conditional.IsObsolete(f.Conditionals) 
+                && !excludedFunctions.Contains(f.Name))
+            .ToHashSet();
+
+        // Group struct methods by their original class
+        var structFunctions = functions
+            .Where(f => !string.IsNullOrEmpty(f.OriginalClass) && f.Arguments.Any(a => a.IsInstancePointer))
+            .GroupBy(f => f.OriginalClass!)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        // Filter out struct methods that were already generated in their structs
+        var nonStructFunctions = functions
+            .Where(f => string.IsNullOrEmpty(f.OriginalClass) || !f.Arguments.Any(a => a.IsInstancePointer))
+            .ToList();
+
         // === Generate Enums (one file per enum) ===
         Console.WriteLine("\nGenerating enums...");
         var enumCount = 0;
-        foreach (EnumInfo? enumInfo in root.Enums.Where(e => !e.IsInternal))
+        foreach (EnumInfo? enumInfo in root.Enums
+            .Where(e => !e.IsInternal 
+                && !TypeMapper.KnownBadTypes.Contains(NamingConventions.CleanEnumName(e.Name))
+                && referencedTypes.ContainsKey(NamingConventions.CleanEnumName(e.Name))))
         {
             var cleanName = NamingConventions.CleanEnumName(enumInfo.Name);
             var content = EnumGenerator.GenerateSingleEnum(enumInfo, ns);
@@ -35,104 +77,70 @@ public static class HeaderGenerator
 
         Console.WriteLine($"  Generated {enumCount} enum files");
 
-        // === Generate Typedef Wrapper Structs (one file per typedef) ===
-        Console.WriteLine("\nGenerating typedef wrapper structs...");
-        var typedefCount = 0;
+        // === Generate Typedefs (one file per typedef) ===
+        Console.WriteLine("\nGenerating typedefs...");
+        var typeDefCount = 0;
         foreach (TypedefInfo typedefInfo in root.Typedefs
-            .Where(t => !t.IsInternal)
-            .Where(t => mainTypes == null || !mainTypes.TypeDefs.Contains(t.Name)))
+            .Where(t => !t.IsInternal 
+                && !enums.Contains(t.Name) 
+                && !TypeMapper.KnownTypedefs.ContainsKey(t.Name) 
+                && !TypeMapper.KnownBadTypes.Contains(t.Name)
+                && !TypeMapper.SdlTypeToModule.ContainsKey(t.Name)
+                && (mainTypes == null || !mainTypes.TypeDefs.Contains(t.Name))
+                && referencedTypes.ContainsKey(t.Name)))
         {
-            if (TypedefGenerator.WrapperTypedefs.TryGetValue(typedefInfo.Name, out var underlyingType))
-            {
-                var content = TypedefGenerator.GenerateSingleTypedef(typedefInfo, underlyingType, ns);
-                var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
-                File.WriteAllText(filePath, content);
-                typedefCount++;
-            }
-        }
-
-        Console.WriteLine($"  Generated {typedefCount} typedef wrapper struct files");
-
-        // === Generate Callback Typedef Wrapper Structs (one file per callback) ===
-        Console.WriteLine("\nGenerating callback typedef wrapper structs...");
-        var callbackCount = 0;
-        foreach (TypedefInfo typedefInfo in root.Typedefs.Where(t => !t.IsInternal))
-        {
-            if (TypedefGenerator.CallbackTypedefs.Contains(typedefInfo.Name))
+            if (typedefInfo.Type?.TypeDetails?.Flavour == "function_pointer")
             {
                 var content = TypedefGenerator.GenerateCallbackTypedef(typeMapper, typedefInfo, ns);
                 var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
                 File.WriteAllText(filePath, content);
-                callbackCount++;
             }
+            else
+            {
+                var content = TypedefGenerator.GenerateSingleTypedef(typedefInfo, typeMapper.MapType(typedefInfo.Type), ns);
+                var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
+                File.WriteAllText(filePath, content);
+            }
+
+            typeDefCount++;
         }
 
-        Console.WriteLine($"  Generated {callbackCount} callback typedef wrapper struct files");
+        Console.WriteLine($"  Generated {typeDefCount} typedef files");
 
-        // === Generate Opaque Handle Wrapper Structs (one file per type) ===
-        Console.WriteLine("\nGenerating opaque handle wrapper structs...");
-        var opaqueHandleCount = 0;
-        foreach (var handleName in typeMapper.OpaqueStructs.Where(s => mainTypes == null || !mainTypes.Structs.Contains(s)))
+        // === Generate Value Structs (one file per struct) ===
+        Console.WriteLine("\nGenerating value structs...");
+        var valueStructCount = 0;
+        foreach (StructInfo? structInfo in structs.Where(s => referencedTypes[s.Name]))
         {
-            var content = TypedefGenerator.GenerateOpaqueHandleWrapper(handleName, ns);
-            var filePath = Path.Combine(outputDir, $"{handleName}.cs");
+            _ = structFunctions.TryGetValue(structInfo.Name, out List<FunctionInfo>? methods);
+            if (structInfo.Fields.Any(f => f.IsInternal))
+            {
+                throw new InvalidDataException();
+            }
+
+            var content = StructGenerator.GenerateValueStruct(typeMapper, structInfo, ns, methods);
+            var filePath = Path.Combine(outputDir, $"{structInfo.Name}.cs");
             File.WriteAllText(filePath, content);
-            opaqueHandleCount++;
+            valueStructCount++;
         }
 
-        Console.WriteLine($"  Generated {opaqueHandleCount} opaque handle wrapper struct files");
+        Console.WriteLine($"  Generated {valueStructCount} value struct files");
 
-        // === Collect and filter all functions ===
-        // Get all valid functions (filtered by common criteria)
-        List<FunctionInfo> allFunctions = [.. root.Functions
-            .Where(f => !f.IsInternal)
-            .Where(f => !f.IsDefaultArgumentHelper)
-            .Where(f => !f.IsImstrHelper)
-            .Where(f => !f.Name.Contains("__"))
-            .Where(f => !f.Arguments.Any(a => a.IsVarargs))
-            .Where(f => !TypeMapper.FunctionHasUnsupportedTypes(f))
-            .Where(f => !Conditional.IsObsolete(f.Conditionals))
-            .Where(f => !excludedFunctions.Contains(f.Name))];
-
-        // Group struct methods by their original class
-        var structMethodsByClass = allFunctions
-            .Where(f => !string.IsNullOrEmpty(f.OriginalClass) && f.Arguments.Any(a => a.IsInstancePointer))
-            .GroupBy(f => f.OriginalClass!)
-            .ToDictionary(g => g.Key, g => g.ToList());
-
-        // Get struct names for filtering
-        var structNames = root.Structs
-            .Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0)
-            .Where(s => !TypeMapper.IsUnsupportedType(s))
-            .Select(s => s.Name)
-            .ToHashSet();
-
-        // === Generate Structs (one file per struct) ===
-        Console.WriteLine("\nGenerating structs...");
-        var structCount = 0;
-        var structMethodCount = 0;
-        foreach (StructInfo? structInfo in root.Structs
-            .Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous && s.Fields.Count > 0)
-            .Where(s => !TypeMapper.IsUnsupportedType(s)))
+        // === Generate Reference Structs (one file per struct) ===
+        Console.WriteLine("\nGenerating reference structs...");
+        var referenceStructCount = 0;
+        foreach (StructInfo? structInfo in structs.Where(s => !referencedTypes[s.Name]))
         {
-            // Get methods for this struct
-            _ = structMethodsByClass.TryGetValue(structInfo.Name, out List<FunctionInfo>? methods);
-            var name = NamingConventions.CleanBackendStructName(structInfo.Name);
-            var content = StructGenerator.GenerateSingleStruct(typeMapper, structInfo, ns, methods, name);
-            var filePath = Path.Combine(outputDir, $"{name}.cs");
+            _ = structFunctions.TryGetValue(structInfo.Name, out List<FunctionInfo>? methods);
+            var content = StructGenerator.GenerateRefStruct(typeMapper, structInfo, ns, methods);
+            var filePath = Path.Combine(outputDir, $"{structInfo.Name}.cs");
             File.WriteAllText(filePath, content);
-            structCount++;
-            structMethodCount += methods?.Count ?? 0;
+            referenceStructCount++;
         }
 
-        Console.WriteLine($"  Generated {structCount} struct files with {structMethodCount} methods");
+        Console.WriteLine($"  Generated {referenceStructCount} reference struct files");
 
         // === Generate Native Methods (one file per class grouping) ===
-        // Filter out struct methods that were already generated in their structs
-        var nonStructFunctions = allFunctions
-            .Where(f => string.IsNullOrEmpty(f.OriginalClass) || !structNames.Contains(f.OriginalClass) || !f.Arguments.Any(a => a.IsInstancePointer))
-            .ToList();
-
         Console.WriteLine("\nGenerating native methods...");
         if (nonStructFunctions.Count != 0)
         {
