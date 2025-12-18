@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Selection request item
 /// </summary>

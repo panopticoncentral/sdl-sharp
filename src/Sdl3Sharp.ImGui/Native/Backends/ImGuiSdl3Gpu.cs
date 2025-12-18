@@ -19,7 +19,7 @@ internal static unsafe partial class ImGuiSdl3Gpu
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_Init")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool Init(ImGuiSdl3GpuInitInfo* info);
+    public static partial bool Init(ImGui_ImplSDLGPU3_InitInfo* info);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_Shutdown")]
     public static partial void Shutdown();

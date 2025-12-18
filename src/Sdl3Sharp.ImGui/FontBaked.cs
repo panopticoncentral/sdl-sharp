@@ -10,7 +10,7 @@ namespace Sdl3Sharp.ImGui;
 /// Pointers to FontBaked are only valid for the current frame.
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe sealed class FontBaked
+public unsafe readonly struct FontBaked
 {
     private readonly ImFontBaked* _native;
 

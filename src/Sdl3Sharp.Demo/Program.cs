@@ -3,16 +3,18 @@ using Sdl3Sharp.Graphics;
 using Sdl3Sharp.ImGui;
 using Sdl3Sharp.ImGui.Backends;
 
+using Sdl3WindowFlags = Sdl3Sharp.Graphics.WindowFlags;
+
 // Initialize SDL
 using Application app = new(Subsystems.Video);
 
 // Create window and renderer
-(Window? window, Renderer? renderer) = Renderer.CreateWindowAndRenderer("ImGui SDL Renderer Demo", new(1280, 720), WindowFlags.Resizable);
+(Window? window, Renderer? renderer) = Renderer.CreateWindowAndRenderer("ImGui SDL Renderer Demo", new(1280, 720), Sdl3WindowFlags.Resizable);
 
 // Create ImGui context
-using var ctx = Context.CreateContext();
-Context.Style.FontSizeBase = 24.0f;
-Context.Current = ctx;
+Context context = ImGui.CreateContext();
+ImGui.GetStyle().FontSizeBase = 24.0f;
+ImGui.SetCurrentContext(context);
 
 // Initialize ImGui backends
 SDL3Backend.InitForSDLRenderer(window, renderer);
@@ -33,13 +35,13 @@ void DoFrame()
     // Start the ImGui frame
     SDL3Backend.NewFrame();
     SDLRenderer3Backend.NewFrame();
-    Context.NewFrame();
+    ImGui.NewFrame();
 
     // Show the ImGui demo window
-    Context.ShowDemoWindow(showDemoWindow);
+    ImGui.ShowDemoWindow(showDemoWindow);
 
     // Rendering
-    Context.Render();
+    ImGui.Render();
 
     renderer.DrawColor = new Color(45, 55, 60, 255);
     renderer.Clear();
@@ -75,3 +77,5 @@ SDL3Backend.Shutdown();
 
 renderer.Dispose();
 window.Dispose();
+
+ImGui.DestroyContext(context);

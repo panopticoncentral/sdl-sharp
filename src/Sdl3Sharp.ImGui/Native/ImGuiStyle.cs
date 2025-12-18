@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 [StructLayout(LayoutKind.Sequential)]
 public unsafe partial struct ImGuiStyle
 {
@@ -327,8 +329,7 @@ public unsafe partial struct ImGuiStyle
     /// <summary>
     /// Colors
     /// </summary>
-    // TODO: Fixed array of ImVec4[ImGuiCol_COUNT]
-    private ImVec4 _Colors_0;
+    public fixed byte Colors[60 * 4 * 4];
 
     /// <summary>
     /// Behaviors
@@ -356,10 +357,6 @@ public unsafe partial struct ImGuiStyle
     /// Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using keyboard/gamepad.
     /// </summary>
     public ImGuiHoveredFlags HoverFlagsForTooltipNav;
-
-    private float _internal0; // _MainScale
-
-    private float _internal1; // _NextFrameFontSizeBase
 
     /// <summary>
     /// Scale all spacing/padding/thickness values. Do not scale fonts.

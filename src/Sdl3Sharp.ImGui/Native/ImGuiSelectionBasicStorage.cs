@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Optional helper to store multi-selection state + apply multi-selection requests.
 /// - Used by our demos and provided as a convenience to easily implement basic multi-selection.
@@ -50,10 +52,6 @@ public unsafe partial struct ImGuiSelectionBasicStorage
     /// e.g. selection.AdapterIndexToStorageId = [](ImGuiSelectionBasicStorage* self, int idx) { return ((MyItems**)self-&gt;UserData)[idx]-&gt;ID; };
     /// </summary>
     public nint AdapterIndexToStorageId;
-
-    private int _internal0; // _SelectionOrder
-
-    private ImGuiStorage _internal1; // _Storage
 
     /// <summary>
     /// Apply selection requests coming from BeginMultiSelect() and EndMultiSelect() functions. It uses 'items_count' passed to BeginMultiSelect()

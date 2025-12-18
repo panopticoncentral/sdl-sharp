@@ -18,9 +18,4 @@ public readonly record struct TextureId
     {
         Value = value;
     }
-
-    /// <summary>
-    /// Gets a value indicating whether this ID is valid.
-    /// </summary>
-    public readonly bool IsValid => Value != -1;
 }

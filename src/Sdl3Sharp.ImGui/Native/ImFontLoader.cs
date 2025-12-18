@@ -5,7 +5,16 @@
 
 #nullable enable
 
+using System.Runtime.InteropServices;
+
 namespace Sdl3Sharp.ImGui.Native;
 
-/// <summary>Opaque handle to an internal ImGui ImFontLoader structure.</summary>
-public readonly struct ImFontLoader;
+// This type is only referenced
+
+/// <summary>
+/// Opaque interface to a font loading backend (stb_truetype, FreeType etc.).
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public partial struct ImFontLoader
+{
+}

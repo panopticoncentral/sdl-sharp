@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Font runtime data and rendering
 /// - ImFontAtlas automatically loads a default embedded font for you if you didn't load one manually.
@@ -19,30 +21,6 @@ namespace Sdl3Sharp.ImGui.Native;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe partial struct ImFont
 {
-    private ImFontBaked* _internal0; // LastBaked
-
-    private ImFontAtlas* _internal1; // OwnerAtlas
-
-    private ImFontFlags _internal2; // Flags
-
-    private float _internal3; // CurrentRasterizerDensity
-
-    private ImGuiID _internal4; // FontId
-
-    private float _internal5; // LegacySize
-
-    private ImVector_ImFontConfigPtr _internal6; // Sources
-
-    private ushort _internal7; // EllipsisChar
-
-    private ushort _internal8; // FallbackChar
-
-    private fixed byte _internal9[17]; // Used8kPagesMap
-
-    private bool _internal10; // EllipsisAutoBake
-
-    private ImGuiStorage _internal11; // RemapPairs
-
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_IsGlyphInFont")]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool IsGlyphInFont(ImFont* self, ushort c);

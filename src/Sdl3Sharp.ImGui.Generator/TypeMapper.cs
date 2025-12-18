@@ -7,7 +7,7 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
 {
     private readonly HashSet<string> _structs = [];
     private readonly HashSet<string> _enumTypes = [];
-    private readonly Dictionary<string, string> _typedefs = [];
+    private readonly Dictionary<string, TypeDescription> _typedefs = [];
 
     /// <summary>
     /// Gets the set of struct names (user-defined types).
@@ -18,14 +18,6 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
     /// Gets the set of typedef names (type aliases).
     /// </summary>
     public IReadOnlySet<string> TypeDefs => new HashSet<string>(_typedefs.Keys);
-
-    public static readonly HashSet<string> KnownBadTypes =
-    [
-        "ImColor",
-        "ImDrawTextFlags",
-        "ImFontAtlasCustomRect",
-        "ImFontGlyphRangesBuilder"
-    ];
 
     /// <summary>
     /// Builtin C type to C# type mapping.
@@ -83,6 +75,11 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
         "va_list",
         "ImColor",
         "ImStr",
+        "ImColor",
+        "ImDrawTextFlags",
+        "ImFontAtlasCustomRect",
+        "ImFontGlyphRangesBuilder",
+        "ImGuiPlatformIO"
     ];
 
     /// <summary>
@@ -116,11 +113,16 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
 
     public void Initialize(DearBindingsRoot root)
     {
-        foreach (StructInfo? s in root.Structs)
+        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous))
         {
-            if (!s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous)
+            // Collect public structs (internal/anonymous structs are filtered out at generation sites)
+            _ = _structs.Add(s.Name);
+        }
+
+        foreach (StructInfo? s in root.Structs.Where(s => s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous))
+        {
+            if (!_structs.Contains(s.Name))
             {
-                // Collect public structs (internal/anonymous structs are filtered out at generation sites)
                 _ = _structs.Add(s.Name);
             }
         }
@@ -134,7 +136,7 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
         // Collect typedefs
         foreach (TypedefInfo t in root.Typedefs.Where(t => t.Type?.Description != null))
         {
-            _typedefs[t.Name] = t.Type!.Declaration;
+            _typedefs[t.Name] = t.Type!;
         }
     }
 
@@ -289,6 +291,11 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
             return name;
         }
 
+        if (_typedefs.TryGetValue(name, out TypeDescription? type))
+        {
+            return type.TypeDetails?.Flavour == "function_pointer" ? BuildFunctionPointerSignature(type.TypeDetails) : name;
+        }
+
         // Check if it's an SDL type from Sdl3Sharp.Native - keep the type name
         if (SdlTypeToModule.ContainsKey(name))
         {
@@ -350,6 +357,11 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
                 return $"{userName}*";
             }
 
+            if (_typedefs.TryGetValue(userName, out TypeDescription? type))
+            {
+                return type.TypeDetails?.Flavour == "function_pointer" ? BuildFunctionPointerSignature(type.TypeDetails) : $"{userName}*";
+            }
+
             // SDL type pointer -> use the actual SDL type pointer for type safety
             if (SdlTypeToModule.ContainsKey(userName))
             {
@@ -398,5 +410,23 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
 
         // bool needs MarshalAs for LibraryImport
         return desc.Kind == "Builtin" && desc.BuiltinType == "bool" ? "[MarshalAs(UnmanagedType.U1)]" : null;
+    }
+
+    private string BuildFunctionPointerSignature(FunctionPointerDetails details)
+    {
+        var returnType = MapType(details.ReturnType);
+        var paramTypes = new List<string>();
+
+        foreach (ArgumentInfo arg in details.Arguments)
+        {
+            var paramType = MapType(arg.Type);
+            paramTypes.Add(paramType);
+        }
+
+        // Add return type at the end for delegate* syntax
+        paramTypes.Add(returnType);
+
+        var signature = string.Join(", ", paramTypes);
+        return $"delegate* unmanaged[Cdecl]<{signature}>";
     }
 }

@@ -5,9 +5,9 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents specs and pixel storage for a texture used by Dear ImGui.
 /// </summary>
-public unsafe sealed class TextureData
+public unsafe readonly struct TextureData
 {
-    internal ImTextureData* Native { get; }
+    internal readonly ImTextureData* Native { get; }
 
     /// <summary>
     /// Gets the unique identifier for this texture. Unique per atlas.

@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Load and rasterize multiple TTF/OTF fonts into a same texture. The font atlas will build a single texture holding:
 /// - One or more fonts.
@@ -83,47 +85,6 @@ public unsafe partial struct ImFontAtlas
     /// Latest texture.
     /// </summary>
     public ImTextureData* TexData;
-
-    private ImVector_ImTextureDataPtr _internal0; // TexList
-
-    private bool _internal1; // Locked
-
-    private bool _internal2; // RendererHasTextures
-
-    private bool _internal3; // TexIsBuilt
-
-    private bool _internal4; // TexPixelsUseColors
-
-    private ImVec2 _internal5; // TexUvScale
-
-    private ImVec2 _internal6; // TexUvWhitePixel
-
-    private ImVector_ImFontPtr _internal7; // Fonts
-
-    private ImVector_ImFontConfig _internal8; // Sources
-
-    // TODO: Fixed array of ImVec4[IM_DRAWLIST_TEX_LINES_WIDTH_MAX+1]
-    private ImVec4 __internal9_0; // TexUvLines
-
-    private int _internal10; // TexNextUniqueID
-
-    private int _internal11; // FontNextUniqueID
-
-    private ImVector_ImDrawListSharedDataPtr _internal12; // DrawListSharedDatas
-
-    private ImFontAtlasBuilder* _internal13; // Builder
-
-    private ImFontLoader* _internal14; // FontLoader
-
-    private byte* _internal15; // FontLoaderName
-
-    private nint _internal16; // FontLoaderData
-
-    private uint _internal17; // FontLoaderFlags
-
-    private int _internal18; // RefCount
-
-    private ImGuiContext* _internal19; // OwnerContext
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddFont")]
     public static partial ImFont* AddFont(ImFontAtlas* self, ImFontConfig* font_cfg);

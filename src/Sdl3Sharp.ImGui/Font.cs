@@ -6,9 +6,9 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents font runtime data and rendering information.
 /// </summary>
-public unsafe sealed class Font
+public unsafe readonly struct Font
 {
-    internal ImFont* Native { get; }
+    internal readonly ImFont* Native { get; }
 
     internal Font(ImFont* native)
     {

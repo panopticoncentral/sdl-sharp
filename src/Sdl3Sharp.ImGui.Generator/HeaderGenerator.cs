@@ -25,14 +25,14 @@ public static class HeaderGenerator
 
         var enums = root.Enums
             .Where(e => !e.IsInternal
-                && !TypeMapper.KnownBadTypes.Contains(e.Name))
+                && !TypeMapper.UnsupportedTypes.Contains(e.Name))
             .Select(e => NamingConventions.CleanEnumName(e.Name))
             .ToHashSet();
 
         var structs = root.Structs
             .Where(s => !s.IsInternal
                 && !s.IsAnonymous
-                && !TypeMapper.KnownBadTypes.Contains(s.Name)
+                && !TypeMapper.UnsupportedTypes.Contains(s.Name)
                 && !TypeMapper.SdlTypeToModule.ContainsKey(s.Name)
                 && (mainTypes == null || !mainTypes.Structs.Contains(s.Name))
                 && referencedTypes.ContainsKey(s.Name))
@@ -65,7 +65,7 @@ public static class HeaderGenerator
         var enumCount = 0;
         foreach (EnumInfo? enumInfo in root.Enums
             .Where(e => !e.IsInternal 
-                && !TypeMapper.KnownBadTypes.Contains(NamingConventions.CleanEnumName(e.Name))
+                && !TypeMapper.UnsupportedTypes.Contains(NamingConventions.CleanEnumName(e.Name))
                 && referencedTypes.ContainsKey(NamingConventions.CleanEnumName(e.Name))))
         {
             var cleanName = NamingConventions.CleanEnumName(enumInfo.Name);
@@ -81,64 +81,37 @@ public static class HeaderGenerator
         Console.WriteLine("\nGenerating typedefs...");
         var typeDefCount = 0;
         foreach (TypedefInfo typedefInfo in root.Typedefs
-            .Where(t => !t.IsInternal 
-                && !enums.Contains(t.Name) 
-                && !TypeMapper.KnownTypedefs.ContainsKey(t.Name) 
-                && !TypeMapper.KnownBadTypes.Contains(t.Name)
+            .Where(t => !t.IsInternal
+                && !enums.Contains(t.Name)
+                && !TypeMapper.KnownTypedefs.ContainsKey(t.Name)
+                && !TypeMapper.UnsupportedTypes.Contains(t.Name)
                 && !TypeMapper.SdlTypeToModule.ContainsKey(t.Name)
+                && t.Type?.TypeDetails?.Flavour != "function_pointer"
                 && (mainTypes == null || !mainTypes.TypeDefs.Contains(t.Name))
                 && referencedTypes.ContainsKey(t.Name)))
         {
-            if (typedefInfo.Type?.TypeDetails?.Flavour == "function_pointer")
-            {
-                var content = TypedefGenerator.GenerateCallbackTypedef(typeMapper, typedefInfo, ns);
-                var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
-                File.WriteAllText(filePath, content);
-            }
-            else
-            {
-                var content = TypedefGenerator.GenerateSingleTypedef(typedefInfo, typeMapper.MapType(typedefInfo.Type), ns);
-                var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
-                File.WriteAllText(filePath, content);
-            }
+            var content = TypedefGenerator.GenerateSingleTypedef(typedefInfo, typeMapper.MapType(typedefInfo.Type), ns);
+            var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
+            File.WriteAllText(filePath, content);
 
             typeDefCount++;
         }
 
         Console.WriteLine($"  Generated {typeDefCount} typedef files");
 
-        // === Generate Value Structs (one file per struct) ===
-        Console.WriteLine("\nGenerating value structs...");
+        // === Generate Structs (one file per struct) ===
+        Console.WriteLine("\nGenerating structs...");
         var valueStructCount = 0;
-        foreach (StructInfo? structInfo in structs.Where(s => referencedTypes[s.Name]))
+        foreach (StructInfo? structInfo in structs)
         {
             _ = structFunctions.TryGetValue(structInfo.Name, out List<FunctionInfo>? methods);
-            if (structInfo.Fields.Any(f => f.IsInternal))
-            {
-                throw new InvalidDataException();
-            }
-
-            var content = StructGenerator.GenerateValueStruct(typeMapper, structInfo, ns, methods);
+            var content = StructGenerator.GenerateValueStruct(typeMapper, structInfo, ns, methods, referencedTypes[structInfo.Name]);
             var filePath = Path.Combine(outputDir, $"{structInfo.Name}.cs");
             File.WriteAllText(filePath, content);
             valueStructCount++;
         }
 
         Console.WriteLine($"  Generated {valueStructCount} value struct files");
-
-        // === Generate Reference Structs (one file per struct) ===
-        Console.WriteLine("\nGenerating reference structs...");
-        var referenceStructCount = 0;
-        foreach (StructInfo? structInfo in structs.Where(s => !referencedTypes[s.Name]))
-        {
-            _ = structFunctions.TryGetValue(structInfo.Name, out List<FunctionInfo>? methods);
-            var content = StructGenerator.GenerateRefStruct(typeMapper, structInfo, ns, methods);
-            var filePath = Path.Combine(outputDir, $"{structInfo.Name}.cs");
-            File.WriteAllText(filePath, content);
-            referenceStructCount++;
-        }
-
-        Console.WriteLine($"  Generated {referenceStructCount} reference struct files");
 
         // === Generate Native Methods (one file per class grouping) ===
         Console.WriteLine("\nGenerating native methods...");

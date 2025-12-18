@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// All draw data to render a Dear ImGui frame
 /// (NB: the style and the naming convention here is a little inconsistent, we currently preserve them for backward compatibility purpose,

@@ -5,7 +5,17 @@
 
 #nullable enable
 
+using System.Runtime.InteropServices;
+
 namespace Sdl3Sharp.ImGui.Native;
 
-/// <summary>Opaque handle to an internal ImGui ImGuiContext structure.</summary>
-public readonly struct ImGuiContext;
+// This type is only referenced
+
+/// <summary>
+/// Forward declarations: ImGui layer
+/// Dear ImGui context (opaque structure, unless including imgui_internal.h)
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public partial struct ImGuiContext
+{
+}

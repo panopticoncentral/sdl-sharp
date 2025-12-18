@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Main IO structure returned by BeginMultiSelect()/EndMultiSelect().
 /// This mainly contains a list of selection requests.

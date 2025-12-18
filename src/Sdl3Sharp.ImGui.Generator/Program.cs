@@ -3,7 +3,7 @@ using Sdl3Sharp.ImGui.Generator;
 // Determine paths
 var baseDir = FindSolutionRoot();
 var dearBindingsDir = Path.Combine(baseDir, "src", "Sdl3Sharp.ImGui.Native", "dear_bindings");
-var outputDir = Path.Combine(baseDir, "src", "Sdl3Sharp.ImGui");
+var outputDir = Path.Combine(baseDir, "src", "Sdl3Sharp.ImGui", "Native");
 
 Console.WriteLine($"Solution root: {baseDir}");
 Console.WriteLine($"Dear Bindings dir: {dearBindingsDir}");

@@ -11,16 +11,16 @@ namespace Sdl3Sharp.ImGui.Native;
 /// Default: store up to 64-bits (any pointer or integer). A majority of backends are ok with that.
 /// </summary>
 /// <param name="value">The underlying ImTextureID value.</param>
-public readonly struct ImTextureID(nint value)
+public readonly struct ImTextureID(ulong value)
 {
     /// <summary>The underlying ImTextureID value.</summary>
-    public readonly nint Value = value;
+    public readonly ulong Value = value;
 
-    /// <summary>Implicitly converts a ImTextureID to nint.</summary>
+    /// <summary>Implicitly converts a ImTextureID to ulong.</summary>
     /// <param name="id">The ImTextureID to convert.</param>
-    public static implicit operator nint(ImTextureID id) => id.Value;
+    public static implicit operator ulong(ImTextureID id) => id.Value;
 
-    /// <summary>Implicitly converts a nint to ImTextureID.</summary>
+    /// <summary>Implicitly converts a ulong to ImTextureID.</summary>
     /// <param name="value">The value to convert.</param>
-    public static implicit operator ImTextureID(nint value) => new(value);
+    public static implicit operator ImTextureID(ulong value) => new(value);
 }

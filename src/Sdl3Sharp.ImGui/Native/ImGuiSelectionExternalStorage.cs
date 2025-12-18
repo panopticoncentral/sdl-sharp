@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Optional helper to apply multi-selection requests to existing randomly accessible storage.
 /// Convenient if you want to quickly wire multi-select API on e.g. an array of bool or items storing their own selection state.

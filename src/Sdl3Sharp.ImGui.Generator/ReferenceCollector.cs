@@ -19,7 +19,7 @@ public static class ReferenceCollector
     private static bool CollectUserType(DearBindingsRoot root, Dictionary<string, bool> referencedTypes, string? typeName, bool isPointer)
     {
         if (typeName == null
-            || TypeMapper.KnownBadTypes.Contains(typeName)
+            || TypeMapper.UnsupportedTypes.Contains(typeName)
             || TypeMapper.KnownTypedefs.ContainsKey(typeName)
             || TypeMapper.SdlTypeToModule.ContainsKey(typeName))
         {
@@ -137,7 +137,7 @@ public static class ReferenceCollector
         // Collect types from functions
         foreach (FunctionInfo function in root.Functions)
         {
-            if (function.IsInternal || (function.OriginalClass != null && TypeMapper.KnownBadTypes.Contains(function.OriginalClass)))
+            if (function.IsInternal || (function.OriginalClass != null && TypeMapper.UnsupportedTypes.Contains(function.OriginalClass)))
             {
                 continue;
             }
@@ -157,7 +157,7 @@ public static class ReferenceCollector
         // Collect types from structs
         foreach (StructInfo structInfo in root.Structs)
         {
-            if (structInfo.IsInternal || TypeMapper.KnownBadTypes.Contains(structInfo.Name))
+            if (structInfo.IsInternal || TypeMapper.UnsupportedTypes.Contains(structInfo.Name))
             {
                 continue;
             }
@@ -176,7 +176,7 @@ public static class ReferenceCollector
         // Collect types from typedefs
         foreach (TypedefInfo typedefInfo in root.Typedefs)
         {
-            if (typedefInfo.IsInternal || TypeMapper.KnownBadTypes.Contains(typedefInfo.Name))
+            if (typedefInfo.IsInternal || TypeMapper.UnsupportedTypes.Contains(typedefInfo.Name))
             {
                 continue;
             }

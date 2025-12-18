@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Data payload for Drag and Drop operations: AcceptDragDropPayload(), GetDragDropPayload()
 /// </summary>
@@ -25,18 +27,6 @@ public unsafe partial struct ImGuiPayload
     /// Data size
     /// </summary>
     public int DataSize;
-
-    private ImGuiID _internal0; // SourceId
-
-    private ImGuiID _internal1; // SourceParentId
-
-    private int _internal2; // DataFrameCount
-
-    private fixed byte _internal3[33]; // DataType
-
-    private bool _internal4; // Preview
-
-    private bool _internal5; // Delivery
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiPayload_Clear")]
     public static partial void Clear(ImGuiPayload* self);

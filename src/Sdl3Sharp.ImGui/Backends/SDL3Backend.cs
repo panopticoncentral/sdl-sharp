@@ -91,7 +91,7 @@ public static unsafe class SDL3Backend
     /// Gamepad selection automatically starts in <see cref="GamepadMode.AutoFirst"/> mode,
     /// picking the first available SDL_Gamepad. Use this method to override this behavior.
     /// </remarks>
-    public static void SetGamepadMode(ImGuiSdl3GamepadMode mode)
+    public static void SetGamepadMode(ImGui_ImplSDL3_GamepadMode mode)
     {
         ImGuiSdl3.SetGamepadModeEx(mode, 0, 0);
     }
@@ -106,7 +106,7 @@ public static unsafe class SDL3Backend
     /// and closing gamepads. The <paramref name="gamepads"/> array contains pointers to
     /// SDL_Gamepad objects that ImGui should use for input.
     /// </remarks>
-    public static void SetGamepadMode(ImGuiSdl3GamepadMode mode, nint[] gamepads)
+    public static void SetGamepadMode(ImGui_ImplSDL3_GamepadMode mode, nint[] gamepads)
     {
         ArgumentNullException.ThrowIfNull(gamepads);
         fixed (nint* gamepadsPtr = gamepads)

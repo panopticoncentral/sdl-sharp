@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 [StructLayout(LayoutKind.Sequential)]
 public partial struct ImDrawVert
 {

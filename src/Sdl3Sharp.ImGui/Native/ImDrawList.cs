@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Draw command list
 /// This is the low-level list of polygons that ImGui:: functions are filling. At the end of the frame,
@@ -43,30 +45,6 @@ public unsafe partial struct ImDrawList
     /// Flags, you may poke into these to adjust anti-aliasing settings per-primitive.
     /// </summary>
     public ImDrawListFlags Flags;
-
-    private uint _internal0; // _VtxCurrentIdx
-
-    private ImDrawListSharedData* _internal1; // _Data
-
-    private ImDrawVert* _internal2; // _VtxWritePtr
-
-    private ImDrawIdx* _internal3; // _IdxWritePtr
-
-    private ImVector_ImVec2 _internal4; // _Path
-
-    private nint _internal5; // _CmdHeader
-
-    private ImDrawListSplitter _internal6; // _Splitter
-
-    private ImVector_ImVec4 _internal7; // _ClipRectStack
-
-    private ImVector_ImTextureRef _internal8; // _TextureStack
-
-    private ImVector_ImU8 _internal9; // _CallbacksDataBuf
-
-    private float _internal10; // _FringeScale
-
-    private byte* _internal11; // _OwnerName
 
     /// <summary>
     /// Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
@@ -235,7 +213,7 @@ public unsafe partial struct ImDrawList
     public static partial void PathRect(ImDrawList* self, ImVec2 rect_min, ImVec2 rect_max, float rounding, ImDrawFlags flags);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddCallbackEx")]
-    public static partial void AddCallback(ImDrawList* self, ImDrawCallback callback, nint userdata, nuint userdata_size);
+    public static partial void AddCallback(ImDrawList* self, delegate* unmanaged[Cdecl]<ImDrawList*, ImDrawCmd*, void> callback, nint userdata, nuint userdata_size);
 
     /// <summary>
     /// Advanced: Miscellaneous

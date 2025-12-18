@@ -46,12 +46,6 @@ internal static unsafe partial class ImGui
     public static partial ImGuiIO* ImGui_GetIO();
 
     /// <summary>
-    /// access the ImGuiPlatformIO structure (mostly hooks/functions to connect to platform/renderer and OS Clipboard, IME etc.)
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative)]
-    public static partial ImGuiPlatformIO* ImGui_GetPlatformIO();
-
-    /// <summary>
     /// access the Style structure (colors, sizes). Always use PushStyleColor(), PushStyleVar() to modify style mid-frame!
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
@@ -306,7 +300,7 @@ internal static unsafe partial class ImGui
     /// set next window size limits. use 0.0f or FLT_MAX if you don't want limits. Use -1 for both min and max of same axis to preserve current size (which itself is a constraint). Use callback to apply non-trivial programmatic constraints.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_SetNextWindowSizeConstraints(ImVec2 size_min, ImVec2 size_max, ImGuiSizeCallback custom_callback, nint custom_callback_data);
+    public static partial void ImGui_SetNextWindowSizeConstraints(ImVec2 size_min, ImVec2 size_max, delegate* unmanaged[Cdecl]<ImGuiSizeCallbackData*, void> custom_callback, nint custom_callback_data);
 
     /// <summary>
     /// set next window content size (~ scrollable client area, which enforce the range of scrollbars). Not including window decorations (title bar, menu bar, etc.) nor WindowPadding. set an axis to 0.0f to leave it automatic. call before Begin()
@@ -1095,15 +1089,15 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputTextEx(byte* label, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
+    public static partial bool ImGui_InputTextEx(byte* label, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, nint user_data);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputTextMultilineEx(byte* label, byte* buf, nuint buf_size, ImVec2 size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
+    public static partial bool ImGui_InputTextMultilineEx(byte* label, byte* buf, nuint buf_size, ImVec2 size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, nint user_data);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputTextWithHintEx(byte* label, byte* hint, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, nint user_data);
+    public static partial bool ImGui_InputTextWithHintEx(byte* label, byte* hint, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, nint user_data);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
@@ -2417,10 +2411,10 @@ internal static unsafe partial class ImGui
     /// for each static/DLL boundary you are calling from. Read "Context and Memory Allocators" section of imgui.cpp for more details.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_SetAllocatorFunctions(ImGuiMemAllocFunc alloc_func, ImGuiMemFreeFunc free_func, nint user_data);
+    public static partial void ImGui_SetAllocatorFunctions(delegate* unmanaged[Cdecl]<nuint, nint, nint> alloc_func, delegate* unmanaged[Cdecl]<nint, nint, void> free_func, nint user_data);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_GetAllocatorFunctions(nint p_alloc_func, nint p_free_func, nint p_user_data);
+    public static partial void ImGui_GetAllocatorFunctions(delegate* unmanaged[Cdecl]<nuint, nint, nint> p_alloc_func, delegate* unmanaged[Cdecl]<nint, nint, void> p_free_func, nint p_user_data);
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial nint ImGui_MemAlloc(nuint size);
@@ -2439,13 +2433,6 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImVector_Destruct(nint vector);
-
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGuiTextFilter_ImGuiTextRange_empty(nint self);
-
-    [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGuiTextFilter_ImGuiTextRange_split(nint self, byte separator, ImVector_ImGuiTextRange* @out);
 
     #endregion
 

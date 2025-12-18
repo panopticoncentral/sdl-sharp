@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Sorting specifications for a table (often handling sort specs for a single column, occasionally more)
 /// Obtained by calling TableGetSortSpecs().

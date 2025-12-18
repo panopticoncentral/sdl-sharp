@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
 /// - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.

@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Specs and pixel storage for a texture used by Dear ImGui.
 /// This is only useful for (1) core library and (2) backends. End-user/applications do not need to care about this.
@@ -96,8 +98,6 @@ public unsafe partial struct ImTextureData
     /// w    r   // Tell whether our texture data is known to use colors (rather than just white + alpha).
     /// </summary>
     public bool UseColors;
-
-    private bool _internal0; // WantDestroyNextFrame
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImTextureData_Create")]
     public static partial void Create(ImTextureData* self, ImTextureFormat format, int w, int h);

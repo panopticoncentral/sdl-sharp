@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Text;
 using Sdl3Sharp.ImGui.Native;
 using static Sdl3Sharp.ImGui.Native.ImGui;
@@ -8,51 +7,14 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents a font atlas that loads and rasterizes multiple TTF/OTF fonts into a single texture.
 /// </summary>
-/// <remarks>
-/// <para>
-/// The font atlas will build a single texture holding one or more fonts, custom graphics data needed
-/// to render the shapes needed by Dear ImGui, and mouse cursor shapes for software cursor rendering.
-/// </para>
-/// <para>
-/// If you don't call any AddFont*** methods, the default font embedded in the code will be loaded for you.
-/// </para>
-/// </remarks>
-public unsafe sealed class FontAtlas : IDisposable
+public unsafe readonly struct FontAtlas
 {
-    private bool _ownsPointer;
-
     internal FontAtlas(ImFontAtlas* native)
     {
         Native = native;
-        _ownsPointer = false;
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FontAtlas"/> struct by allocating a new native ImFontAtlas.
-    /// </summary>
-    /// <remarks>
-    /// The allocated memory will be freed when <see cref="Dispose"/> is called.
-    /// The ImFontAtlas is initialized with default values matching ImGui's constructor.
-    /// </remarks>
-    public FontAtlas()
-    {
-        Native = (ImFontAtlas*)ImGui_MemAlloc((nuint)Unsafe.SizeOf<ImFontAtlas>());
-        _ownsPointer = true;
-
-        // Zero-initialize the memory
-        Unsafe.InitBlock(Native, 0, (uint)Unsafe.SizeOf<ImFontAtlas>());
-
-        // Set default values matching ImFontAtlas constructor
-        Native->TexDesiredFormat = ImTextureFormat.RGBA32;
-        Native->TexGlyphPadding = 1;
-        Native->TexMinWidth = 512;
-        Native->TexMinHeight = 128;
-        Native->TexMaxWidth = 8192;
-        Native->TexMaxHeight = 8192;
-        Native->TexRef = new ImTextureRef { TexID = default };
-    }
-
-    internal ImFontAtlas* Native { get; private set; }
+    internal readonly ImFontAtlas* Native { get; }
 
     /// <summary>
     /// Gets or sets the build flags for the atlas.
@@ -324,25 +286,5 @@ public unsafe sealed class FontAtlas : IDisposable
         var result = ImFontAtlas.GetCustomRect(Native, id.Native, &nativeRect);
         outRect = new(nativeRect);
         return result;
-    }
-
-    /// <summary>
-    /// Disposes the font atlas, freeing the memory if this instance owns the pointer.
-    /// </summary>
-    /// <remarks>
-    /// If the font atlas was created using the parameterless constructor, this will call
-    /// Clear() to clean up ImGui resources and then free the allocated memory.
-    /// If the font atlas was created by wrapping an existing pointer, this does nothing.
-    /// </remarks>
-    public void Dispose()
-    {
-        if (_ownsPointer && Native != null)
-        {
-            // Call Clear to clean up ImGui-managed resources (like ClearFonts and ClearTexData in destructor)
-            ImFontAtlas.Clear(Native);
-            ImGui_MemFree((nint)Native);
-            Native = null;
-            _ownsPointer = false;
-        }
     }
 }

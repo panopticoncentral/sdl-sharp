@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Helper: Key-&gt;Value storage
 /// Typically you don't have to worry about this since a storage is held within each Window.
@@ -22,8 +24,6 @@ namespace Sdl3Sharp.ImGui.Native;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe partial struct ImGuiStorage
 {
-    private ImVector_ImGuiStoragePair _internal0; // Data
-
     /// <summary>
     /// - Get***() functions find pair, never add/allocate. Pairs are sorted so a query is O(log N)
     /// - Set***() functions find pair, insertion on demand if missing.

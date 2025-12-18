@@ -10,7 +10,7 @@ public static class StructGenerator
         return !Conditional.IsObsolete(field.Conditionals) && !field.IsInternal && !field.IsAnonymous;
     }
 
-    public static string GenerateRefStruct(TypeMapper typeMapper, StructInfo structInfo, string namespaceName, IEnumerable<FunctionInfo>? methods)
+    public static string GenerateValueStruct(TypeMapper typeMapper, StructInfo structInfo, string namespaceName, List<FunctionInfo>? methods, bool referenced)
     {
         var writer = new CodeWriter();
 
@@ -37,62 +37,11 @@ public static class StructGenerator
         writer.AppendLine($"namespace {namespaceName};");
         writer.AppendLine();
 
-        // Write documentation
-        writer.WriteDocComment(structInfo.Comments);
-
-        writer.AppendLine($"public unsafe partial struct {structInfo.Name}");
-        writer.OpenBrace();
-
-        writer.AppendLine($"private {structInfo.Name}Native* _native;");
-        writer.AppendLine();
-
-        writer.AppendLine($"internal {structInfo.Name}({structInfo.Name}Native* native)");
-        writer.OpenBrace();
-        writer.AppendLine("_native = native;");
-        writer.CloseBrace();
-        writer.AppendLine();
-
-        // Filter out obsolete fields and internal fields
-        var fields = structInfo.Fields.Where(IsEmittableField).ToList();
-
-        foreach (FieldInfo field in fields)
+        if (!referenced)
         {
-            GenerateFieldWrapper(typeMapper, writer, field);
+            writer.AppendLine("// This type is only referenced");
+            writer.AppendLine();
         }
-
-        GenerateValueStruct(writer, typeMapper, structInfo, "Native", methods?.ToList());
-
-        writer.CloseBrace();
-
-        return writer.ToString();
-    }
-
-    public static string GenerateValueStruct(TypeMapper typeMapper, StructInfo structInfo, string namespaceName, List<FunctionInfo>? methods)
-    {
-        var writer = new CodeWriter();
-
-        writer.WriteFileHeader();
-
-        writer.AppendLine("using System.Runtime.InteropServices;");
-
-        // Add static using directives for SDL modules (types are nested in module classes)
-        HashSet<string> sdlModules = TypeMapper.GetSdlModulesUsedByStruct(structInfo);
-        if (methods != null)
-        {
-            foreach (var module in TypeMapper.GetSdlModulesUsedByFunctions(methods))
-            {
-                _ = sdlModules.Add(module);
-            }
-        }
-
-        foreach (var module in sdlModules.OrderBy(m => m))
-        {
-            writer.AppendLine($"using static Sdl3Sharp.Native.{module};");
-        }
-
-        writer.AppendLine();
-        writer.AppendLine($"namespace {namespaceName};");
-        writer.AppendLine();
 
         // Write documentation
         writer.WriteDocComment(structInfo.Comments);
@@ -305,43 +254,6 @@ public static class StructGenerator
 
         // For larger fields, use the smallest unsigned type that fits
         return width <= 8 ? "byte" : width <= 16 ? "ushort" : width <= 32 ? "uint" : "ulong";
-    }
-
-    private static void GenerateFieldWrapper(TypeMapper typeMapper, CodeWriter writer, FieldInfo field)
-    {
-        string fieldName;
-
-        // Write documentation for public fields
-        writer.WriteDocComment(field.Comments);
-        fieldName = NamingConventions.ToPascalCase(field.Name);
-
-        if (field.IsArray && field.Type?.Description?.Kind == "Array")
-        {
-            var elementType = GetArrayElementType(typeMapper, field.Type.Description);
-            switch (elementType)
-            {
-                case "byte":
-                    // Generate a property which maps UTF8 to string
-                    writer.AppendLine($"public string {fieldName} => Marshal.PtrToStringUTF8((nint)_native->{fieldName})!;");
-                    break;
-                case "ImVec4":
-                    // Special handling for ImVec4 arrays (fixed-size)
-                    var evaluatedBounds = EvaluateBoundsExpression(field.Type.Description.Bounds);
-                    writer.AppendLine($"public System.Span<ImVec4> {fieldName} => new System.Span<ImVec4>((ImVec4*)_native->{fieldName}, {evaluatedBounds});");
-                    break;
-                default:
-                    var fieldType = field.Width.HasValue ? GetBitfieldPropertyType(field.Width.Value) : typeMapper.MapType(field.Type);
-                    writer.AppendLine($"public {fieldType} {fieldName} => _native->{fieldName};");
-                    break;
-            }
-        }
-        else
-        {
-            var fieldType = field.Width.HasValue ? GetBitfieldPropertyType(field.Width.Value) : typeMapper.MapType(field.Type);
-            writer.AppendLine($"public {fieldType} {fieldName} => _native->{fieldName};");
-        }
-
-        writer.AppendLine();
     }
 
     private static void GenerateField(TypeMapper typeMapper, CodeWriter writer, FieldInfo field)

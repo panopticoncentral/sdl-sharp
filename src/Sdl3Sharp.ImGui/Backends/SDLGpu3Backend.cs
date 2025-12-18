@@ -28,7 +28,7 @@ public static unsafe class SDLGpu3Backend
     public static bool Init(GpuDevice device, GpuTextureFormat colorTargetFormat, GpuSampleCount msaaSamples = GpuSampleCount.Count1)
     {
         ArgumentNullException.ThrowIfNull(device);
-        var info = new ImGuiSdl3GpuInitInfo
+        var info = new ImGui_ImplSDLGPU3_InitInfo
         {
             Device = device.Handle,
             ColorTargetFormat = (Sdl3Sharp.Native.Gpu.SDL_GPUTextureFormat)colorTargetFormat,
@@ -52,7 +52,7 @@ public static unsafe class SDLGpu3Backend
     public static bool Init(GpuDevice device, GpuTextureFormat colorTargetFormat, GpuSampleCount msaaSamples, GpuSwapchainComposition swapchainComposition, GpuPresentMode presentMode)
     {
         ArgumentNullException.ThrowIfNull(device);
-        var info = new ImGuiSdl3GpuInitInfo
+        var info = new ImGui_ImplSDLGPU3_InitInfo
         {
             Device = device.Handle,
             ColorTargetFormat = (Sdl3Sharp.Native.Gpu.SDL_GPUTextureFormat)colorTargetFormat,

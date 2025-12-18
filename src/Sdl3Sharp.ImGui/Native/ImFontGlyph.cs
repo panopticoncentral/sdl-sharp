@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Hold rendering data for one glyph.
 /// (Note: some language parsers may fail to convert the bitfield members, in this case maybe drop store a single u32 or we can rework this)
@@ -98,6 +100,4 @@ public partial struct ImFontGlyph
     /// Texture coordinates for the current value of ImFontAtlas-&gt;TexRef. Cached equivalent of calling GetCustomRect() with PackId.
     /// </summary>
     public float V1;
-
-    private int _internal0; // PackId
 }

@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
 /// Typically, 1 command = 1 GPU draw call (unless command is a callback)
 /// - VtxOffset: When 'io.BackendFlags &amp; ImGuiBackendFlags_RendererHasVtxOffset' is enabled,
@@ -47,7 +49,7 @@ public unsafe partial struct ImDrawCmd
     /// <summary>
     /// 4-8  // If != NULL, call the function instead of rendering the vertices. clip_rect and texture_id will be set normally.
     /// </summary>
-    public ImDrawCallback UserCallback;
+    public delegate* unmanaged[Cdecl]<ImDrawList*, ImDrawCmd*, void> UserCallback;
 
     /// <summary>
     /// 4-8  // Callback user data (when UserCallback != NULL). If called AddCallback() with size == 0, this is a copy of the AddCallback() argument. If called AddCallback() with size &gt; 0, this is pointing to a buffer where data is stored.
@@ -58,8 +60,6 @@ public unsafe partial struct ImDrawCmd
     /// 4 // Size of callback user data when using storage, otherwise 0.
     /// </summary>
     public int UserCallbackDataSize;
-
-    private int _internal0; // UserCallbackDataOffset
 
     /// <summary>
     /// Since 1.83: returns ImTextureID associated with this draw call. Warning: DO NOT assume this is always same as 'TextureId' (we will change this function for an upcoming feature)

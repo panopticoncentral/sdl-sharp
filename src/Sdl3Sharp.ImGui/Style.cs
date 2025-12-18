@@ -769,28 +769,4 @@ public unsafe sealed class Style
     {
         ImGuiStyle.ScaleAllSizes(Native, scaleFactor);
     }
-
-    /// <summary>
-    /// Applies the dark color style (default).
-    /// </summary>
-    public void StyleColorsDark()
-    {
-        ImGuiNative.ImGui_StyleColorsDark(Native);
-    }
-
-    /// <summary>
-    /// Applies the light color style.
-    /// </summary>
-    public void StyleColorsLight()
-    {
-        ImGuiNative.ImGui_StyleColorsLight(Native);
-    }
-
-    /// <summary>
-    /// Applies the classic ImGui color style.
-    /// </summary>
-    public void StyleColorsClassic()
-    {
-        ImGuiNative.ImGui_StyleColorsClassic(Native);
-    }
 }

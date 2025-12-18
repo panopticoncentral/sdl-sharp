@@ -5,7 +5,16 @@
 
 #nullable enable
 
+using System.Runtime.InteropServices;
+
 namespace Sdl3Sharp.ImGui.Native;
 
-/// <summary>Opaque handle to an internal ImGui ImDrawListSharedData structure.</summary>
-public readonly struct ImDrawListSharedData;
+// This type is only referenced
+
+/// <summary>
+/// Data shared among multiple draw lists (typically owned by parent ImGui context, but you may create one yourself)
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public partial struct ImDrawListSharedData
+{
+}

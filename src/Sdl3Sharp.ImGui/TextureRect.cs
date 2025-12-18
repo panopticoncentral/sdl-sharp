@@ -1,5 +1,4 @@
 using Sdl3Sharp.ImGui.Native;
-using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui;
 
