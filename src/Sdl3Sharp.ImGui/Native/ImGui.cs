@@ -99,6 +99,12 @@ internal static unsafe partial class ImGui
     public static partial void ImGui_ShowDebugLogWindow(bool* p_open);
 
     /// <summary>
+    /// Implied p_open = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ShowIDStackToolWindow();
+
+    /// <summary>
     /// create Stack Tool window. hover items with mouse to query information about the source of their unique ID.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
@@ -283,6 +289,18 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial float ImGui_GetWindowHeight();
+
+    #endregion
+
+    #region Window manipulation
+
+    /// <summary>
+    /// Window manipulation
+    /// - Prefer using SetNextXXX functions (before Begin) rather that SetXXX functions (after Begin).
+    /// Implied pivot = ImVec2(0, 0)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetNextWindowPos(ImVec2 pos, ImGuiCond cond);
 
     /// <summary>
     /// set next window position. call before Begin(). use pivot=(0.5f,0.5f) to center on given point, etc.
@@ -508,6 +526,12 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_PushStyleColorImVec4(ImGuiCol idx, ImVec4 col);
 
+    /// <summary>
+    /// Implied count = 1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopStyleColor();
+
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_PopStyleColorEx(int count);
 
@@ -534,6 +558,12 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_PushStyleVarY(ImGuiStyleVar idx, float val_y);
+
+    /// <summary>
+    /// Implied count = 1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PopStyleVar();
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_PopStyleVarEx(int count);
@@ -595,6 +625,12 @@ internal static unsafe partial class ImGui
     public static partial ImVec2 ImGui_GetFontTexUvWhitePixel();
 
     /// <summary>
+    /// Implied alpha_mul = 1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial uint ImGui_GetColorU32(ImGuiCol idx);
+
+    /// <summary>
     /// retrieve given style color with style alpha applied and optional extra alpha multiplier, packed as a 32-bit value suitable for ImDrawList
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
@@ -605,6 +641,12 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial uint ImGui_GetColorU32ImVec4(ImVec4 col);
+
+    /// <summary>
+    /// Implied alpha_mul = 1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial uint ImGui_GetColorU32ImU32(uint col);
 
     /// <summary>
     /// retrieve given color with style alpha applied, packed as a 32-bit value suitable for ImDrawList
@@ -704,6 +746,12 @@ internal static unsafe partial class ImGui
     public static partial void ImGui_Separator();
 
     /// <summary>
+    /// Implied offset_from_start_x = 0.0f, spacing = -1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SameLine();
+
+    /// <summary>
     /// call between widgets or groups to layout them horizontally. X position given in window coordinates.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
@@ -728,10 +776,22 @@ internal static unsafe partial class ImGui
     public static partial void ImGui_Dummy(ImVec2 size);
 
     /// <summary>
+    /// Implied indent_w = 0.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Indent();
+
+    /// <summary>
     /// move content position toward the right, by indent_w, or style.IndentSpacing if indent_w &lt;= 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_IndentEx(float indent_w);
+
+    /// <summary>
+    /// Implied indent_w = 0.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Unindent();
 
     /// <summary>
     /// move content position back to the left, by indent_w, or style.IndentSpacing if indent_w &lt;= 0
@@ -841,6 +901,17 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     public static partial ImGuiID ImGui_GetIDInt(int int_id);
 
+    #endregion
+
+    #region Widgets: Text
+
+    /// <summary>
+    /// Widgets: Text
+    /// Implied text_end = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TextUnformatted(byte* text);
+
     /// <summary>
     /// raw text without formatting. Roughly equivalent to Text("%s", text) but: A) doesn't require null terminated string if 'text_end' is specified, B) it's faster, no memory copy is done, no buffer size limits, recommended for long chunks of text.
     /// </summary>
@@ -852,6 +923,20 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_SeparatorText(byte* label);
+
+    #endregion
+
+    #region Widgets: Main
+
+    /// <summary>
+    /// Widgets: Main
+    /// - Most widgets return true when the value has been changed or when pressed/selected
+    /// - You may also use one of the many IsItemXXX functions (e.g. IsItemActive, IsItemHovered, etc.) to query widget state.
+    /// Implied size = ImVec2(0, 0)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_Button(byte* label);
 
     /// <summary>
     /// button
@@ -924,17 +1009,53 @@ internal static unsafe partial class ImGui
     public static partial bool ImGui_TextLink(byte* label);
 
     /// <summary>
+    /// Implied url = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_TextLinkOpenURL(byte* label);
+
+    /// <summary>
     /// hyperlink text button, automatically open file/url when clicked
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_TextLinkOpenURLEx(byte* label, byte* url);
 
+    #endregion
+
+    #region Widgets: Images
+
+    /// <summary>
+    /// Widgets: Images
+    /// - Read about ImTextureID/ImTextureRef  here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+    /// - 'uv0' and 'uv1' are texture coordinates. Read about them from the same link above.
+    /// - Image() pads adds style.ImageBorderSize on each side, ImageButton() adds style.FramePadding on each side.
+    /// - ImageButton() draws a background based on regular Button() color + optionally an inner background if specified.
+    /// - An obsolete version of Image(), before 1.91.9 (March 2025), had a 'tint_col' parameter which is now supported by the ImageWithBg() function.
+    /// Implied uv0 = ImVec2(0, 0), uv1 = ImVec2(1, 1)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Image(ImTextureRef tex_ref, ImVec2 image_size);
+
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_ImageEx(ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1);
 
+    /// <summary>
+    /// Implied uv0 = ImVec2(0, 0), uv1 = ImVec2(1, 1), bg_col = ImVec4(0, 0, 0, 0), tint_col = ImVec4(1, 1, 1, 1)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ImageWithBg(ImTextureRef tex_ref, ImVec2 image_size);
+
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_ImageWithBgEx(ImTextureRef tex_ref, ImVec2 image_size, ImVec2 uv0, ImVec2 uv1, ImVec4 bg_col, ImVec4 tint_col);
+
+    /// <summary>
+    /// Implied uv0 = ImVec2(0, 0), uv1 = ImVec2(1, 1), bg_col = ImVec4(0, 0, 0, 0), tint_col = ImVec4(1, 1, 1, 1)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_ImageButton(byte* str_id, ImTextureRef tex_ref, ImVec2 image_size);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
@@ -959,9 +1080,23 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_EndCombo();
 
+    /// <summary>
+    /// Implied popup_max_height_in_items = -1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_ComboChar(byte* label, int* current_item, byte* items, int items_count);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_ComboCharEx(byte* label, int* current_item, byte* items, int items_count, int popup_max_height_in_items);
+
+    /// <summary>
+    /// Implied popup_max_height_in_items = -1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_Combo(byte* label, int* current_item, byte* items_separated_by_zeros);
 
     /// <summary>
     /// Separate items with \0 within a string, end item-list with \0\0. e.g. "One\0Two\0Three\0"
@@ -970,9 +1105,39 @@ internal static unsafe partial class ImGui
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_ComboEx(byte* label, int* current_item, byte* items_separated_by_zeros, int popup_max_height_in_items);
 
+    /// <summary>
+    /// Implied popup_max_height_in_items = -1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_ComboCallback(byte* label, int* current_item, nint getter, nint user_data, int items_count);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_ComboCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int popup_max_height_in_items);
+
+    #endregion
+
+    #region Widgets: Drag Sliders
+
+    /// <summary>
+    /// Widgets: Drag Sliders
+    /// - Ctrl+Click on any drag box to turn them into an input box. Manually input values aren't clamped by default and can go off-bounds. Use ImGuiSliderFlags_AlwaysClamp to always clamp.
+    /// - For all the Float2/Float3/Float4/Int2/Int3/Int4 versions of every function, note that a 'float v[X]' function argument is the same as 'float* v',
+    /// the array syntax is just a way to document the number of elements that are expected to be accessible. You can pass address of your first element out of a contiguous set, e.g. &amp;myvector.x
+    /// - Adjust format string to decorate the value with a prefix, a suffix, or adapt the editing and display precision e.g. "%.3f" -&gt; 1.234; "%5.2f secs" -&gt; 01.23 secs; "Biscuit: %.0f" -&gt; Biscuit: 1; etc.
+    /// - Format string may also be set to NULL or use the default format ("%f" or "%d").
+    /// - Speed are per-pixel of mouse movement (v_speed=0.2f: mouse needs to move by 5 pixels to increase value by 1). For keyboard/gamepad navigation, minimum speed is Max(v_speed, minimum_step_at_given_precision).
+    /// - Use v_min &lt; v_max to clamp edits to given limits. Note that Ctrl+Click manual input can override those limits if ImGuiSliderFlags_AlwaysClamp is not used.
+    /// - Use v_max = FLT_MAX / INT_MAX etc to avoid clamping to a maximum, same with v_min = -FLT_MAX / INT_MIN to avoid clamping to a minimum.
+    /// - We use the same sets of flags for DragXXX() and SliderXXX() functions as the features are the same and it makes it easier to swap them.
+    /// - Legacy: Pre-1.78 there are DragXXX() function signatures that take a final `float power=1.0f' argument instead of the `ImGuiSliderFlags flags=0' argument.
+    /// If you get a warning converting a float to ImGuiSliderFlags, read https://github.com/ocornut/imgui/issues/3361
+    /// Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragFloat(byte* label, float* v);
 
     /// <summary>
     /// If v_min &gt;= v_max we have no bound
@@ -981,21 +1146,56 @@ internal static unsafe partial class ImGui
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragFloatEx(byte* label, float* v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragFloat2(byte* label, float v);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragFloat2Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragFloat3(byte* label, float v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragFloat3Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragFloat4(byte* label, float v);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragFloat4Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", format_max = NULL, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragFloatRange2(byte* label, float* v_current_min, float* v_current_max);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragFloatRange2Ex(byte* label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, byte* format, byte* format_max, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragInt(byte* label, int* v);
 
     /// <summary>
     /// If v_min &gt;= v_max we have no bound
@@ -1004,29 +1204,88 @@ internal static unsafe partial class ImGui
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragIntEx(byte* label, int* v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragInt2(byte* label, int v);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragInt2Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragInt3(byte* label, int v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragInt3Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragInt4(byte* label, int v);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragInt4Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", format_max = NULL, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragIntRange2(byte* label, int* v_current_min, int* v_current_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragIntRange2Ex(byte* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, byte* format, byte* format_max, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied v_speed = 1.0f, p_min = NULL, p_max = NULL, format = NULL, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragScalar(byte* label, ImGuiDataType data_type, nint p_data);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragScalarEx(byte* label, ImGuiDataType data_type, nint p_data, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied v_speed = 1.0f, p_min = NULL, p_max = NULL, format = NULL, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragScalarN(byte* label, ImGuiDataType data_type, nint p_data, int components);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DragScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+
+    #endregion
+
+    #region Widgets: Regular Sliders
+
+    /// <summary>
+    /// Widgets: Regular Sliders
+    /// - Ctrl+Click on any slider to turn them into an input box. Manually input values aren't clamped by default and can go off-bounds. Use ImGuiSliderFlags_AlwaysClamp to always clamp.
+    /// - Adjust format string to decorate the value with a prefix, a suffix, or adapt the editing and display precision e.g. "%.3f" -&gt; 1.234; "%5.2f secs" -&gt; 01.23 secs; "Biscuit: %.0f" -&gt; Biscuit: 1; etc.
+    /// - Format string may also be set to NULL or use the default format ("%f" or "%d").
+    /// - Legacy: Pre-1.78 there are SliderXXX() function signatures that take a final `float power=1.0f' argument instead of the `ImGuiSliderFlags flags=0' argument.
+    /// If you get a warning converting a float to ImGuiSliderFlags, read https://github.com/ocornut/imgui/issues/3361
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderFloat(byte* label, float* v, float v_min, float v_max);
 
     /// <summary>
     /// adjust format to decorate the value with a prefix or a suffix for in-slider labels or unit display.
@@ -1035,85 +1294,239 @@ internal static unsafe partial class ImGui
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderFloatEx(byte* label, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderFloat2(byte* label, float v, float v_min, float v_max);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderFloat2Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderFloat3(byte* label, float v, float v_min, float v_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderFloat3Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderFloat4(byte* label, float v, float v_min, float v_max);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderFloat4Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied v_degrees_min = -360.0f, v_degrees_max = +360.0f, format = "%.0f deg", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderAngle(byte* label, float* v_rad);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderAngleEx(byte* label, float* v_rad, float v_degrees_min, float v_degrees_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderInt(byte* label, int* v, int v_min, int v_max);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderIntEx(byte* label, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderInt2(byte* label, int v, int v_min, int v_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderInt2Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderInt3(byte* label, int v, int v_min, int v_max);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderInt3Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderInt4(byte* label, int v, int v_min, int v_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderInt4Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied format = NULL, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderScalar(byte* label, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied format = NULL, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderScalarN(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_min, nint p_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SliderScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_VSliderFloat(byte* label, ImVec2 size, float* v, float v_min, float v_max);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_VSliderFloatEx(byte* label, ImVec2 size, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_VSliderInt(byte* label, ImVec2 size, int* v, int v_min, int v_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_VSliderIntEx(byte* label, ImVec2 size, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
+    /// <summary>
+    /// Implied format = NULL, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_VSliderScalar(byte* label, ImVec2 size, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_VSliderScalarEx(byte* label, ImVec2 size, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+
+    #endregion
+
+    #region Widgets: Input with Keyboard
+
+    /// <summary>
+    /// Widgets: Input with Keyboard
+    /// - If you want to use InputText() with std::string or any custom dynamic string type, use the wrapper in misc/cpp/imgui_stdlib.h/.cpp!
+    /// - Most of the ImGuiInputTextFlags flags are only useful for InputText() and not for InputFloatX, InputIntX, InputDouble etc.
+    /// Implied callback = NULL, user_data = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputText(byte* label, byte* buf, nuint buf_size, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputTextEx(byte* label, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, nint user_data);
 
+    /// <summary>
+    /// Implied size = ImVec2(0, 0), flags = 0, callback = NULL, user_data = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputTextMultiline(byte* label, byte* buf, nuint buf_size);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputTextMultilineEx(byte* label, byte* buf, nuint buf_size, ImVec2 size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, nint user_data);
+
+    /// <summary>
+    /// Implied callback = NULL, user_data = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputTextWithHint(byte* label, byte* hint, byte* buf, nuint buf_size, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputTextWithHintEx(byte* label, byte* hint, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, nint user_data);
 
+    /// <summary>
+    /// Implied step = 0.0f, step_fast = 0.0f, format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputFloat(byte* label, float* v);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputFloatEx(byte* label, float* v, float step, float step_fast, byte* format, ImGuiInputTextFlags flags);
+
+    /// <summary>
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputFloat2(byte* label, float v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputFloat2Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
 
+    /// <summary>
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputFloat3(byte* label, float v);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputFloat3Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
 
+    /// <summary>
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputFloat4(byte* label, float v);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputFloat4Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
+
+    /// <summary>
+    /// Implied step = 1, step_fast = 100, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputInt(byte* label, int* v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
@@ -1131,13 +1544,34 @@ internal static unsafe partial class ImGui
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputInt4(byte* label, int v, ImGuiInputTextFlags flags);
 
+    /// <summary>
+    /// Implied step = 0.0, step_fast = 0.0, format = "%.6f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputDouble(byte* label, double* v);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputDoubleEx(byte* label, double* v, double step, double step_fast, byte* format, ImGuiInputTextFlags flags);
 
+    /// <summary>
+    /// Implied p_step = NULL, p_step_fast = NULL, format = NULL, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputScalar(byte* label, ImGuiDataType data_type, nint p_data);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_InputScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_step, nint p_step_fast, byte* format, ImGuiInputTextFlags flags);
+
+    /// <summary>
+    /// Implied p_step = NULL, p_step_fast = NULL, format = NULL, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputScalarN(byte* label, ImGuiDataType data_type, nint p_data, int components);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
@@ -1163,6 +1597,13 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_ColorPicker4(byte* label, float col, ImGuiColorEditFlags flags, float* ref_col);
+
+    /// <summary>
+    /// Implied size = ImVec2(0, 0)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_ColorButton(byte* desc_id, ImVec4 col, ImGuiColorEditFlags flags);
 
     /// <summary>
     /// display a color square/button, hover for details, return true when pressed.
@@ -1243,6 +1684,20 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_SetNextItemStorageID(ImGuiID storage_id);
 
+    #endregion
+
+    #region Widgets: Selectables
+
+    /// <summary>
+    /// Widgets: Selectables
+    /// - A selectable highlights when hovered, and can display another color when selected.
+    /// - Neighbors selectable extend their highlight bounds in order to leave no gap between them. This is so a series of selected Selectable appear contiguous.
+    /// Implied selected = false, flags = 0, size = ImVec2(0, 0)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_Selectable(byte* label);
+
     /// <summary>
     /// "bool selected" carry the selection state (read-only). Selectable() is clicked is returns true so you can modify your selection state. size.x==0.0: use remaining width, size.x&gt;0.0: specify width. size.y==0.0: use label height, size.y&gt;0.0: specify height
     /// </summary>
@@ -1251,11 +1706,35 @@ internal static unsafe partial class ImGui
     public static partial bool ImGui_SelectableEx(byte* label, [MarshalAs(UnmanagedType.U1)] bool selected, ImGuiSelectableFlags flags, ImVec2 size);
 
     /// <summary>
+    /// Implied size = ImVec2(0, 0)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SelectableBoolPtr(byte* label, bool* p_selected, ImGuiSelectableFlags flags);
+
+    /// <summary>
     /// "bool* p_selected" point to the selection state (read-write), as a convenient helper.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_SelectableBoolPtrEx(byte* label, bool* p_selected, ImGuiSelectableFlags flags, ImVec2 size);
+
+    #endregion
+
+    #region Multi-selection system for Selectable(), Checkbox(), TreeNode() functions [BETA]
+
+    /// <summary>
+    /// Multi-selection system for Selectable(), Checkbox(), TreeNode() functions [BETA]
+    /// - This enables standard multi-selection/range-selection idioms (Ctrl+Mouse/Keyboard, Shift+Mouse/Keyboard, etc.) in a way that also allow a clipper to be used.
+    /// - ImGuiSelectionUserData is often used to store your item index within the current view (but may store something else).
+    /// - Read comments near ImGuiMultiSelectIO for instructions/details and see 'Demo-&gt;Widgets-&gt;Selection State &amp; Multi-Select' for demo.
+    /// - TreeNode() is technically supported but... using this correctly is more complicated. You need some sort of linear/random access to your tree,
+    /// which is suited to advanced trees setups already implementing filters and clipper. We will work simplifying the current demo.
+    /// - 'selection_size' and 'items_count' parameters are optional and used by a few features. If they are costly for you to compute, you may avoid them.
+    /// Implied selection_size = -1, items_count = -1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiMultiSelectIO* ImGui_BeginMultiSelect(ImGuiMultiSelectFlags flags);
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial ImGuiMultiSelectIO* ImGui_BeginMultiSelectEx(ImGuiMultiSelectFlags flags, int selection_size, int items_count);
@@ -1301,18 +1780,55 @@ internal static unsafe partial class ImGui
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_ListBox(byte* label, int* current_item, byte* items, int items_count, int height_in_items);
 
+    /// <summary>
+    /// Implied height_in_items = -1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_ListBoxCallback(byte* label, int* current_item, nint getter, nint user_data, int items_count);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_ListBoxCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int height_in_items);
 
+    #endregion
+
+    #region Widgets: Data Plotting
+
+    /// <summary>
+    /// Widgets: Data Plotting
+    /// - Consider using ImPlot (https://github.com/epezent/implot) which is much better!
+    /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0), stride = sizeof(float)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PlotLines(byte* label, float* values, int values_count);
+
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_PlotLinesEx(byte* label, float* values, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
+
+    /// <summary>
+    /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PlotLinesCallback(byte* label, nint values_getter, nint data, int values_count);
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_PlotLinesCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
 
+    /// <summary>
+    /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0), stride = sizeof(float)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PlotHistogram(byte* label, float* values, int values_count);
+
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_PlotHistogramEx(byte* label, float* values, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride);
+
+    /// <summary>
+    /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_PlotHistogramCallback(byte* label, nint values_getter, nint data, int values_count);
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_PlotHistogramCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
@@ -1353,6 +1869,13 @@ internal static unsafe partial class ImGui
     public static partial void ImGui_EndMainMenuBar();
 
     /// <summary>
+    /// Implied enabled = true
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_BeginMenu(byte* label);
+
+    /// <summary>
     /// create a sub-menu entry. only call EndMenu() if this returns true!
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
@@ -1364,6 +1887,13 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_EndMenu();
+
+    /// <summary>
+    /// Implied shortcut = NULL, selected = false, enabled = true
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_MenuItem(byte* label);
 
     /// <summary>
     /// return true when activated.
@@ -1485,6 +2015,22 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_CloseCurrentPopup();
 
+    #endregion
+
+    #region Popups: open+begin combined functions helpers
+
+    /// <summary>
+    /// Popups: open+begin combined functions helpers
+    /// - Helpers to do OpenPopup+BeginPopup where the Open action is triggered by e.g. hovering an item and right-clicking.
+    /// - They are convenient to easily create context menus, hence the name.
+    /// - IMPORTANT: Notice that BeginPopupContextXXX takes ImGuiPopupFlags just like OpenPopup() and unlike BeginPopup(). For full consistency, we may add ImGuiWindowFlags to the BeginPopupContextXXX functions in the future.
+    /// - IMPORTANT: Notice that we exceptionally default their flags to 1 (== ImGuiPopupFlags_MouseButtonRight) for backward compatibility with older API taking 'int mouse_button = 1' parameter, so if you add other flags remember to re-add the ImGuiPopupFlags_MouseButtonRight.
+    /// Implied str_id = NULL, popup_flags = 1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_BeginPopupContextItem();
+
     /// <summary>
     /// open+begin popup when clicked on last item. Use str_id==NULL to associate the popup to previous item. If you want to use that on a non-interactive item such as Text() you need to pass in an explicit ID here. read comments in .cpp!
     /// </summary>
@@ -1493,11 +2039,25 @@ internal static unsafe partial class ImGui
     public static partial bool ImGui_BeginPopupContextItemEx(byte* str_id, ImGuiPopupFlags popup_flags);
 
     /// <summary>
+    /// Implied str_id = NULL, popup_flags = 1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_BeginPopupContextWindow();
+
+    /// <summary>
     /// open+begin popup when clicked on current window.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_BeginPopupContextWindowEx(byte* str_id, ImGuiPopupFlags popup_flags);
+
+    /// <summary>
+    /// Implied str_id = NULL, popup_flags = 1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_BeginPopupContextVoid();
 
     /// <summary>
     /// open+begin popup when clicked in void (where there are no windows).
@@ -1521,6 +2081,38 @@ internal static unsafe partial class ImGui
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_IsPopupOpen(byte* str_id, ImGuiPopupFlags flags);
 
+    #endregion
+
+    #region Tables
+
+    /// <summary>
+    /// Tables
+    /// - Full-featured replacement for old Columns API.
+    /// - See Demo-&gt;Tables for demo code. See top of imgui_tables.cpp for general commentary.
+    /// - See ImGuiTableFlags_ and ImGuiTableColumnFlags_ enums for a description of available flags.
+    /// The typical call flow is:
+    /// - 1. Call BeginTable(), early out if returning false.
+    /// - 2. Optionally call TableSetupColumn() to submit column name/flags/defaults.
+    /// - 3. Optionally call TableSetupScrollFreeze() to request scroll freezing of columns/rows.
+    /// - 4. Optionally call TableHeadersRow() to submit a header row. Names are pulled from TableSetupColumn() data.
+    /// - 5. Populate contents:
+    /// - In most situations you can use TableNextRow() + TableSetColumnIndex(N) to start appending into a column.
+    /// - If you are using tables as a sort of grid, where every column is holding the same type of contents,
+    /// you may prefer using TableNextColumn() instead of TableNextRow() + TableSetColumnIndex().
+    /// TableNextColumn() will automatically wrap-around into the next row if needed.
+    /// - IMPORTANT: Comparatively to the old Columns() API, we need to call TableNextColumn() for the first column!
+    /// - Summary of possible call flow:
+    /// - TableNextRow() -&gt; TableSetColumnIndex(0) -&gt; Text("Hello 0") -&gt; TableSetColumnIndex(1) -&gt; Text("Hello 1")  // OK
+    /// - TableNextRow() -&gt; TableNextColumn()      -&gt; Text("Hello 0") -&gt; TableNextColumn()      -&gt; Text("Hello 1")  // OK
+    /// -                   TableNextColumn()      -&gt; Text("Hello 0") -&gt; TableNextColumn()      -&gt; Text("Hello 1")  // OK: TableNextColumn() automatically gets to next row!
+    /// - TableNextRow()                           -&gt; Text("Hello 0")                                               // Not OK! Missing TableSetColumnIndex() or TableNextColumn()! Text will not appear!
+    /// - 5. Call EndTable()
+    /// Implied outer_size = ImVec2(0.0f, 0.0f), inner_width = 0.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_BeginTable(byte* str_id, int columns, ImGuiTableFlags flags);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_BeginTableEx(byte* str_id, int columns, ImGuiTableFlags flags, ImVec2 outer_size, float inner_width);
@@ -1530,6 +2122,12 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_EndTable();
+
+    /// <summary>
+    /// Implied row_flags = 0, min_row_height = 0.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableNextRow();
 
     /// <summary>
     /// append into the first cell of a new row.
@@ -1550,6 +2148,24 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_TableSetColumnIndex(int column_n);
+
+    #endregion
+
+    #region Tables: Headers & Columns declaration
+
+    /// <summary>
+    /// Tables: Headers &amp; Columns declaration
+    /// - Use TableSetupColumn() to specify label, resizing policy, default width/weight, id, various other flags etc.
+    /// - Use TableHeadersRow() to create a header row and automatically submit a TableHeader() for each column.
+    /// Headers are required to perform: reordering, sorting, and opening the context menu.
+    /// The context menu can also be made available in columns body using ImGuiTableFlags_ContextMenuInBody.
+    /// - You may manually submit headers using TableNextRow() + TableHeader() calls, but this is only useful in
+    /// some advanced use cases (e.g. adding custom widgets in header row).
+    /// - Use TableSetupScrollFreeze() to lock columns/rows so they stay visible when scrolled.
+    /// Implied init_width_or_weight = 0.0f, user_id = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TableSetupColumn(byte* label, ImGuiTableColumnFlags flags);
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_TableSetupColumnEx(byte* label, ImGuiTableColumnFlags flags, float init_width_or_weight, ImGuiID user_id);
@@ -1641,6 +2257,18 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_TableSetBgColor(ImGuiTableBgTarget target, uint color, int column_n);
+
+    #endregion
+
+    #region Legacy Columns API (prefer using Tables!)
+
+    /// <summary>
+    /// Legacy Columns API (prefer using Tables!)
+    /// - You can also use SameLine(pos_x) to mimic simplified columns.
+    /// Implied count = 1, id = NULL, borders = true
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Columns();
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_ColumnsEx(int count, byte* id, [MarshalAs(UnmanagedType.U1)] bool borders);
@@ -1862,6 +2490,12 @@ internal static unsafe partial class ImGui
     public static partial void ImGui_SetItemDefaultFocus();
 
     /// <summary>
+    /// Implied offset = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetKeyboardFocusHere();
+
+    /// <summary>
     /// focus keyboard on the next widget. Use positive 'offset' to access sub components of a multiple component widget. Use -1 to access previous widget.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
@@ -1916,6 +2550,13 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_IsItemFocused();
+
+    /// <summary>
+    /// Implied mouse_button = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_IsItemClicked();
 
     /// <summary>
     /// is the last item hovered and mouse clicked on? (**)  == IsMouseClicked(mouse_button) &amp;&amp; IsItemHovered()Important. (**) this is NOT equivalent to the behavior of e.g. Button(). Read comments in function definition.
@@ -2094,6 +2735,17 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     public static partial ImGuiStorage* ImGui_GetStateStorage();
 
+    #endregion
+
+    #region Text Utilities
+
+    /// <summary>
+    /// Text Utilities
+    /// Implied text_end = NULL, hide_text_after_double_hash = false, wrap_width = -1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImVec2 ImGui_CalcTextSize(byte* text);
+
     [LibraryImport(Common.ImGuiNative)]
     public static partial ImVec2 ImGui_CalcTextSizeEx(byte* text, byte* text_end, [MarshalAs(UnmanagedType.U1)] bool hide_text_after_double_hash, float wrap_width);
 
@@ -2130,6 +2782,13 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_IsKeyDown(ImGuiKey key);
+
+    /// <summary>
+    /// Implied repeat = true
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_IsKeyPressed(ImGuiKey key);
 
     /// <summary>
     /// was key pressed (went from !Down to Down)? if repeat=true, uses io.KeyRepeatDelay / KeyRepeatRate
@@ -2230,6 +2889,13 @@ internal static unsafe partial class ImGui
     public static partial bool ImGui_IsMouseDown(ImGuiMouseButton button);
 
     /// <summary>
+    /// Implied repeat = false
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_IsMouseClicked(ImGuiMouseButton button);
+
+    /// <summary>
     /// did mouse button clicked? (went from !Down to Down). Same as GetMouseClickedCount() == 1.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
@@ -2262,6 +2928,13 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial int ImGui_GetMouseClickedCount(ImGuiMouseButton button);
+
+    /// <summary>
+    /// Implied clip = true
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_IsMouseHoveringRect(ImVec2 r_min, ImVec2 r_max);
 
     /// <summary>
     /// is mouse hovering given bounding rect (in screen space). clipped by current clipping settings, but disregarding of other consideration of focus/window ordering/popup-block.
@@ -2308,6 +2981,12 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial ImVec2 ImGui_GetMouseDragDelta(ImGuiMouseButton button, float lock_threshold);
+
+    /// <summary>
+    /// Implied button = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_ResetMouseDragDelta();
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_ResetMouseDragDeltaEx(ImGuiMouseButton button);

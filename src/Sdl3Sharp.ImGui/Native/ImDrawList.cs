@@ -70,14 +70,39 @@ public unsafe partial struct ImDrawList
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_GetClipRectMax")]
     public static partial ImVec2 GetClipRectMax(ImDrawList* self);
 
+    /// <summary>
+    /// Primitives
+    /// - Filled shapes must always use clockwise winding order. The anti-aliasing fringe depends on it. Counter-clockwise shapes will have "inward" anti-aliasing.
+    /// - For rectangular primitives, "p_min" and "p_max" represent the upper-left and lower-right corners.
+    /// - For circle primitives, use "num_segments == 0" to automatically calculate tessellation (preferred).
+    /// In older versions (until Dear ImGui 1.77) the AddCircle functions defaulted to num_segments == 12.
+    /// In future versions we will use textures to provide cheaper and higher-quality circles.
+    /// Use AddNgon() and AddNgonFilled() functions if you need to guarantee a specific number of sides.
+    /// Implied thickness = 1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddLine")]
+    public static partial void AddLine(ImDrawList* self, ImVec2 p1, ImVec2 p2, uint col);
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddLineEx")]
     public static partial void AddLine(ImDrawList* self, ImVec2 p1, ImVec2 p2, uint col, float thickness);
+
+    /// <summary>
+    /// Implied rounding = 0.0f, flags = 0, thickness = 1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddRect")]
+    public static partial void AddRect(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, uint col);
 
     /// <summary>
     /// a: upper-left, b: lower-right (== upper-left + size)
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddRectEx")]
     public static partial void AddRect(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, uint col, float rounding, ImDrawFlags flags, float thickness);
+
+    /// <summary>
+    /// Implied rounding = 0.0f, flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddRectFilled")]
+    public static partial void AddRectFilled(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, uint col);
 
     /// <summary>
     /// a: upper-left, b: lower-right (== upper-left + size)
@@ -88,11 +113,23 @@ public unsafe partial struct ImDrawList
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddRectFilledMultiColor")]
     public static partial void AddRectFilledMultiColor(ImDrawList* self, ImVec2 p_min, ImVec2 p_max, uint col_upr_left, uint col_upr_right, uint col_bot_right, uint col_bot_left);
 
+    /// <summary>
+    /// Implied thickness = 1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddQuad")]
+    public static partial void AddQuad(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, uint col);
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddQuadEx")]
     public static partial void AddQuad(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, uint col, float thickness);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddQuadFilled")]
     public static partial void AddQuadFilled(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, uint col);
+
+    /// <summary>
+    /// Implied thickness = 1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddTriangle")]
+    public static partial void AddTriangle(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, uint col);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddTriangleEx")]
     public static partial void AddTriangle(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, uint col, float thickness);
@@ -100,11 +137,23 @@ public unsafe partial struct ImDrawList
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddTriangleFilled")]
     public static partial void AddTriangleFilled(ImDrawList* self, ImVec2 p1, ImVec2 p2, ImVec2 p3, uint col);
 
+    /// <summary>
+    /// Implied num_segments = 0, thickness = 1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddCircle")]
+    public static partial void AddCircle(ImDrawList* self, ImVec2 center, float radius, uint col);
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddCircleEx")]
     public static partial void AddCircle(ImDrawList* self, ImVec2 center, float radius, uint col, int num_segments, float thickness);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddCircleFilled")]
     public static partial void AddCircleFilled(ImDrawList* self, ImVec2 center, float radius, uint col, int num_segments);
+
+    /// <summary>
+    /// Implied thickness = 1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddNgon")]
+    public static partial void AddNgon(ImDrawList* self, ImVec2 center, float radius, uint col, int num_segments);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddNgonEx")]
     public static partial void AddNgon(ImDrawList* self, ImVec2 center, float radius, uint col, int num_segments, float thickness);
@@ -112,14 +161,38 @@ public unsafe partial struct ImDrawList
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddNgonFilled")]
     public static partial void AddNgonFilled(ImDrawList* self, ImVec2 center, float radius, uint col, int num_segments);
 
+    /// <summary>
+    /// Implied rot = 0.0f, num_segments = 0, thickness = 1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddEllipse")]
+    public static partial void AddEllipse(ImDrawList* self, ImVec2 center, ImVec2 radius, uint col);
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddEllipseEx")]
     public static partial void AddEllipse(ImDrawList* self, ImVec2 center, ImVec2 radius, uint col, float rot, int num_segments, float thickness);
+
+    /// <summary>
+    /// Implied rot = 0.0f, num_segments = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddEllipseFilled")]
+    public static partial void AddEllipseFilled(ImDrawList* self, ImVec2 center, ImVec2 radius, uint col);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddEllipseFilledEx")]
     public static partial void AddEllipseFilled(ImDrawList* self, ImVec2 center, ImVec2 radius, uint col, float rot, int num_segments);
 
+    /// <summary>
+    /// Implied text_end = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddText")]
+    public static partial void AddText(ImDrawList* self, ImVec2 pos, uint col, byte* text_begin);
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddTextEx")]
     public static partial void AddText(ImDrawList* self, ImVec2 pos, uint col, byte* text_begin, byte* text_end);
+
+    /// <summary>
+    /// Implied text_end = NULL, wrap_width = 0.0f, cpu_fine_clip_rect = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddTextImFontPtr")]
+    public static partial void AddText(ImDrawList* self, ImFont* font, float font_size, ImVec2 pos, uint col, byte* text_begin);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddTextImFontPtrEx")]
     public static partial void AddText(ImDrawList* self, ImFont* font, float font_size, ImVec2 pos, uint col, byte* text_begin, byte* text_end, float wrap_width, ImVec4* cpu_fine_clip_rect);
@@ -150,8 +223,24 @@ public unsafe partial struct ImDrawList
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddConcavePolyFilled")]
     public static partial void AddConcavePolyFilled(ImDrawList* self, ImVec2* points, int num_points, uint col);
 
+    /// <summary>
+    /// Image primitives
+    /// - Read FAQ to understand what ImTextureID/ImTextureRef are.
+    /// - "p_min" and "p_max" represent the upper-left and lower-right corners of the rectangle.
+    /// - "uv_min" and "uv_max" represent the normalized texture coordinates to use for those corners. Using (0,0)-&gt;(1,1) texture coordinates will generally display the entire texture.
+    /// Implied uv_min = ImVec2(0, 0), uv_max = ImVec2(1, 1), col = IM_COL32_WHITE
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddImage")]
+    public static partial void AddImage(ImDrawList* self, ImTextureRef tex_ref, ImVec2 p_min, ImVec2 p_max);
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddImageEx")]
     public static partial void AddImage(ImDrawList* self, ImTextureRef tex_ref, ImVec2 p_min, ImVec2 p_max, ImVec2 uv_min, ImVec2 uv_max, uint col);
+
+    /// <summary>
+    /// Implied uv1 = ImVec2(0, 0), uv2 = ImVec2(1, 0), uv3 = ImVec2(1, 1), uv4 = ImVec2(0, 1), col = IM_COL32_WHITE
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddImageQuad")]
+    public static partial void AddImageQuad(ImDrawList* self, ImTextureRef tex_ref, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddImageQuadEx")]
     public static partial void AddImageQuad(ImDrawList* self, ImTextureRef tex_ref, ImVec2 p1, ImVec2 p2, ImVec2 p3, ImVec2 p4, ImVec2 uv1, ImVec2 uv2, ImVec2 uv3, ImVec2 uv4, uint col);
@@ -192,6 +281,12 @@ public unsafe partial struct ImDrawList
     public static partial void PathArcToFast(ImDrawList* self, ImVec2 center, float radius, int a_min_of_12, int a_max_of_12);
 
     /// <summary>
+    /// Implied num_segments = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_PathEllipticalArcTo")]
+    public static partial void PathEllipticalArcTo(ImDrawList* self, ImVec2 center, ImVec2 radius, float rot, float a_min, float a_max);
+
+    /// <summary>
     /// Ellipse
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_PathEllipticalArcToEx")]
@@ -211,6 +306,21 @@ public unsafe partial struct ImDrawList
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_PathRect")]
     public static partial void PathRect(ImDrawList* self, ImVec2 rect_min, ImVec2 rect_max, float rounding, ImDrawFlags flags);
+
+    /// <summary>
+    /// Advanced: Draw Callbacks
+    /// - May be used to alter render state (change sampler, blending, current shader). May be used to emit custom rendering commands (difficult to do correctly, but possible).
+    /// - Use special ImDrawCallback_ResetRenderState callback to instruct backend to reset its render state to the default.
+    /// - Your rendering loop must check for 'UserCallback' in ImDrawCmd and call the function instead of rendering triangles. All standard backends are honoring this.
+    /// - For some backends, the callback may access selected render-states exposed by the backend in a ImGui_ImplXXXX_RenderState structure pointed to by platform_io.Renderer_RenderState.
+    /// - IMPORTANT: please be mindful of the different level of indirection between using size==0 (copying argument) and using size&gt;0 (copying pointed data into a buffer).
+    /// - If userdata_size == 0: we copy/store the 'userdata' argument as-is. It will be available unmodified in ImDrawCmd::UserCallbackData during render.
+    /// - If userdata_size &gt; 0,  we copy/store 'userdata_size' bytes pointed to by 'userdata'. We store them in a buffer stored inside the drawlist. ImDrawCmd::UserCallbackData will point inside that buffer so you have to retrieve data from there. Your callback may need to use ImDrawCmd::UserCallbackDataSize if you expect dynamically-sized data.
+    /// - Support for userdata_size &gt; 0 was added in v1.91.4, October 2024. So earlier code always only allowed to copy/store a simple void*.
+    /// Implied userdata_size = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddCallback")]
+    public static partial void AddCallback(ImDrawList* self, delegate* unmanaged[Cdecl]<ImDrawList*, ImDrawCmd*, void> callback, nint userdata);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddCallbackEx")]
     public static partial void AddCallback(ImDrawList* self, delegate* unmanaged[Cdecl]<ImDrawList*, ImDrawCmd*, void> callback, nint userdata, nuint userdata_size);

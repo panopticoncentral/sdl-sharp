@@ -30,6 +30,12 @@ internal static unsafe partial class ImGuiSdl3Gpu
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_PrepareDrawData")]
     public static partial void PrepareDrawData(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer);
 
+    /// <summary>
+    /// Implied pipeline = nullptr
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_RenderDrawData")]
+    public static partial void RenderDrawData(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass);
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDLGPU3_RenderDrawDataEx")]
     public static partial void RenderDrawDataEx(ImDrawData* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass, SDL_GPUGraphicsPipeline* pipeline);
 

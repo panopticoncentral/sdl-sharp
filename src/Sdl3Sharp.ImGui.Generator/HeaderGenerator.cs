@@ -40,7 +40,6 @@ public static class HeaderGenerator
 
         var functions = root.Functions
             .Where(f => !f.IsInternal 
-                && !f.IsDefaultArgumentHelper 
                 && !f.IsImstrHelper 
                 && !f.Name.Contains("__") 
                 && !f.Arguments.Any(a => a.IsVarargs) 

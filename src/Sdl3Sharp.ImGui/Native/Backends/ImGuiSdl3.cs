@@ -35,6 +35,12 @@ internal static unsafe partial class ImGuiSdl3
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ProcessEvent(SDL_Event* @event);
 
+    /// <summary>
+    /// Implied manual_gamepads_array = nullptr, manual_gamepads_count = -1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDL3_SetGamepadMode")]
+    public static partial void SetGamepadMode(ImGui_ImplSDL3_GamepadMode mode);
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDL3_SetGamepadModeEx")]
     public static partial void SetGamepadModeEx(ImGui_ImplSDL3_GamepadMode mode, nint manual_gamepads_array, int manual_gamepads_count);
 

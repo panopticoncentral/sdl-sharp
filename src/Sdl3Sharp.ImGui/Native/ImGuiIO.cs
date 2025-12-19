@@ -434,6 +434,12 @@ public unsafe partial struct ImGuiIO
     public static partial void AddInputCharactersUTF8(ImGuiIO* self, byte* str);
 
     /// <summary>
+    /// Implied native_legacy_index = -1
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiIO_SetKeyEventNativeData")]
+    public static partial void SetKeyEventNativeData(ImGuiIO* self, ImGuiKey key, int native_keycode, int native_scancode);
+
+    /// <summary>
     /// [Optional] Specify index for legacy &lt;1.87 IsKeyXXX() functions with native indices + specify native keycode, scancode.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiIO_SetKeyEventNativeDataEx")]
