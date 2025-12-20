@@ -99,6 +99,13 @@ public static class FunctionGenerator
             var paramType = typeMapper.MapType(arg.Type);
             var paramName = NamingConventions.ToParameterName(arg.Name);
 
+            // For array parameters without fixed bounds (e.g., const char* const[]),
+            // the type should be a pointer to the element type
+            if (arg.IsArray && string.IsNullOrEmpty(arg.ArrayBounds))
+            {
+                paramType = $"{paramType}*";
+            }
+
             // Get marshaling attribute
             var marshalAttr = TypeMapper.GetMarshalAsAttribute(arg.Type);
 

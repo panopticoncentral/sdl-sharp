@@ -353,4 +353,7 @@ public sealed class ArgumentInfo
 
     [JsonPropertyName("default_value")]
     public string? DefaultValue { get; set; }
+
+    [JsonPropertyName("array_bounds")]
+    public string? ArrayBounds { get; set; }
 }

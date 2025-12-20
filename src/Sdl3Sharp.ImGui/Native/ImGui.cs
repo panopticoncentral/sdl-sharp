@@ -1121,11 +1121,11 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ComboChar(byte* label, int* current_item, byte* items, int items_count);
+    public static partial bool ImGui_ComboChar(byte* label, int* current_item, byte** items, int items_count);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ComboCharEx(byte* label, int* current_item, byte* items, int items_count, int popup_max_height_in_items);
+    public static partial bool ImGui_ComboCharEx(byte* label, int* current_item, byte** items, int items_count, int popup_max_height_in_items);
 
     /// <summary>
     /// Implied popup_max_height_in_items = -1
@@ -1836,7 +1836,7 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ListBox(byte* label, int* current_item, byte* items, int items_count, int height_in_items);
+    public static partial bool ImGui_ListBox(byte* label, int* current_item, byte** items, int items_count, int height_in_items);
 
     /// <summary>
     /// Implied height_in_items = -1
