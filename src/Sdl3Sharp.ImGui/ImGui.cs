@@ -9,7 +9,7 @@ namespace Sdl3Sharp.ImGui;
 /// </summary>
 public static unsafe class ImGui
 {
-    #region Context creation and access
+    #region * Context creation and access
 
     /// <summary>
     /// Creates a new ImGui context.
@@ -25,7 +25,7 @@ public static unsafe class ImGui
     /// Destroys an ImGui context.
     /// </summary>
     /// <param name="context">The context to destroy. If null, the current context will be destroyed.</param>
-    public static void DestroyContext(Context? context)
+    public static void DestroyContext(Context? context = null)
     {
         ImGui_DestroyContext(context == null ? null : context.Value.Native);
     }
@@ -50,7 +50,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Main
+    #region * Main
 
     /// <summary>
     /// Gets the IO configuration and state for the current context.
@@ -94,53 +94,56 @@ public static unsafe class ImGui
         ImGui_Render();
     }
 
+    // Not wrapping GetDrawData at this time
+
     #endregion
 
-    #region Demo, Debug, Information
+    #region * Demo, Debug, Information
 
     /// <summary>
     /// Shows the ImGui demo window, which demonstrates most ImGui features.
     /// </summary>
     /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowDemoWindow(StateRef<bool> open)
+    public static void ShowDemoWindow(StateRef<bool>? open = null)
     {
-        ImGui_ShowDemoWindow(open.Ptr);
+        ImGui_ShowDemoWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
     /// Shows the ImGui metrics/debug window, displaying internal state information.
     /// </summary>
     /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowMetricsWindow(StateRef<bool> open)
+    public static void ShowMetricsWindow(StateRef<bool>? open = null)
     {
-        ImGui_ShowMetricsWindow(open.Ptr);
+        ImGui_ShowMetricsWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
     /// Shows the ImGui debug log window.
     /// </summary>
     /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowDebugLogWindow(StateRef<bool> open)
+    public static void ShowDebugLogWindow(StateRef<bool>? open = null)
     {
-        ImGui_ShowDebugLogWindow(open.Ptr);
+        ImGui_ShowDebugLogWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
     /// Shows the ImGui ID stack tool window, useful for debugging ID conflicts.
     /// </summary>
     /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowIDStackToolWindowEx(StateRef<bool> open)
+    public static void ShowIDStackToolWindow(StateRef<bool>? open = null)
     {
-        ImGui_ShowIDStackToolWindowEx(open.Ptr);
+        // TODO: Why does this one get an "Ex" but the others don't?
+        ImGui_ShowIDStackToolWindowEx(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
     /// Shows the ImGui about window, displaying version and build information.
     /// </summary>
     /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowAboutWindow(StateRef<bool> open)
+    public static void ShowAboutWindow(StateRef<bool>? open = null)
     {
-        ImGui_ShowAboutWindow(open.Ptr);
+        ImGui_ShowAboutWindow(open == null ? null : open.Value.Ptr);
     }
 
     /// <summary>
@@ -157,7 +160,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The label for the combo box.</param>
     /// <returns>True if the style was changed, false otherwise.</returns>
-    public static bool ShowStyleSelector(Span<byte> label)
+    public static bool ShowStyleSelector(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -169,7 +172,7 @@ public static unsafe class ImGui
     /// Shows a combo box to select between available fonts.
     /// </summary>
     /// <param name="label">The label for the combo box.</param>
-    public static void ShowFontSelector(Span<byte> label)
+    public static void ShowFontSelector(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -197,38 +200,38 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Styles
+    #region * Styles
 
     /// <summary>
     /// Applies the dark color theme to the specified style.
     /// </summary>
     /// <param name="destination">The style object to apply the dark theme to.</param>
-    public static void StyleColorsDark(Style destination)
+    public static void StyleColorsDark(Style? destination = null)
     {
-        ImGui_StyleColorsDark(destination.Native);
+        ImGui_StyleColorsDark(destination == null ? null : destination.Native);
     }
 
     /// <summary>
     /// Applies the light color theme to the specified style.
     /// </summary>
     /// <param name="destination">The style object to apply the light theme to.</param>
-    public static void StyleColorsLight(Style destination)
+    public static void StyleColorsLight(Style? destination = null)
     {
-        ImGui_StyleColorsLight(destination.Native);
+        ImGui_StyleColorsLight(destination == null ? null : destination.Native);
     }
 
     /// <summary>
     /// Applies the classic (original) color theme to the specified style.
     /// </summary>
     /// <param name="destination">The style object to apply the classic theme to.</param>
-    public static void StyleColorsClassic(Style destination)
+    public static void StyleColorsClassic(Style? destination = null)
     {
-        ImGui_StyleColorsClassic(destination.Native);
+        ImGui_StyleColorsClassic(destination == null ? null : destination.Native);
     }
 
     #endregion
 
-    #region Windows
+    #region * Windows
 
     /// <summary>
     /// Begins a new window. Must be paired with a call to <see cref="End"/>.
@@ -244,11 +247,11 @@ public static unsafe class ImGui
     /// You may append multiple times to the same window during the same frame by calling Begin()/End() pairs multiple times.
     /// Some information such as 'flags' or 'open' will only be considered by the first call to Begin().
     /// </remarks>
-    public static bool Begin(Span<byte> name, StateRef<bool>? open = null, WindowFlags flags = WindowFlags.None)
+    public static bool Begin(ReadOnlySpan<byte> name, StateRef<bool>? open = null, WindowFlags flags = WindowFlags.None)
     {
         fixed (byte* ptr = name)
         {
-            return ImGui_Begin(ptr, open.HasValue ? open.Value.Ptr : null, (Native.ImGuiWindowFlags)flags);
+            return ImGui_Begin(ptr, open == null ? null : open.Value.Ptr, (Native.ImGuiWindowFlags)flags);
         }
     }
 
@@ -262,7 +265,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Child Windows
+    #region * Child Windows
 
     /// <summary>
     /// Begins a child window. Must be paired with a call to <see cref="EndChild"/>.
@@ -282,7 +285,7 @@ public static unsafe class ImGui
     /// Use child windows to create independent scrolling/clipping regions within a host window.
     /// Child windows can embed their own child windows.
     /// </remarks>
-    public static bool BeginChild(Span<byte> id, Vec2 size = default, ChildFlags childFlags = ChildFlags.None, WindowFlags windowFlags = WindowFlags.None)
+    public static bool BeginChild(ReadOnlySpan<byte> id, Vec2 size = default, ChildFlags childFlags = ChildFlags.None, WindowFlags windowFlags = WindowFlags.None)
     {
         fixed (byte* ptr = id)
         {
@@ -323,7 +326,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Windows Utilities
+    #region * Windows Utilities
 
     /// <summary>
     /// Returns true if the current window is appearing (was just created or unhidden this frame).
@@ -366,6 +369,8 @@ public static unsafe class ImGui
     {
         return ImGui_IsWindowHovered((Native.ImGuiHoveredFlags)flags);
     }
+
+    // Not wrapping ImGui_GetWindowDrawList at this time
 
     /// <summary>
     /// Gets the current window position in screen space.
@@ -417,20 +422,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Window Manipulation
-
-    /// <summary>
-    /// Sets the next window position. Call before <see cref="Begin"/>.
-    /// </summary>
-    /// <param name="pos">The position in screen coordinates.</param>
-    /// <param name="cond">Condition for applying the position.</param>
-    /// <remarks>
-    /// Prefer using SetNextWindow*** functions (before Begin) rather than SetWindow*** functions (after Begin).
-    /// </remarks>
-    public static void SetNextWindowPos(Vec2 pos, Cond cond = Cond.None)
-    {
-        ImGui_SetNextWindowPos(pos.ToNative(), (Native.ImGuiCond)cond);
-    }
+    #region * Window Manipulation
 
     /// <summary>
     /// Sets the next window position with a pivot point. Call before <see cref="Begin"/>.
@@ -441,7 +433,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// Use pivot=(0.5f, 0.5f) to center on the given point.
     /// </remarks>
-    public static void SetNextWindowPos(Vec2 pos, Cond cond, Vec2 pivot)
+    public static void SetNextWindowPos(Vec2 pos, Cond cond = Cond.None, Vec2 pivot = default)
     {
         ImGui_SetNextWindowPosEx(pos.ToNative(), (Native.ImGuiCond)cond, pivot.ToNative());
     }
@@ -463,6 +455,7 @@ public static unsafe class ImGui
     /// <param name="sizeMax">Maximum window size. Use float.MaxValue for no maximum. Use -1 for both min and max of same axis to preserve current size.</param>
     public static void SetNextWindowSizeConstraints(Vec2 sizeMin, Vec2 sizeMax)
     {
+        // TODO: We're not exposing the custom size callback for now
         ImGui_SetNextWindowSizeConstraints(sizeMin.ToNative(), sizeMax.ToNative(), null, 0);
     }
 
@@ -571,7 +564,7 @@ public static unsafe class ImGui
     /// <param name="name">The window name.</param>
     /// <param name="pos">The position in screen coordinates.</param>
     /// <param name="cond">Condition for applying the position.</param>
-    public static void SetWindowPos(Span<byte> name, Vec2 pos, Cond cond = Cond.None)
+    public static void SetWindowPos(ReadOnlySpan<byte> name, Vec2 pos, Cond cond = Cond.None)
     {
         fixed (byte* ptr = name)
         {
@@ -585,7 +578,7 @@ public static unsafe class ImGui
     /// <param name="name">The window name.</param>
     /// <param name="size">The window size. Set an axis to 0.0f to force auto-fit on that axis.</param>
     /// <param name="cond">Condition for applying the size.</param>
-    public static void SetWindowSize(Span<byte> name, Vec2 size, Cond cond = Cond.None)
+    public static void SetWindowSize(ReadOnlySpan<byte> name, Vec2 size, Cond cond = Cond.None)
     {
         fixed (byte* ptr = name)
         {
@@ -599,7 +592,7 @@ public static unsafe class ImGui
     /// <param name="name">The window name.</param>
     /// <param name="collapsed">Whether the window should be collapsed.</param>
     /// <param name="cond">Condition for applying the collapsed state.</param>
-    public static void SetWindowCollapsed(Span<byte> name, bool collapsed, Cond cond = Cond.None)
+    public static void SetWindowCollapsed(ReadOnlySpan<byte> name, bool collapsed, Cond cond = Cond.None)
     {
         fixed (byte* ptr = name)
         {
@@ -611,7 +604,7 @@ public static unsafe class ImGui
     /// Sets a named window to be focused / top-most.
     /// </summary>
     /// <param name="name">The window name. Use null to remove focus.</param>
-    public static void SetWindowFocus(Span<byte> name)
+    public static void SetWindowFocus(ReadOnlySpan<byte> name)
     {
         fixed (byte* ptr = name)
         {
@@ -621,7 +614,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Windows Scrolling
+    #region * Windows Scrolling
 
     /// <summary>
     /// Gets the horizontal scrolling amount [0 .. <see cref="GetScrollMaxX"/>].
@@ -731,7 +724,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Parameters stacks (font)
+    #region * Parameters stacks (font)
 
     /// <summary>
     /// Pushes a font and/or font size onto the stack.
@@ -752,7 +745,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static void PushFont(Font? font, float fontSizeBaseUnscaled = 0.0f)
     {
-        ImGui_PushFontFloat(font.HasValue ? font.Value.Native : null, fontSizeBaseUnscaled);
+        ImGui_PushFontFloat(font == null ? null : font.Value.Native, fontSizeBaseUnscaled);
     }
 
     /// <summary>
@@ -784,9 +777,22 @@ public static unsafe class ImGui
         return ImGui_GetFontSize();
     }
 
+    /// <summary>
+    /// Gets the current font baked at the current size.
+    /// </summary>
+    /// <returns>The current font baked instance.</returns>
+    /// <remarks>
+    /// This is equivalent to <c>GetFont().GetFontBaked(GetFontSize())</c>.
+    /// Pointers to FontBaked are only valid for the current frame.
+    /// </remarks>
+    public static FontBaked GetFontBaked()
+    {
+        return new FontBaked(ImGui_GetFontBaked());
+    }
+
     #endregion
 
-    #region Parameters stacks (shared)
+    #region * Parameters stacks (shared)
 
     /// <summary>
     /// Pushes a style color modification onto the stack using a 32-bit color value.
@@ -815,18 +821,10 @@ public static unsafe class ImGui
     }
 
     /// <summary>
-    /// Pops the most recently pushed style color from the stack.
-    /// </summary>
-    public static void PopStyleColor()
-    {
-        ImGui_PopStyleColor();
-    }
-
-    /// <summary>
     /// Pops multiple style colors from the stack.
     /// </summary>
     /// <param name="count">The number of style colors to pop.</param>
-    public static void PopStyleColor(int count)
+    public static void PopStyleColor(int count = 1)
     {
         ImGui_PopStyleColorEx(count);
     }
@@ -878,18 +876,10 @@ public static unsafe class ImGui
     }
 
     /// <summary>
-    /// Pops the most recently pushed style variable from the stack.
-    /// </summary>
-    public static void PopStyleVar()
-    {
-        ImGui_PopStyleVar();
-    }
-
-    /// <summary>
     /// Pops multiple style variables from the stack.
     /// </summary>
     /// <param name="count">The number of style variables to pop.</param>
-    public static void PopStyleVar(int count)
+    public static void PopStyleVar(int count = 1)
     {
         ImGui_PopStyleVarEx(count);
     }
@@ -914,7 +904,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Parameters stacks (current window)
+    #region * Parameters stacks (current window)
 
     /// <summary>
     /// Pushes the width of items for common large "item+label" widgets.
@@ -986,7 +976,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Style read access
+    #region * Style read access
 
     /// <summary>
     /// Gets the UV coordinate for a white pixel, useful to draw custom shapes via the DrawList API.
@@ -996,24 +986,13 @@ public static unsafe class ImGui
     {
         return Vec2.FromNative(ImGui_GetFontTexUvWhitePixel());
     }
-
-    /// <summary>
-    /// Gets a style color as a 32-bit packed value suitable for DrawList.
-    /// </summary>
-    /// <param name="idx">The color index.</param>
-    /// <returns>The color as a 32-bit packed RGBA value with style alpha applied.</returns>
-    public static uint GetColorU32(Col idx)
-    {
-        return ImGui_GetColorU32((Native.ImGuiCol)idx);
-    }
-
     /// <summary>
     /// Gets a style color as a 32-bit packed value with an additional alpha multiplier.
     /// </summary>
     /// <param name="idx">The color index.</param>
     /// <param name="alphaMul">Additional alpha multiplier (0.0 to 1.0).</param>
     /// <returns>The color as a 32-bit packed RGBA value with style alpha and multiplier applied.</returns>
-    public static uint GetColorU32(Col idx, float alphaMul)
+    public static uint GetColorU32(Col idx, float alphaMul = 1.0f)
     {
         return ImGui_GetColorU32Ex((Native.ImGuiCol)idx, alphaMul);
     }
@@ -1029,22 +1008,12 @@ public static unsafe class ImGui
     }
 
     /// <summary>
-    /// Gets a 32-bit color with style alpha applied.
-    /// </summary>
-    /// <param name="col">The color as a 32-bit packed RGBA value.</param>
-    /// <returns>The color with style alpha applied.</returns>
-    public static uint GetColorU32(uint col)
-    {
-        return ImGui_GetColorU32ImU32(col);
-    }
-
-    /// <summary>
     /// Gets a 32-bit color with style alpha and an additional alpha multiplier applied.
     /// </summary>
     /// <param name="col">The color as a 32-bit packed RGBA value.</param>
     /// <param name="alphaMul">Additional alpha multiplier (0.0 to 1.0).</param>
     /// <returns>The color with style alpha and multiplier applied.</returns>
-    public static uint GetColorU32(uint col, float alphaMul)
+    public static uint GetColorU32(uint col, float alphaMul = 1.0f)
     {
         return ImGui_GetColorU32ImU32Ex(col, alphaMul);
     }
@@ -1065,7 +1034,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Layout cursor positioning
+    #region * Layout cursor positioning
 
     /// <summary>
     /// Gets the cursor position in absolute screen coordinates.
@@ -1175,7 +1144,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Other layout functions
+    #region * Other layout functions
 
     /// <summary>
     /// Draws a separator, generally horizontal. Inside a menu bar or in horizontal layout mode, this becomes a vertical separator.
@@ -1186,19 +1155,11 @@ public static unsafe class ImGui
     }
 
     /// <summary>
-    /// Calls between widgets or groups to layout them horizontally.
-    /// </summary>
-    public static void SameLine()
-    {
-        ImGui_SameLine();
-    }
-
-    /// <summary>
     /// Calls between widgets or groups to layout them horizontally with custom positioning.
     /// </summary>
     /// <param name="offsetFromStartX">X position from window start in window coordinates. 0.0f to use current position.</param>
     /// <param name="spacing">Spacing between the previous widget and current position. -1.0f to use default spacing.</param>
-    public static void SameLine(float offsetFromStartX, float spacing = -1.0f)
+    public static void SameLine(float offsetFromStartX = 0.0f, float spacing = -1.0f)
     {
         ImGui_SameLineEx(offsetFromStartX, spacing);
     }
@@ -1232,35 +1193,19 @@ public static unsafe class ImGui
     }
 
     /// <summary>
-    /// Moves content position toward the right by style.IndentSpacing.
-    /// </summary>
-    public static void Indent()
-    {
-        ImGui_Indent();
-    }
-
-    /// <summary>
     /// Moves content position toward the right by the specified amount.
     /// </summary>
     /// <param name="indentW">The indentation amount. If less than or equal to 0, uses style.IndentSpacing.</param>
-    public static void Indent(float indentW)
+    public static void Indent(float indentW = 0.0f)
     {
         ImGui_IndentEx(indentW);
-    }
-
-    /// <summary>
-    /// Moves content position back to the left by style.IndentSpacing.
-    /// </summary>
-    public static void Unindent()
-    {
-        ImGui_Unindent();
     }
 
     /// <summary>
     /// Moves content position back to the left by the specified amount.
     /// </summary>
     /// <param name="indentW">The unindentation amount. If less than or equal to 0, uses style.IndentSpacing.</param>
-    public static void Unindent(float indentW)
+    public static void Unindent(float indentW = 0.0f)
     {
         ImGui_UnindentEx(indentW);
     }
@@ -1336,7 +1281,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region ID stack/scopes
+    #region * ID stack/scopes
 
     /// <summary>
     /// Pushes a string into the ID stack (will hash string).
@@ -1355,7 +1300,7 @@ public static unsafe class ImGui
     /// You can also use the "Label##foobar" syntax within widget labels to distinguish them from each other.
     /// </para>
     /// </remarks>
-    public static void PushID(Span<byte> strId)
+    public static void PushID(ReadOnlySpan<byte> strId)
     {
         fixed (byte* ptr = strId)
         {
@@ -1397,7 +1342,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// Use this if you want to query into ImGuiStorage yourself.
     /// </remarks>
-    public static Id GetID(Span<byte> strId)
+    public static Id GetID(ReadOnlySpan<byte> strId)
     {
         fixed (byte* ptr = strId)
         {
@@ -1437,7 +1382,7 @@ public static unsafe class ImGui
     /// This is faster than formatted text functions, with no memory copy or buffer size limits.
     /// Recommended for long chunks of text.
     /// </remarks>
-    public static void TextUnformatted(Span<byte> text)
+    public static void TextUnformatted(ReadOnlySpan<byte> text)
     {
         fixed (byte* ptr = text)
         {
@@ -1449,7 +1394,7 @@ public static unsafe class ImGui
     /// Displays text with a horizontal separator line.
     /// </summary>
     /// <param name="label">The text label to display.</param>
-    public static void SeparatorText(Span<byte> label)
+    public static void SeparatorText(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -1470,7 +1415,7 @@ public static unsafe class ImGui
     /// Most widgets return true when their value has been changed or when pressed/selected.
     /// You may also use the IsItem* functions (e.g. IsItemActive, IsItemHovered, etc.) to query widget state.
     /// </remarks>
-    public static bool Button(Span<byte> label)
+    public static bool Button(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -1484,7 +1429,7 @@ public static unsafe class ImGui
     /// <param name="label">The button label. ID is derived from the label (use ## to append non-visible ID).</param>
     /// <param name="size">The button size. Use (0,0) for automatic sizing.</param>
     /// <returns>True when clicked.</returns>
-    public static bool Button(Span<byte> label, Vec2 size)
+    public static bool Button(ReadOnlySpan<byte> label, Vec2 size)
     {
         fixed (byte* ptr = label)
         {
@@ -1497,7 +1442,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The button label.</param>
     /// <returns>True when clicked.</returns>
-    public static bool SmallButton(Span<byte> label)
+    public static bool SmallButton(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -1515,7 +1460,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// Useful for building custom behaviors using the public API (along with IsItemActive, IsItemHovered, etc.).
     /// </remarks>
-    public static bool InvisibleButton(Span<byte> strId, Vec2 size, ButtonFlags flags = ButtonFlags.None)
+    public static bool InvisibleButton(ReadOnlySpan<byte> strId, Vec2 size, ButtonFlags flags = ButtonFlags.None)
     {
         fixed (byte* ptr = strId)
         {
@@ -1529,7 +1474,7 @@ public static unsafe class ImGui
     /// <param name="strId">The string ID.</param>
     /// <param name="dir">The arrow direction.</param>
     /// <returns>True when clicked.</returns>
-    public static bool ArrowButton(Span<byte> strId, Dir dir)
+    public static bool ArrowButton(ReadOnlySpan<byte> strId, Dir dir)
     {
         fixed (byte* ptr = strId)
         {
@@ -1543,7 +1488,7 @@ public static unsafe class ImGui
     /// <param name="label">The checkbox label.</param>
     /// <param name="v">Reference to the boolean value.</param>
     /// <returns>True when the value has been changed.</returns>
-    public static bool Checkbox(Span<byte> label, StateRef<bool> v)
+    public static bool Checkbox(ReadOnlySpan<byte> label, StateRef<bool> v)
     {
         fixed (byte* ptr = label)
         {
@@ -1558,7 +1503,7 @@ public static unsafe class ImGui
     /// <param name="flags">Reference to the flags value.</param>
     /// <param name="flagsValue">The flag bit(s) to toggle.</param>
     /// <returns>True when the value has been changed.</returns>
-    public static bool CheckboxFlags(Span<byte> label, StateRef<int> flags, int flagsValue)
+    public static bool CheckboxFlags(ReadOnlySpan<byte> label, StateRef<int> flags, int flagsValue)
     {
         fixed (byte* ptr = label)
         {
@@ -1573,7 +1518,7 @@ public static unsafe class ImGui
     /// <param name="flags">Reference to the flags value.</param>
     /// <param name="flagsValue">The flag bit(s) to toggle.</param>
     /// <returns>True when the value has been changed.</returns>
-    public static bool CheckboxFlags(Span<byte> label, StateRef<uint> flags, uint flagsValue)
+    public static bool CheckboxFlags(ReadOnlySpan<byte> label, StateRef<uint> flags, uint flagsValue)
     {
         fixed (byte* ptr = label)
         {
@@ -1590,7 +1535,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// Use with e.g. if (RadioButton("one", myValue == 1)) { myValue = 1; }
     /// </remarks>
-    public static bool RadioButton(Span<byte> label, bool active)
+    public static bool RadioButton(ReadOnlySpan<byte> label, bool active)
     {
         fixed (byte* ptr = label)
         {
@@ -1608,7 +1553,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// Shortcut to handle the RadioButton pattern when the value is an integer.
     /// </remarks>
-    public static bool RadioButton(Span<byte> label, StateRef<int> v, int vButton)
+    public static bool RadioButton(ReadOnlySpan<byte> label, StateRef<int> v, int vButton)
     {
         fixed (byte* ptr = label)
         {
@@ -1622,7 +1567,7 @@ public static unsafe class ImGui
     /// <param name="fraction">The progress value between 0.0f and 1.0f.</param>
     /// <param name="sizeArg">The bar size. Use (-FLT_MIN, 0) for default size.</param>
     /// <param name="overlay">Optional overlay text.</param>
-    public static void ProgressBar(float fraction, Vec2 sizeArg = default, Span<byte> overlay = default)
+    public static void ProgressBar(float fraction, Vec2 sizeArg = default, ReadOnlySpan<byte> overlay = default)
     {
         fixed (byte* overlayPtr = overlay)
         {
@@ -1646,7 +1591,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The link text.</param>
     /// <returns>True when clicked.</returns>
-    public static bool TextLink(Span<byte> label)
+    public static bool TextLink(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -1659,7 +1604,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The link text (also used as the URL if url is not specified).</param>
     /// <returns>True when clicked.</returns>
-    public static bool TextLinkOpenURL(Span<byte> label)
+    public static bool TextLinkOpenURL(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -1673,7 +1618,7 @@ public static unsafe class ImGui
     /// <param name="label">The link text.</param>
     /// <param name="url">The URL to open.</param>
     /// <returns>True when clicked.</returns>
-    public static bool TextLinkOpenURL(Span<byte> label, Span<byte> url)
+    public static bool TextLinkOpenURL(ReadOnlySpan<byte> label, ReadOnlySpan<byte> url)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* urlPtr = url)
@@ -1746,7 +1691,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// ImageButton() adds style.FramePadding on each side and draws a background based on regular Button() color.
     /// </remarks>
-    public static bool ImageButton(Span<byte> strId, TextureRef texRef, Vec2 imageSize)
+    public static bool ImageButton(ReadOnlySpan<byte> strId, TextureRef texRef, Vec2 imageSize)
     {
         fixed (byte* ptr = strId)
         {
@@ -1765,7 +1710,7 @@ public static unsafe class ImGui
     /// <param name="bgCol">The background color.</param>
     /// <param name="tintCol">The tint color to apply to the image.</param>
     /// <returns>True when clicked.</returns>
-    public static bool ImageButton(Span<byte> strId, TextureRef texRef, Vec2 imageSize, Vec2 uv0, Vec2 uv1, Vec4 bgCol, Vec4 tintCol)
+    public static bool ImageButton(ReadOnlySpan<byte> strId, TextureRef texRef, Vec2 imageSize, Vec2 uv0, Vec2 uv1, Vec4 bgCol, Vec4 tintCol)
     {
         fixed (byte* ptr = strId)
         {
@@ -1788,7 +1733,7 @@ public static unsafe class ImGui
     /// The BeginCombo()/EndCombo() API allows you to manage your contents and selection state however you want,
     /// by creating e.g. Selectable() items.
     /// </remarks>
-    public static bool BeginCombo(Span<byte> label, Span<byte> previewValue, ComboFlags flags = ComboFlags.None)
+    public static bool BeginCombo(ReadOnlySpan<byte> label, ReadOnlySpan<byte> previewValue, ComboFlags flags = ComboFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* previewPtr = previewValue)
@@ -1812,7 +1757,7 @@ public static unsafe class ImGui
     /// <param name="currentItem">Reference to the current selected item index.</param>
     /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
     /// <returns>True if the selection changed.</returns>
-    public static bool Combo(Span<byte> label, StateRef<int> currentItem, Span<byte> itemsSeparatedByZeros)
+    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* itemsPtr = itemsSeparatedByZeros)
@@ -1829,7 +1774,7 @@ public static unsafe class ImGui
     /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
     /// <param name="popupMaxHeightInItems">Maximum height in items. Use -1 for default.</param>
     /// <returns>True if the selection changed.</returns>
-    public static bool Combo(Span<byte> label, StateRef<int> currentItem, Span<byte> itemsSeparatedByZeros, int popupMaxHeightInItems)
+    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* itemsPtr = itemsSeparatedByZeros)
@@ -1852,7 +1797,7 @@ public static unsafe class ImGui
     /// Ctrl+Click on any drag box to turn it into an input box.
     /// Speed is per-pixel of mouse movement (v_speed=0.2f: mouse needs to move by 5 pixels to increase value by 1).
     /// </remarks>
-    public static bool DragFloat(Span<byte> label, StateRef<float> v)
+    public static bool DragFloat(ReadOnlySpan<byte> label, StateRef<float> v)
     {
         fixed (byte* ptr = label)
         {
@@ -1871,7 +1816,7 @@ public static unsafe class ImGui
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool DragFloat(Span<byte> label, StateRef<float> v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, Span<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool DragFloat(ReadOnlySpan<byte> label, StateRef<float> v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -1887,7 +1832,7 @@ public static unsafe class ImGui
     /// <param name="vCurrentMin">Reference to the minimum value.</param>
     /// <param name="vCurrentMax">Reference to the maximum value.</param>
     /// <returns>True if either value changed.</returns>
-    public static bool DragFloatRange2(Span<byte> label, StateRef<float> vCurrentMin, StateRef<float> vCurrentMax)
+    public static bool DragFloatRange2(ReadOnlySpan<byte> label, StateRef<float> vCurrentMin, StateRef<float> vCurrentMax)
     {
         fixed (byte* ptr = label)
         {
@@ -1908,7 +1853,7 @@ public static unsafe class ImGui
     /// <param name="formatMax">Printf format string for the max value. If null, uses format.</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if either value changed.</returns>
-    public static bool DragFloatRange2(Span<byte> label, StateRef<float> vCurrentMin, StateRef<float> vCurrentMax, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, Span<byte> format = default, Span<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
+    public static bool DragFloatRange2(ReadOnlySpan<byte> label, StateRef<float> vCurrentMin, StateRef<float> vCurrentMax, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -1924,7 +1869,7 @@ public static unsafe class ImGui
     /// <param name="label">The label for the slider.</param>
     /// <param name="v">Reference to the value.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool DragInt(Span<byte> label, StateRef<int> v)
+    public static bool DragInt(ReadOnlySpan<byte> label, StateRef<int> v)
     {
         fixed (byte* ptr = label)
         {
@@ -1943,7 +1888,7 @@ public static unsafe class ImGui
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool DragInt(Span<byte> label, StateRef<int> v, float vSpeed, int vMin = 0, int vMax = 0, Span<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool DragInt(ReadOnlySpan<byte> label, StateRef<int> v, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -1959,7 +1904,7 @@ public static unsafe class ImGui
     /// <param name="vCurrentMin">Reference to the minimum value.</param>
     /// <param name="vCurrentMax">Reference to the maximum value.</param>
     /// <returns>True if either value changed.</returns>
-    public static bool DragIntRange2(Span<byte> label, StateRef<int> vCurrentMin, StateRef<int> vCurrentMax)
+    public static bool DragIntRange2(ReadOnlySpan<byte> label, StateRef<int> vCurrentMin, StateRef<int> vCurrentMax)
     {
         fixed (byte* ptr = label)
         {
@@ -1980,7 +1925,7 @@ public static unsafe class ImGui
     /// <param name="formatMax">Printf format string for the max value. If null, uses format.</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if either value changed.</returns>
-    public static bool DragIntRange2(Span<byte> label, StateRef<int> vCurrentMin, StateRef<int> vCurrentMax, float vSpeed, int vMin = 0, int vMax = 0, Span<byte> format = default, Span<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
+    public static bool DragIntRange2(ReadOnlySpan<byte> label, StateRef<int> vCurrentMin, StateRef<int> vCurrentMax, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -2006,7 +1951,7 @@ public static unsafe class ImGui
     /// Ctrl+Click on any slider to turn it into an input box.
     /// Manually input values aren't clamped by default. Use SliderFlags.AlwaysClamp to always clamp.
     /// </remarks>
-    public static bool SliderFloat(Span<byte> label, StateRef<float> v, float vMin, float vMax)
+    public static bool SliderFloat(ReadOnlySpan<byte> label, StateRef<float> v, float vMin, float vMax)
     {
         fixed (byte* ptr = label)
         {
@@ -2024,7 +1969,7 @@ public static unsafe class ImGui
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool SliderFloat(Span<byte> label, StateRef<float> v, float vMin, float vMax, Span<byte> format, SliderFlags flags = SliderFlags.None)
+    public static bool SliderFloat(ReadOnlySpan<byte> label, StateRef<float> v, float vMin, float vMax, ReadOnlySpan<byte> format, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -2039,7 +1984,7 @@ public static unsafe class ImGui
     /// <param name="label">The label for the slider.</param>
     /// <param name="vRad">Reference to the value in radians.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool SliderAngle(Span<byte> label, StateRef<float> vRad)
+    public static bool SliderAngle(ReadOnlySpan<byte> label, StateRef<float> vRad)
     {
         fixed (byte* ptr = label)
         {
@@ -2057,7 +2002,7 @@ public static unsafe class ImGui
     /// <param name="format">Printf format string for display (e.g., "%.0f deg").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool SliderAngle(Span<byte> label, StateRef<float> vRad, float vDegreesMin = -360.0f, float vDegreesMax = 360.0f, Span<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool SliderAngle(ReadOnlySpan<byte> label, StateRef<float> vRad, float vDegreesMin = -360.0f, float vDegreesMax = 360.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -2074,7 +2019,7 @@ public static unsafe class ImGui
     /// <param name="vMin">Minimum value.</param>
     /// <param name="vMax">Maximum value.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool SliderInt(Span<byte> label, StateRef<int> v, int vMin, int vMax)
+    public static bool SliderInt(ReadOnlySpan<byte> label, StateRef<int> v, int vMin, int vMax)
     {
         fixed (byte* ptr = label)
         {
@@ -2092,7 +2037,7 @@ public static unsafe class ImGui
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool SliderInt(Span<byte> label, StateRef<int> v, int vMin, int vMax, Span<byte> format, SliderFlags flags = SliderFlags.None)
+    public static bool SliderInt(ReadOnlySpan<byte> label, StateRef<int> v, int vMin, int vMax, ReadOnlySpan<byte> format, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -2110,7 +2055,7 @@ public static unsafe class ImGui
     /// <param name="vMin">Minimum value.</param>
     /// <param name="vMax">Maximum value.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSliderFloat(Span<byte> label, Vec2 size, StateRef<float> v, float vMin, float vMax)
+    public static bool VSliderFloat(ReadOnlySpan<byte> label, Vec2 size, StateRef<float> v, float vMin, float vMax)
     {
         fixed (byte* ptr = label)
         {
@@ -2129,7 +2074,7 @@ public static unsafe class ImGui
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSliderFloat(Span<byte> label, Vec2 size, StateRef<float> v, float vMin, float vMax, Span<byte> format, SliderFlags flags = SliderFlags.None)
+    public static bool VSliderFloat(ReadOnlySpan<byte> label, Vec2 size, StateRef<float> v, float vMin, float vMax, ReadOnlySpan<byte> format, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -2147,7 +2092,7 @@ public static unsafe class ImGui
     /// <param name="vMin">Minimum value.</param>
     /// <param name="vMax">Maximum value.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSliderInt(Span<byte> label, Vec2 size, StateRef<int> v, int vMin, int vMax)
+    public static bool VSliderInt(ReadOnlySpan<byte> label, Vec2 size, StateRef<int> v, int vMin, int vMax)
     {
         fixed (byte* ptr = label)
         {
@@ -2166,7 +2111,7 @@ public static unsafe class ImGui
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSliderInt(Span<byte> label, Vec2 size, StateRef<int> v, int vMin, int vMax, Span<byte> format, SliderFlags flags = SliderFlags.None)
+    public static bool VSliderInt(ReadOnlySpan<byte> label, Vec2 size, StateRef<int> v, int vMin, int vMax, ReadOnlySpan<byte> format, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -2186,7 +2131,7 @@ public static unsafe class ImGui
     /// <param name="buf">The buffer to edit.</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputText(Span<byte> label, Span<byte> buf, InputTextFlags flags = InputTextFlags.None)
+    public static bool InputText(ReadOnlySpan<byte> label, Span<byte> buf, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* bufPtr = buf)
@@ -2201,7 +2146,7 @@ public static unsafe class ImGui
     /// <param name="label">The label for the input.</param>
     /// <param name="buf">The buffer to edit.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputTextMultiline(Span<byte> label, Span<byte> buf)
+    public static bool InputTextMultiline(ReadOnlySpan<byte> label, Span<byte> buf)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* bufPtr = buf)
@@ -2218,7 +2163,7 @@ public static unsafe class ImGui
     /// <param name="size">The size of the input area.</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputTextMultiline(Span<byte> label, Span<byte> buf, Vec2 size, InputTextFlags flags = InputTextFlags.None)
+    public static bool InputTextMultiline(ReadOnlySpan<byte> label, Span<byte> buf, Vec2 size, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* bufPtr = buf)
@@ -2235,7 +2180,7 @@ public static unsafe class ImGui
     /// <param name="buf">The buffer to edit.</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputTextWithHint(Span<byte> label, Span<byte> hint, Span<byte> buf, InputTextFlags flags = InputTextFlags.None)
+    public static bool InputTextWithHint(ReadOnlySpan<byte> label, ReadOnlySpan<byte> hint, Span<byte> buf, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* hintPtr = hint)
@@ -2251,7 +2196,7 @@ public static unsafe class ImGui
     /// <param name="label">The label for the input.</param>
     /// <param name="v">Reference to the value.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputFloat(Span<byte> label, StateRef<float> v)
+    public static bool InputFloat(ReadOnlySpan<byte> label, StateRef<float> v)
     {
         fixed (byte* ptr = label)
         {
@@ -2269,7 +2214,7 @@ public static unsafe class ImGui
     /// <param name="format">Printf format string for display.</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputFloat(Span<byte> label, StateRef<float> v, float step, float stepFast = 0.0f, Span<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool InputFloat(ReadOnlySpan<byte> label, StateRef<float> v, float step, float stepFast = 0.0f, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -2284,7 +2229,7 @@ public static unsafe class ImGui
     /// <param name="label">The label for the input.</param>
     /// <param name="v">Reference to the value.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputInt(Span<byte> label, StateRef<int> v)
+    public static bool InputInt(ReadOnlySpan<byte> label, StateRef<int> v)
     {
         fixed (byte* ptr = label)
         {
@@ -2301,7 +2246,7 @@ public static unsafe class ImGui
     /// <param name="stepFast">Fast step value when holding button.</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputInt(Span<byte> label, StateRef<int> v, int step, int stepFast = 100, InputTextFlags flags = InputTextFlags.None)
+    public static bool InputInt(ReadOnlySpan<byte> label, StateRef<int> v, int step, int stepFast = 100, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* ptr = label)
         {
@@ -2315,7 +2260,7 @@ public static unsafe class ImGui
     /// <param name="label">The label for the input.</param>
     /// <param name="v">Reference to the value.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputDouble(Span<byte> label, StateRef<double> v)
+    public static bool InputDouble(ReadOnlySpan<byte> label, StateRef<double> v)
     {
         fixed (byte* ptr = label)
         {
@@ -2333,7 +2278,7 @@ public static unsafe class ImGui
     /// <param name="format">Printf format string for display.</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool InputDouble(Span<byte> label, StateRef<double> v, double step, double stepFast = 0.0, Span<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool InputDouble(ReadOnlySpan<byte> label, StateRef<double> v, double step, double stepFast = 0.0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -2353,7 +2298,7 @@ public static unsafe class ImGui
     /// <param name="col">The color to display.</param>
     /// <param name="flags">Color edit behavior flags.</param>
     /// <returns>True when clicked.</returns>
-    public static bool ColorButton(Span<byte> descId, Vec4 col, ColorEditFlags flags = ColorEditFlags.None)
+    public static bool ColorButton(ReadOnlySpan<byte> descId, Vec4 col, ColorEditFlags flags = ColorEditFlags.None)
     {
         fixed (byte* ptr = descId)
         {
@@ -2369,7 +2314,7 @@ public static unsafe class ImGui
     /// <param name="flags">Color edit behavior flags.</param>
     /// <param name="size">The button size.</param>
     /// <returns>True when clicked.</returns>
-    public static bool ColorButton(Span<byte> descId, Vec4 col, ColorEditFlags flags, Vec2 size)
+    public static bool ColorButton(ReadOnlySpan<byte> descId, Vec4 col, ColorEditFlags flags, Vec2 size)
     {
         fixed (byte* ptr = descId)
         {
@@ -2400,7 +2345,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The node label.</param>
     /// <returns>True if the node is open. Call <see cref="TreePop"/> when done if this returns true.</returns>
-    public static bool TreeNode(Span<byte> label)
+    public static bool TreeNode(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -2414,7 +2359,7 @@ public static unsafe class ImGui
     /// <param name="label">The node label.</param>
     /// <param name="flags">Tree node behavior flags.</param>
     /// <returns>True if the node is open. Call <see cref="TreePop"/> when done if this returns true.</returns>
-    public static bool TreeNode(Span<byte> label, TreeNodeFlags flags)
+    public static bool TreeNode(ReadOnlySpan<byte> label, TreeNodeFlags flags)
     {
         fixed (byte* ptr = label)
         {
@@ -2429,7 +2374,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
     /// </remarks>
-    public static void TreePush(Span<byte> strId)
+    public static void TreePush(ReadOnlySpan<byte> strId)
     {
         fixed (byte* ptr = strId)
         {
@@ -2472,7 +2417,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// Doesn't indent or push onto the ID stack. User doesn't have to call TreePop().
     /// </remarks>
-    public static bool CollapsingHeader(Span<byte> label, TreeNodeFlags flags = TreeNodeFlags.None)
+    public static bool CollapsingHeader(ReadOnlySpan<byte> label, TreeNodeFlags flags = TreeNodeFlags.None)
     {
         fixed (byte* ptr = label)
         {
@@ -2487,7 +2432,7 @@ public static unsafe class ImGui
     /// <param name="pVisible">Reference to visibility state. If false, header is not displayed.</param>
     /// <param name="flags">Tree node behavior flags.</param>
     /// <returns>True if the header is open.</returns>
-    public static bool CollapsingHeader(Span<byte> label, StateRef<bool> pVisible, TreeNodeFlags flags = TreeNodeFlags.None)
+    public static bool CollapsingHeader(ReadOnlySpan<byte> label, StateRef<bool> pVisible, TreeNodeFlags flags = TreeNodeFlags.None)
     {
         fixed (byte* ptr = label)
         {
@@ -2523,7 +2468,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The item label.</param>
     /// <returns>True when clicked.</returns>
-    public static bool Selectable(Span<byte> label)
+    public static bool Selectable(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -2539,7 +2484,7 @@ public static unsafe class ImGui
     /// <param name="flags">Selectable behavior flags.</param>
     /// <param name="size">The item size.</param>
     /// <returns>True when clicked.</returns>
-    public static bool Selectable(Span<byte> label, bool selected, SelectableFlags flags = SelectableFlags.None, Vec2 size = default)
+    public static bool Selectable(ReadOnlySpan<byte> label, bool selected, SelectableFlags flags = SelectableFlags.None, Vec2 size = default)
     {
         fixed (byte* ptr = label)
         {
@@ -2554,7 +2499,7 @@ public static unsafe class ImGui
     /// <param name="pSelected">Reference to selection state (read-write).</param>
     /// <param name="flags">Selectable behavior flags.</param>
     /// <returns>True when clicked.</returns>
-    public static bool Selectable(Span<byte> label, StateRef<bool> pSelected, SelectableFlags flags = SelectableFlags.None)
+    public static bool Selectable(ReadOnlySpan<byte> label, StateRef<bool> pSelected, SelectableFlags flags = SelectableFlags.None)
     {
         fixed (byte* ptr = label)
         {
@@ -2570,7 +2515,7 @@ public static unsafe class ImGui
     /// <param name="flags">Selectable behavior flags.</param>
     /// <param name="size">The item size.</param>
     /// <returns>True when clicked.</returns>
-    public static bool Selectable(Span<byte> label, StateRef<bool> pSelected, SelectableFlags flags, Vec2 size)
+    public static bool Selectable(ReadOnlySpan<byte> label, StateRef<bool> pSelected, SelectableFlags flags, Vec2 size)
     {
         fixed (byte* ptr = label)
         {
@@ -2588,7 +2533,7 @@ public static unsafe class ImGui
     /// <param name="label">The label for the list box.</param>
     /// <param name="size">The size of the list box.</param>
     /// <returns>True if the list box is open and items should be rendered.</returns>
-    public static bool BeginListBox(Span<byte> label, Vec2 size = default)
+    public static bool BeginListBox(ReadOnlySpan<byte> label, Vec2 size = default)
     {
         fixed (byte* ptr = label)
         {
@@ -2613,7 +2558,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The label for the plot.</param>
     /// <param name="values">The array of values to plot.</param>
-    public static void PlotLines(Span<byte> label, ReadOnlySpan<float> values)
+    public static void PlotLines(ReadOnlySpan<byte> label, ReadOnlySpan<float> values)
     {
         fixed (byte* labelPtr = label)
         fixed (float* valuesPtr = values)
@@ -2632,7 +2577,7 @@ public static unsafe class ImGui
     /// <param name="scaleMin">The minimum scale value (float.MaxValue for auto).</param>
     /// <param name="scaleMax">The maximum scale value (float.MaxValue for auto).</param>
     /// <param name="graphSize">The size of the graph (0,0 for default).</param>
-    public static void PlotLines(Span<byte> label, ReadOnlySpan<float> values, int valuesOffset, Span<byte> overlayText, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, Vec2 graphSize = default)
+    public static void PlotLines(ReadOnlySpan<byte> label, ReadOnlySpan<float> values, int valuesOffset, ReadOnlySpan<byte> overlayText, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, Vec2 graphSize = default)
     {
         fixed (byte* labelPtr = label)
         fixed (float* valuesPtr = values)
@@ -2647,7 +2592,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The label for the plot.</param>
     /// <param name="values">The array of values to plot.</param>
-    public static void PlotHistogram(Span<byte> label, ReadOnlySpan<float> values)
+    public static void PlotHistogram(ReadOnlySpan<byte> label, ReadOnlySpan<float> values)
     {
         fixed (byte* labelPtr = label)
         fixed (float* valuesPtr = values)
@@ -2666,7 +2611,7 @@ public static unsafe class ImGui
     /// <param name="scaleMin">The minimum scale value (float.MaxValue for auto).</param>
     /// <param name="scaleMax">The maximum scale value (float.MaxValue for auto).</param>
     /// <param name="graphSize">The size of the graph (0,0 for default).</param>
-    public static void PlotHistogram(Span<byte> label, ReadOnlySpan<float> values, int valuesOffset, Span<byte> overlayText, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, Vec2 graphSize = default)
+    public static void PlotHistogram(ReadOnlySpan<byte> label, ReadOnlySpan<float> values, int valuesOffset, ReadOnlySpan<byte> overlayText, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, Vec2 graphSize = default)
     {
         fixed (byte* labelPtr = label)
         fixed (float* valuesPtr = values)
@@ -2722,7 +2667,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The menu label.</param>
     /// <returns>True if the menu is open. Only call <see cref="EndMenu"/> if this returns true.</returns>
-    public static bool BeginMenu(Span<byte> label)
+    public static bool BeginMenu(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -2736,7 +2681,7 @@ public static unsafe class ImGui
     /// <param name="label">The menu label.</param>
     /// <param name="enabled">Whether the menu is enabled.</param>
     /// <returns>True if the menu is open. Only call <see cref="EndMenu"/> if this returns true.</returns>
-    public static bool BeginMenu(Span<byte> label, bool enabled)
+    public static bool BeginMenu(ReadOnlySpan<byte> label, bool enabled)
     {
         fixed (byte* ptr = label)
         {
@@ -2757,7 +2702,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The item label.</param>
     /// <returns>True when activated.</returns>
-    public static bool MenuItem(Span<byte> label)
+    public static bool MenuItem(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -2773,7 +2718,7 @@ public static unsafe class ImGui
     /// <param name="selected">Whether to show a check mark.</param>
     /// <param name="enabled">Whether the item is enabled.</param>
     /// <returns>True when activated.</returns>
-    public static bool MenuItem(Span<byte> label, Span<byte> shortcut, bool selected = false, bool enabled = true)
+    public static bool MenuItem(ReadOnlySpan<byte> label, ReadOnlySpan<byte> shortcut, bool selected = false, bool enabled = true)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* shortcutPtr = shortcut)
@@ -2790,7 +2735,7 @@ public static unsafe class ImGui
     /// <param name="pSelected">Reference to selection state (toggles on activation).</param>
     /// <param name="enabled">Whether the item is enabled.</param>
     /// <returns>True when activated.</returns>
-    public static bool MenuItem(Span<byte> label, Span<byte> shortcut, StateRef<bool> pSelected, bool enabled = true)
+    public static bool MenuItem(ReadOnlySpan<byte> label, ReadOnlySpan<byte> shortcut, StateRef<bool> pSelected, bool enabled = true)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* shortcutPtr = shortcut)
@@ -2842,7 +2787,7 @@ public static unsafe class ImGui
     /// <param name="strId">The popup string ID.</param>
     /// <param name="flags">Window behavior flags.</param>
     /// <returns>True if the popup is open. Only call <see cref="EndPopup"/> if this returns true.</returns>
-    public static bool BeginPopup(Span<byte> strId, WindowFlags flags = WindowFlags.None)
+    public static bool BeginPopup(ReadOnlySpan<byte> strId, WindowFlags flags = WindowFlags.None)
     {
         fixed (byte* ptr = strId)
         {
@@ -2860,7 +2805,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// Modal windows block all interaction behind them and cannot be closed by clicking outside.
     /// </remarks>
-    public static bool BeginPopupModal(Span<byte> name, StateRef<bool>? pOpen = null, WindowFlags flags = WindowFlags.None)
+    public static bool BeginPopupModal(ReadOnlySpan<byte> name, StateRef<bool>? pOpen = null, WindowFlags flags = WindowFlags.None)
     {
         fixed (byte* ptr = name)
         {
@@ -2884,7 +2829,7 @@ public static unsafe class ImGui
     /// <remarks>
     /// Call to mark popup as open (don't call every frame!).
     /// </remarks>
-    public static void OpenPopup(Span<byte> strId, PopupFlags popupFlags = PopupFlags.None)
+    public static void OpenPopup(ReadOnlySpan<byte> strId, PopupFlags popupFlags = PopupFlags.None)
     {
         fixed (byte* ptr = strId)
         {
@@ -2907,7 +2852,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="strId">The popup string ID. Use null to associate with previous item.</param>
     /// <param name="popupFlags">Popup behavior flags. Defaults to right mouse button.</param>
-    public static void OpenPopupOnItemClick(Span<byte> strId = default, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
+    public static void OpenPopupOnItemClick(ReadOnlySpan<byte> strId = default, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
     {
         fixed (byte* ptr = strId)
         {
@@ -2938,7 +2883,7 @@ public static unsafe class ImGui
     /// <param name="strId">The popup string ID. Use null to associate with previous item.</param>
     /// <param name="popupFlags">Popup behavior flags. Defaults to right mouse button.</param>
     /// <returns>True if the popup is open.</returns>
-    public static bool BeginPopupContextItem(Span<byte> strId, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
+    public static bool BeginPopupContextItem(ReadOnlySpan<byte> strId, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
     {
         fixed (byte* ptr = strId)
         {
@@ -2961,7 +2906,7 @@ public static unsafe class ImGui
     /// <param name="strId">The popup string ID.</param>
     /// <param name="popupFlags">Popup behavior flags. Defaults to right mouse button.</param>
     /// <returns>True if the popup is open.</returns>
-    public static bool BeginPopupContextWindow(Span<byte> strId, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
+    public static bool BeginPopupContextWindow(ReadOnlySpan<byte> strId, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
     {
         fixed (byte* ptr = strId)
         {
@@ -2984,7 +2929,7 @@ public static unsafe class ImGui
     /// <param name="strId">The popup string ID.</param>
     /// <param name="popupFlags">Popup behavior flags. Defaults to right mouse button.</param>
     /// <returns>True if the popup is open.</returns>
-    public static bool BeginPopupContextVoid(Span<byte> strId, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
+    public static bool BeginPopupContextVoid(ReadOnlySpan<byte> strId, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
     {
         fixed (byte* ptr = strId)
         {
@@ -2998,7 +2943,7 @@ public static unsafe class ImGui
     /// <param name="strId">The popup string ID.</param>
     /// <param name="flags">Popup flags for query behavior.</param>
     /// <returns>True if the popup is open.</returns>
-    public static bool IsPopupOpen(Span<byte> strId, PopupFlags flags = PopupFlags.None)
+    public static bool IsPopupOpen(ReadOnlySpan<byte> strId, PopupFlags flags = PopupFlags.None)
     {
         fixed (byte* ptr = strId)
         {
@@ -3017,7 +2962,7 @@ public static unsafe class ImGui
     /// <param name="columns">The number of columns.</param>
     /// <param name="flags">Table behavior flags.</param>
     /// <returns>True if the table is visible. Only call <see cref="EndTable"/> if this returns true.</returns>
-    public static bool BeginTable(Span<byte> strId, int columns, TableFlags flags = TableFlags.None)
+    public static bool BeginTable(ReadOnlySpan<byte> strId, int columns, TableFlags flags = TableFlags.None)
     {
         fixed (byte* ptr = strId)
         {
@@ -3034,7 +2979,7 @@ public static unsafe class ImGui
     /// <param name="outerSize">The outer size of the table.</param>
     /// <param name="innerWidth">The inner width for scrolling.</param>
     /// <returns>True if the table is visible. Only call <see cref="EndTable"/> if this returns true.</returns>
-    public static bool BeginTable(Span<byte> strId, int columns, TableFlags flags, Vec2 outerSize, float innerWidth = 0.0f)
+    public static bool BeginTable(ReadOnlySpan<byte> strId, int columns, TableFlags flags, Vec2 outerSize, float innerWidth = 0.0f)
     {
         fixed (byte* ptr = strId)
         {
@@ -3092,7 +3037,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="label">The column label.</param>
     /// <param name="flags">Column behavior flags.</param>
-    public static void TableSetupColumn(Span<byte> label, TableColumnFlags flags = TableColumnFlags.None)
+    public static void TableSetupColumn(ReadOnlySpan<byte> label, TableColumnFlags flags = TableColumnFlags.None)
     {
         fixed (byte* ptr = label)
         {
@@ -3107,7 +3052,7 @@ public static unsafe class ImGui
     /// <param name="flags">Column behavior flags.</param>
     /// <param name="initWidthOrWeight">Initial width or weight depending on flags.</param>
     /// <param name="userId">User ID for the column.</param>
-    public static void TableSetupColumn(Span<byte> label, TableColumnFlags flags, float initWidthOrWeight, Id userId = default)
+    public static void TableSetupColumn(ReadOnlySpan<byte> label, TableColumnFlags flags, float initWidthOrWeight, Id userId = default)
     {
         fixed (byte* ptr = label)
         {
@@ -3129,7 +3074,7 @@ public static unsafe class ImGui
     /// Submits one header cell manually.
     /// </summary>
     /// <param name="label">The header label.</param>
-    public static void TableHeader(Span<byte> label)
+    public static void TableHeader(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
@@ -3222,7 +3167,7 @@ public static unsafe class ImGui
     /// <param name="strId">The tab bar string ID.</param>
     /// <param name="flags">Tab bar behavior flags.</param>
     /// <returns>True if the tab bar is visible. Only call <see cref="EndTabBar"/> if this returns true.</returns>
-    public static bool BeginTabBar(Span<byte> strId, TabBarFlags flags = TabBarFlags.None)
+    public static bool BeginTabBar(ReadOnlySpan<byte> strId, TabBarFlags flags = TabBarFlags.None)
     {
         fixed (byte* ptr = strId)
         {
@@ -3245,7 +3190,7 @@ public static unsafe class ImGui
     /// <param name="pOpen">Optional reference to open state. If provided, shows a close button.</param>
     /// <param name="flags">Tab item behavior flags.</param>
     /// <returns>True if the tab is selected. Only call <see cref="EndTabItem"/> if this returns true.</returns>
-    public static bool BeginTabItem(Span<byte> label, StateRef<bool>? pOpen = null, TabItemFlags flags = TabItemFlags.None)
+    public static bool BeginTabItem(ReadOnlySpan<byte> label, StateRef<bool>? pOpen = null, TabItemFlags flags = TabItemFlags.None)
     {
         fixed (byte* ptr = label)
         {
@@ -3267,7 +3212,7 @@ public static unsafe class ImGui
     /// <param name="label">The button label.</param>
     /// <param name="flags">Tab item behavior flags.</param>
     /// <returns>True when clicked.</returns>
-    public static bool TabItemButton(Span<byte> label, TabItemFlags flags = TabItemFlags.None)
+    public static bool TabItemButton(ReadOnlySpan<byte> label, TabItemFlags flags = TabItemFlags.None)
     {
         fixed (byte* ptr = label)
         {
@@ -3279,7 +3224,7 @@ public static unsafe class ImGui
     /// Notifies the tab bar of a closed tab/window ahead of time.
     /// </summary>
     /// <param name="tabOrDockedWindowLabel">The tab or window label.</param>
-    public static void SetTabItemClosed(Span<byte> tabOrDockedWindowLabel)
+    public static void SetTabItemClosed(ReadOnlySpan<byte> tabOrDockedWindowLabel)
     {
         fixed (byte* ptr = tabOrDockedWindowLabel)
         {
@@ -3305,7 +3250,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="autoOpenDepth">Depth to auto-open tree nodes (-1 for default).</param>
     /// <param name="filename">The filename to log to (null for default "imgui_log.txt").</param>
-    public static void LogToFile(int autoOpenDepth = -1, Span<byte> filename = default)
+    public static void LogToFile(int autoOpenDepth = -1, ReadOnlySpan<byte> filename = default)
     {
         fixed (byte* ptr = filename)
         {
@@ -3359,7 +3304,7 @@ public static unsafe class ImGui
     /// <param name="data">The data to be copied and held by ImGui.</param>
     /// <param name="cond">Condition for setting the payload.</param>
     /// <returns>True when payload has been accepted.</returns>
-    public static bool SetDragDropPayload(Span<byte> type, ReadOnlySpan<byte> data, Cond cond = Cond.None)
+    public static bool SetDragDropPayload(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data, Cond cond = Cond.None)
     {
         fixed (byte* typePtr = type)
         fixed (byte* dataPtr = data)
@@ -3681,7 +3626,7 @@ public static unsafe class ImGui
     /// </summary>
     /// <param name="text">The text to measure.</param>
     /// <returns>The calculated text size.</returns>
-    public static Vec2 CalcTextSize(Span<byte> text)
+    public static Vec2 CalcTextSize(ReadOnlySpan<byte> text)
     {
         fixed (byte* ptr = text)
         {
@@ -3696,7 +3641,7 @@ public static unsafe class ImGui
     /// <param name="hideTextAfterDoubleHash">If true, stop measuring at ##.</param>
     /// <param name="wrapWidth">The wrap width (-1.0f for no wrapping).</param>
     /// <returns>The calculated text size.</returns>
-    public static Vec2 CalcTextSize(Span<byte> text, bool hideTextAfterDoubleHash, float wrapWidth = -1.0f)
+    public static Vec2 CalcTextSize(ReadOnlySpan<byte> text, bool hideTextAfterDoubleHash, float wrapWidth = -1.0f)
     {
         fixed (byte* ptr = text)
         {
@@ -4014,7 +3959,7 @@ public static unsafe class ImGui
     /// Sets the clipboard text.
     /// </summary>
     /// <param name="text">The text to set.</param>
-    public static void SetClipboardText(Span<byte> text)
+    public static void SetClipboardText(ReadOnlySpan<byte> text)
     {
         fixed (byte* ptr = text)
         {
@@ -4034,7 +3979,7 @@ public static unsafe class ImGui
     /// Call after CreateContext() and before the first call to NewFrame().
     /// NewFrame() automatically calls this with io.IniFilename if set.
     /// </remarks>
-    public static void LoadIniSettingsFromDisk(Span<byte> iniFilename)
+    public static void LoadIniSettingsFromDisk(ReadOnlySpan<byte> iniFilename)
     {
         fixed (byte* ptr = iniFilename)
         {
@@ -4066,7 +4011,7 @@ public static unsafe class ImGui
     /// This is automatically called (if io.IniFilename is not empty) a few seconds
     /// after any modification that should be reflected in the .ini file, and also by DestroyContext().
     /// </remarks>
-    public static void SaveIniSettingsToDisk(Span<byte> iniFilename)
+    public static void SaveIniSettingsToDisk(ReadOnlySpan<byte> iniFilename)
     {
         fixed (byte* ptr = iniFilename)
         {
