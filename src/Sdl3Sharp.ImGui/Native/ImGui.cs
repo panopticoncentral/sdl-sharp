@@ -919,6 +919,42 @@ internal static unsafe partial class ImGui
     public static partial void ImGui_TextUnformattedEx(byte* text, byte* text_end);
 
     /// <summary>
+    /// formatted text
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_Text(byte* fmt);
+
+    /// <summary>
+    /// shortcut for PushStyleColor(ImGuiCol_Text, col); Text(fmt, ...); PopStyleColor();
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TextColored(ImVec4 col, byte* fmt);
+
+    /// <summary>
+    /// shortcut for PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]); Text(fmt, ...); PopStyleColor();
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TextDisabled(byte* fmt);
+
+    /// <summary>
+    /// shortcut for PushTextWrapPos(0.0f); Text(fmt, ...); PopTextWrapPos();. Note that this won't work on an auto-resizing window if there's no other widgets to extend the window width, yoy may need to set a size using SetNextWindowSize().
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_TextWrapped(byte* fmt);
+
+    /// <summary>
+    /// display text+label aligned the same way as value+label widgets
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_LabelText(byte* label, byte* fmt);
+
+    /// <summary>
+    /// shortcut for Bullet()+Text()
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_BulletText(byte* fmt);
+
+    /// <summary>
     /// currently: formatted text with a horizontal line
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
@@ -1630,9 +1666,31 @@ internal static unsafe partial class ImGui
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_TreeNode(byte* label);
 
+    /// <summary>
+    /// helper variation to easily decorrelate the id from the displayed string. Read the FAQ about why and how to use ID. to align arbitrary text at the same level as a TreeNode() you can use Bullet().
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_TreeNodeStr(byte* str_id, byte* fmt);
+
+    /// <summary>
+    /// "
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_TreeNodePtr(nint ptr_id, byte* fmt);
+
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_TreeNodeEx(byte* label, ImGuiTreeNodeFlags flags);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_TreeNodeExStr(byte* str_id, ImGuiTreeNodeFlags flags, byte* fmt);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_TreeNodeExPtr(nint ptr_id, ImGuiTreeNodeFlags flags, byte* fmt);
 
     /// <summary>
     /// ~ Indent()+PushID(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
@@ -1930,6 +1988,12 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_EndTooltip();
 
+    /// <summary>
+    /// set a text-only tooltip. Often used after a ImGui::IsItemHovered() check. Override any previous call to SetTooltip().
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetTooltip(byte* fmt);
+
     #endregion
 
     #region Tooltips: helpers for showing a tooltip when hovering an item
@@ -1944,6 +2008,12 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_BeginItemTooltip();
+
+    /// <summary>
+    /// set a text-only tooltip if preceding item was hovered. override any previous call to SetTooltip().
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_SetItemTooltip(byte* fmt);
 
     #endregion
 
@@ -2392,6 +2462,12 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     public static partial void ImGui_LogButtons();
+
+    /// <summary>
+    /// pass text data straight to log (without being displayed)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_LogText(byte* fmt);
 
     #endregion
 
@@ -3078,6 +3154,12 @@ internal static unsafe partial class ImGui
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool ImGui_DebugCheckVersionAndDataLayout(byte* version_str, nuint sz_io, nuint sz_style, nuint sz_vec2, nuint sz_vec4, nuint sz_drawvert, nuint sz_drawidx);
+
+    /// <summary>
+    /// Call via IMGUI_DEBUG_LOG() for maximum stripping in caller code!
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial void ImGui_DebugLog(byte* fmt);
 
     #endregion
 

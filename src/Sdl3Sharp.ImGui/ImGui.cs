@@ -1391,6 +1391,99 @@ public static unsafe class ImGui
     }
 
     /// <summary>
+    /// Displays formatted text.
+    /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <remarks>
+    /// The text is passed directly to ImGui. Any '%' characters in the text are escaped
+    /// to prevent them from being interpreted as format specifiers.
+    /// </remarks>
+    public static void Text(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_Text(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Displays colored text.
+    /// </summary>
+    /// <param name="color">The text color as RGBA values (0-1 range).</param>
+    /// <param name="text">The text to display.</param>
+    /// <remarks>
+    /// Shortcut for PushStyleColor(ImGuiCol_Text, col); Text(text); PopStyleColor();
+    /// </remarks>
+    public static void TextColored(Vec4 color, ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_TextColored(color.ToNative(), ptr);
+        }
+    }
+
+    /// <summary>
+    /// Displays text in the disabled color.
+    /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <remarks>
+    /// Shortcut for PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]); Text(text); PopStyleColor();
+    /// </remarks>
+    public static void TextDisabled(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_TextDisabled(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Displays text with automatic word wrapping.
+    /// </summary>
+    /// <param name="text">The text to display.</param>
+    /// <remarks>
+    /// Shortcut for PushTextWrapPos(0.0f); Text(text); PopTextWrapPos();
+    /// Note that this won't work on an auto-resizing window if there's no other widgets
+    /// to extend the window width. You may need to set a size using SetNextWindowSize().
+    /// </remarks>
+    public static void TextWrapped(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_TextWrapped(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Displays a label and text aligned the same way as value+label widgets.
+    /// </summary>
+    /// <param name="label">The label text.</param>
+    /// <param name="text">The value text to display.</param>
+    public static void LabelText(ReadOnlySpan<byte> label, ReadOnlySpan<byte> text)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* textPtr = text)
+        {
+            ImGui_LabelText(labelPtr, textPtr);
+        }
+    }
+
+    /// <summary>
+    /// Displays a bullet point followed by text.
+    /// </summary>
+    /// <param name="text">The text to display after the bullet.</param>
+    /// <remarks>
+    /// Shortcut for Bullet()+Text().
+    /// </remarks>
+    public static void BulletText(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_BulletText(ptr);
+        }
+    }
+
+    /// <summary>
     /// Displays text with a horizontal separator line.
     /// </summary>
     /// <param name="label">The text label to display.</param>
@@ -2777,6 +2870,21 @@ public static unsafe class ImGui
         return ImGui_BeginItemTooltip();
     }
 
+    /// <summary>
+    /// Sets a text-only tooltip.
+    /// </summary>
+    /// <param name="text">The tooltip text.</param>
+    /// <remarks>
+    /// Often used after an IsItemHovered() check. Overrides any previous call to SetTooltip().
+    /// </remarks>
+    public static void SetTooltip(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_SetTooltip(ptr);
+        }
+    }
+
     #endregion
 
     #region Popups, Modals
@@ -3281,6 +3389,18 @@ public static unsafe class ImGui
     public static void LogButtons()
     {
         ImGui_LogButtons();
+    }
+
+    /// <summary>
+    /// Passes text data straight to the log without being displayed.
+    /// </summary>
+    /// <param name="text">The text to log.</param>
+    public static void LogText(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_LogText(ptr);
+        }
     }
 
     #endregion

@@ -39,12 +39,11 @@ public static class HeaderGenerator
             .ToHashSet();
 
         var functions = root.Functions
-            .Where(f => !f.IsInternal 
-                && !f.IsImstrHelper 
-                && !f.Name.Contains("__") 
-                && !f.Arguments.Any(a => a.IsVarargs) 
-                && !TypeMapper.FunctionHasUnsupportedTypes(f) 
-                && !Conditional.IsObsolete(f.Conditionals) 
+            .Where(f => !f.IsInternal
+                && !f.IsImstrHelper
+                && !f.Name.Contains("__")
+                && !TypeMapper.FunctionHasUnsupportedTypes(f)
+                && !Conditional.IsObsolete(f.Conditionals)
                 && !excludedFunctions.Contains(f.Name))
             .ToHashSet();
 
