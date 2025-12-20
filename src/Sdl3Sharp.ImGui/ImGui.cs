@@ -1372,7 +1372,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Widgets: Text
+    #region * Widgets: Text
 
     /// <summary>
     /// Displays raw text without formatting.
@@ -1497,24 +1497,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Widgets: Main
-
-    /// <summary>
-    /// Creates a button widget.
-    /// </summary>
-    /// <param name="label">The button label. ID is derived from the label (use ## to append non-visible ID).</param>
-    /// <returns>True when clicked.</returns>
-    /// <remarks>
-    /// Most widgets return true when their value has been changed or when pressed/selected.
-    /// You may also use the IsItem* functions (e.g. IsItemActive, IsItemHovered, etc.) to query widget state.
-    /// </remarks>
-    public static bool Button(ReadOnlySpan<byte> label)
-    {
-        fixed (byte* ptr = label)
-        {
-            return ImGui_Button(ptr);
-        }
-    }
+    #region * Widgets: Main
 
     /// <summary>
     /// Creates a button widget with explicit size.
@@ -1522,7 +1505,7 @@ public static unsafe class ImGui
     /// <param name="label">The button label. ID is derived from the label (use ## to append non-visible ID).</param>
     /// <param name="size">The button size. Use (0,0) for automatic sizing.</param>
     /// <returns>True when clicked.</returns>
-    public static bool Button(ReadOnlySpan<byte> label, Vec2 size)
+    public static bool Button(ReadOnlySpan<byte> label, Vec2 size = default)
     {
         fixed (byte* ptr = label)
         {
@@ -1722,7 +1705,7 @@ public static unsafe class ImGui
 
     #endregion
 
-    #region Widgets: Images
+    #region * Widgets: Images
 
     /// <summary>
     /// Displays an image.
@@ -1844,22 +1827,6 @@ public static unsafe class ImGui
     }
 
     /// <summary>
-    /// Creates a combo box with items separated by null characters.
-    /// </summary>
-    /// <param name="label">The label for the combo box.</param>
-    /// <param name="currentItem">Reference to the current selected item index.</param>
-    /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
-    /// <returns>True if the selection changed.</returns>
-    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros)
-    {
-        fixed (byte* labelPtr = label)
-        fixed (byte* itemsPtr = itemsSeparatedByZeros)
-        {
-            return ImGui_Combo(labelPtr, currentItem.Ptr, itemsPtr);
-        }
-    }
-
-    /// <summary>
     /// Creates a combo box with items separated by null characters and explicit popup height.
     /// </summary>
     /// <param name="label">The label for the combo box.</param>
@@ -1867,7 +1834,7 @@ public static unsafe class ImGui
     /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
     /// <param name="popupMaxHeightInItems">Maximum height in items. Use -1 for default.</param>
     /// <returns>True if the selection changed.</returns>
-    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems)
+    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems = -1)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* itemsPtr = itemsSeparatedByZeros)
