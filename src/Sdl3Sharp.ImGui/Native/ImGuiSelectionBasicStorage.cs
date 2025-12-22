@@ -51,7 +51,7 @@ public unsafe partial struct ImGuiSelectionBasicStorage
     /// <summary>
     /// e.g. selection.AdapterIndexToStorageId = [](ImGuiSelectionBasicStorage* self, int idx) { return ((MyItems**)self-&gt;UserData)[idx]-&gt;ID; };
     /// </summary>
-    public nint AdapterIndexToStorageId;
+    public delegate* unmanaged[Cdecl]<ImGuiSelectionBasicStorage*, int, ImGuiID> AdapterIndexToStorageId;
 
     /// <summary>
     /// Apply selection requests coming from BeginMultiSelect() and EndMultiSelect() functions. It uses 'items_count' passed to BeginMultiSelect()

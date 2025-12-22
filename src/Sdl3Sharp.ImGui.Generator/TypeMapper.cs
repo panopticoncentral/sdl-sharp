@@ -250,7 +250,18 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
     /// </summary>
     public string MapType(TypeDescription? type)
     {
-        return type?.Description == null ? "void" : MapTypeDescription(type.Description);
+        if (type == null)
+        {
+            return "void";
+        }
+
+        // Check for inline function pointer type_details (e.g., callback parameters)
+        if (type.TypeDetails?.Flavour == "function_pointer")
+        {
+            return BuildFunctionPointerSignature(type.TypeDetails);
+        }
+
+        return type.Description == null ? "void" : MapTypeDescription(type.Description);
     }
 
     private string MapTypeDescription(TypeDescriptionDetail desc)

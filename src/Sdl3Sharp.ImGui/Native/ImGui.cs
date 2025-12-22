@@ -1146,11 +1146,11 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ComboCallback(byte* label, int* current_item, nint getter, nint user_data, int items_count);
+    public static partial bool ImGui_ComboCallback(byte* label, int* current_item, delegate* unmanaged[Cdecl]<nint, int, byte*> getter, nint user_data, int items_count);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ComboCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int popup_max_height_in_items);
+    public static partial bool ImGui_ComboCallbackEx(byte* label, int* current_item, delegate* unmanaged[Cdecl]<nint, int, byte*> getter, nint user_data, int items_count, int popup_max_height_in_items);
 
     #endregion
 
@@ -1843,11 +1843,11 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ListBoxCallback(byte* label, int* current_item, nint getter, nint user_data, int items_count);
+    public static partial bool ImGui_ListBoxCallback(byte* label, int* current_item, delegate* unmanaged[Cdecl]<nint, int, byte*> getter, nint user_data, int items_count);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ListBoxCallbackEx(byte* label, int* current_item, nint getter, nint user_data, int items_count, int height_in_items);
+    public static partial bool ImGui_ListBoxCallbackEx(byte* label, int* current_item, delegate* unmanaged[Cdecl]<nint, int, byte*> getter, nint user_data, int items_count, int height_in_items);
 
     #endregion
 
@@ -1868,10 +1868,10 @@ internal static unsafe partial class ImGui
     /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0)
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_PlotLinesCallback(byte* label, nint values_getter, nint data, int values_count);
+    public static partial void ImGui_PlotLinesCallback(byte* label, delegate* unmanaged[Cdecl]<nint, int, float> values_getter, nint data, int values_count);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_PlotLinesCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
+    public static partial void ImGui_PlotLinesCallbackEx(byte* label, delegate* unmanaged[Cdecl]<nint, int, float> values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
 
     /// <summary>
     /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0), stride = sizeof(float)
@@ -1886,10 +1886,10 @@ internal static unsafe partial class ImGui
     /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0)
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_PlotHistogramCallback(byte* label, nint values_getter, nint data, int values_count);
+    public static partial void ImGui_PlotHistogramCallback(byte* label, delegate* unmanaged[Cdecl]<nint, int, float> values_getter, nint data, int values_count);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_PlotHistogramCallbackEx(byte* label, nint values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
+    public static partial void ImGui_PlotHistogramCallbackEx(byte* label, delegate* unmanaged[Cdecl]<nint, int, float> values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
 
     #endregion
 
