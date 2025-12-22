@@ -99,9 +99,9 @@ public static class FunctionGenerator
             var paramType = typeMapper.MapType(arg.Type);
             var paramName = NamingConventions.ToParameterName(arg.Name);
 
-            // For array parameters without fixed bounds (e.g., const char* const[]),
-            // the type should be a pointer to the element type
-            if (arg.IsArray && string.IsNullOrEmpty(arg.ArrayBounds))
+            // For array parameters (e.g., float[2], const char* const[]),
+            // the type should be a pointer to the element type since arrays decay to pointers in C
+            if (arg.IsArray)
             {
                 paramType = $"{paramType}*";
             }

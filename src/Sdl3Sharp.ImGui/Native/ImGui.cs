@@ -1187,33 +1187,33 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragFloat2(byte* label, float v);
+    public static partial bool ImGui_DragFloat2(byte* label, float* v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragFloat2Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
-
-    /// <summary>
-    /// Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragFloat3(byte* label, float v);
-
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragFloat3Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragFloat2Ex(byte* label, float* v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragFloat4(byte* label, float v);
+    public static partial bool ImGui_DragFloat3(byte* label, float* v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragFloat4Ex(byte* label, float v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragFloat3Ex(byte* label, float* v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragFloat4(byte* label, float* v);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragFloat4Ex(byte* label, float* v, float v_speed, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied v_speed = 1.0f, v_min = 0.0f, v_max = 0.0f, format = "%.3f", format_max = NULL, flags = 0
@@ -1245,33 +1245,33 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragInt2(byte* label, int v);
+    public static partial bool ImGui_DragInt2(byte* label, int* v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragInt2Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
-
-    /// <summary>
-    /// Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragInt3(byte* label, int v);
-
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragInt3Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragInt2Ex(byte* label, int* v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragInt4(byte* label, int v);
+    public static partial bool ImGui_DragInt3(byte* label, int* v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragInt4Ex(byte* label, int v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragInt3Ex(byte* label, int* v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragInt4(byte* label, int* v);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_DragInt4Ex(byte* label, int* v, float v_speed, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied v_speed = 1.0f, v_min = 0, v_max = 0, format = "%d", format_max = NULL, flags = 0
@@ -1335,33 +1335,33 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderFloat2(byte* label, float v, float v_min, float v_max);
+    public static partial bool ImGui_SliderFloat2(byte* label, float* v, float v_min, float v_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderFloat2Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
-
-    /// <summary>
-    /// Implied format = "%.3f", flags = 0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderFloat3(byte* label, float v, float v_min, float v_max);
-
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderFloat3Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderFloat2Ex(byte* label, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied format = "%.3f", flags = 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderFloat4(byte* label, float v, float v_min, float v_max);
+    public static partial bool ImGui_SliderFloat3(byte* label, float* v, float v_min, float v_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderFloat4Ex(byte* label, float v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderFloat3Ex(byte* label, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderFloat4(byte* label, float* v, float v_min, float v_max);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderFloat4Ex(byte* label, float* v, float v_min, float v_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied v_degrees_min = -360.0f, v_degrees_max = +360.0f, format = "%.0f deg", flags = 0
@@ -1390,33 +1390,33 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderInt2(byte* label, int v, int v_min, int v_max);
+    public static partial bool ImGui_SliderInt2(byte* label, int* v, int v_min, int v_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderInt2Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
-
-    /// <summary>
-    /// Implied format = "%d", flags = 0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderInt3(byte* label, int v, int v_min, int v_max);
-
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderInt3Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderInt2Ex(byte* label, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied format = "%d", flags = 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderInt4(byte* label, int v, int v_min, int v_max);
+    public static partial bool ImGui_SliderInt3(byte* label, int* v, int v_min, int v_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderInt4Ex(byte* label, int v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderInt3Ex(byte* label, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
+
+    /// <summary>
+    /// Implied format = "%d", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderInt4(byte* label, int* v, int v_min, int v_max);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_SliderInt4Ex(byte* label, int* v, int v_min, int v_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied format = NULL, flags = 0
@@ -1529,33 +1529,33 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputFloat2(byte* label, float v);
+    public static partial bool ImGui_InputFloat2(byte* label, float* v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputFloat2Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
-
-    /// <summary>
-    /// Implied format = "%.3f", flags = 0
-    /// </summary>
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputFloat3(byte* label, float v);
-
-    [LibraryImport(Common.ImGuiNative)]
-    [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputFloat3Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputFloat2Ex(byte* label, float* v, byte* format, ImGuiInputTextFlags flags);
 
     /// <summary>
     /// Implied format = "%.3f", flags = 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputFloat4(byte* label, float v);
+    public static partial bool ImGui_InputFloat3(byte* label, float* v);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputFloat4Ex(byte* label, float v, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputFloat3Ex(byte* label, float* v, byte* format, ImGuiInputTextFlags flags);
+
+    /// <summary>
+    /// Implied format = "%.3f", flags = 0
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputFloat4(byte* label, float* v);
+
+    [LibraryImport(Common.ImGuiNative)]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool ImGui_InputFloat4Ex(byte* label, float* v, byte* format, ImGuiInputTextFlags flags);
 
     /// <summary>
     /// Implied step = 1, step_fast = 100, flags = 0
@@ -1570,15 +1570,15 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputInt2(byte* label, int v, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputInt2(byte* label, int* v, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputInt3(byte* label, int v, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputInt3(byte* label, int* v, ImGuiInputTextFlags flags);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputInt4(byte* label, int v, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputInt4(byte* label, int* v, ImGuiInputTextFlags flags);
 
     /// <summary>
     /// Implied step = 0.0, step_fast = 0.0, format = "%.6f", flags = 0
@@ -1620,19 +1620,19 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ColorEdit3(byte* label, float col, ImGuiColorEditFlags flags);
+    public static partial bool ImGui_ColorEdit3(byte* label, float* col, ImGuiColorEditFlags flags);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ColorEdit4(byte* label, float col, ImGuiColorEditFlags flags);
+    public static partial bool ImGui_ColorEdit4(byte* label, float* col, ImGuiColorEditFlags flags);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ColorPicker3(byte* label, float col, ImGuiColorEditFlags flags);
+    public static partial bool ImGui_ColorPicker3(byte* label, float* col, ImGuiColorEditFlags flags);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ColorPicker4(byte* label, float col, ImGuiColorEditFlags flags, float* ref_col);
+    public static partial bool ImGui_ColorPicker4(byte* label, float* col, ImGuiColorEditFlags flags, float* ref_col);
 
     /// <summary>
     /// Implied size = ImVec2(0, 0)
