@@ -9,47 +9,6 @@ namespace Sdl3Sharp.ImGui;
 /// </summary>
 public static unsafe class ImGui
 {
-    #region * Context creation and access
-
-    /// <summary>
-    /// Creates a new ImGui context.
-    /// </summary>
-    /// <param name="sharedFontAtlas">Optional shared font atlas to use across multiple contexts. If null, a new font atlas will be created.</param>
-    /// <returns>The newly created ImGui context.</returns>
-    public static Context CreateContext(FontAtlas? sharedFontAtlas = null)
-    {
-        return new Context(ImGui_CreateContext(sharedFontAtlas == null ? null : sharedFontAtlas.Value.Native));
-    }
-
-    /// <summary>
-    /// Destroys an ImGui context.
-    /// </summary>
-    /// <param name="context">The context to destroy. If null, the current context will be destroyed.</param>
-    public static void DestroyContext(Context? context = null)
-    {
-        ImGui_DestroyContext(context == null ? null : context.Value.Native);
-    }
-
-    /// <summary>
-    /// Gets the current ImGui context.
-    /// </summary>
-    /// <returns>The current ImGui context.</returns>
-    public static Context GetCurrentContext()
-    {
-        return new Context(ImGui_GetCurrentContext());
-    }
-
-    /// <summary>
-    /// Sets the current ImGui context.
-    /// </summary>
-    /// <param name="context">The context to set as current. If null, no context will be current.</param>
-    public static void SetCurrentContext(Context? context)
-    {
-        ImGui_SetCurrentContext(context == null ? null : context.Value.Native);
-    }
-
-    #endregion
-
     #region * Main
 
     /// <summary>

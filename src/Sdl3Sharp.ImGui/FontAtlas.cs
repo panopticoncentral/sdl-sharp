@@ -11,18 +11,18 @@ public unsafe readonly struct FontAtlas
 {
     internal FontAtlas(ImFontAtlas* native)
     {
-        Native = native;
+        Value = native;
     }
 
-    internal readonly ImFontAtlas* Native { get; }
+    internal readonly ImFontAtlas* Value { get; }
 
     /// <summary>
     /// Gets or sets the build flags for the atlas.
     /// </summary>
     public FontAtlasFlags Flags
     {
-        get => (FontAtlasFlags)Native->Flags;
-        set => Native->Flags = (ImFontAtlasFlags)value;
+        get => (FontAtlasFlags)Value->Flags;
+        set => Value->Flags = (ImFontAtlasFlags)value;
     }
 
     /// <summary>
@@ -30,8 +30,8 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public TextureFormat TexDesiredFormat
     {
-        get => (TextureFormat)Native->TexDesiredFormat;
-        set => Native->TexDesiredFormat = (ImTextureFormat)value;
+        get => (TextureFormat)Value->TexDesiredFormat;
+        set => Value->TexDesiredFormat = (ImTextureFormat)value;
     }
 
     /// <summary>
@@ -39,8 +39,8 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public int TexGlyphPadding
     {
-        get => Native->TexGlyphPadding;
-        set => Native->TexGlyphPadding = value;
+        get => Value->TexGlyphPadding;
+        set => Value->TexGlyphPadding = value;
     }
 
     /// <summary>
@@ -48,8 +48,8 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public int TexMinWidth
     {
-        get => Native->TexMinWidth;
-        set => Native->TexMinWidth = value;
+        get => Value->TexMinWidth;
+        set => Value->TexMinWidth = value;
     }
 
     /// <summary>
@@ -57,8 +57,8 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public int TexMinHeight
     {
-        get => Native->TexMinHeight;
-        set => Native->TexMinHeight = value;
+        get => Value->TexMinHeight;
+        set => Value->TexMinHeight = value;
     }
 
     /// <summary>
@@ -66,8 +66,8 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public int TexMaxWidth
     {
-        get => Native->TexMaxWidth;
-        set => Native->TexMaxWidth = value;
+        get => Value->TexMaxWidth;
+        set => Value->TexMaxWidth = value;
     }
 
     /// <summary>
@@ -75,8 +75,8 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public int TexMaxHeight
     {
-        get => Native->TexMaxHeight;
-        set => Native->TexMaxHeight = value;
+        get => Value->TexMaxHeight;
+        set => Value->TexMaxHeight = value;
     }
 
     /// <summary>
@@ -84,19 +84,19 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public nint UserData
     {
-        get => Native->UserData;
-        set => Native->UserData = value;
+        get => Value->UserData;
+        set => Value->UserData = value;
     }
 
     /// <summary>
     /// Gets the latest texture reference.
     /// </summary>
-    public TextureRef TexRef => new(Native->TexRef);
+    public TextureRef TexRef => new(Value->TexRef);
 
     /// <summary>
     /// Gets the latest texture data.
     /// </summary>
-    public TextureData TexData => new(Native->TexData);
+    public TextureData TexData => new(Value->TexData);
 
     /// <summary>
     /// Adds a font from a font configuration.
@@ -105,7 +105,7 @@ public unsafe readonly struct FontAtlas
     /// <returns>The newly added font.</returns>
     public Font AddFont(FontConfig fontConfig)
     {
-        return new(ImFontAtlas.AddFont(Native, (ImFontConfig*)&fontConfig));
+        return new(ImFontAtlas.AddFont(Value, (ImFontConfig*)&fontConfig));
     }
 
     /// <summary>
@@ -117,11 +117,11 @@ public unsafe readonly struct FontAtlas
     {
         if (fontConfig is null)
         {
-            return new(ImFontAtlas.AddFontDefault(Native, null));
+            return new(ImFontAtlas.AddFontDefault(Value, null));
         }
 
         FontConfig config = fontConfig.Value;
-        return new(ImFontAtlas.AddFontDefault(Native, (ImFontConfig*)&config));
+        return new(ImFontAtlas.AddFontDefault(Value, (ImFontConfig*)&config));
     }
 
     /// <summary>
@@ -137,11 +137,11 @@ public unsafe readonly struct FontAtlas
         {
             if (fontConfig is null)
             {
-                return new(ImFontAtlas.AddFontFromFileTTF(Native, filenamePtr, sizePixels, null, null));
+                return new(ImFontAtlas.AddFontFromFileTTF(Value, filenamePtr, sizePixels, null, null));
             }
 
             FontConfig config = fontConfig.Value;
-            return new(ImFontAtlas.AddFontFromFileTTF(Native, filenamePtr, sizePixels, (ImFontConfig*)&config, null));
+            return new(ImFontAtlas.AddFontFromFileTTF(Value, filenamePtr, sizePixels, (ImFontConfig*)&config, null));
         }
     }
 
@@ -166,11 +166,11 @@ public unsafe readonly struct FontAtlas
 
             if (fontConfig is null)
             {
-                return new(ImFontAtlas.AddFontFromMemoryTTF(Native, imguiMemory, fontData.Length, sizePixels, null, null));
+                return new(ImFontAtlas.AddFontFromMemoryTTF(Value, imguiMemory, fontData.Length, sizePixels, null, null));
             }
 
             FontConfig config = fontConfig.Value;
-            return new(ImFontAtlas.AddFontFromMemoryTTF(Native, imguiMemory, fontData.Length, sizePixels, (ImFontConfig*)&config, null));
+            return new(ImFontAtlas.AddFontFromMemoryTTF(Value, imguiMemory, fontData.Length, sizePixels, (ImFontConfig*)&config, null));
         }
         else
         {
@@ -178,7 +178,7 @@ public unsafe readonly struct FontAtlas
             FontConfig config = fontConfig!.Value;
             fixed (byte* dataPtr = fontData)
             {
-                return new(ImFontAtlas.AddFontFromMemoryTTF(Native, (nint)dataPtr, fontData.Length, sizePixels, (ImFontConfig*)&config, null));
+                return new(ImFontAtlas.AddFontFromMemoryTTF(Value, (nint)dataPtr, fontData.Length, sizePixels, (ImFontConfig*)&config, null));
             }
         }
     }
@@ -196,11 +196,11 @@ public unsafe readonly struct FontAtlas
         {
             if (fontConfig is null)
             {
-                return new(ImFontAtlas.AddFontFromMemoryCompressedTTF(Native, (nint)dataPtr, compressedFontData.Length, sizePixels, null, null));
+                return new(ImFontAtlas.AddFontFromMemoryCompressedTTF(Value, (nint)dataPtr, compressedFontData.Length, sizePixels, null, null));
             }
 
             FontConfig config = fontConfig.Value;
-            return new(ImFontAtlas.AddFontFromMemoryCompressedTTF(Native, (nint)dataPtr, compressedFontData.Length, sizePixels, (ImFontConfig*)&config, null));
+            return new(ImFontAtlas.AddFontFromMemoryCompressedTTF(Value, (nint)dataPtr, compressedFontData.Length, sizePixels, (ImFontConfig*)&config, null));
         }
     }
 
@@ -217,11 +217,11 @@ public unsafe readonly struct FontAtlas
         {
             if (fontConfig is null)
             {
-                return new(ImFontAtlas.AddFontFromMemoryCompressedBase85TTF(Native, dataPtr, sizePixels, null, null));
+                return new(ImFontAtlas.AddFontFromMemoryCompressedBase85TTF(Value, dataPtr, sizePixels, null, null));
             }
 
             FontConfig config = fontConfig.Value;
-            return new(ImFontAtlas.AddFontFromMemoryCompressedBase85TTF(Native, dataPtr, sizePixels, (ImFontConfig*)&config, null));
+            return new(ImFontAtlas.AddFontFromMemoryCompressedBase85TTF(Value, dataPtr, sizePixels, (ImFontConfig*)&config, null));
         }
     }
 
@@ -231,7 +231,7 @@ public unsafe readonly struct FontAtlas
     /// <param name="font">The font to remove.</param>
     public void RemoveFont(Font font)
     {
-        ImFontAtlas.RemoveFont(Native, font.Native);
+        ImFontAtlas.RemoveFont(Value, font.Native);
     }
 
     /// <summary>
@@ -239,7 +239,7 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public void Clear()
     {
-        ImFontAtlas.Clear(Native);
+        ImFontAtlas.Clear(Value);
     }
 
     /// <summary>
@@ -247,7 +247,7 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public void CompactCache()
     {
-        ImFontAtlas.CompactCache(Native);
+        ImFontAtlas.CompactCache(Value);
     }
 
     /// <summary>
@@ -260,7 +260,7 @@ public unsafe readonly struct FontAtlas
     public FontAtlasRectId AddCustomRect(int width, int height, out FontAtlasRect outRect)
     {
         ImFontAtlasRect nativeRect;
-        FontAtlasRectId id = new(ImFontAtlas.AddCustomRect(Native, width, height, &nativeRect));
+        FontAtlasRectId id = new(ImFontAtlas.AddCustomRect(Value, width, height, &nativeRect));
         outRect = new(nativeRect);
         return id;
     }
@@ -271,7 +271,7 @@ public unsafe readonly struct FontAtlas
     /// <param name="id">The rectangle ID to remove.</param>
     public void RemoveCustomRect(FontAtlasRectId id)
     {
-        ImFontAtlas.RemoveCustomRect(Native, id.Native);
+        ImFontAtlas.RemoveCustomRect(Value, id.Native);
     }
 
     /// <summary>
@@ -283,7 +283,7 @@ public unsafe readonly struct FontAtlas
     public bool GetCustomRect(FontAtlasRectId id, out FontAtlasRect outRect)
     {
         ImFontAtlasRect nativeRect;
-        var result = ImFontAtlas.GetCustomRect(Native, id.Native, &nativeRect);
+        var result = ImFontAtlas.GetCustomRect(Value, id.Native, &nativeRect);
         outRect = new(nativeRect);
         return result;
     }

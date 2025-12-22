@@ -12,9 +12,9 @@ using Application app = new(Subsystems.Video);
 (Window? window, Renderer? renderer) = Renderer.CreateWindowAndRenderer("ImGui SDL Renderer Demo", new(1280, 720), Sdl3WindowFlags.Resizable);
 
 // Create ImGui context
-ImGui.Context context = ImGui.ImGui.CreateContext();
+using ImGui.Context context = new();
 ImGui.ImGui.GetStyle().FontSizeBase = 24.0f;
-ImGui.ImGui.SetCurrentContext(context);
+ImGui.Context.Current = context;
 
 // Initialize ImGui backends
 SDL3Backend.InitForSDLRenderer(window, renderer);
@@ -77,5 +77,3 @@ SDL3Backend.Shutdown();
 
 renderer.Dispose();
 window.Dispose();
-
-ImGui.ImGui.DestroyContext(context);
