@@ -3,33 +3,33 @@ using Sdl3Sharp.ImGui.Native;
 namespace Sdl3Sharp.ImGui;
 
 /// <summary>
-/// Represents a 2D vector with X and Y components.
+/// Represents a point.
 /// </summary>
-public readonly record struct Vec2
+public readonly record struct Point
 {
     internal readonly ImVec2 Value { get; }
 
     /// <summary>
-    /// The X component of the vector.
+    /// The X component of the point.
     /// </summary>
     public float X => Value.X;
 
     /// <summary>
-    /// The Y component of the vector.
+    /// The Y component of the point.
     /// </summary>
     public float Y => Value.Y;
 
     /// <summary>
-    /// Creates a new Vec2 instance.
+    /// Creates a new Point instance.
     /// </summary>
     /// <param name="x">The X component of the vector.</param>
     /// <param name="y">The Y component of the vector.</param>
-    public Vec2(float x, float y)
+    public Point(float x, float y)
     {
         Value = new ImVec2 { X = x, Y = y };
     }
 
-    internal Vec2(ImVec2 value)
+    internal Point(ImVec2 value)
     {
         Value = value;
     }

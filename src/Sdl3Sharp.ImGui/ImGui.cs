@@ -817,7 +817,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static void PushStyleColor(Col idx, Vec4 col)
     {
-        ImGui_PushStyleColorImVec4((Native.ImGuiCol)idx, col.ToNative());
+        ImGui_PushStyleColorImVec4((Native.ImGuiCol)idx, col.Value);
     }
 
     /// <summary>
@@ -1004,7 +1004,7 @@ public static unsafe class ImGui
     /// <returns>The color as a 32-bit packed RGBA value.</returns>
     public static uint GetColorU32(Vec4 col)
     {
-        return ImGui_GetColorU32ImVec4(col.ToNative());
+        return ImGui_GetColorU32ImVec4(col.Value);
     }
 
     /// <summary>
@@ -1029,7 +1029,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static Vec4 GetStyleColorVec4(Col idx)
     {
-        return Vec4.FromNative(*ImGui_GetStyleColorVec4((Native.ImGuiCol)idx));
+        return new(*ImGui_GetStyleColorVec4((Native.ImGuiCol)idx));
     }
 
     #endregion
@@ -1418,7 +1418,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = text)
         {
-            ImGui_TextColored(color.ToNative(), ptr);
+            ImGui_TextColored(color.Value, ptr);
         }
     }
 
@@ -1754,7 +1754,7 @@ public static unsafe class ImGui
     /// <param name="tintCol">The tint color to apply to the image.</param>
     public static void ImageWithBg(TextureRef texRef, Vec2 imageSize, Vec2 uv0, Vec2 uv1, Vec4 bgCol, Vec4 tintCol)
     {
-        ImGui_ImageWithBgEx(texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.ToNative(), tintCol.ToNative());
+        ImGui_ImageWithBgEx(texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.Value, tintCol.Value);
     }
 
     /// <summary>
@@ -1790,7 +1790,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_ImageButtonEx(ptr, texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.ToNative(), tintCol.ToNative());
+            return ImGui_ImageButtonEx(ptr, texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.Value, tintCol.Value);
         }
     }
 
@@ -2407,7 +2407,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = descId)
         {
-            return ImGui_ColorButton(ptr, col.ToNative(), (Native.ImGuiColorEditFlags)flags);
+            return ImGui_ColorButton(ptr, col.Value, (Native.ImGuiColorEditFlags)flags);
         }
     }
 
@@ -2423,7 +2423,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = descId)
         {
-            return ImGui_ColorButtonEx(ptr, col.ToNative(), (Native.ImGuiColorEditFlags)flags, size.Value);
+            return ImGui_ColorButtonEx(ptr, col.Value, (Native.ImGuiColorEditFlags)flags, size.Value);
         }
     }
 
@@ -3792,7 +3792,7 @@ public static unsafe class ImGui
     /// <returns>The color as a Vec4 (RGBA, 0-1 range).</returns>
     public static Vec4 ColorConvertU32ToFloat4(uint color)
     {
-        return Vec4.FromNative(ImGui_ColorConvertU32ToFloat4(color));
+        return new(ImGui_ColorConvertU32ToFloat4(color));
     }
 
     /// <summary>
@@ -3802,7 +3802,7 @@ public static unsafe class ImGui
     /// <returns>The 32-bit color value.</returns>
     public static uint ColorConvertFloat4ToU32(Vec4 color)
     {
-        return ImGui_ColorConvertFloat4ToU32(color.ToNative());
+        return ImGui_ColorConvertFloat4ToU32(color.Value);
     }
 
     /// <summary>
