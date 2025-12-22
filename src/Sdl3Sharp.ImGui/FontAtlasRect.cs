@@ -35,12 +35,12 @@ public unsafe readonly struct FontAtlasRect
     /// <summary>
     /// Gets the minimum UV coordinates in the current texture.
     /// </summary>
-    public readonly Vec2 Uv0 => Vec2.FromNative(Native.Uv0);
+    public readonly Vec2 Uv0 => new(Native.Uv0);
 
     /// <summary>
     /// Gets the maximum UV coordinates in the current texture.
     /// </summary>
-    public readonly Vec2 Uv1 => Vec2.FromNative(Native.Uv1);
+    public readonly Vec2 Uv1 => new(Native.Uv1);
 
     internal FontAtlasRect(ImFontAtlasRect native)
     {

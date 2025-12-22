@@ -88,8 +88,8 @@ public unsafe struct FontConfig
     /// </summary>
     public Vec2 GlyphOffset
     {
-        readonly get => Vec2.FromNative(_native.GlyphOffset);
-        set => _native.GlyphOffset = value.ToNative();
+        readonly get => new(_native.GlyphOffset);
+        set => _native.GlyphOffset = value.Value;
     }
 
     /// <summary>

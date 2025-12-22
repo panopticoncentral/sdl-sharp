@@ -289,7 +289,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = id)
         {
-            return ImGui_BeginChild(ptr, size.ToNative(), (Native.ImGuiChildFlags)childFlags, (Native.ImGuiWindowFlags)windowFlags);
+            return ImGui_BeginChild(ptr, size.Value, (Native.ImGuiChildFlags)childFlags, (Native.ImGuiWindowFlags)windowFlags);
         }
     }
 
@@ -313,7 +313,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static bool BeginChild(Id id, Vec2 size = default, ChildFlags childFlags = ChildFlags.None, WindowFlags windowFlags = WindowFlags.None)
     {
-        return ImGui_BeginChildID(id.Value, size.ToNative(), (Native.ImGuiChildFlags)childFlags, (Native.ImGuiWindowFlags)windowFlags);
+        return ImGui_BeginChildID(id.Value, size.Value, (Native.ImGuiChildFlags)childFlags, (Native.ImGuiWindowFlags)windowFlags);
     }
 
     /// <summary>
@@ -381,7 +381,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static Vec2 GetWindowPos()
     {
-        return Vec2.FromNative(ImGui_GetWindowPos());
+        return new(ImGui_GetWindowPos());
     }
 
     /// <summary>
@@ -393,7 +393,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static Vec2 GetWindowSize()
     {
-        return Vec2.FromNative(ImGui_GetWindowSize());
+        return new(ImGui_GetWindowSize());
     }
 
     /// <summary>
@@ -435,7 +435,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static void SetNextWindowPos(Vec2 pos, Cond cond = Cond.None, Vec2 pivot = default)
     {
-        ImGui_SetNextWindowPosEx(pos.ToNative(), (Native.ImGuiCond)cond, pivot.ToNative());
+        ImGui_SetNextWindowPosEx(pos.Value, (Native.ImGuiCond)cond, pivot.Value);
     }
 
     /// <summary>
@@ -445,7 +445,7 @@ public static unsafe class ImGui
     /// <param name="cond">Condition for applying the size.</param>
     public static void SetNextWindowSize(Vec2 size, Cond cond = Cond.None)
     {
-        ImGui_SetNextWindowSize(size.ToNative(), (Native.ImGuiCond)cond);
+        ImGui_SetNextWindowSize(size.Value, (Native.ImGuiCond)cond);
     }
 
     /// <summary>
@@ -456,7 +456,7 @@ public static unsafe class ImGui
     public static void SetNextWindowSizeConstraints(Vec2 sizeMin, Vec2 sizeMax)
     {
         // TODO: We're not exposing the custom size callback for now
-        ImGui_SetNextWindowSizeConstraints(sizeMin.ToNative(), sizeMax.ToNative(), null, 0);
+        ImGui_SetNextWindowSizeConstraints(sizeMin.Value, sizeMax.Value, null, 0);
     }
 
     /// <summary>
@@ -465,7 +465,7 @@ public static unsafe class ImGui
     /// <param name="size">The content size. Does not include window decorations (title bar, menu bar, etc.) or WindowPadding. Set an axis to 0.0f to leave it automatic.</param>
     public static void SetNextWindowContentSize(Vec2 size)
     {
-        ImGui_SetNextWindowContentSize(size.ToNative());
+        ImGui_SetNextWindowContentSize(size.Value);
     }
 
     /// <summary>
@@ -492,7 +492,7 @@ public static unsafe class ImGui
     /// <param name="scroll">The scroll position. Use a value less than 0.0f to not affect a given axis.</param>
     public static void SetNextWindowScroll(Vec2 scroll)
     {
-        ImGui_SetNextWindowScroll(scroll.ToNative());
+        ImGui_SetNextWindowScroll(scroll.Value);
     }
 
     /// <summary>
@@ -518,7 +518,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static void SetWindowPos(Vec2 pos, Cond cond = Cond.None)
     {
-        ImGui_SetWindowPos(pos.ToNative(), (Native.ImGuiCond)cond);
+        ImGui_SetWindowPos(pos.Value, (Native.ImGuiCond)cond);
     }
 
     /// <summary>
@@ -531,7 +531,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static void SetWindowSize(Vec2 size, Cond cond = Cond.None)
     {
-        ImGui_SetWindowSize(size.ToNative(), (Native.ImGuiCond)cond);
+        ImGui_SetWindowSize(size.Value, (Native.ImGuiCond)cond);
     }
 
     /// <summary>
@@ -568,7 +568,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = name)
         {
-            ImGui_SetWindowPosStr(ptr, pos.ToNative(), (Native.ImGuiCond)cond);
+            ImGui_SetWindowPosStr(ptr, pos.Value, (Native.ImGuiCond)cond);
         }
     }
 
@@ -582,7 +582,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = name)
         {
-            ImGui_SetWindowSizeStr(ptr, size.ToNative(), (Native.ImGuiCond)cond);
+            ImGui_SetWindowSizeStr(ptr, size.Value, (Native.ImGuiCond)cond);
         }
     }
 
@@ -852,7 +852,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static void PushStyleVar(StyleVar idx, Vec2 val)
     {
-        ImGui_PushStyleVarImVec2((Native.ImGuiStyleVar)idx, val.ToNative());
+        ImGui_PushStyleVarImVec2((Native.ImGuiStyleVar)idx, val.Value);
     }
 
     /// <summary>
@@ -984,7 +984,7 @@ public static unsafe class ImGui
     /// <returns>The UV coordinate for a white pixel in the font texture.</returns>
     public static Vec2 GetFontTexUvWhitePixel()
     {
-        return Vec2.FromNative(ImGui_GetFontTexUvWhitePixel());
+        return new(ImGui_GetFontTexUvWhitePixel());
     }
     /// <summary>
     /// Gets a style color as a 32-bit packed value with an additional alpha multiplier.
@@ -1046,7 +1046,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static Vec2 GetCursorScreenPos()
     {
-        return Vec2.FromNative(ImGui_GetCursorScreenPos());
+        return new(ImGui_GetCursorScreenPos());
     }
 
     /// <summary>
@@ -1058,7 +1058,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static void SetCursorScreenPos(Vec2 pos)
     {
-        ImGui_SetCursorScreenPos(pos.ToNative());
+        ImGui_SetCursorScreenPos(pos.Value);
     }
 
     /// <summary>
@@ -1070,7 +1070,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static Vec2 GetContentRegionAvail()
     {
-        return Vec2.FromNative(ImGui_GetContentRegionAvail());
+        return new(ImGui_GetContentRegionAvail());
     }
 
     /// <summary>
@@ -1082,7 +1082,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static Vec2 GetCursorPos()
     {
-        return Vec2.FromNative(ImGui_GetCursorPos());
+        return new(ImGui_GetCursorPos());
     }
 
     /// <summary>
@@ -1109,7 +1109,7 @@ public static unsafe class ImGui
     /// <param name="localPos">The position in window-local coordinates.</param>
     public static void SetCursorPos(Vec2 localPos)
     {
-        ImGui_SetCursorPos(localPos.ToNative());
+        ImGui_SetCursorPos(localPos.Value);
     }
 
     /// <summary>
@@ -1139,7 +1139,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static Vec2 GetCursorStartPos()
     {
-        return Vec2.FromNative(ImGui_GetCursorStartPos());
+        return new(ImGui_GetCursorStartPos());
     }
 
     #endregion
@@ -1189,7 +1189,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static void Dummy(Vec2 size)
     {
-        ImGui_Dummy(size.ToNative());
+        ImGui_Dummy(size.Value);
     }
 
     /// <summary>
@@ -1509,7 +1509,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_ButtonEx(ptr, size.ToNative());
+            return ImGui_ButtonEx(ptr, size.Value);
         }
     }
 
@@ -1540,7 +1540,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_InvisibleButton(ptr, size.ToNative(), (Native.ImGuiButtonFlags)flags);
+            return ImGui_InvisibleButton(ptr, size.Value, (Native.ImGuiButtonFlags)flags);
         }
     }
 
@@ -1647,7 +1647,7 @@ public static unsafe class ImGui
     {
         fixed (byte* overlayPtr = overlay)
         {
-            ImGui_ProgressBar(fraction, sizeArg.ToNative(), overlayPtr);
+            ImGui_ProgressBar(fraction, sizeArg.Value, overlayPtr);
         }
     }
 
@@ -1718,7 +1718,7 @@ public static unsafe class ImGui
     /// </remarks>
     public static void Image(TextureRef texRef, Vec2 imageSize)
     {
-        ImGui_Image(texRef.Native, imageSize.ToNative());
+        ImGui_Image(texRef.Native, imageSize.Value);
     }
 
     /// <summary>
@@ -1730,7 +1730,7 @@ public static unsafe class ImGui
     /// <param name="uv1">The UV coordinate of the bottom-right corner.</param>
     public static void Image(TextureRef texRef, Vec2 imageSize, Vec2 uv0, Vec2 uv1)
     {
-        ImGui_ImageEx(texRef.Native, imageSize.ToNative(), uv0.ToNative(), uv1.ToNative());
+        ImGui_ImageEx(texRef.Native, imageSize.Value, uv0.Value, uv1.Value);
     }
 
     /// <summary>
@@ -1740,7 +1740,7 @@ public static unsafe class ImGui
     /// <param name="imageSize">The size of the image to display.</param>
     public static void ImageWithBg(TextureRef texRef, Vec2 imageSize)
     {
-        ImGui_ImageWithBg(texRef.Native, imageSize.ToNative());
+        ImGui_ImageWithBg(texRef.Native, imageSize.Value);
     }
 
     /// <summary>
@@ -1754,7 +1754,7 @@ public static unsafe class ImGui
     /// <param name="tintCol">The tint color to apply to the image.</param>
     public static void ImageWithBg(TextureRef texRef, Vec2 imageSize, Vec2 uv0, Vec2 uv1, Vec4 bgCol, Vec4 tintCol)
     {
-        ImGui_ImageWithBgEx(texRef.Native, imageSize.ToNative(), uv0.ToNative(), uv1.ToNative(), bgCol.ToNative(), tintCol.ToNative());
+        ImGui_ImageWithBgEx(texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.ToNative(), tintCol.ToNative());
     }
 
     /// <summary>
@@ -1771,7 +1771,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_ImageButton(ptr, texRef.Native, imageSize.ToNative());
+            return ImGui_ImageButton(ptr, texRef.Native, imageSize.Value);
         }
     }
 
@@ -1790,7 +1790,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_ImageButtonEx(ptr, texRef.Native, imageSize.ToNative(), uv0.ToNative(), uv1.ToNative(), bgCol.ToNative(), tintCol.ToNative());
+            return ImGui_ImageButtonEx(ptr, texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.ToNative(), tintCol.ToNative());
         }
     }
 
@@ -2164,7 +2164,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_VSliderFloat(ptr, size.ToNative(), v.Ptr, vMin, vMax);
+            return ImGui_VSliderFloat(ptr, size.Value, v.Ptr, vMin, vMax);
         }
     }
 
@@ -2184,7 +2184,7 @@ public static unsafe class ImGui
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         {
-            return ImGui_VSliderFloatEx(labelPtr, size.ToNative(), v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderFloatEx(labelPtr, size.Value, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -2201,7 +2201,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_VSliderInt(ptr, size.ToNative(), v.Ptr, vMin, vMax);
+            return ImGui_VSliderInt(ptr, size.Value, v.Ptr, vMin, vMax);
         }
     }
 
@@ -2221,7 +2221,7 @@ public static unsafe class ImGui
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         {
-            return ImGui_VSliderIntEx(labelPtr, size.ToNative(), v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderIntEx(labelPtr, size.Value, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -2273,7 +2273,7 @@ public static unsafe class ImGui
         fixed (byte* labelPtr = label)
         fixed (byte* bufPtr = buf)
         {
-            return ImGui_InputTextMultilineEx(labelPtr, bufPtr, (nuint)buf.Length, size.ToNative(), (Native.ImGuiInputTextFlags)flags, null, 0);
+            return ImGui_InputTextMultilineEx(labelPtr, bufPtr, (nuint)buf.Length, size.Value, (Native.ImGuiInputTextFlags)flags, null, 0);
         }
     }
 
@@ -2423,7 +2423,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = descId)
         {
-            return ImGui_ColorButtonEx(ptr, col.ToNative(), (Native.ImGuiColorEditFlags)flags, size.ToNative());
+            return ImGui_ColorButtonEx(ptr, col.ToNative(), (Native.ImGuiColorEditFlags)flags, size.Value);
         }
     }
 
@@ -2593,7 +2593,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_SelectableEx(ptr, selected, (Native.ImGuiSelectableFlags)flags, size.ToNative());
+            return ImGui_SelectableEx(ptr, selected, (Native.ImGuiSelectableFlags)flags, size.Value);
         }
     }
 
@@ -2624,7 +2624,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_SelectableBoolPtrEx(ptr, pSelected.Ptr, (Native.ImGuiSelectableFlags)flags, size.ToNative());
+            return ImGui_SelectableBoolPtrEx(ptr, pSelected.Ptr, (Native.ImGuiSelectableFlags)flags, size.Value);
         }
     }
 
@@ -2642,7 +2642,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_BeginListBox(ptr, size.ToNative());
+            return ImGui_BeginListBox(ptr, size.Value);
         }
     }
 
@@ -2688,7 +2688,7 @@ public static unsafe class ImGui
         fixed (float* valuesPtr = values)
         fixed (byte* overlayPtr = overlayText)
         {
-            ImGui_PlotLinesEx(labelPtr, valuesPtr, values.Length, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.ToNative(), sizeof(float));
+            ImGui_PlotLinesEx(labelPtr, valuesPtr, values.Length, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.Value, sizeof(float));
         }
     }
 
@@ -2722,7 +2722,7 @@ public static unsafe class ImGui
         fixed (float* valuesPtr = values)
         fixed (byte* overlayPtr = overlayText)
         {
-            ImGui_PlotHistogramEx(labelPtr, valuesPtr, values.Length, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.ToNative(), sizeof(float));
+            ImGui_PlotHistogramEx(labelPtr, valuesPtr, values.Length, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.Value, sizeof(float));
         }
     }
 
@@ -3103,7 +3103,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_BeginTableEx(ptr, columns, (Native.ImGuiTableFlags)flags, outerSize.ToNative(), innerWidth);
+            return ImGui_BeginTableEx(ptr, columns, (Native.ImGuiTableFlags)flags, outerSize.Value, innerWidth);
         }
     }
 
@@ -3482,7 +3482,7 @@ public static unsafe class ImGui
     /// <param name="intersectWithCurrentClipRect">Whether to intersect with the current clip rectangle.</param>
     public static void PushClipRect(Vec2 clipRectMin, Vec2 clipRectMax, bool intersectWithCurrentClipRect)
     {
-        ImGui_PushClipRect(clipRectMin.ToNative(), clipRectMax.ToNative(), intersectWithCurrentClipRect);
+        ImGui_PushClipRect(clipRectMin.Value, clipRectMax.Value, intersectWithCurrentClipRect);
     }
 
     /// <summary>
@@ -3685,7 +3685,7 @@ public static unsafe class ImGui
     /// <returns>The minimum bounding rectangle position.</returns>
     public static Vec2 GetItemRectMin()
     {
-        return Vec2.FromNative(ImGui_GetItemRectMin());
+        return new(ImGui_GetItemRectMin());
     }
 
     /// <summary>
@@ -3694,7 +3694,7 @@ public static unsafe class ImGui
     /// <returns>The maximum bounding rectangle position.</returns>
     public static Vec2 GetItemRectMax()
     {
-        return Vec2.FromNative(ImGui_GetItemRectMax());
+        return new(ImGui_GetItemRectMax());
     }
 
     /// <summary>
@@ -3703,7 +3703,7 @@ public static unsafe class ImGui
     /// <returns>The size of the last item.</returns>
     public static Vec2 GetItemRectSize()
     {
-        return Vec2.FromNative(ImGui_GetItemRectSize());
+        return new(ImGui_GetItemRectSize());
     }
 
     #endregion
@@ -3717,7 +3717,7 @@ public static unsafe class ImGui
     /// <returns>True if the rectangle is visible.</returns>
     public static bool IsRectVisible(Vec2 size)
     {
-        return ImGui_IsRectVisibleBySize(size.ToNative());
+        return ImGui_IsRectVisibleBySize(size.Value);
     }
 
     /// <summary>
@@ -3728,7 +3728,7 @@ public static unsafe class ImGui
     /// <returns>True if the rectangle is visible.</returns>
     public static bool IsRectVisible(Vec2 rectMin, Vec2 rectMax)
     {
-        return ImGui_IsRectVisible(rectMin.ToNative(), rectMax.ToNative());
+        return ImGui_IsRectVisible(rectMin.Value, rectMax.Value);
     }
 
     /// <summary>
@@ -3762,7 +3762,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = text)
         {
-            return Vec2.FromNative(ImGui_CalcTextSize(ptr));
+            return new(ImGui_CalcTextSize(ptr));
         }
     }
 
@@ -3777,7 +3777,7 @@ public static unsafe class ImGui
     {
         fixed (byte* ptr = text)
         {
-            return Vec2.FromNative(ImGui_CalcTextSizeEx(ptr, null, hideTextAfterDoubleHash, wrapWidth));
+            return new(ImGui_CalcTextSizeEx(ptr, null, hideTextAfterDoubleHash, wrapWidth));
         }
     }
 
@@ -3974,8 +3974,8 @@ public static unsafe class ImGui
     public static bool IsMouseHoveringRect(Vec2 rMin, Vec2 rMax, bool clip = true)
     {
         return clip
-            ? ImGui_IsMouseHoveringRect(rMin.ToNative(), rMax.ToNative())
-            : ImGui_IsMouseHoveringRectEx(rMin.ToNative(), rMax.ToNative(), false);
+            ? ImGui_IsMouseHoveringRect(rMin.Value, rMax.Value)
+            : ImGui_IsMouseHoveringRectEx(rMin.Value, rMax.Value, false);
     }
 
     /// <summary>
@@ -3993,7 +3993,7 @@ public static unsafe class ImGui
     /// <returns>The mouse position in screen space.</returns>
     public static Vec2 GetMousePos()
     {
-        return Vec2.FromNative(ImGui_GetMousePos());
+        return new(ImGui_GetMousePos());
     }
 
     /// <summary>
@@ -4002,7 +4002,7 @@ public static unsafe class ImGui
     /// <returns>The mouse position when the popup was opened.</returns>
     public static Vec2 GetMousePosOnOpeningCurrentPopup()
     {
-        return Vec2.FromNative(ImGui_GetMousePosOnOpeningCurrentPopup());
+        return new(ImGui_GetMousePosOnOpeningCurrentPopup());
     }
 
     /// <summary>
@@ -4024,7 +4024,7 @@ public static unsafe class ImGui
     /// <returns>The drag delta.</returns>
     public static Vec2 GetMouseDragDelta(MouseButton button = MouseButton.Left, float lockThreshold = -1.0f)
     {
-        return Vec2.FromNative(ImGui_GetMouseDragDelta((Native.ImGuiMouseButton)button, lockThreshold));
+        return new(ImGui_GetMouseDragDelta((Native.ImGuiMouseButton)button, lockThreshold));
     }
 
     /// <summary>

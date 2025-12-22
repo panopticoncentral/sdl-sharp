@@ -40,8 +40,8 @@ public unsafe readonly struct IO
     /// </summary>
     public Vec2 DisplaySize
     {
-        get => Vec2.FromNative(Native->DisplaySize);
-        set => Native->DisplaySize = value.ToNative();
+        get => new(Native->DisplaySize);
+        set => Native->DisplaySize = value.Value;
     }
 
     /// <summary>
@@ -49,8 +49,8 @@ public unsafe readonly struct IO
     /// </summary>
     public Vec2 DisplayFramebufferScale
     {
-        get => Vec2.FromNative(Native->DisplayFramebufferScale);
-        set => Native->DisplayFramebufferScale = value.ToNative();
+        get => new(Native->DisplayFramebufferScale);
+        set => Native->DisplayFramebufferScale = value.Value;
     }
 
     /// <summary>
@@ -504,7 +504,7 @@ public unsafe readonly struct IO
     /// <summary>
     /// Gets the mouse delta.
     /// </summary>
-    public Vec2 MouseDelta => Vec2.FromNative(Native->MouseDelta);
+    public Vec2 MouseDelta => new(Native->MouseDelta);
 
     /// <summary>
     /// Queues a new key down/up event.

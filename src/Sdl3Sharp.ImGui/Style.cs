@@ -83,8 +83,8 @@ public unsafe sealed class Style
     /// </summary>
     public Vec2 WindowPadding
     {
-        get => Vec2.FromNative(Native->WindowPadding);
-        set => Native->WindowPadding = value.ToNative();
+        get => new(Native->WindowPadding);
+        set => Native->WindowPadding = value.Value;
     }
 
     /// <summary>
@@ -132,8 +132,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 WindowMinSize
     {
-        get => Vec2.FromNative(Native->WindowMinSize);
-        set => Native->WindowMinSize = value.ToNative();
+        get => new(Native->WindowMinSize);
+        set => Native->WindowMinSize = value.Value;
     }
 
     /// <summary>
@@ -144,8 +144,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 WindowTitleAlign
     {
-        get => Vec2.FromNative(Native->WindowTitleAlign);
-        set => Native->WindowTitleAlign = value.ToNative();
+        get => new(Native->WindowTitleAlign);
+        set => Native->WindowTitleAlign = value.Value;
     }
 
     /// <summary>
@@ -213,8 +213,8 @@ public unsafe sealed class Style
     /// </summary>
     public Vec2 FramePadding
     {
-        get => Vec2.FromNative(Native->FramePadding);
-        set => Native->FramePadding = value.ToNative();
+        get => new(Native->FramePadding);
+        set => Native->FramePadding = value.Value;
     }
 
     /// <summary>
@@ -246,8 +246,8 @@ public unsafe sealed class Style
     /// </summary>
     public Vec2 ItemSpacing
     {
-        get => Vec2.FromNative(Native->ItemSpacing);
-        set => Native->ItemSpacing = value.ToNative();
+        get => new(Native->ItemSpacing);
+        set => Native->ItemSpacing = value.Value;
     }
 
     /// <summary>
@@ -256,8 +256,8 @@ public unsafe sealed class Style
     /// </summary>
     public Vec2 ItemInnerSpacing
     {
-        get => Vec2.FromNative(Native->ItemInnerSpacing);
-        set => Native->ItemInnerSpacing = value.ToNative();
+        get => new(Native->ItemInnerSpacing);
+        set => Native->ItemInnerSpacing = value.Value;
     }
 
     /// <summary>
@@ -268,8 +268,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 CellPadding
     {
-        get => Vec2.FromNative(Native->CellPadding);
-        set => Native->CellPadding = value.ToNative();
+        get => new(Native->CellPadding);
+        set => Native->CellPadding = value.Value;
     }
 
     /// <summary>
@@ -281,8 +281,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 TouchExtraPadding
     {
-        get => Vec2.FromNative(Native->TouchExtraPadding);
-        set => Native->TouchExtraPadding = value.ToNative();
+        get => new(Native->TouchExtraPadding);
+        set => Native->TouchExtraPadding = value.Value;
     }
 
     /// <summary>
@@ -474,8 +474,8 @@ public unsafe sealed class Style
     /// </summary>
     public Vec2 TableAngledHeadersTextAlign
     {
-        get => Vec2.FromNative(Native->TableAngledHeadersTextAlign);
-        set => Native->TableAngledHeadersTextAlign = value.ToNative();
+        get => new(Native->TableAngledHeadersTextAlign);
+        set => Native->TableAngledHeadersTextAlign = value.Value;
     }
 
     /// <summary>
@@ -556,8 +556,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 ButtonTextAlign
     {
-        get => Vec2.FromNative(Native->ButtonTextAlign);
-        set => Native->ButtonTextAlign = value.ToNative();
+        get => new(Native->ButtonTextAlign);
+        set => Native->ButtonTextAlign = value.Value;
     }
 
     /// <summary>
@@ -569,8 +569,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 SelectableTextAlign
     {
-        get => Vec2.FromNative(Native->SelectableTextAlign);
-        set => Native->SelectableTextAlign = value.ToNative();
+        get => new(Native->SelectableTextAlign);
+        set => Native->SelectableTextAlign = value.Value;
     }
 
     /// <summary>
@@ -590,8 +590,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 SeparatorTextAlign
     {
-        get => Vec2.FromNative(Native->SeparatorTextAlign);
-        set => Native->SeparatorTextAlign = value.ToNative();
+        get => new(Native->SeparatorTextAlign);
+        set => Native->SeparatorTextAlign = value.Value;
     }
 
     /// <summary>
@@ -602,8 +602,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 SeparatorTextPadding
     {
-        get => Vec2.FromNative(Native->SeparatorTextPadding);
-        set => Native->SeparatorTextPadding = value.ToNative();
+        get => new(Native->SeparatorTextPadding);
+        set => Native->SeparatorTextPadding = value.Value;
     }
 
     /// <summary>
@@ -614,8 +614,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 DisplayWindowPadding
     {
-        get => Vec2.FromNative(Native->DisplayWindowPadding);
-        set => Native->DisplayWindowPadding = value.ToNative();
+        get => new(Native->DisplayWindowPadding);
+        set => Native->DisplayWindowPadding = value.Value;
     }
 
     /// <summary>
@@ -627,8 +627,8 @@ public unsafe sealed class Style
     /// </remarks>
     public Vec2 DisplaySafeAreaPadding
     {
-        get => Vec2.FromNative(Native->DisplaySafeAreaPadding);
-        set => Native->DisplaySafeAreaPadding = value.ToNative();
+        get => new(Native->DisplaySafeAreaPadding);
+        set => Native->DisplaySafeAreaPadding = value.Value;
     }
 
     /// <summary>
