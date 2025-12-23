@@ -9,118 +9,6 @@ namespace Sdl3Sharp.ImGui;
 /// </summary>
 public static unsafe class ImGui
 {
-    #region * Parameters stacks (shared)
-
-    /// <summary>
-    /// Pushes a style color modification onto the stack using a 32-bit color value.
-    /// </summary>
-    /// <param name="idx">The color index to modify.</param>
-    /// <param name="col">The color value as a 32-bit packed RGBA value.</param>
-    /// <remarks>
-    /// Always use this if you modify the style after <see cref="NewFrame"/>.
-    /// </remarks>
-    public static void PushStyleColor(Col idx, uint col)
-    {
-        ImGui_PushStyleColor((Native.ImGuiCol)idx, col);
-    }
-
-    /// <summary>
-    /// Pushes a style color modification onto the stack using a Vec4 color value.
-    /// </summary>
-    /// <param name="idx">The color index to modify.</param>
-    /// <param name="col">The color value as a Vec4 (RGBA, each component 0-1).</param>
-    /// <remarks>
-    /// Always use this if you modify the style after <see cref="NewFrame"/>.
-    /// </remarks>
-    public static void PushStyleColor(Col idx, Vec4 col)
-    {
-        ImGui_PushStyleColorImVec4((Native.ImGuiCol)idx, col.Value);
-    }
-
-    /// <summary>
-    /// Pops multiple style colors from the stack.
-    /// </summary>
-    /// <param name="count">The number of style colors to pop.</param>
-    public static void PopStyleColor(int count = 1)
-    {
-        ImGui_PopStyleColorEx(count);
-    }
-
-    /// <summary>
-    /// Pushes a style variable modification onto the stack using a float value.
-    /// </summary>
-    /// <param name="idx">The style variable to modify.</param>
-    /// <param name="val">The new float value.</param>
-    /// <remarks>
-    /// Always use this if you modify the style after <see cref="NewFrame"/>.
-    /// </remarks>
-    public static void PushStyleVar(StyleVar idx, float val)
-    {
-        ImGui_PushStyleVar((Native.ImGuiStyleVar)idx, val);
-    }
-
-    /// <summary>
-    /// Pushes a style variable modification onto the stack using a Vec2 value.
-    /// </summary>
-    /// <param name="idx">The style variable to modify.</param>
-    /// <param name="val">The new Vec2 value.</param>
-    /// <remarks>
-    /// Always use this if you modify the style after <see cref="NewFrame"/>.
-    /// </remarks>
-    public static void PushStyleVar(StyleVar idx, Vec2 val)
-    {
-        ImGui_PushStyleVarImVec2((Native.ImGuiStyleVar)idx, val.Value);
-    }
-
-    /// <summary>
-    /// Pushes a modification to the X component of a style Vec2 variable.
-    /// </summary>
-    /// <param name="idx">The style variable to modify.</param>
-    /// <param name="valX">The new X component value.</param>
-    public static void PushStyleVarX(StyleVar idx, float valX)
-    {
-        ImGui_PushStyleVarX((Native.ImGuiStyleVar)idx, valX);
-    }
-
-    /// <summary>
-    /// Pushes a modification to the Y component of a style Vec2 variable.
-    /// </summary>
-    /// <param name="idx">The style variable to modify.</param>
-    /// <param name="valY">The new Y component value.</param>
-    public static void PushStyleVarY(StyleVar idx, float valY)
-    {
-        ImGui_PushStyleVarY((Native.ImGuiStyleVar)idx, valY);
-    }
-
-    /// <summary>
-    /// Pops multiple style variables from the stack.
-    /// </summary>
-    /// <param name="count">The number of style variables to pop.</param>
-    public static void PopStyleVar(int count = 1)
-    {
-        ImGui_PopStyleVarEx(count);
-    }
-
-    /// <summary>
-    /// Pushes an item flag modification onto the stack.
-    /// </summary>
-    /// <param name="option">The item flag to modify.</param>
-    /// <param name="enabled">Whether the flag should be enabled.</param>
-    public static void PushItemFlag(ItemFlags option, bool enabled)
-    {
-        ImGui_PushItemFlag((Native.ImGuiItemFlags)option, enabled);
-    }
-
-    /// <summary>
-    /// Pops the most recently pushed item flag from the stack.
-    /// </summary>
-    public static void PopItemFlag()
-    {
-        ImGui_PopItemFlag();
-    }
-
-    #endregion
-
     #region * Parameters stacks (current window)
 
     /// <summary>
@@ -209,7 +97,7 @@ public static unsafe class ImGui
     /// <param name="idx">The color index.</param>
     /// <param name="alphaMul">Additional alpha multiplier (0.0 to 1.0).</param>
     /// <returns>The color as a 32-bit packed RGBA value with style alpha and multiplier applied.</returns>
-    public static uint GetColorU32(Col idx, float alphaMul = 1.0f)
+    public static uint GetColorU32(StyleColor idx, float alphaMul = 1.0f)
     {
         return ImGui_GetColorU32Ex((Native.ImGuiCol)idx, alphaMul);
     }
@@ -241,10 +129,10 @@ public static unsafe class ImGui
     /// <param name="idx">The color index.</param>
     /// <returns>The color as a Vec4.</returns>
     /// <remarks>
-    /// Use this to feed back into <see cref="PushStyleColor(Col, Vec4)"/>.
-    /// Otherwise use <see cref="GetColorU32(Col)"/> to get style color with style alpha baked in.
+    /// Use this to feed back into <see cref="PushStyleColor(StyleColor, Vec4)"/>.
+    /// Otherwise use <see cref="GetColorU32(StyleColor)"/> to get style color with style alpha baked in.
     /// </remarks>
-    public static Vec4 GetStyleColorVec4(Col idx)
+    public static Vec4 GetStyleColorVec4(StyleColor idx)
     {
         return new(*ImGui_GetStyleColorVec4((Native.ImGuiCol)idx));
     }

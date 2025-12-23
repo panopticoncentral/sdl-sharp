@@ -9,7 +9,7 @@ namespace Sdl3Sharp.ImGui;
 /// The enum only refers to fields of <see cref="Style"/> which makes sense to be pushed/popped inside UI code.
 /// During initialization or between frames, feel free to just poke into <see cref="Style"/> directly.
 /// </remarks>
-public enum StyleVar
+public enum StyleVariable
 {
     /// <summary>
     /// Global alpha applies to everything in Dear ImGui. (float)

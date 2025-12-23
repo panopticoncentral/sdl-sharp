@@ -45,17 +45,6 @@ public unsafe readonly struct Font
     }
 
     /// <summary>
-    /// Pushes a font and/or font size onto the stack.
-    /// </summary>
-    /// <param name="font">The font to use, or null to keep the current font.</param>
-    /// <param name="fontSizeBaseUnscaled">The base font size before global scaling, or 0.0f to keep the current size.</param>
-    public static FontScope Push(Font? font, float fontSizeBaseUnscaled = 0.0f)
-    {
-        ImGui_PushFontFloat(font == null ? null : font.Value.Native, fontSizeBaseUnscaled);
-        return new FontScope();
-    }
-
-    /// <summary>
     /// Gets the current scaled font size (height in pixels) after global scale factors are applied.
     /// </summary>
     /// <returns>The current font size in pixels.</returns>
@@ -94,17 +83,5 @@ public unsafe readonly struct Font
     {
         var namePtr = ImFont.GetDebugName(Native);
         return Marshal.PtrToStringUTF8((nint)namePtr) ?? string.Empty;
-    }
-
-    /// <summary>
-    /// A scope that automatically pops the font when disposed.
-    /// </summary>
-    public readonly ref struct FontScope: IDisposable
-    {
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            PopFont();
-        }
     }
 }

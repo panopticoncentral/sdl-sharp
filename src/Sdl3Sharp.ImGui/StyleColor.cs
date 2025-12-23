@@ -5,7 +5,7 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Enumeration for PushStyleColor() / PopStyleColor().
 /// </summary>
-public enum Col
+public enum StyleColor
 {
     /// <summary>
     /// Text color.
@@ -20,17 +20,17 @@ public enum Col
     /// <summary>
     /// Background of normal windows.
     /// </summary>
-    WindowBg = ImGuiCol.WindowBg,
+    WindowBackground = ImGuiCol.WindowBg,
 
     /// <summary>
     /// Background of child windows.
     /// </summary>
-    ChildBg = ImGuiCol.ChildBg,
+    ChildBackground = ImGuiCol.ChildBg,
 
     /// <summary>
     /// Background of popups, menus, tooltips windows.
     /// </summary>
-    PopupBg = ImGuiCol.PopupBg,
+    PopupBackground = ImGuiCol.PopupBg,
 
     /// <summary>
     /// Border color.
@@ -45,42 +45,42 @@ public enum Col
     /// <summary>
     /// Background of checkbox, radio button, plot, slider, text input.
     /// </summary>
-    FrameBg = ImGuiCol.FrameBg,
+    FrameBackground = ImGuiCol.FrameBg,
 
     /// <summary>
     /// Frame background when hovered.
     /// </summary>
-    FrameBgHovered = ImGuiCol.FrameBgHovered,
+    FrameBackgroundHovered = ImGuiCol.FrameBgHovered,
 
     /// <summary>
     /// Frame background when active.
     /// </summary>
-    FrameBgActive = ImGuiCol.FrameBgActive,
+    FrameBackgroundActive = ImGuiCol.FrameBgActive,
 
     /// <summary>
     /// Title bar color.
     /// </summary>
-    TitleBg = ImGuiCol.TitleBg,
+    TitleBackground = ImGuiCol.TitleBg,
 
     /// <summary>
     /// Title bar when focused.
     /// </summary>
-    TitleBgActive = ImGuiCol.TitleBgActive,
+    TitleBackgroundActive = ImGuiCol.TitleBgActive,
 
     /// <summary>
     /// Title bar when collapsed.
     /// </summary>
-    TitleBgCollapsed = ImGuiCol.TitleBgCollapsed,
+    TitleBackgroundCollapsed = ImGuiCol.TitleBgCollapsed,
 
     /// <summary>
     /// Menu bar background.
     /// </summary>
-    MenuBarBg = ImGuiCol.MenuBarBg,
+    MenuBarBackground = ImGuiCol.MenuBarBg,
 
     /// <summary>
     /// Scrollbar background.
     /// </summary>
-    ScrollbarBg = ImGuiCol.ScrollbarBg,
+    ScrollbarBackground = ImGuiCol.ScrollbarBg,
 
     /// <summary>
     /// Scrollbar grab color.
@@ -235,7 +235,7 @@ public enum Col
     /// <summary>
     /// Table header background.
     /// </summary>
-    TableHeaderBg = ImGuiCol.TableHeaderBg,
+    TableHeaderBackground = ImGuiCol.TableHeaderBg,
 
     /// <summary>
     /// Table outer and header borders (prefer using Alpha=1.0 here).
@@ -250,12 +250,12 @@ public enum Col
     /// <summary>
     /// Table row background (even rows).
     /// </summary>
-    TableRowBg = ImGuiCol.TableRowBg,
+    TableRowBackground = ImGuiCol.TableRowBg,
 
     /// <summary>
     /// Table row background (odd rows).
     /// </summary>
-    TableRowBgAlt = ImGuiCol.TableRowBgAlt,
+    TableRowBackgroundAlt = ImGuiCol.TableRowBgAlt,
 
     /// <summary>
     /// Hyperlink color.
@@ -265,7 +265,7 @@ public enum Col
     /// <summary>
     /// Selected text inside an InputText.
     /// </summary>
-    TextSelectedBg = ImGuiCol.TextSelectedBg,
+    TextSelectedBackground = ImGuiCol.TextSelectedBg,
 
     /// <summary>
     /// Tree node hierarchy outlines when using TreeNodeFlags.DrawLines.
@@ -280,7 +280,7 @@ public enum Col
     /// <summary>
     /// Rectangle background highlighting a drop target.
     /// </summary>
-    DragDropTargetBg = ImGuiCol.DragDropTargetBg,
+    DragDropTargetBackground = ImGuiCol.DragDropTargetBg,
 
     /// <summary>
     /// Unsaved Document marker (in window title and tabs).
@@ -300,10 +300,10 @@ public enum Col
     /// <summary>
     /// Darken/colorize entire screen behind the Ctrl+Tab window list, when active.
     /// </summary>
-    NavWindowingDimBg = ImGuiCol.NavWindowingDimBg,
+    NavWindowingDimBackground = ImGuiCol.NavWindowingDimBg,
 
     /// <summary>
     /// Darken/colorize entire screen behind a modal window, when one is active.
     /// </summary>
-    ModalWindowDimBg = ImGuiCol.ModalWindowDimBg
+    ModalWindowDimBackground = ImGuiCol.ModalWindowDimBg
 }
