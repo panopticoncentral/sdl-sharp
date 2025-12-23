@@ -13,7 +13,7 @@ using Application app = new(Subsystems.Video);
 
 // Create ImGui context
 using ImGui.Context context = new();
-ImGui.ImGui.GetStyle().FontSizeBase = 24.0f;
+ImGui.Context.Style.FontSizeBase = 24.0f;
 ImGui.Context.Current = context;
 
 // Initialize ImGui backends
@@ -35,13 +35,13 @@ void DoFrame()
     // Start the ImGui frame
     SDL3Backend.NewFrame();
     SDLRenderer3Backend.NewFrame();
-    ImGui.ImGui.NewFrame();
+    ImGui.Context.NewFrame();
 
     // Show the ImGui demo window
-    ImGui.ImGui.ShowDemoWindow(showDemoWindow);
+    ImGui.Context.ShowDemoWindow(showDemoWindow);
 
     // Rendering
-    ImGui.ImGui.Render();
+    ImGui.Context.Render();
 
     renderer.DrawColor = new Color(45, 55, 60, 255);
     renderer.Clear();

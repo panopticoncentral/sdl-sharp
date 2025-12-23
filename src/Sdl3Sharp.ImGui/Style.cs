@@ -1,6 +1,5 @@
 using Sdl3Sharp.ImGui.Native;
-
-using ImGuiNative = Sdl3Sharp.ImGui.Native.ImGui;
+using static Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
 
@@ -768,5 +767,32 @@ public unsafe sealed class Style
     public void ScaleAllSizes(float scaleFactor)
     {
         ImGuiStyle.ScaleAllSizes(Native, scaleFactor);
+    }
+
+    /// <summary>
+    /// Applies the dark color theme to the specified style.
+    /// </summary>
+    /// <param name="destination">The style object to apply the dark theme to.</param>
+    public static void SetColorsDark(Style? destination = null)
+    {
+        ImGui_StyleColorsDark(destination == null ? null : destination.Native);
+    }
+
+    /// <summary>
+    /// Applies the light color theme to the specified style.
+    /// </summary>
+    /// <param name="destination">The style object to apply the light theme to.</param>
+    public static void SetColorsLight(Style? destination = null)
+    {
+        ImGui_StyleColorsLight(destination == null ? null : destination.Native);
+    }
+
+    /// <summary>
+    /// Applies the classic (original) color theme to the specified style.
+    /// </summary>
+    /// <param name="destination">The style object to apply the classic theme to.</param>
+    public static void SetColorsClassic(Style? destination = null)
+    {
+        ImGui_StyleColorsClassic(destination == null ? null : destination.Native);
     }
 }

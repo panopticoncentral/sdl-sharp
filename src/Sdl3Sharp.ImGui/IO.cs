@@ -1,6 +1,8 @@
 using System.Runtime.InteropServices;
 using Sdl3Sharp.ImGui.Native;
 
+using static Sdl3Sharp.ImGui.Native.ImGui;
+
 namespace Sdl3Sharp.ImGui;
 
 /// <summary>
