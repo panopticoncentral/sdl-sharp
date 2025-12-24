@@ -357,6 +357,31 @@ public readonly unsafe ref struct Window: IDisposable
         ImGui_SetScrollFromPosY(localY, centerYRatio);
     }
 
+    /// <summary>
+    /// Sets the width of the next common large "item+label" widget.
+    /// </summary>
+    /// <param name="itemWidth">
+    /// The item width in pixels. Greater than 0.0f for explicit width.
+    /// Less than 0.0f to align that many pixels from the right of the window.
+    /// Use -float.Epsilon to always align to the right side.
+    /// </param>
+    public static void SetNextItemWidth(float itemWidth)
+    {
+        ImGui_SetNextItemWidth(itemWidth);
+    }
+
+    /// <summary>
+    /// Calculates the width of an item given pushed settings and current cursor position.
+    /// </summary>
+    /// <returns>The calculated item width.</returns>
+    /// <remarks>
+    /// This is NOT necessarily the width of the last item unlike most 'Item' functions.
+    /// </remarks>
+    public static float CalcItemWidth()
+    {
+        return ImGui_CalcItemWidth();
+    }
+
     /// <inheritdoc/>
     public void Dispose()
     {

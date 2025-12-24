@@ -1,11 +1,13 @@
 using Sdl3Sharp.ImGui.Native;
 
+using static Sdl3Sharp.ImGui.Native.ImGui;
+
 namespace Sdl3Sharp.ImGui;
 
 /// <summary>
 /// Represents a color.
 /// </summary>
-public readonly record struct Color
+public unsafe readonly record struct Color
 {
     internal readonly ImVec4 Value { get; }
 
@@ -44,6 +46,52 @@ public readonly record struct Color
     internal Color(ImVec4 value)
     {
         Value = value;
+    }
+
+    /// <summary>
+    /// Gets a style color as a 32-bit packed value with an additional alpha multiplier.
+    /// </summary>
+    /// <param name="idx">The color index.</param>
+    /// <param name="alphaMul">Additional alpha multiplier (0.0 to 1.0).</param>
+    /// <returns>The color as a 32-bit packed RGBA value with style alpha and multiplier applied.</returns>
+    public static uint GetColorU32(StyleColor idx, float alphaMul = 1.0f)
+    {
+        return ImGui_GetColorU32Ex((Native.ImGuiCol)idx, alphaMul);
+    }
+
+    /// <summary>
+    /// Gets a Vec4 color as a 32-bit packed value with style alpha applied.
+    /// </summary>
+    /// <param name="col">The color as a Vec4.</param>
+    /// <returns>The color as a 32-bit packed RGBA value.</returns>
+    public static uint GetColorU32(Color col)
+    {
+        return ImGui_GetColorU32ImVec4(col.Value);
+    }
+
+    /// <summary>
+    /// Gets a 32-bit color with style alpha and an additional alpha multiplier applied.
+    /// </summary>
+    /// <param name="col">The color as a 32-bit packed RGBA value.</param>
+    /// <param name="alphaMul">Additional alpha multiplier (0.0 to 1.0).</param>
+    /// <returns>The color with style alpha and multiplier applied.</returns>
+    public static uint GetColorU32(uint col, float alphaMul = 1.0f)
+    {
+        return ImGui_GetColorU32ImU32Ex(col, alphaMul);
+    }
+
+    /// <summary>
+    /// Gets a style color as stored in the Style structure.
+    /// </summary>
+    /// <param name="idx">The color index.</param>
+    /// <returns>The color as a Vec4.</returns>
+    /// <remarks>
+    /// Use this to feed back into <see cref="PushStyleColor(StyleColor, Vec4)"/>.
+    /// Otherwise use <see cref="GetColorU32(StyleColor)"/> to get style color with style alpha baked in.
+    /// </remarks>
+    public static Color GetStyleColorVec4(StyleColor idx)
+    {
+        return new(*ImGui_GetStyleColorVec4((Native.ImGuiCol)idx));
     }
 
     /// <inheritdoc />

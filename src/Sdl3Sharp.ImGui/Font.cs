@@ -84,4 +84,13 @@ public unsafe readonly struct Font
         var namePtr = ImFont.GetDebugName(Native);
         return Marshal.PtrToStringUTF8((nint)namePtr) ?? string.Empty;
     }
+
+    /// <summary>
+    /// Gets the UV coordinate for a white pixel, useful to draw custom shapes via the DrawList API.
+    /// </summary>
+    /// <returns>The UV coordinate for a white pixel in the font texture.</returns>
+    public static Vec2 GetFontTexUvWhitePixel()
+    {
+        return new(ImGui_GetFontTexUvWhitePixel());
+    }
 }
