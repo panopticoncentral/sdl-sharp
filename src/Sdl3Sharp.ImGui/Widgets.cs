@@ -954,4 +954,615 @@ public unsafe static class Widgets
             return ImGui_DragIntRange2Ex(labelPtr, vCurrentMin.Ptr, vCurrentMax.Ptr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
+
+    /// <summary>
+    /// Creates a slider for an int value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<int> v, int vMin, int vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderIntEx(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for a float value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<float> v, float vMin, float vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderFloatEx(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for a signed byte value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<sbyte> v, sbyte vMin, sbyte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for a byte value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<byte> v, byte vMin, byte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for a short value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<short> v, short vMin, short vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an unsigned short value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<ushort> v, ushort vMin, ushort vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an unsigned int value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<uint> v, uint vMin, uint vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for a long value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%lld").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<long> v, long vMin, long vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an unsigned long value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%llu").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<ulong> v, ulong vMin, ulong vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for a double value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateRef<double> v, double vMin, double vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of int values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<int> v, int vMin, int vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return v.Length switch
+            {
+                2 => ImGui_SliderInt2Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                3 => ImGui_SliderInt3Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                4 => ImGui_SliderInt4Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                _ => ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S32, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+            };
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of float values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<float> v, float vMin, float vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return v.Length switch
+            {
+                2 => ImGui_SliderFloat2Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                3 => ImGui_SliderFloat3Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                4 => ImGui_SliderFloat4Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                _ => ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.Float, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+            };
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of signed byte values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<sbyte> v, sbyte vMin, sbyte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of byte values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<byte> v, byte vMin, byte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of short values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<short> v, short vMin, short vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of unsigned short values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<ushort> v, ushort vMin, ushort vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of unsigned int values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<uint> v, uint vMin, uint vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of long values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%lld").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<long> v, long vMin, long vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of unsigned long values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%llu").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<ulong> v, ulong vMin, ulong vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a slider for an array of double values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<double> v, double vMin, double vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates an angle slider for a float value in radians.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="vRad">Reference to the angle value in radians.</param>
+    /// <param name="vDegreesMin">Minimum angle in degrees.</param>
+    /// <param name="vDegreesMax">Maximum angle in degrees.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.0f deg").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool SliderAngle(ReadOnlySpan<byte> label, StateRef<float> vRad, float vDegreesMin = -360.0f, float vDegreesMax = 360.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_SliderAngleEx(labelPtr, vRad.Ptr, vDegreesMin, vDegreesMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for an int value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<int> v, int vMin, int vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderIntEx(labelPtr, size.Value, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for a float value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<float> v, float vMin, float vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderFloatEx(labelPtr, size.Value, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for a signed byte value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<sbyte> v, sbyte vMin, sbyte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S8, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for a byte value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<byte> v, byte vMin, byte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U8, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for a short value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<short> v, short vMin, short vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S16, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for an unsigned short value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<ushort> v, ushort vMin, ushort vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U16, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for an unsigned int value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<uint> v, uint vMin, uint vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U32, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for a long value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%lld").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<long> v, long vMin, long vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S64, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for an unsigned long value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%llu").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<ulong> v, ulong vMin, ulong vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U64, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a vertical slider for a double value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="size">The size of the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vMin">Minimum value.</param>
+    /// <param name="vMax">Maximum value.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<double> v, double vMin, double vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.Double, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
 }
