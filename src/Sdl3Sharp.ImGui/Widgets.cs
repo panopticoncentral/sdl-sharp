@@ -2242,4 +2242,38 @@ public unsafe static class Widgets
             ImGui_PlotHistogramEx(labelPtr, valuesPtr, values.Length, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.Value, sizeof(float));
         }
     }
+
+    /// <summary>
+    /// Creates a menu item with explicit parameters.
+    /// </summary>
+    /// <param name="label">The item label.</param>
+    /// <param name="shortcut">Optional shortcut text displayed on the right.</param>
+    /// <param name="selected">Whether to show a check mark.</param>
+    /// <param name="enabled">Whether the item is enabled.</param>
+    /// <returns>True when activated.</returns>
+    public static bool MenuItem(ReadOnlySpan<byte> label, ReadOnlySpan<byte> shortcut, bool selected = false, bool enabled = true)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* shortcutPtr = shortcut)
+        {
+            return ImGui_MenuItemEx(labelPtr, shortcutPtr, selected, enabled);
+        }
+    }
+
+    /// <summary>
+    /// Creates a menu item with mutable selection state.
+    /// </summary>
+    /// <param name="label">The item label.</param>
+    /// <param name="shortcut">Optional shortcut text displayed on the right.</param>
+    /// <param name="pSelected">Reference to selection state (toggles on activation).</param>
+    /// <param name="enabled">Whether the item is enabled.</param>
+    /// <returns>True when activated.</returns>
+    public static bool MenuItem(ReadOnlySpan<byte> label, ReadOnlySpan<byte> shortcut, StateRef<bool> pSelected, bool enabled = true)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* shortcutPtr = shortcut)
+        {
+            return ImGui_MenuItemBoolPtr(labelPtr, shortcutPtr, pSelected.Ptr, enabled);
+        }
+    }
 }
