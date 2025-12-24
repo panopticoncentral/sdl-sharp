@@ -1,24 +1,22 @@
 using Sdl3Sharp;
+using Sdl3Sharp.Demo;
 using Sdl3Sharp.Graphics;
 using ImGui = Sdl3Sharp.ImGui;
-using Sdl3Sharp.ImGui.Backends;
-
-using Sdl3WindowFlags = Sdl3Sharp.Graphics.WindowFlags;
 
 // Initialize SDL
 using Application app = new(Subsystems.Video);
 
 // Create window and renderer
-(Window? window, Renderer? renderer) = Renderer.CreateWindowAndRenderer("ImGui SDL Renderer Demo", new(1280, 720), Sdl3WindowFlags.Resizable);
+(Window? window, Renderer? renderer) = Renderer.CreateWindowAndRenderer("ImGui SDL Renderer Demo", new(1280, 720), WindowFlags.Resizable);
 
 // Create ImGui context
-using ImGui.Context context = new();
+using var context = ImGui.Context.Create();
 ImGui.Context.Style.FontSizeBase = 24.0f;
 ImGui.Context.Current = context;
 
 // Initialize ImGui backends
-SDL3Backend.InitForSDLRenderer(window, renderer);
-SDLRenderer3Backend.Init(renderer);
+ImGui.Backends.SDL3Backend.InitForSDLRenderer(window, renderer);
+ImGui.Backends.SDLRenderer3Backend.Init(renderer);
 
 // Create a state store for persistent ImGui state
 using var state = new ImGui.StateStore();
@@ -28,24 +26,28 @@ Application.Quitting += (sender, e) => quit = true;
 
 // Demo state
 ImGui.StateRef<bool> showDemoWindow = state.Create(true);
+ImGui.StateRef<bool> showManagedDemoWindow = state.Create(true);
 
 // Handle live resize: render during window resize on Windows
 void DoFrame()
 {
     // Start the ImGui frame
-    SDL3Backend.NewFrame();
-    SDLRenderer3Backend.NewFrame();
+    ImGui.Backends.SDL3Backend.NewFrame();
+    ImGui.Backends.SDLRenderer3Backend.NewFrame();
     ImGui.Context.NewFrame();
 
     // Show the ImGui demo window
     ImGui.Context.ShowDemoWindow(showDemoWindow);
+
+    // Show the managed ImGui demo window
+    ImGuiDemoWindow.ShowDemoWindow(showManagedDemoWindow);
 
     // Rendering
     ImGui.Context.Render();
 
     renderer.DrawColor = new Color(45, 55, 60, 255);
     renderer.Clear();
-    SDLRenderer3Backend.RenderDrawData(renderer);
+    ImGui.Backends.SDLRenderer3Backend.RenderDrawData(renderer);
     renderer.Present();
 }
 
@@ -63,7 +65,7 @@ while (!quit)
     Event? e;
     while ((e = EventQueue.Poll()) != null)
     {
-        _ = SDL3Backend.ProcessEvent(e.Value);
+        _ = ImGui.Backends.SDL3Backend.ProcessEvent(e.Value);
         EventQueue.DispatchEvent(e.Value);
     }
 
@@ -72,8 +74,8 @@ while (!quit)
 
 // Cleanup
 EventQueue.RemoveWatch(watchHandle);
-SDLRenderer3Backend.Shutdown();
-SDL3Backend.Shutdown();
+ImGui.Backends.SDLRenderer3Backend.Shutdown();
+ImGui.Backends.SDL3Backend.Shutdown();
 
 renderer.Dispose();
 window.Dispose();

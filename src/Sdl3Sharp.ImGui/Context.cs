@@ -51,9 +51,9 @@ public unsafe readonly struct Context: IDisposable
     /// Initializes a new instance of the Context class, optionally using a specified font atlas.
     /// </summary>
     /// <param name="fontAtlas">An optional FontAtlas to use for font rendering. If null, a default font atlas is created and used.</param>
-    public Context(FontAtlas? fontAtlas = null)
+    public static Context Create(FontAtlas? fontAtlas = null)
     {
-        Value = ImGui_CreateContext(fontAtlas == null ? null : fontAtlas.Value.Value);
+        return new Context(ImGui_CreateContext(fontAtlas == null ? null : fontAtlas.Value.Value));
     }
 
     internal Context(ImGuiContext* native)
