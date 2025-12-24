@@ -93,4 +93,51 @@ public unsafe readonly struct Font
     {
         return new(ImGui_GetFontTexUvWhitePixel());
     }
+
+    /// <summary>
+    /// Vertically aligns upcoming text baseline to FramePadding.Y.
+    /// </summary>
+    /// <remarks>
+    /// Call this if you have text on a line before a framed item, so that it will align properly.
+    /// </remarks>
+    public static void AlignTextToFramePadding()
+    {
+        ImGui_AlignTextToFramePadding();
+    }
+
+    /// <summary>
+    /// Gets the height of a line of text (~~ FontSize).
+    /// </summary>
+    /// <returns>The text line height in pixels.</returns>
+    public static float GetTextLineHeight()
+    {
+        return ImGui_GetTextLineHeight();
+    }
+
+    /// <summary>
+    /// Gets the height of a line of text with spacing (~~ FontSize + style.ItemSpacing.Y).
+    /// </summary>
+    /// <returns>The distance in pixels between two consecutive lines of text.</returns>
+    public static float GetTextLineHeightWithSpacing()
+    {
+        return ImGui_GetTextLineHeightWithSpacing();
+    }
+
+    /// <summary>
+    /// Gets the height of a framed widget (~~ FontSize + style.FramePadding.Y * 2).
+    /// </summary>
+    /// <returns>The frame height in pixels.</returns>
+    public static float GetFrameHeight()
+    {
+        return ImGui_GetFrameHeight();
+    }
+
+    /// <summary>
+    /// Gets the height of a framed widget with spacing (~~ FontSize + style.FramePadding.Y * 2 + style.ItemSpacing.Y).
+    /// </summary>
+    /// <returns>The distance in pixels between two consecutive lines of framed widgets.</returns>
+    public static float GetFrameHeightWithSpacing()
+    {
+        return ImGui_GetFrameHeightWithSpacing();
+    }
 }

@@ -84,6 +84,65 @@ public readonly unsafe ref struct Window: IDisposable
     public static float ScrollMaxY => ImGui_GetScrollMaxY();
 
     /// <summary>
+    /// Gets or sets the cursor position in absolute screen coordinates.
+    /// </summary>
+    /// <remarks>
+    /// This is your best friend! Prefer using this rather than <see cref="CursorPos"/>.
+    /// Also more useful when working with the DrawList API.
+    /// </remarks>
+    public static Point CursorScreenPosition
+    {
+        get => new(ImGui_GetCursorScreenPos());
+        set => ImGui_SetCursorScreenPos(value.Value);
+    }
+
+    /// <summary>
+    /// Gets the available space from the current cursor position.
+    /// </summary>
+    /// <remarks>
+    /// This is your best friend!
+    /// </remarks>
+    public static Size ContentRegionAvail => new(ImGui_GetContentRegionAvail());
+
+    /// <summary>
+    /// Gets or sets the cursor position in window-local coordinates.
+    /// </summary>
+    /// <remarks>
+    /// This is not your best friend. Prefer <see cref="CursorScreenPos"/>.
+    /// </remarks>
+    public static Point CursorPosition
+    {
+        get => new(ImGui_GetCursorPos());
+        set => ImGui_SetCursorPos(value.Value);
+    }
+
+    /// <summary>
+    /// Gets or sets the cursor X position in window-local coordinates.
+    /// </summary>
+    public static float CursorPositionX
+    {
+        get => ImGui_GetCursorPosX();
+        set => ImGui_SetCursorPosX(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the cursor Y position in window-local coordinates.
+    /// </summary>
+    public static float CursorPositionY
+    {
+        get => ImGui_GetCursorPosY();
+        set => ImGui_SetCursorPosY(value);
+    }
+
+    /// <summary>
+    /// Gets the initial cursor position in window-local coordinates.
+    /// </summary>
+    /// <remarks>
+    /// Call <see cref="CursorScreenPos"/> after Begin to get the absolute coordinates version.
+    /// </remarks>
+    public static Point CursorStartPosition => new(ImGui_GetCursorStartPos());
+
+    /// <summary>
     /// Begins a new window.
     /// </summary>
     /// <param name="name">The window name, used as a unique identifier. Use "##" to pass a label that isn't displayed.</param>
