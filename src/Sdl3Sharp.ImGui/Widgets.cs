@@ -481,23 +481,6 @@ public unsafe static class Widgets
     }
 
     /// <summary>
-    /// Creates a combo box with items separated by null characters and explicit popup height.
-    /// </summary>
-    /// <param name="label">The label for the combo box.</param>
-    /// <param name="currentItem">Reference to the current selected item index.</param>
-    /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
-    /// <param name="popupMaxHeightInItems">Maximum height in items. Use -1 for default.</param>
-    /// <returns>True if the selection changed.</returns>
-    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems = -1)
-    {
-        fixed (byte* labelPtr = label)
-        fixed (byte* itemsPtr = itemsSeparatedByZeros)
-        {
-            return ImGui_ComboEx(labelPtr, currentItem.Ptr, itemsPtr, popupMaxHeightInItems);
-        }
-    }
-
-    /// <summary>
     /// Creates a drag slider for an int value with explicit parameters.
     /// </summary>
     /// <param name="label">The label for the slider.</param>
@@ -2099,5 +2082,164 @@ public unsafe static class Widgets
     public static void SetColorEditOptions(ColorEditFlags flags)
     {
         ImGui_SetColorEditOptions((Native.ImGuiColorEditFlags)flags);
+    }
+
+    /// <summary>
+    /// Creates a tree node.
+    /// </summary>
+    /// <param name="label">The node label.</param>
+    /// <returns>True if the node is open. Call <see cref="TreePop"/> when done if this returns true.</returns>
+    public static bool TreeNode(ReadOnlySpan<byte> label)
+    {
+        fixed (byte* ptr = label)
+        {
+            return ImGui_TreeNode(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Creates a tree node with flags.
+    /// </summary>
+    /// <param name="label">The node label.</param>
+    /// <param name="flags">Tree node behavior flags.</param>
+    /// <returns>True if the node is open. Call <see cref="TreePop"/> when done if this returns true.</returns>
+    public static bool TreeNode(ReadOnlySpan<byte> label, TreeNodeFlags flags)
+    {
+        fixed (byte* ptr = label)
+        {
+            return ImGui_TreeNodeEx(ptr, (Native.ImGuiTreeNodeFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Gets the horizontal distance preceding a label when using TreeNode or Bullet.
+    /// </summary>
+    /// <returns>The spacing in pixels.</returns>
+    public static float GetTreeNodeToLabelSpacing()
+    {
+        return ImGui_GetTreeNodeToLabelSpacing();
+    }
+
+    /// <summary>
+    /// Creates a collapsing header.
+    /// </summary>
+    /// <param name="label">The header label.</param>
+    /// <param name="flags">Tree node behavior flags.</param>
+    /// <returns>True if the header is open.</returns>
+    /// <remarks>
+    /// Doesn't indent or push onto the ID stack. User doesn't have to call TreePop().
+    /// </remarks>
+    public static bool CollapsingHeader(ReadOnlySpan<byte> label, TreeNodeFlags flags = TreeNodeFlags.None)
+    {
+        fixed (byte* ptr = label)
+        {
+            return ImGui_CollapsingHeader(ptr, (Native.ImGuiTreeNodeFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a collapsing header with a close button.
+    /// </summary>
+    /// <param name="label">The header label.</param>
+    /// <param name="pVisible">Reference to visibility state. If false, header is not displayed.</param>
+    /// <param name="flags">Tree node behavior flags.</param>
+    /// <returns>True if the header is open.</returns>
+    public static bool CollapsingHeader(ReadOnlySpan<byte> label, StateRef<bool> pVisible, TreeNodeFlags flags = TreeNodeFlags.None)
+    {
+        fixed (byte* ptr = label)
+        {
+            return ImGui_CollapsingHeaderBoolPtr(ptr, pVisible.Ptr, (Native.ImGuiTreeNodeFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Sets the next TreeNode/CollapsingHeader open state.
+    /// </summary>
+    /// <param name="isOpen">Whether the node should be open.</param>
+    /// <param name="cond">Condition for applying the state.</param>
+    public static void SetNextItemOpen(bool isOpen, Cond cond = Cond.None)
+    {
+        ImGui_SetNextItemOpen(isOpen, (Native.ImGuiCond)cond);
+    }
+
+    /// <summary>
+    /// Sets the ID to use for open/close storage (default is same as item ID).
+    /// </summary>
+    /// <param name="storageId">The storage ID.</param>
+    public static void SetNextItemStorageID(Id storageId)
+    {
+        ImGui_SetNextItemStorageID(storageId.Value);
+    }
+
+    /// <summary>
+    /// Creates a selectable item with explicit parameters.
+    /// </summary>
+    /// <param name="label">The item label.</param>
+    /// <param name="selected">Whether the item is currently selected (read-only).</param>
+    /// <param name="flags">Selectable behavior flags.</param>
+    /// <param name="size">The item size.</param>
+    /// <returns>True when clicked.</returns>
+    public static bool Selectable(ReadOnlySpan<byte> label, bool selected, SelectableFlags flags = SelectableFlags.None, Size size = default)
+    {
+        fixed (byte* ptr = label)
+        {
+            return ImGui_SelectableEx(ptr, selected, (Native.ImGuiSelectableFlags)flags, size.Value);
+        }
+    }
+
+    /// <summary>
+    /// Creates a selectable item with mutable selection state and explicit size.
+    /// </summary>
+    /// <param name="label">The item label.</param>
+    /// <param name="pSelected">Reference to selection state (read-write).</param>
+    /// <param name="flags">Selectable behavior flags.</param>
+    /// <param name="size">The item size.</param>
+    /// <returns>True when clicked.</returns>
+    public static bool Selectable(ReadOnlySpan<byte> label, StateRef<bool> pSelected, SelectableFlags flags = SelectableFlags.None, Size size = default)
+    {
+        fixed (byte* ptr = label)
+        {
+            return ImGui_SelectableBoolPtrEx(ptr, pSelected.Ptr, (Native.ImGuiSelectableFlags)flags, size.Value);
+        }
+    }
+
+    /// <summary>
+    /// Plots a line graph from an array of values with extended options.
+    /// </summary>
+    /// <param name="label">The label for the plot.</param>
+    /// <param name="values">The array of values to plot.</param>
+    /// <param name="valuesOffset">Index offset into the values array.</param>
+    /// <param name="overlayText">Text to overlay on the graph.</param>
+    /// <param name="scaleMin">The minimum scale value (float.MaxValue for auto).</param>
+    /// <param name="scaleMax">The maximum scale value (float.MaxValue for auto).</param>
+    /// <param name="graphSize">The size of the graph (0,0 for default).</param>
+    public static void PlotLines(ReadOnlySpan<byte> label, ReadOnlySpan<float> values, int valuesOffset, ReadOnlySpan<byte> overlayText, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, Vec2 graphSize = default)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (float* valuesPtr = values)
+        fixed (byte* overlayPtr = overlayText)
+        {
+            ImGui_PlotLinesEx(labelPtr, valuesPtr, values.Length, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.Value, sizeof(float));
+        }
+    }
+
+    /// <summary>
+    /// Plots a histogram from an array of values with extended options.
+    /// </summary>
+    /// <param name="label">The label for the plot.</param>
+    /// <param name="values">The array of values to plot.</param>
+    /// <param name="valuesOffset">Index offset into the values array.</param>
+    /// <param name="overlayText">Text to overlay on the graph.</param>
+    /// <param name="scaleMin">The minimum scale value (float.MaxValue for auto).</param>
+    /// <param name="scaleMax">The maximum scale value (float.MaxValue for auto).</param>
+    /// <param name="graphSize">The size of the graph (0,0 for default).</param>
+    public static void PlotHistogram(ReadOnlySpan<byte> label, ReadOnlySpan<float> values, int valuesOffset, ReadOnlySpan<byte> overlayText, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, Vec2 graphSize = default)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (float* valuesPtr = values)
+        fixed (byte* overlayPtr = overlayText)
+        {
+            ImGui_PlotHistogramEx(labelPtr, valuesPtr, values.Length, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.Value, sizeof(float));
+        }
     }
 }
