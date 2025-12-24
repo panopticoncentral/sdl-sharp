@@ -1565,4 +1565,443 @@ public unsafe static class Widgets
             return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.Double, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
+
+    /// <summary>
+    /// Creates a keyboard input for an int value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<int> v, int step = 0, int stepFast = 0, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        {
+            return ImGui_InputIntEx(labelPtr, v.Ptr, step, stepFast, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for a float value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<float> v, float step = 0.0f, float stepFast = 0.0f, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputFloatEx(labelPtr, v.Ptr, step, stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for a double value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<double> v, double step = 0.0, double stepFast = 0.0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputDoubleEx(labelPtr, v.Ptr, step, stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for a signed byte value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<sbyte> v, sbyte step = 0, sbyte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for a byte value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<byte> v, byte step = 0, byte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for a short value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<short> v, short step = 0, short stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an unsigned short value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<ushort> v, ushort step = 0, ushort stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an unsigned int value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<uint> v, uint step = 0, uint stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for a long value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%lld").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<long> v, long step = 0, long stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an unsigned long value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%llu").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateRef<ulong> v, ulong step = 0, ulong stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of int values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<int> v, int step = 0, int stepFast = 0, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        {
+            return v.Length switch
+            {
+                2 => ImGui_InputInt2(labelPtr, v.Ptr, (Native.ImGuiInputTextFlags)flags),
+                3 => ImGui_InputInt3(labelPtr, v.Ptr, (Native.ImGuiInputTextFlags)flags),
+                4 => ImGui_InputInt4(labelPtr, v.Ptr, (Native.ImGuiInputTextFlags)flags),
+                _ => ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S32, v.Ptr, v.Length, &step, &stepFast, null, (Native.ImGuiInputTextFlags)flags),
+            };
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of float values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<float> v, float step = 0.0f, float stepFast = 0.0f, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return v.Length switch
+            {
+                2 => ImGui_InputFloat2Ex(labelPtr, v.Ptr, formatPtr, (Native.ImGuiInputTextFlags)flags),
+                3 => ImGui_InputFloat3Ex(labelPtr, v.Ptr, formatPtr, (Native.ImGuiInputTextFlags)flags),
+                4 => ImGui_InputFloat4Ex(labelPtr, v.Ptr, formatPtr, (Native.ImGuiInputTextFlags)flags),
+                _ => ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.Float, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags),
+            };
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of signed byte values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<sbyte> v, sbyte step = 0, sbyte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of byte values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<byte> v, byte step = 0, byte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of short values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<short> v, short step = 0, short stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of unsigned short values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<ushort> v, ushort step = 0, ushort stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of unsigned int values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<uint> v, uint step = 0, uint stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of long values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%lld").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<long> v, long step = 0, long stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of unsigned long values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%llu").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<ulong> v, ulong step = 0, ulong stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a keyboard input for an array of double values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="step">Step value for +/- buttons. Use 0 to hide buttons.</param>
+    /// <param name="stepFast">Fast step value when holding Ctrl.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<double> v, double step = 0.0, double stepFast = 0.0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a single-line text input field.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="buf">The buffer to hold the text. Must be null-terminated.</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the text was modified.</returns>
+    public static bool InputText(ReadOnlySpan<byte> label, Span<byte> buf, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* bufPtr = buf)
+        {
+            return ImGui_InputText(labelPtr, bufPtr, (nuint)buf.Length, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a multi-line text input field.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="buf">The buffer to hold the text. Must be null-terminated.</param>
+    /// <param name="size">The size of the input area. Use (0,0) for default size.</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the text was modified.</returns>
+    public static bool InputTextMultiline(ReadOnlySpan<byte> label, Span<byte> buf, Size size = default, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* bufPtr = buf)
+        {
+            return ImGui_InputTextMultilineEx(labelPtr, bufPtr, (nuint)buf.Length, size.Value, (Native.ImGuiInputTextFlags)flags, null, null);
+        }
+    }
+
+    /// <summary>
+    /// Creates a single-line text input field with a hint displayed when empty.
+    /// </summary>
+    /// <param name="label">The label for the input.</param>
+    /// <param name="hint">The hint text displayed when the input is empty.</param>
+    /// <param name="buf">The buffer to hold the text. Must be null-terminated.</param>
+    /// <param name="flags">Input text behavior flags.</param>
+    /// <returns>True if the text was modified.</returns>
+    public static bool InputTextWithHint(ReadOnlySpan<byte> label, ReadOnlySpan<byte> hint, Span<byte> buf, InputTextFlags flags = InputTextFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* hintPtr = hint)
+        fixed (byte* bufPtr = buf)
+        {
+            return ImGui_InputTextWithHint(labelPtr, hintPtr, bufPtr, (nuint)buf.Length, (Native.ImGuiInputTextFlags)flags);
+        }
+    }
 }
