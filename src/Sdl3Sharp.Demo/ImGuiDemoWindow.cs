@@ -18,5 +18,17 @@ public static class ImGuiDemoWindow
         {
             return;
         }
+
+        // Most framed widgets share a common width settings. Remaining width is used for the label.
+        // The width of the frame may be changed with PushItemWidth() or SetNextItemWidth().
+        // - Positive value for absolute size, negative value for right-alignment.
+        // - The default value is about GetWindowWidth() * 0.65f.
+        // - See 'Demo->Layout->Widgets Width' for details.
+        // Here we change the frame width based on how much width we want to give to the label.
+        var labelWidthBase = Font.GetFontSize() * 12; // Some amount of width for label, based on font size.
+        var labelWidthMax = Window.ContentRegionAvail.Width * 0.40f; // ...but always leave some room for framed widgets.
+        var labelWidth = Math.Min(labelWidthBase, labelWidthMax);
+        using var itemWidthScope = ItemWidthScope.Push(-labelWidth); // Right-align: framed items will leave 'label_width' available for the label.
+
     }
 }
