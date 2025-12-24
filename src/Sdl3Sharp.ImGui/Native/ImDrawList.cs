@@ -320,10 +320,10 @@ public unsafe partial struct ImDrawList
     /// Implied userdata_size = 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddCallback")]
-    public static partial void AddCallback(ImDrawList* self, delegate* unmanaged[Cdecl]<ImDrawList*, ImDrawCmd*, void> callback, nint userdata);
+    public static partial void AddCallback(ImDrawList* self, delegate* unmanaged[Cdecl]<ImDrawList*, ImDrawCmd*, void> callback, void* userdata);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_AddCallbackEx")]
-    public static partial void AddCallback(ImDrawList* self, delegate* unmanaged[Cdecl]<ImDrawList*, ImDrawCmd*, void> callback, nint userdata, nuint userdata_size);
+    public static partial void AddCallback(ImDrawList* self, delegate* unmanaged[Cdecl]<ImDrawList*, ImDrawCmd*, void> callback, void* userdata, nuint userdata_size);
 
     /// <summary>
     /// Advanced: Miscellaneous

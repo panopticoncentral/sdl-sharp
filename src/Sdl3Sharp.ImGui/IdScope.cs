@@ -45,7 +45,7 @@ public unsafe readonly ref struct IdScope : IDisposable
     /// <returns>An <see cref="IdScope"/> that automatically pops the ID when disposed.</returns>
     public static IdScope Push(nint ptrId)
     {
-        ImGui_PushIDPtr(ptrId);
+        ImGui_PushIDPtr((void*)ptrId);
         return new IdScope();
     }
 

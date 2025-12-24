@@ -62,12 +62,12 @@ public unsafe partial struct ImGuiViewport
     /// Platform/Backend Dependent Data
     /// void* to hold higher-level, platform window handle (e.g. HWND, GLFWWindow*, SDL_Window*)
     /// </summary>
-    public nint PlatformHandle;
+    public void* PlatformHandle;
 
     /// <summary>
     /// void* to hold lower-level, platform-native window handle (under Win32 this is expected to be a HWND, unused for other platforms)
     /// </summary>
-    public nint PlatformHandleRaw;
+    public void* PlatformHandleRaw;
 
     /// <summary>
     /// Helpers

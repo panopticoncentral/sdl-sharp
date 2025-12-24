@@ -35,6 +35,26 @@ public unsafe sealed class StateStore : IDisposable
     }
 
     /// <summary>
+    /// Creates a reference to a stored value.
+    /// </summary>
+    /// <typeparam name="T">The type of value to store. Must be an unmanaged type.</typeparam>
+    /// <param name="defaultValue">The initial value to use.</param>
+    /// <returns>A reference to the stored value.</returns>
+    public StateArrayRef<T> CreateArray<T>(int length) where T : unmanaged
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        var ptr = (nint)NativeMemory.Alloc((nuint)sizeof(T) * (uint)length);
+        for (var i = 0; i < length; i++)
+        {
+            *(T*)(ptr + sizeof(T) * i) = default;
+        }
+        _storage.Add(ptr);
+
+        return new StateArrayRef<T>((T*)ptr, length);
+    }
+    
+    /// <summary>
     /// Releases all native memory allocated by this store.
     /// </summary>
     public void Dispose()

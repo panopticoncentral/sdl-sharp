@@ -78,8 +78,8 @@ public unsafe readonly struct IO
     /// </summary>
     public nint UserData
     {
-        get => Native->UserData;
-        set => Native->UserData = value;
+        get => (nint)Native->UserData;
+        set => Native->UserData = (void*)value;
     }
 
     /// <summary>
@@ -417,8 +417,8 @@ public unsafe readonly struct IO
     /// </summary>
     public nint BackendPlatformUserData
     {
-        get => Native->BackendPlatformUserData;
-        set => Native->BackendPlatformUserData = value;
+        get => (nint)Native->BackendPlatformUserData;
+        set => Native->BackendPlatformUserData = (void*)value;
     }
 
     /// <summary>
@@ -426,8 +426,8 @@ public unsafe readonly struct IO
     /// </summary>
     public nint BackendRendererUserData
     {
-        get => Native->BackendRendererUserData;
-        set => Native->BackendRendererUserData = value;
+        get => (nint)Native->BackendRendererUserData;
+        set => Native->BackendRendererUserData = (void*)value;
     }
 
     /// <summary>
@@ -435,8 +435,8 @@ public unsafe readonly struct IO
     /// </summary>
     public nint BackendLanguageUserData
     {
-        get => Native->BackendLanguageUserData;
-        set => Native->BackendLanguageUserData = value;
+        get => (nint)Native->BackendLanguageUserData;
+        set => Native->BackendLanguageUserData = (void*)value;
     }
 
     /// <summary>

@@ -325,10 +325,10 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
             return "nint";
         }
 
-        // void* -> nint
+        // void* -> void*
         if (innerType.Kind == "Builtin" && innerType.BuiltinType == "void")
         {
-            return "nint";
+            return "void*";
         }
 
         // char* -> byte* (marshalling handled at managed wrapper level)

@@ -479,4 +479,479 @@ public unsafe static class Widgets
             return ImGui_ImageButtonEx(ptr, texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.Value, tintCol.Value);
         }
     }
+
+    /// <summary>
+    /// Creates a combo box with items separated by null characters and explicit popup height.
+    /// </summary>
+    /// <param name="label">The label for the combo box.</param>
+    /// <param name="currentItem">Reference to the current selected item index.</param>
+    /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
+    /// <param name="popupMaxHeightInItems">Maximum height in items. Use -1 for default.</param>
+    /// <returns>True if the selection changed.</returns>
+    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems = -1)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* itemsPtr = itemsSeparatedByZeros)
+        {
+            return ImGui_ComboEx(labelPtr, currentItem.Ptr, itemsPtr, popupMaxHeightInItems);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an int value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<int> v, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragIntEx(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for a float value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<float> v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragFloatEx(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for a signed byte value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<sbyte> v, float vSpeed, sbyte vMin = 0, sbyte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for a byte value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<byte> v, float vSpeed, byte vMin = 0, byte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for a short value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<short> v, float vSpeed, short vMin = 0, short vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an unsigned short value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<ushort> v, float vSpeed, ushort vMin = 0, ushort vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an unsigned int value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<uint> v, float vSpeed, uint vMin = 0, uint vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for a long value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%lld").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<long> v, float vSpeed, long vMin = 0, long vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an unsigned long value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%llu").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<ulong> v, float vSpeed, ulong vMin = 0, ulong vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for a double value with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if the value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateRef<double> v, float vSpeed, double vMin = 0.0, double vMax = 0.0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of int values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<int> v, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return v.Length switch
+            {
+                2 => ImGui_DragInt2Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                3 => ImGui_DragInt3Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                4 => ImGui_DragInt4Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                _ => ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S32, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+            };
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of float values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<float> v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return v.Length switch
+            {
+                2 => ImGui_DragFloat2Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                3 => ImGui_DragFloat3Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                4 => ImGui_DragFloat4Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                _ => ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.Float, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+            };
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of signed byte values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<sbyte> v, float vSpeed, sbyte vMin = 0, sbyte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of byte values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<byte> v, float vSpeed, byte vMin = 0, byte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of short values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%d").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<short> v, float vSpeed, short vMin = 0, short vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of unsigned short values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<ushort> v, float vSpeed, ushort vMin = 0, ushort vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of unsigned int values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%u").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<uint> v, float vSpeed, uint vMin = 0, uint vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of long values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%lld").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<long> v, float vSpeed, long vMin = 0, long vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of unsigned long values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%llu").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<ulong> v, float vSpeed, ulong vMin = 0, ulong vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an array of double values with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="v">Reference to the array of values.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="vMax">Maximum value. If vMin >= vMax, there is no bound.</param>
+    /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if any value changed.</returns>
+    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<double> v, float vSpeed, double vMin = 0.0, double vMax = 0.0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        {
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for a float range with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="vCurrentMin">Reference to the minimum value.</param>
+    /// <param name="vCurrentMax">Reference to the maximum value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum allowed value.</param>
+    /// <param name="vMax">Maximum allowed value.</param>
+    /// <param name="format">Printf format string for the min value.</param>
+    /// <param name="formatMax">Printf format string for the max value. If null, uses format.</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if either value changed.</returns>
+    public static bool DragRange(ReadOnlySpan<byte> label, StateRef<float> vCurrentMin, StateRef<float> vCurrentMax, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        fixed (byte* formatMaxPtr = formatMax)
+        {
+            return ImGui_DragFloatRange2Ex(labelPtr, vCurrentMin.Ptr, vCurrentMax.Ptr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a drag slider for an integer range with explicit parameters.
+    /// </summary>
+    /// <param name="label">The label for the slider.</param>
+    /// <param name="vCurrentMin">Reference to the minimum value.</param>
+    /// <param name="vCurrentMax">Reference to the maximum value.</param>
+    /// <param name="vSpeed">The speed of value change per pixel of mouse movement.</param>
+    /// <param name="vMin">Minimum allowed value.</param>
+    /// <param name="vMax">Maximum allowed value.</param>
+    /// <param name="format">Printf format string for the min value.</param>
+    /// <param name="formatMax">Printf format string for the max value. If null, uses format.</param>
+    /// <param name="flags">Slider behavior flags.</param>
+    /// <returns>True if either value changed.</returns>
+    public static bool DragRange(ReadOnlySpan<byte> label, StateRef<int> vCurrentMin, StateRef<int> vCurrentMax, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
+        fixed (byte* formatMaxPtr = formatMax)
+        {
+            return ImGui_DragIntRange2Ex(labelPtr, vCurrentMin.Ptr, vCurrentMax.Ptr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (Native.ImGuiSliderFlags)flags);
+        }
+    }
 }

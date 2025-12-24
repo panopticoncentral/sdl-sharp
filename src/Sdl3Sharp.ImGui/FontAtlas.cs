@@ -84,8 +84,8 @@ public unsafe readonly struct FontAtlas
     /// </summary>
     public nint UserData
     {
-        get => Value->UserData;
-        set => Value->UserData = value;
+        get => (nint)Value->UserData;
+        set => Value->UserData = (void*)value;
     }
 
     /// <summary>
@@ -178,7 +178,7 @@ public unsafe readonly struct FontAtlas
             FontConfig config = fontConfig!.Value;
             fixed (byte* dataPtr = fontData)
             {
-                return new(ImFontAtlas.AddFontFromMemoryTTF(Value, (nint)dataPtr, fontData.Length, sizePixels, (ImFontConfig*)&config, null));
+                return new(ImFontAtlas.AddFontFromMemoryTTF(Value, dataPtr, fontData.Length, sizePixels, (ImFontConfig*)&config, null));
             }
         }
     }
@@ -196,11 +196,11 @@ public unsafe readonly struct FontAtlas
         {
             if (fontConfig is null)
             {
-                return new(ImFontAtlas.AddFontFromMemoryCompressedTTF(Value, (nint)dataPtr, compressedFontData.Length, sizePixels, null, null));
+                return new(ImFontAtlas.AddFontFromMemoryCompressedTTF(Value, dataPtr, compressedFontData.Length, sizePixels, null, null));
             }
 
             FontConfig config = fontConfig.Value;
-            return new(ImFontAtlas.AddFontFromMemoryCompressedTTF(Value, (nint)dataPtr, compressedFontData.Length, sizePixels, (ImFontConfig*)&config, null));
+            return new(ImFontAtlas.AddFontFromMemoryCompressedTTF(Value, dataPtr, compressedFontData.Length, sizePixels, (ImFontConfig*)&config, null));
         }
     }
 

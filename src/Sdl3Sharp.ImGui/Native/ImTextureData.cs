@@ -37,7 +37,7 @@ public unsafe partial struct ImTextureData
     /// <summary>
     /// -    rw  // Convenience storage for backend. Some backends may have enough with TexID.
     /// </summary>
-    public nint BackendUserData;
+    public void* BackendUserData;
 
     /// <summary>
     /// r    w   // Backend-specific texture identifier. Always use SetTexID() to modify! The identifier will stored in ImDrawCmd::GetTexID() and passed to backend's RenderDrawData function.
@@ -106,10 +106,10 @@ public unsafe partial struct ImTextureData
     public static partial void DestroyPixels(ImTextureData* self);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImTextureData_GetPixels")]
-    public static partial nint GetPixels(ImTextureData* self);
+    public static partial void* GetPixels(ImTextureData* self);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImTextureData_GetPixelsAt")]
-    public static partial nint GetPixelsAt(ImTextureData* self, int x, int y);
+    public static partial void* GetPixelsAt(ImTextureData* self, int x, int y);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImTextureData_GetSizeInBytes")]
     public static partial int GetSizeInBytes(ImTextureData* self);

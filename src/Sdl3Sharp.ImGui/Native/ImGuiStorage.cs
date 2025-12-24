@@ -55,10 +55,10 @@ public unsafe partial struct ImGuiStorage
     /// default_val is NULL
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiStorage_GetVoidPtr")]
-    public static partial nint GetVoidPtr(ImGuiStorage* self, ImGuiID key);
+    public static partial void* GetVoidPtr(ImGuiStorage* self, ImGuiID key);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiStorage_SetVoidPtr")]
-    public static partial void SetVoidPtr(ImGuiStorage* self, ImGuiID key, nint val);
+    public static partial void SetVoidPtr(ImGuiStorage* self, ImGuiID key, void* val);
 
     /// <summary>
     /// - Get***Ref() functions finds pair, insert on demand if missing, return pointer. Useful if you intend to do Get+Set.
@@ -76,7 +76,7 @@ public unsafe partial struct ImGuiStorage
     public static partial float* GetFloatRef(ImGuiStorage* self, ImGuiID key, float default_val);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiStorage_GetVoidPtrRef")]
-    public static partial nint GetVoidPtrRef(ImGuiStorage* self, ImGuiID key, nint default_val);
+    public static partial nint GetVoidPtrRef(ImGuiStorage* self, ImGuiID key, void* default_val);
 
     /// <summary>
     /// Advanced: for quicker full rebuild of a storage (instead of an incremental one), you may add all your contents and then sort once.

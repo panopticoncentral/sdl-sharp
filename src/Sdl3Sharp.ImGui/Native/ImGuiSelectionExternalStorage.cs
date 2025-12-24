@@ -22,7 +22,7 @@ public unsafe partial struct ImGuiSelectionExternalStorage
     /// Members
     /// User data for use by adapter function                                // e.g. selection.UserData = (void*)my_items;
     /// </summary>
-    public nint UserData;
+    public void* UserData;
 
     /// <summary>
     /// e.g. AdapterSetItemSelected = [](ImGuiSelectionExternalStorage* self, int idx, bool selected) { ((MyItems**)self-&gt;UserData)[idx]-&gt;Selected = selected; }

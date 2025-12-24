@@ -21,7 +21,7 @@ public unsafe partial struct ImGuiPayload
     /// Members
     /// Data (copied and owned by dear imgui)
     /// </summary>
-    public nint Data;
+    public void* Data;
 
     /// <summary>
     /// Data size

@@ -9,55 +9,6 @@ namespace Sdl3Sharp.ImGui;
 /// </summary>
 public static unsafe class ImGui
 {
-    #region * Widgets: Combo Box (Dropdown)
-
-    /// <summary>
-    /// Begins a combo box (dropdown). Must be followed by <see cref="EndCombo"/> if this returns true.
-    /// </summary>
-    /// <param name="label">The label for the combo box.</param>
-    /// <param name="previewValue">The preview value displayed when closed.</param>
-    /// <param name="flags">Combo box behavior flags.</param>
-    /// <returns>True if the combo box is open and items should be rendered.</returns>
-    /// <remarks>
-    /// The BeginCombo()/EndCombo() API allows you to manage your contents and selection state however you want,
-    /// by creating e.g. Selectable() items.
-    /// </remarks>
-    public static bool BeginCombo(ReadOnlySpan<byte> label, ReadOnlySpan<byte> previewValue, ComboFlags flags = ComboFlags.None)
-    {
-        fixed (byte* labelPtr = label)
-        fixed (byte* previewPtr = previewValue)
-        {
-            return ImGui_BeginCombo(labelPtr, previewPtr, (Native.ImGuiComboFlags)flags);
-        }
-    }
-
-    /// <summary>
-    /// Ends a combo box. Only call this if <see cref="BeginCombo"/> returned true.
-    /// </summary>
-    public static void EndCombo()
-    {
-        ImGui_EndCombo();
-    }
-
-    /// <summary>
-    /// Creates a combo box with items separated by null characters and explicit popup height.
-    /// </summary>
-    /// <param name="label">The label for the combo box.</param>
-    /// <param name="currentItem">Reference to the current selected item index.</param>
-    /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
-    /// <param name="popupMaxHeightInItems">Maximum height in items. Use -1 for default.</param>
-    /// <returns>True if the selection changed.</returns>
-    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems = -1)
-    {
-        fixed (byte* labelPtr = label)
-        fixed (byte* itemsPtr = itemsSeparatedByZeros)
-        {
-            return ImGui_ComboEx(labelPtr, currentItem.Ptr, itemsPtr, popupMaxHeightInItems);
-        }
-    }
-
-    #endregion
-
     #region Widgets: Drag Sliders
 
     /// <summary>
@@ -486,7 +437,7 @@ public static unsafe class ImGui
         fixed (byte* labelPtr = label)
         fixed (byte* bufPtr = buf)
         {
-            return ImGui_InputTextMultilineEx(labelPtr, bufPtr, (nuint)buf.Length, size.Value, (Native.ImGuiInputTextFlags)flags, null, 0);
+            return ImGui_InputTextMultilineEx(labelPtr, bufPtr, (nuint)buf.Length, size.Value, (Native.ImGuiInputTextFlags)flags, null, null);
         }
     }
 
@@ -706,7 +657,7 @@ public static unsafe class ImGui
     /// <param name="ptrId">The pointer ID to push.</param>
     public static void TreePush(nint ptrId)
     {
-        ImGui_TreePushPtr(ptrId);
+        ImGui_TreePushPtr((void*)ptrId);
     }
 
     /// <summary>
@@ -1654,7 +1605,7 @@ public static unsafe class ImGui
         fixed (byte* typePtr = type)
         fixed (byte* dataPtr = data)
         {
-            return ImGui_SetDragDropPayload(typePtr, (nint)dataPtr, (nuint)data.Length, (Native.ImGuiCond)cond);
+            return ImGui_SetDragDropPayload(typePtr, dataPtr, (nuint)data.Length, (Native.ImGuiCond)cond);
         }
     }
 

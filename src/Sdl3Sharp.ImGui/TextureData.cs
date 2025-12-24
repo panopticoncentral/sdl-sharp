@@ -28,8 +28,8 @@ public unsafe readonly struct TextureData
     /// </summary>
     public nint BackendUserData
     {
-        get => Native->BackendUserData;
-        set => Native->BackendUserData = value;
+        get => (nint)Native->BackendUserData;
+        set => Native->BackendUserData = (void*)value;
     }
 
     /// <summary>

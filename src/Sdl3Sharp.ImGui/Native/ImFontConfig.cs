@@ -26,7 +26,7 @@ public unsafe partial struct ImFontConfig
     /// <summary>
     /// // TTF/OTF data
     /// </summary>
-    public nint FontData;
+    public void* FontData;
 
     /// <summary>
     /// // TTF/OTF data size

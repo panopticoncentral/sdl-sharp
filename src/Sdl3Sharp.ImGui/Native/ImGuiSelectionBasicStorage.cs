@@ -46,7 +46,7 @@ public unsafe partial struct ImGuiSelectionBasicStorage
     /// <summary>
     /// = NULL   // User data for use by adapter function        // e.g. selection.UserData = (void*)my_items;
     /// </summary>
-    public nint UserData;
+    public void* UserData;
 
     /// <summary>
     /// e.g. selection.AdapterIndexToStorageId = [](ImGuiSelectionBasicStorage* self, int idx) { return ((MyItems**)self-&gt;UserData)[idx]-&gt;ID; };

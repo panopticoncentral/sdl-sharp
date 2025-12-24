@@ -57,7 +57,7 @@ public unsafe partial struct ImGuiIO
     /// <summary>
     /// = NULL           // Store your own data.
     /// </summary>
-    public nint UserData;
+    public void* UserData;
 
     /// <summary>
     /// Font system
@@ -295,17 +295,17 @@ public unsafe partial struct ImGuiIO
     /// <summary>
     /// = NULL           // User data for platform backend
     /// </summary>
-    public nint BackendPlatformUserData;
+    public void* BackendPlatformUserData;
 
     /// <summary>
     /// = NULL           // User data for renderer backend
     /// </summary>
-    public nint BackendRendererUserData;
+    public void* BackendRendererUserData;
 
     /// <summary>
     /// = NULL           // User data for non C++ programming language backend
     /// </summary>
-    public nint BackendLanguageUserData;
+    public void* BackendLanguageUserData;
 
     /// <summary>
     /// Set when Dear ImGui will use mouse inputs, in this case do not dispatch them to your main game/application (either way, always pass on mouse inputs to imgui). (e.g. unclicked mouse is hovering over an imgui window, widget is active, mouse was clicked over an imgui window, etc.).

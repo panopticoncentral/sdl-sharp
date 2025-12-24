@@ -74,7 +74,7 @@ public unsafe partial struct ImFontAtlas
     /// <summary>
     /// Store your own atlas related user-data (if e.g. you have multiple font atlas).
     /// </summary>
-    public nint UserData;
+    public void* UserData;
 
     /// <summary>
     /// Latest texture identifier == TexData-&gt;GetTexRef().
@@ -99,13 +99,13 @@ public unsafe partial struct ImFontAtlas
     /// Note: Transfer ownership of 'ttf_data' to ImFontAtlas! Will be deleted after destruction of the atlas. Set font_cfg-&gt;FontDataOwnedByAtlas=false to keep ownership of your data and it won't be freed.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddFontFromMemoryTTF")]
-    public static partial ImFont* AddFontFromMemoryTTF(ImFontAtlas* self, nint font_data, int font_data_size, float size_pixels, ImFontConfig* font_cfg, ushort* glyph_ranges);
+    public static partial ImFont* AddFontFromMemoryTTF(ImFontAtlas* self, void* font_data, int font_data_size, float size_pixels, ImFontConfig* font_cfg, ushort* glyph_ranges);
 
     /// <summary>
     /// 'compressed_font_data' still owned by caller. Compress with binary_to_compressed_c.cpp.
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddFontFromMemoryCompressedTTF")]
-    public static partial ImFont* AddFontFromMemoryCompressedTTF(ImFontAtlas* self, nint compressed_font_data, int compressed_font_data_size, float size_pixels, ImFontConfig* font_cfg, ushort* glyph_ranges);
+    public static partial ImFont* AddFontFromMemoryCompressedTTF(ImFontAtlas* self, void* compressed_font_data, int compressed_font_data_size, float size_pixels, ImFontConfig* font_cfg, ushort* glyph_ranges);
 
     /// <summary>
     /// 'compressed_font_data_base85' still owned by caller. Compress with binary_to_compressed_c.cpp with -base85 parameter.

@@ -318,7 +318,7 @@ internal static unsafe partial class ImGui
     /// set next window size limits. use 0.0f or FLT_MAX if you don't want limits. Use -1 for both min and max of same axis to preserve current size (which itself is a constraint). Use callback to apply non-trivial programmatic constraints.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_SetNextWindowSizeConstraints(ImVec2 size_min, ImVec2 size_max, delegate* unmanaged[Cdecl]<ImGuiSizeCallbackData*, void> custom_callback, nint custom_callback_data);
+    public static partial void ImGui_SetNextWindowSizeConstraints(ImVec2 size_min, ImVec2 size_max, delegate* unmanaged[Cdecl]<ImGuiSizeCallbackData*, void> custom_callback, void* custom_callback_data);
 
     /// <summary>
     /// set next window content size (~ scrollable client area, which enforce the range of scrollbars). Not including window decorations (title bar, menu bar, etc.) nor WindowPadding. set an axis to 0.0f to leave it automatic. call before Begin()
@@ -872,7 +872,7 @@ internal static unsafe partial class ImGui
     /// push pointer into the ID stack (will hash pointer).
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_PushIDPtr(nint ptr_id);
+    public static partial void ImGui_PushIDPtr(void* ptr_id);
 
     /// <summary>
     /// push integer into the ID stack (will hash integer).
@@ -896,7 +896,7 @@ internal static unsafe partial class ImGui
     public static partial ImGuiID ImGui_GetIDStr(byte* str_id_begin, byte* str_id_end);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial ImGuiID ImGui_GetIDPtr(nint ptr_id);
+    public static partial ImGuiID ImGui_GetIDPtr(void* ptr_id);
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial ImGuiID ImGui_GetIDInt(int int_id);
@@ -1146,11 +1146,11 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ComboCallback(byte* label, int* current_item, delegate* unmanaged[Cdecl]<nint, int, byte*> getter, nint user_data, int items_count);
+    public static partial bool ImGui_ComboCallback(byte* label, int* current_item, delegate* unmanaged[Cdecl]<void*, int, byte*> getter, void* user_data, int items_count);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ComboCallbackEx(byte* label, int* current_item, delegate* unmanaged[Cdecl]<nint, int, byte*> getter, nint user_data, int items_count, int popup_max_height_in_items);
+    public static partial bool ImGui_ComboCallbackEx(byte* label, int* current_item, delegate* unmanaged[Cdecl]<void*, int, byte*> getter, void* user_data, int items_count, int popup_max_height_in_items);
 
     #endregion
 
@@ -1289,22 +1289,22 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragScalar(byte* label, ImGuiDataType data_type, nint p_data);
+    public static partial bool ImGui_DragScalar(byte* label, ImGuiDataType data_type, void* p_data);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragScalarEx(byte* label, ImGuiDataType data_type, nint p_data, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragScalarEx(byte* label, ImGuiDataType data_type, void* p_data, float v_speed, void* p_min, void* p_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied v_speed = 1.0f, p_min = NULL, p_max = NULL, format = NULL, flags = 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragScalarN(byte* label, ImGuiDataType data_type, nint p_data, int components);
+    public static partial bool ImGui_DragScalarN(byte* label, ImGuiDataType data_type, void* p_data, int components);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_DragScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, float v_speed, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_DragScalarNEx(byte* label, ImGuiDataType data_type, void* p_data, int components, float v_speed, void* p_min, void* p_max, byte* format, ImGuiSliderFlags flags);
 
     #endregion
 
@@ -1423,22 +1423,22 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderScalar(byte* label, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max);
+    public static partial bool ImGui_SliderScalar(byte* label, ImGuiDataType data_type, void* p_data, void* p_min, void* p_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderScalarEx(byte* label, ImGuiDataType data_type, void* p_data, void* p_min, void* p_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied format = NULL, flags = 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderScalarN(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_min, nint p_max);
+    public static partial bool ImGui_SliderScalarN(byte* label, ImGuiDataType data_type, void* p_data, int components, void* p_min, void* p_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SliderScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_SliderScalarNEx(byte* label, ImGuiDataType data_type, void* p_data, int components, void* p_min, void* p_max, byte* format, ImGuiSliderFlags flags);
 
     /// <summary>
     /// Implied format = "%.3f", flags = 0
@@ -1467,11 +1467,11 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_VSliderScalar(byte* label, ImVec2 size, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max);
+    public static partial bool ImGui_VSliderScalar(byte* label, ImVec2 size, ImGuiDataType data_type, void* p_data, void* p_min, void* p_max);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_VSliderScalarEx(byte* label, ImVec2 size, ImGuiDataType data_type, nint p_data, nint p_min, nint p_max, byte* format, ImGuiSliderFlags flags);
+    public static partial bool ImGui_VSliderScalarEx(byte* label, ImVec2 size, ImGuiDataType data_type, void* p_data, void* p_min, void* p_max, byte* format, ImGuiSliderFlags flags);
 
     #endregion
 
@@ -1489,7 +1489,7 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputTextEx(byte* label, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, nint user_data);
+    public static partial bool ImGui_InputTextEx(byte* label, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, void* user_data);
 
     /// <summary>
     /// Implied size = ImVec2(0, 0), flags = 0, callback = NULL, user_data = NULL
@@ -1500,7 +1500,7 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputTextMultilineEx(byte* label, byte* buf, nuint buf_size, ImVec2 size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, nint user_data);
+    public static partial bool ImGui_InputTextMultilineEx(byte* label, byte* buf, nuint buf_size, ImVec2 size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, void* user_data);
 
     /// <summary>
     /// Implied callback = NULL, user_data = NULL
@@ -1511,7 +1511,7 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputTextWithHintEx(byte* label, byte* hint, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, nint user_data);
+    public static partial bool ImGui_InputTextWithHintEx(byte* label, byte* hint, byte* buf, nuint buf_size, ImGuiInputTextFlags flags, delegate* unmanaged[Cdecl]<ImGuiInputTextCallbackData*, int> callback, void* user_data);
 
     /// <summary>
     /// Implied step = 0.0f, step_fast = 0.0f, format = "%.3f", flags = 0
@@ -1596,22 +1596,22 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputScalar(byte* label, ImGuiDataType data_type, nint p_data);
+    public static partial bool ImGui_InputScalar(byte* label, ImGuiDataType data_type, void* p_data);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputScalarEx(byte* label, ImGuiDataType data_type, nint p_data, nint p_step, nint p_step_fast, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputScalarEx(byte* label, ImGuiDataType data_type, void* p_data, void* p_step, void* p_step_fast, byte* format, ImGuiInputTextFlags flags);
 
     /// <summary>
     /// Implied p_step = NULL, p_step_fast = NULL, format = NULL, flags = 0
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputScalarN(byte* label, ImGuiDataType data_type, nint p_data, int components);
+    public static partial bool ImGui_InputScalarN(byte* label, ImGuiDataType data_type, void* p_data, int components);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_InputScalarNEx(byte* label, ImGuiDataType data_type, nint p_data, int components, nint p_step, nint p_step_fast, byte* format, ImGuiInputTextFlags flags);
+    public static partial bool ImGui_InputScalarNEx(byte* label, ImGuiDataType data_type, void* p_data, int components, void* p_step, void* p_step_fast, byte* format, ImGuiInputTextFlags flags);
 
     /// <summary>
     /// Widgets: Color Editor/Picker (tip: the ColorEdit* functions have a little color square that can be left-clicked to open a picker, and right-clicked to open an option menu.)
@@ -1678,7 +1678,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_TreeNodePtr(nint ptr_id, byte* fmt);
+    public static partial bool ImGui_TreeNodePtr(void* ptr_id, byte* fmt);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
@@ -1690,7 +1690,7 @@ internal static unsafe partial class ImGui
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_TreeNodeExPtr(nint ptr_id, ImGuiTreeNodeFlags flags, byte* fmt);
+    public static partial bool ImGui_TreeNodeExPtr(void* ptr_id, ImGuiTreeNodeFlags flags, byte* fmt);
 
     /// <summary>
     /// ~ Indent()+PushID(). Already called by TreeNode() when returning true, but you can call TreePush/TreePop yourself if desired.
@@ -1702,7 +1702,7 @@ internal static unsafe partial class ImGui
     /// "
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_TreePushPtr(nint ptr_id);
+    public static partial void ImGui_TreePushPtr(void* ptr_id);
 
     /// <summary>
     /// ~ Unindent()+PopID()
@@ -1843,11 +1843,11 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ListBoxCallback(byte* label, int* current_item, delegate* unmanaged[Cdecl]<nint, int, byte*> getter, nint user_data, int items_count);
+    public static partial bool ImGui_ListBoxCallback(byte* label, int* current_item, delegate* unmanaged[Cdecl]<void*, int, byte*> getter, void* user_data, int items_count);
 
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_ListBoxCallbackEx(byte* label, int* current_item, delegate* unmanaged[Cdecl]<nint, int, byte*> getter, nint user_data, int items_count, int height_in_items);
+    public static partial bool ImGui_ListBoxCallbackEx(byte* label, int* current_item, delegate* unmanaged[Cdecl]<void*, int, byte*> getter, void* user_data, int items_count, int height_in_items);
 
     #endregion
 
@@ -1868,10 +1868,10 @@ internal static unsafe partial class ImGui
     /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0)
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_PlotLinesCallback(byte* label, delegate* unmanaged[Cdecl]<nint, int, float> values_getter, nint data, int values_count);
+    public static partial void ImGui_PlotLinesCallback(byte* label, delegate* unmanaged[Cdecl]<void*, int, float> values_getter, void* data, int values_count);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_PlotLinesCallbackEx(byte* label, delegate* unmanaged[Cdecl]<nint, int, float> values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
+    public static partial void ImGui_PlotLinesCallbackEx(byte* label, delegate* unmanaged[Cdecl]<void*, int, float> values_getter, void* data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
 
     /// <summary>
     /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0), stride = sizeof(float)
@@ -1886,10 +1886,10 @@ internal static unsafe partial class ImGui
     /// Implied values_offset = 0, overlay_text = NULL, scale_min = FLT_MAX, scale_max = FLT_MAX, graph_size = ImVec2(0, 0)
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_PlotHistogramCallback(byte* label, delegate* unmanaged[Cdecl]<nint, int, float> values_getter, nint data, int values_count);
+    public static partial void ImGui_PlotHistogramCallback(byte* label, delegate* unmanaged[Cdecl]<void*, int, float> values_getter, void* data, int values_count);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_PlotHistogramCallbackEx(byte* label, delegate* unmanaged[Cdecl]<nint, int, float> values_getter, nint data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
+    public static partial void ImGui_PlotHistogramCallbackEx(byte* label, delegate* unmanaged[Cdecl]<void*, int, float> values_getter, void* data, int values_count, int values_offset, byte* overlay_text, float scale_min, float scale_max, ImVec2 graph_size);
 
     #endregion
 
@@ -2490,7 +2490,7 @@ internal static unsafe partial class ImGui
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool ImGui_SetDragDropPayload(byte* type, nint data, nuint sz, ImGuiCond cond);
+    public static partial bool ImGui_SetDragDropPayload(byte* type, void* data, nuint sz, ImGuiCond cond);
 
     /// <summary>
     /// only call EndDragDropSource() if BeginDragDropSource() returns true!
@@ -3172,28 +3172,28 @@ internal static unsafe partial class ImGui
     /// for each static/DLL boundary you are calling from. Read "Context and Memory Allocators" section of imgui.cpp for more details.
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_SetAllocatorFunctions(delegate* unmanaged[Cdecl]<nuint, nint, nint> alloc_func, delegate* unmanaged[Cdecl]<nint, nint, void> free_func, nint user_data);
+    public static partial void ImGui_SetAllocatorFunctions(delegate* unmanaged[Cdecl]<nuint, void*, void*> alloc_func, delegate* unmanaged[Cdecl]<void*, void*, void> free_func, void* user_data);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_GetAllocatorFunctions(delegate* unmanaged[Cdecl]<nuint, nint, nint> p_alloc_func, delegate* unmanaged[Cdecl]<nint, nint, void> p_free_func, nint p_user_data);
+    public static partial void ImGui_GetAllocatorFunctions(delegate* unmanaged[Cdecl]<nuint, void*, void*> p_alloc_func, delegate* unmanaged[Cdecl]<void*, void*, void> p_free_func, nint p_user_data);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial nint ImGui_MemAlloc(nuint size);
+    public static partial void* ImGui_MemAlloc(nuint size);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_MemFree(nint ptr);
+    public static partial void ImGui_MemFree(void* ptr);
 
     /// <summary>
     /// Construct a zero-size ImVector&lt;&gt; (of any type). This is primarily useful when calling ImFontGlyphRangesBuilder_BuildRanges()
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImVector_Construct(nint vector);
+    public static partial void ImVector_Construct(void* vector);
 
     /// <summary>
     /// Destruct an ImVector&lt;&gt; (of any type). Important: Frees the vector memory but does not call destructors on contained objects (if they have them)
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImVector_Destruct(nint vector);
+    public static partial void ImVector_Destruct(void* vector);
 
     #endregion
 

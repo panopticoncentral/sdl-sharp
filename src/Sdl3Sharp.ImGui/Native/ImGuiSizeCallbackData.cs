@@ -16,12 +16,12 @@ namespace Sdl3Sharp.ImGui.Native;
 /// NB: For basic min/max size constraint on each axis you don't need to use the callback! The SetNextWindowSizeConstraints() parameters are enough.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct ImGuiSizeCallbackData
+public unsafe partial struct ImGuiSizeCallbackData
 {
     /// <summary>
     /// Read-only.   What user passed to SetNextWindowSizeConstraints(). Generally store an integer or float in here (need reinterpret_cast&lt;&gt;).
     /// </summary>
-    public nint UserData;
+    public void* UserData;
 
     /// <summary>
     /// Read-only.   Window position, for reference.

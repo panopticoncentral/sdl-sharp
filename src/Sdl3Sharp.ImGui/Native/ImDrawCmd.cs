@@ -54,7 +54,7 @@ public unsafe partial struct ImDrawCmd
     /// <summary>
     /// 4-8  // Callback user data (when UserCallback != NULL). If called AddCallback() with size == 0, this is a copy of the AddCallback() argument. If called AddCallback() with size &gt; 0, this is pointing to a buffer where data is stored.
     /// </summary>
-    public nint UserCallbackData;
+    public void* UserCallbackData;
 
     /// <summary>
     /// 4 // Size of callback user data when using storage, otherwise 0.

@@ -38,7 +38,7 @@ public unsafe readonly record struct Id
     /// <returns>The calculated unique ID.</returns>
     public static Id Get(nint ptrId)
     {
-        return new Id(ImGui_GetIDPtr(ptrId));
+        return new Id(ImGui_GetIDPtr((void*)ptrId));
     }
 
     /// <summary>

@@ -43,7 +43,7 @@ public unsafe partial struct ImGuiInputTextCallbackData
     /// <summary>
     /// What user passed to InputText()      // Read-only
     /// </summary>
-    public nint UserData;
+    public void* UserData;
 
     /// <summary>
     /// Arguments for the different callback events

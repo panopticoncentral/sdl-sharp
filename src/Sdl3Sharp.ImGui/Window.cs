@@ -216,7 +216,7 @@ public readonly unsafe ref struct Window: IDisposable
     public static void SetNextWindowSizeConstraints(Vec2 sizeMin, Vec2 sizeMax)
     {
         // TODO: We're not exposing the custom size callback for now
-        ImGui_SetNextWindowSizeConstraints(sizeMin.Value, sizeMax.Value, null, 0);
+        ImGui_SetNextWindowSizeConstraints(sizeMin.Value, sizeMax.Value, null, null);
     }
 
     /// <summary>
