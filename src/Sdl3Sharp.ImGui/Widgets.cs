@@ -2004,4 +2004,100 @@ public unsafe static class Widgets
             return ImGui_InputTextWithHint(labelPtr, hintPtr, bufPtr, (nuint)buf.Length, (Native.ImGuiInputTextFlags)flags);
         }
     }
+
+    /// <summary>
+    /// Creates a color editor for an RGB or RGBA color value.
+    /// </summary>
+    /// <param name="label">The label for the color editor.</param>
+    /// <param name="col">Reference to the color values (3 floats for RGB, 4 floats for RGBA).</param>
+    /// <param name="flags">Color edit behavior flags.</param>
+    /// <returns>True if the color was modified.</returns>
+    /// <remarks>
+    /// The color editor displays a small color preview square that can be clicked to open a picker,
+    /// and right-clicked to open an options menu.
+    /// </remarks>
+    /// <exception cref="ArgumentException">Thrown when the color array length is not 3 or 4.</exception>
+    public static bool ColorEdit(ReadOnlySpan<byte> label, StateArrayRef<float> col, ColorEditFlags flags = ColorEditFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        {
+            return col.Length switch
+            {
+                3 => ImGui_ColorEdit3(labelPtr, col.Ptr, (Native.ImGuiColorEditFlags)flags),
+                4 => ImGui_ColorEdit4(labelPtr, col.Ptr, (Native.ImGuiColorEditFlags)flags),
+                _ => throw new ArgumentException("Color array must have 3 (RGB) or 4 (RGBA) elements.", nameof(col))
+            };
+        }
+    }
+
+    /// <summary>
+    /// Creates a color picker for an RGB or RGBA color value.
+    /// </summary>
+    /// <param name="label">The label for the color picker.</param>
+    /// <param name="col">Reference to the color values (3 floats for RGB, 4 floats for RGBA).</param>
+    /// <param name="flags">Color edit behavior flags.</param>
+    /// <param name="refCol">Optional reference color to display for comparison (RGBA only). Pass default for no reference.</param>
+    /// <returns>True if the color was modified.</returns>
+    /// <remarks>
+    /// The color picker displays a full color selection interface with a hue bar/wheel and saturation/value selector.
+    /// When a reference color is provided (RGBA only), it is displayed alongside the current color for comparison.
+    /// </remarks>
+    /// <exception cref="ArgumentException">Thrown when the color array length is not 3 or 4.</exception>
+    public static bool ColorPicker(ReadOnlySpan<byte> label, StateArrayRef<float> col, ColorEditFlags flags = ColorEditFlags.None, StateArrayRef<float> refCol = default)
+    {
+        fixed (byte* labelPtr = label)
+        {
+            return col.Length switch
+            {
+                3 => ImGui_ColorPicker3(labelPtr, col.Ptr, (Native.ImGuiColorEditFlags)flags),
+                4 => ImGui_ColorPicker4(labelPtr, col.Ptr, (Native.ImGuiColorEditFlags)flags, refCol.Ptr),
+                _ => throw new ArgumentException("Color array must have 3 (RGB) or 4 (RGBA) elements.", nameof(col))
+            };
+        }
+    }
+
+    /// <summary>
+    /// Displays a color button that opens a color picker when clicked.
+    /// </summary>
+    /// <param name="descId">Description ID for the button.</param>
+    /// <param name="color">The color to display.</param>
+    /// <param name="flags">Color edit behavior flags.</param>
+    /// <returns>True when clicked.</returns>
+    public static bool ColorButton(ReadOnlySpan<byte> descId, Color color, ColorEditFlags flags = ColorEditFlags.None)
+    {
+        fixed (byte* ptr = descId)
+        {
+            return ImGui_ColorButton(ptr, color.Value, (Native.ImGuiColorEditFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Displays a color button with explicit size that opens a color picker when clicked.
+    /// </summary>
+    /// <param name="descId">Description ID for the button.</param>
+    /// <param name="color">The color to display.</param>
+    /// <param name="flags">Color edit behavior flags.</param>
+    /// <param name="size">The button size.</param>
+    /// <returns>True when clicked.</returns>
+    public static bool ColorButton(ReadOnlySpan<byte> descId, Color color, ColorEditFlags flags, Vec2 size)
+    {
+        fixed (byte* ptr = descId)
+        {
+            return ImGui_ColorButtonEx(ptr, color.Value, (Native.ImGuiColorEditFlags)flags, size.Value);
+        }
+    }
+
+    /// <summary>
+    /// Sets the default color edit options.
+    /// </summary>
+    /// <param name="flags">Color edit behavior flags to use as defaults.</param>
+    /// <remarks>
+    /// Initialize current options (generally on application startup) if you want to select
+    /// a default format, picker type, etc. User will be able to change many settings,
+    /// unless you pass the NoOptions flag to your calls.
+    /// </remarks>
+    public static void SetColorEditOptions(ColorEditFlags flags)
+    {
+        ImGui_SetColorEditOptions((Native.ImGuiColorEditFlags)flags);
+    }
 }

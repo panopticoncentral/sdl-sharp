@@ -9,55 +9,6 @@ namespace Sdl3Sharp.ImGui;
 /// </summary>
 public static unsafe class ImGui
 {
-    #region Widgets: Color Editor/Picker
-
-    /// <summary>
-    /// Displays a color button that opens a color picker when clicked.
-    /// </summary>
-    /// <param name="descId">Description ID for the button.</param>
-    /// <param name="col">The color to display.</param>
-    /// <param name="flags">Color edit behavior flags.</param>
-    /// <returns>True when clicked.</returns>
-    public static bool ColorButton(ReadOnlySpan<byte> descId, Vec4 col, ColorEditFlags flags = ColorEditFlags.None)
-    {
-        fixed (byte* ptr = descId)
-        {
-            return ImGui_ColorButton(ptr, col.Value, (Native.ImGuiColorEditFlags)flags);
-        }
-    }
-
-    /// <summary>
-    /// Displays a color button with explicit size that opens a color picker when clicked.
-    /// </summary>
-    /// <param name="descId">Description ID for the button.</param>
-    /// <param name="col">The color to display.</param>
-    /// <param name="flags">Color edit behavior flags.</param>
-    /// <param name="size">The button size.</param>
-    /// <returns>True when clicked.</returns>
-    public static bool ColorButton(ReadOnlySpan<byte> descId, Vec4 col, ColorEditFlags flags, Vec2 size)
-    {
-        fixed (byte* ptr = descId)
-        {
-            return ImGui_ColorButtonEx(ptr, col.Value, (Native.ImGuiColorEditFlags)flags, size.Value);
-        }
-    }
-
-    /// <summary>
-    /// Sets the default color edit options.
-    /// </summary>
-    /// <param name="flags">Color edit behavior flags to use as defaults.</param>
-    /// <remarks>
-    /// Initialize current options (generally on application startup) if you want to select
-    /// a default format, picker type, etc. User will be able to change many settings,
-    /// unless you pass the NoOptions flag to your calls.
-    /// </remarks>
-    public static void SetColorEditOptions(ColorEditFlags flags)
-    {
-        ImGui_SetColorEditOptions((Native.ImGuiColorEditFlags)flags);
-    }
-
-    #endregion
-
     #region Widgets: Trees
 
     /// <summary>
