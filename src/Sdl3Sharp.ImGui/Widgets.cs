@@ -2157,7 +2157,7 @@ public unsafe static class Widgets
     /// </summary>
     /// <param name="isOpen">Whether the node should be open.</param>
     /// <param name="cond">Condition for applying the state.</param>
-    public static void SetNextItemOpen(bool isOpen, Cond cond = Cond.None)
+    public static void SetNextItemOpen(bool isOpen, Condition cond = Condition.None)
     {
         ImGui_SetNextItemOpen(isOpen, (Native.ImGuiCond)cond);
     }

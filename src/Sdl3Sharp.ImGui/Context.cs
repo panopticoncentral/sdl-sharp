@@ -25,6 +25,18 @@ public unsafe readonly struct Context: IDisposable
     }
 
     /// <summary>
+    /// Gets the main viewport.
+    /// </summary>
+    public static Viewport MainViewport
+    {
+        get
+        {
+            ImGuiViewport* vp = ImGui_GetMainViewport();
+            return new Viewport(vp);
+        }
+    }
+
+    /// <summary>
     /// Gets the current ImGui IO configuration and state for the calling thread.
     /// </summary>
     public static IO IO => new(ImGui_GetIO());

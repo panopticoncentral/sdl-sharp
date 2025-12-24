@@ -8,7 +8,7 @@ namespace Sdl3Sharp.ImGui;
 /// <remarks>
 /// Important: Treat as a regular enum! Do NOT combine multiple values using binary operators! All the functions above treat 0 as a shortcut to Always.
 /// </remarks>
-public enum Cond
+public enum Condition
 {
     /// <summary>
     /// No condition (always set the variable), same as Always.

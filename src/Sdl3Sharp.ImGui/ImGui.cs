@@ -594,7 +594,7 @@ public static unsafe class ImGui
     /// <param name="data">The data to be copied and held by ImGui.</param>
     /// <param name="cond">Condition for setting the payload.</param>
     /// <returns>True when payload has been accepted.</returns>
-    public static bool SetDragDropPayload(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data, Cond cond = Cond.None)
+    public static bool SetDragDropPayload(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data, Condition cond = Condition.None)
     {
         fixed (byte* typePtr = type)
         fixed (byte* dataPtr = data)

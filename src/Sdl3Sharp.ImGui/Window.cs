@@ -187,15 +187,15 @@ public readonly unsafe ref struct Window: IDisposable
     /// <summary>
     /// Sets the next window position with a pivot point. Call before <see cref="Begin"/>.
     /// </summary>
-    /// <param name="pos">The position in screen coordinates.</param>
+    /// <param name="position">The position in screen coordinates.</param>
     /// <param name="cond">Condition for applying the position.</param>
     /// <param name="pivot">The pivot point (0,0) = top-left, (0.5,0.5) = center, (1,1) = bottom-right.</param>
     /// <remarks>
     /// Use pivot=(0.5f, 0.5f) to center on the given point.
     /// </remarks>
-    public static void SetNextWindowPos(Vec2 pos, Cond cond = Cond.None, Vec2 pivot = default)
+    public static void SetNextWindowPos(Point position, Condition cond = Condition.None, Point pivot = default)
     {
-        ImGui_SetNextWindowPosEx(pos.Value, (Native.ImGuiCond)cond, pivot.Value);
+        ImGui_SetNextWindowPosEx(position.Value, (Native.ImGuiCond)cond, pivot.Value);
     }
 
     /// <summary>
@@ -203,7 +203,7 @@ public readonly unsafe ref struct Window: IDisposable
     /// </summary>
     /// <param name="size">The window size. Set an axis to 0.0f to force auto-fit on that axis.</param>
     /// <param name="cond">Condition for applying the size.</param>
-    public static void SetNextWindowSize(Vec2 size, Cond cond = Cond.None)
+    public static void SetNextWindowSize(Size size, Condition cond = Condition.None)
     {
         ImGui_SetNextWindowSize(size.Value, (Native.ImGuiCond)cond);
     }
@@ -213,7 +213,7 @@ public readonly unsafe ref struct Window: IDisposable
     /// </summary>
     /// <param name="sizeMin">Minimum window size. Use 0.0f for no minimum. Use -1 for both min and max of same axis to preserve current size.</param>
     /// <param name="sizeMax">Maximum window size. Use float.MaxValue for no maximum. Use -1 for both min and max of same axis to preserve current size.</param>
-    public static void SetNextWindowSizeConstraints(Vec2 sizeMin, Vec2 sizeMax)
+    public static void SetNextWindowSizeConstraints(Size sizeMin, Size sizeMax)
     {
         // TODO: We're not exposing the custom size callback for now
         ImGui_SetNextWindowSizeConstraints(sizeMin.Value, sizeMax.Value, null, null);
@@ -223,7 +223,7 @@ public readonly unsafe ref struct Window: IDisposable
     /// Sets the next window content size (scrollable client area). Call before <see cref="Begin"/>.
     /// </summary>
     /// <param name="size">The content size. Does not include window decorations (title bar, menu bar, etc.) or WindowPadding. Set an axis to 0.0f to leave it automatic.</param>
-    public static void SetNextWindowContentSize(Vec2 size)
+    public static void SetNextWindowContentSize(Size size)
     {
         ImGui_SetNextWindowContentSize(size.Value);
     }
@@ -233,7 +233,7 @@ public readonly unsafe ref struct Window: IDisposable
     /// </summary>
     /// <param name="collapsed">Whether the window should be collapsed.</param>
     /// <param name="cond">Condition for applying the collapsed state.</param>
-    public static void SetNextWindowCollapsed(bool collapsed, Cond cond = Cond.None)
+    public static void SetNextWindowCollapsed(bool collapsed, Condition cond = Condition.None)
     {
         ImGui_SetNextWindowCollapsed(collapsed, (Native.ImGuiCond)cond);
     }
@@ -274,9 +274,9 @@ public readonly unsafe ref struct Window: IDisposable
     /// <param name="pos">The position in screen coordinates.</param>
     /// <param name="cond">Condition for applying the position.</param>
     /// <remarks>
-    /// Not recommended. Prefer using <see cref="SetNextWindowPos(Vec2, Cond)"/> as this may incur tearing and side-effects.
+    /// Not recommended. Prefer using <see cref="SetNextWindowPos(Vec2, Condition)"/> as this may incur tearing and side-effects.
     /// </remarks>
-    public static void SetWindowPos(Vec2 pos, Cond cond = Cond.None)
+    public static void SetWindowPos(Vec2 pos, Condition cond = Condition.None)
     {
         ImGui_SetWindowPos(pos.Value, (Native.ImGuiCond)cond);
     }
@@ -289,7 +289,7 @@ public readonly unsafe ref struct Window: IDisposable
     /// <remarks>
     /// Not recommended. Prefer using <see cref="SetNextWindowSize"/> as this may incur tearing and minor side-effects.
     /// </remarks>
-    public static void SetWindowSize(Vec2 size, Cond cond = Cond.None)
+    public static void SetWindowSize(Vec2 size, Condition cond = Condition.None)
     {
         ImGui_SetWindowSize(size.Value, (Native.ImGuiCond)cond);
     }
@@ -302,7 +302,7 @@ public readonly unsafe ref struct Window: IDisposable
     /// <remarks>
     /// Not recommended. Prefer using <see cref="SetNextWindowCollapsed"/>.
     /// </remarks>
-    public static void SetWindowCollapsed(bool collapsed, Cond cond = Cond.None)
+    public static void SetWindowCollapsed(bool collapsed, Condition cond = Condition.None)
     {
         ImGui_SetWindowCollapsed(collapsed, (Native.ImGuiCond)cond);
     }
@@ -324,7 +324,7 @@ public readonly unsafe ref struct Window: IDisposable
     /// <param name="name">The window name.</param>
     /// <param name="pos">The position in screen coordinates.</param>
     /// <param name="cond">Condition for applying the position.</param>
-    public static void SetWindowPos(ReadOnlySpan<byte> name, Vec2 pos, Cond cond = Cond.None)
+    public static void SetWindowPos(ReadOnlySpan<byte> name, Vec2 pos, Condition cond = Condition.None)
     {
         fixed (byte* ptr = name)
         {
@@ -338,7 +338,7 @@ public readonly unsafe ref struct Window: IDisposable
     /// <param name="name">The window name.</param>
     /// <param name="size">The window size. Set an axis to 0.0f to force auto-fit on that axis.</param>
     /// <param name="cond">Condition for applying the size.</param>
-    public static void SetWindowSize(ReadOnlySpan<byte> name, Vec2 size, Cond cond = Cond.None)
+    public static void SetWindowSize(ReadOnlySpan<byte> name, Vec2 size, Condition cond = Condition.None)
     {
         fixed (byte* ptr = name)
         {
@@ -352,7 +352,7 @@ public readonly unsafe ref struct Window: IDisposable
     /// <param name="name">The window name.</param>
     /// <param name="collapsed">Whether the window should be collapsed.</param>
     /// <param name="cond">Condition for applying the collapsed state.</param>
-    public static void SetWindowCollapsed(ReadOnlySpan<byte> name, bool collapsed, Cond cond = Cond.None)
+    public static void SetWindowCollapsed(ReadOnlySpan<byte> name, bool collapsed, Condition cond = Condition.None)
     {
         fixed (byte* ptr = name)
         {
