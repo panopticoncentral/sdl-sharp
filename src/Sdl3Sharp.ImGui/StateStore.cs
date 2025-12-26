@@ -17,6 +17,12 @@ public unsafe sealed class StateStore : IDisposable
     private readonly List<nint> _storage = [];
     private bool _disposed;
 
+    public static StateStore Instance = new();
+
+    private StateStore()
+    {
+    }
+
     /// <summary>
     /// Creates a reference to a stored value.
     /// </summary>

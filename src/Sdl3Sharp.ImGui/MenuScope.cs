@@ -4,11 +4,11 @@ namespace Sdl3Sharp.ImGui;
 
 public unsafe readonly ref struct MenuScope: IDisposable
 {
-    private readonly bool _isOpen;
+    public bool IsOpen { get; }
 
     private MenuScope(bool isOpen)
     {
-        _isOpen = isOpen;
+        IsOpen = isOpen;
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public unsafe readonly ref struct MenuScope: IDisposable
 
     public void Dispose()
     {
-        if (_isOpen)
+        if (IsOpen)
         {
             ImGui_EndMenu();
         }
