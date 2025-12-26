@@ -140,4 +140,22 @@ public unsafe readonly struct Font
     {
         return ImGui_GetFrameHeightWithSpacing();
     }
+
+    /// <summary>
+    /// Pushes a font and/or font size onto the stack.
+    /// </summary>
+    /// <param name="font">The font to use, or null to keep the current font.</param>
+    /// <param name="fontSizeBaseUnscaled">The base font size before global scaling, or 0.0f to keep the current size.</param>
+    public static void Push(Font? font, float fontSizeBaseUnscaled = 0.0f)
+    {
+        ImGui_PushFontFloat(font == null ? null : font.Value.Native, fontSizeBaseUnscaled);
+    }
+
+    /// <summary>
+    /// Pops a font off of the stack.
+    /// </summary>
+    public static void Pop()
+    {
+        ImGui_PopFont();
+    }
 }

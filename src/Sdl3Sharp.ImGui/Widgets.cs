@@ -5,6 +5,63 @@ namespace Sdl3Sharp.ImGui;
 public unsafe static class Widgets
 {
     /// <summary>
+    /// Begins a child window. Must be paired with a call to <see cref="EndChild"/>.
+    /// </summary>
+    /// <param name="id">The child window string ID.</param>
+    /// <param name="size">
+    /// The size of the child window. Use 0.0f for an axis to use remaining parent window size.
+    /// Use values greater than 0.0f for explicit size. Use negative values to right/bottom-align.
+    /// </param>
+    /// <param name="childFlags">Child window behavior flags.</param>
+    /// <param name="windowFlags">Window behavior flags.</param>
+    /// <returns>
+    /// False if the window is collapsed or fully clipped (you can early out and skip submitting content).
+    /// Always call <see cref="EndChild"/> regardless of this return value.
+    /// </returns>
+    /// <remarks>
+    /// Use child windows to create independent scrolling/clipping regions within a host window.
+    /// Child windows can embed their own child windows.
+    /// </remarks>
+    public static bool BeginChild(ReadOnlySpan<byte> id, Vec2 size = default, ChildFlags childFlags = ChildFlags.None, WindowFlags windowFlags = WindowFlags.None)
+    {
+        fixed (byte* ptr = id)
+        {
+            return ImGui_BeginChild(ptr, size.Value, (Native.ImGuiChildFlags)childFlags, (Native.ImGuiWindowFlags)windowFlags);
+        }
+    }
+
+    /// <summary>
+    /// Begins a child window using an integer ID. Must be paired with a call to <see cref="EndChild"/>.
+    /// </summary>
+    /// <param name="id">The child window integer ID.</param>
+    /// <param name="size">
+    /// The size of the child window. Use 0.0f for an axis to use remaining parent window size.
+    /// Use values greater than 0.0f for explicit size. Use negative values to right/bottom-align.
+    /// </param>
+    /// <param name="childFlags">Child window behavior flags.</param>
+    /// <param name="windowFlags">Window behavior flags.</param>
+    /// <returns>
+    /// False if the window is collapsed or fully clipped (you can early out and skip submitting content).
+    /// Always call <see cref="EndChild"/> regardless of this return value.
+    /// </returns>
+    /// <remarks>
+    /// Use child windows to create independent scrolling/clipping regions within a host window.
+    /// Child windows can embed their own child windows.
+    /// </remarks>
+    public static bool BeginChild(Id id, Vec2 size = default, ChildFlags childFlags = ChildFlags.None, WindowFlags windowFlags = WindowFlags.None)
+    {
+        return ImGui_BeginChildID(id.Value, size.Value, (Native.ImGuiChildFlags)childFlags, (Native.ImGuiWindowFlags)windowFlags);
+    }
+
+    /// <summary>
+    /// Ends a child window. Must be called for every <see cref="BeginChild"/> call, regardless of its return value.
+    /// </summary>
+    public static void EndChild()
+    {
+        ImGui_EndChild();
+    }
+
+    /// <summary>
     /// Draws a separator, generally horizontal. Inside a menu bar or in horizontal layout mode, this becomes a vertical separator.
     /// </summary>
     public static void Separator()
@@ -66,6 +123,28 @@ public unsafe static class Widgets
     public static void Unindent(float indentW = 0.0f)
     {
         ImGui_UnindentEx(indentW);
+    }
+
+    /// <summary>
+    /// Locks the horizontal starting position for a group of items.
+    /// </summary>
+    /// <remarks>
+    /// Must be paired with <see cref="EndGroup"/>.
+    /// </remarks>
+    public static void BeginGroup()
+    {
+        ImGui_BeginGroup();
+    }
+
+    /// <summary>
+    /// Unlocks the horizontal starting position and captures the whole group bounding box into one "item".
+    /// </summary>
+    /// <remarks>
+    /// After calling this, you can use IsItemHovered() or layout primitives such as SameLine() on the whole group.
+    /// </remarks>
+    public static void EndGroup()
+    {
+        ImGui_EndGroup();
     }
 
     /// <summary>
@@ -477,6 +556,51 @@ public unsafe static class Widgets
         fixed (byte* ptr = strId)
         {
             return ImGui_ImageButtonEx(ptr, texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.Value, tintCol.Value);
+        }
+    }
+
+    /// <summary>
+    /// Begins a combo box (dropdown). Must be followed by <see cref="EndCombo"/> if this returns true.
+    /// </summary>
+    /// <param name="label">The label for the combo box.</param>
+    /// <param name="previewValue">The preview value displayed when closed.</param>
+    /// <param name="flags">Combo box behavior flags.</param>
+    /// <returns>True if the combo box is open and items should be rendered.</returns>
+    /// <remarks>
+    /// The BeginCombo()/EndCombo() API allows you to manage your contents and selection state however you want,
+    /// by creating e.g. Selectable() items.
+    /// </remarks>
+    public static bool BeginCombo(ReadOnlySpan<byte> label, ReadOnlySpan<byte> previewValue, ComboFlags flags = ComboFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* previewPtr = previewValue)
+        {
+            return ImGui_BeginCombo(labelPtr, previewPtr, (Native.ImGuiComboFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Ends a combo box. Only call this if <see cref="BeginCombo"/> returned true.
+    /// </summary>
+    public static void EndCombo()
+    {
+        ImGui_EndCombo();
+    }
+
+    /// <summary>
+    /// Creates a combo box with items separated by null characters and explicit popup height.
+    /// </summary>
+    /// <param name="label">The label for the combo box.</param>
+    /// <param name="currentItem">Reference to the current selected item index.</param>
+    /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
+    /// <param name="popupMaxHeightInItems">Maximum height in items. Use -1 for default.</param>
+    /// <returns>True if the selection changed.</returns>
+    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems = -1)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* itemsPtr = itemsSeparatedByZeros)
+        {
+            return ImGui_ComboEx(labelPtr, currentItem.Ptr, itemsPtr, popupMaxHeightInItems);
         }
     }
 
@@ -2204,6 +2328,28 @@ public unsafe static class Widgets
     }
 
     /// <summary>
+    /// Begins a list box. Must be followed by <see cref="EndListBox"/> if this returns true.
+    /// </summary>
+    /// <param name="label">The label for the list box.</param>
+    /// <param name="size">The size of the list box.</param>
+    /// <returns>True if the list box is open and items should be rendered.</returns>
+    public static bool BeginListBox(ReadOnlySpan<byte> label, Vec2 size = default)
+    {
+        fixed (byte* ptr = label)
+        {
+            return ImGui_BeginListBox(ptr, size.Value);
+        }
+    }
+
+    /// <summary>
+    /// Ends a list box. Only call this if <see cref="BeginListBox"/> returned true.
+    /// </summary>
+    public static void EndListBox()
+    {
+        ImGui_EndListBox();
+    }
+
+    /// <summary>
     /// Plots a line graph from an array of values with extended options.
     /// </summary>
     /// <param name="label">The label for the plot.</param>
@@ -2241,6 +2387,78 @@ public unsafe static class Widgets
         {
             ImGui_PlotHistogramEx(labelPtr, valuesPtr, values.Length, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.Value, sizeof(float));
         }
+    }
+
+    /// <summary>
+    /// Begins appending to a menu bar of the current window.
+    /// </summary>
+    /// <returns>True if the menu bar is visible. Only call <see cref="EndMenuBar"/> if this returns true.</returns>
+    /// <remarks>
+    /// Requires the parent window to have the MenuBar window flag set.
+    /// </remarks>
+    public static bool BeginMenuBar()
+    {
+        return ImGui_BeginMenuBar();
+    }
+
+    /// <summary>
+    /// Ends appending to the menu bar. Only call if <see cref="BeginMenuBar"/> returned true.
+    /// </summary>
+    public static void EndMenuBar()
+    {
+        ImGui_EndMenuBar();
+    }
+
+    /// <summary>
+    /// Creates and appends to a full-screen menu bar.
+    /// </summary>
+    /// <returns>True if the main menu bar is visible. Only call <see cref="EndMainMenuBar"/> if this returns true.</returns>
+    public static bool BeginMainMenuBar()
+    {
+        return ImGui_BeginMainMenuBar();
+    }
+
+    /// <summary>
+    /// Ends the main menu bar. Only call if <see cref="BeginMainMenuBar"/> returned true.
+    /// </summary>
+    public static void EndMainMenuBar()
+    {
+        ImGui_EndMainMenuBar();
+    }
+
+    /// <summary>
+    /// Creates a sub-menu entry.
+    /// </summary>
+    /// <param name="label">The menu label.</param>
+    /// <returns>True if the menu is open. Only call <see cref="EndMenu"/> if this returns true.</returns>
+    public static bool BeginMenu(ReadOnlySpan<byte> label)
+    {
+        fixed (byte* ptr = label)
+        {
+            return ImGui_BeginMenu(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Creates a sub-menu entry with explicit enabled state.
+    /// </summary>
+    /// <param name="label">The menu label.</param>
+    /// <param name="enabled">Whether the menu is enabled.</param>
+    /// <returns>True if the menu is open. Only call <see cref="EndMenu"/> if this returns true.</returns>
+    public static bool BeginMenu(ReadOnlySpan<byte> label, bool enabled)
+    {
+        fixed (byte* ptr = label)
+        {
+            return ImGui_BeginMenuEx(ptr, enabled);
+        }
+    }
+
+    /// <summary>
+    /// Ends a menu. Only call if <see cref="BeginMenu"/> returned true.
+    /// </summary>
+    public static void EndMenu()
+    {
+        ImGui_EndMenu();
     }
 
     /// <summary>

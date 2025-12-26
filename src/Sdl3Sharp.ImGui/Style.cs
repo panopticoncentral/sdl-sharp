@@ -795,4 +795,180 @@ public unsafe sealed class Style
     {
         ImGui_StyleColorsClassic(destination == null ? null : destination.Native);
     }
+
+    /// <summary>
+    /// Pushes a style color modification onto the stack using a 32-bit color value.
+    /// </summary>
+    /// <param name="idx">The color index to modify.</param>
+    /// <param name="col">The color value as a 32-bit packed RGBA value.</param>
+    /// <remarks>
+    /// Always use this if you modify the style after <see cref="NewFrame"/>.
+    /// </remarks>
+    public static void PushStyleColor(StyleColor idx, uint col)
+    {
+        ImGui_PushStyleColor((ImGuiCol)idx, col);
+    }
+
+    /// <summary>
+    /// Pushes a style color modification onto the stack using a Vec4 color value.
+    /// </summary>
+    /// <param name="idx">The color index to modify.</param>
+    /// <param name="col">The color value as a Vec4 (RGBA, each component 0-1).</param>
+    /// <remarks>
+    /// Always use this if you modify the style after <see cref="NewFrame"/>.
+    /// </remarks>
+    public static void PushStyleColor(StyleColor idx, Color col)
+    {
+        ImGui_PushStyleColorImVec4((ImGuiCol)idx, col.Value);
+    }
+
+    /// <summary>
+    /// Pops multiple style colors from the stack.
+    /// </summary>
+    /// <param name="count">The number of style colors to pop.</param>
+    public static void PopStyleColor(int count = 1)
+    {
+        ImGui_PopStyleColorEx(count);
+    }
+
+    /// <summary>
+    /// Pushes a style variable modification onto the stack using a float value.
+    /// </summary>
+    /// <param name="idx">The style variable to modify.</param>
+    /// <param name="val">The new float value.</param>
+    /// <remarks>
+    /// Always use this if you modify the style after <see cref="NewFrame"/>.
+    /// </remarks>
+    public static void PushStyleVar(StyleVariable idx, float val)
+    {
+        ImGui_PushStyleVar((ImGuiStyleVar)idx, val);
+    }
+
+    /// <summary>
+    /// Pushes a style variable modification onto the stack using a Vec2 value.
+    /// </summary>
+    /// <param name="idx">The style variable to modify.</param>
+    /// <param name="val">The new Vec2 value.</param>
+    /// <remarks>
+    /// Always use this if you modify the style after <see cref="NewFrame"/>.
+    /// </remarks>
+    public static void PushStyleVar(StyleVariable idx, Vec2 val)
+    {
+        ImGui_PushStyleVarImVec2((ImGuiStyleVar)idx, val.Value);
+    }
+
+    /// <summary>
+    /// Pushes a modification to the X component of a style Vec2 variable.
+    /// </summary>
+    /// <param name="idx">The style variable to modify.</param>
+    /// <param name="valX">The new X component value.</param>
+    public static void PushStyleVarX(StyleVariable idx, float valX)
+    {
+        ImGui_PushStyleVarX((ImGuiStyleVar)idx, valX);
+    }
+
+    /// <summary>
+    /// Pushes a modification to the Y component of a style Vec2 variable.
+    /// </summary>
+    /// <param name="idx">The style variable to modify.</param>
+    /// <param name="valY">The new Y component value.</param>
+    public static void PushStyleVarY(StyleVariable idx, float valY)
+    {
+        ImGui_PushStyleVarY((ImGuiStyleVar)idx, valY);
+    }
+
+    /// <summary>
+    /// Pops multiple style variables from the stack.
+    /// </summary>
+    /// <param name="count">The number of style variables to pop.</param>
+    public static void PopStyleVar(int count = 1)
+    {
+        ImGui_PopStyleVarEx(count);
+    }
+
+    /// <summary>
+    /// Pushes an item flag modification onto the stack.
+    /// </summary>
+    /// <param name="option">The item flag to modify.</param>
+    /// <param name="enabled">Whether the flag should be enabled.</param>
+    public static void PushItemFlag(ItemFlags option, bool enabled)
+    {
+        ImGui_PushItemFlag((ImGuiItemFlags)option, enabled);
+    }
+
+    /// <summary>
+    /// Pops the most recently pushed item flag from the stack.
+    /// </summary>
+    public static void PopItemFlag()
+    {
+        ImGui_PopItemFlag();
+    }
+
+    /// <summary>
+    /// Pushes the width of items for common large "item+label" widgets.
+    /// </summary>
+    /// <param name="itemWidth">
+    /// The item width in pixels. Greater than 0.0f for explicit width.
+    /// Less than 0.0f to align that many pixels from the right of the window.
+    /// Use -float.Epsilon to always align to the right side.
+    /// </param>
+    public static void PushItemWidth(float itemWidth)
+    {
+        ImGui_PushItemWidth(itemWidth);
+    }
+
+    /// <summary>
+    /// Pops the most recently pushed item width from the stack.
+    /// </summary>
+    public static void PopItemWidth()
+    {
+        ImGui_PopItemWidth();
+    }
+
+    /// <summary>
+    /// Sets the width of the next common large "item+label" widget.
+    /// </summary>
+    /// <param name="itemWidth">
+    /// The item width in pixels. Greater than 0.0f for explicit width.
+    /// Less than 0.0f to align that many pixels from the right of the window.
+    /// Use -float.Epsilon to always align to the right side.
+    /// </param>
+    public static void SetNextItemWidth(float itemWidth)
+    {
+        ImGui_SetNextItemWidth(itemWidth);
+    }
+
+    /// <summary>
+    /// Calculates the width of an item given pushed settings and current cursor position.
+    /// </summary>
+    /// <returns>The calculated item width.</returns>
+    /// <remarks>
+    /// This is NOT necessarily the width of the last item unlike most 'Item' functions.
+    /// </remarks>
+    public static float CalcItemWidth()
+    {
+        return ImGui_CalcItemWidth();
+    }
+
+    /// <summary>
+    /// Pushes a word-wrapping position for Text*() commands.
+    /// </summary>
+    /// <param name="wrapLocalPosX">
+    /// The wrap position in window local space.
+    /// Less than 0.0f: no wrapping.
+    /// 0.0f: wrap to end of window (or column).
+    /// Greater than 0.0f: wrap at the specified X position.
+    /// </param>
+    public static void PushTextWrapPosition(float wrapLocalPositionX = 0.0f)
+    {
+        ImGui_PushTextWrapPos(wrapLocalPositionX);
+    }
+
+    /// <summary>
+    /// Pops the most recently pushed text wrap position from the stack.
+    /// </summary>
+    public static void PopTextWrapPosition()
+    {
+        ImGui_PopTextWrapPos();
+    }
 }

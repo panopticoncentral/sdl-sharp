@@ -10,7 +10,7 @@ using Application app = new(Subsystems.Video);
 (Window? window, Renderer? renderer) = Renderer.CreateWindowAndRenderer("ImGui SDL Renderer Demo", new(1280, 720), WindowFlags.Resizable);
 
 // Create ImGui context
-using var context = ImGui.Context.Create();
+var context = ImGui.Context.Create();
 ImGui.Context.Style.FontSizeBase = 24.0f;
 ImGui.Context.Current = context;
 
@@ -18,15 +18,12 @@ ImGui.Context.Current = context;
 ImGui.Backends.SDL3Backend.InitForSDLRenderer(window, renderer);
 ImGui.Backends.SDLRenderer3Backend.Init(renderer);
 
-// Create a state store for persistent ImGui state
-using var state = new ImGui.StateStore();
-
 var quit = false;
 Application.Quitting += (sender, e) => quit = true;
 
 // Demo state
-ImGui.StateRef<bool> showDemoWindow = state.Create(true);
-ImGui.StateRef<bool> showManagedDemoWindow = state.Create(true);
+ImGui.StateRef<bool> showDemoWindow = ImGui.StateStore.Instance.Create(true);
+ImGui.StateRef<bool> showManagedDemoWindow = ImGui.StateStore.Instance.Create(true);
 
 // Handle live resize: render during window resize on Windows
 void DoFrame()
@@ -79,3 +76,5 @@ ImGui.Backends.SDL3Backend.Shutdown();
 
 renderer.Dispose();
 window.Dispose();
+
+ImGui.Context.Destroy(context);

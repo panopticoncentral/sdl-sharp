@@ -7,7 +7,7 @@ namespace Sdl3Sharp.ImGui;
 /// <summary>
 /// Represents a Dear ImGui context that manages the state for a single ImGui instance.
 /// </summary>
-public unsafe readonly struct Context: IDisposable
+public unsafe readonly struct Context
 {
     internal readonly ImGuiContext* Value { get; init; }
 
@@ -59,6 +59,11 @@ public unsafe readonly struct Context: IDisposable
         }
     }
 
+    internal Context(ImGuiContext* native)
+    {
+        Value = native;
+    }
+
     /// <summary>
     /// Initializes a new instance of the Context class, optionally using a specified font atlas.
     /// </summary>
@@ -68,9 +73,13 @@ public unsafe readonly struct Context: IDisposable
         return new Context(ImGui_CreateContext(fontAtlas == null ? null : fontAtlas.Value.Value));
     }
 
-    internal Context(ImGuiContext* native)
+    /// <summary>
+    /// Destroys an ImGui context.
+    /// </summary>
+    /// <param name="context">The context to destroy. If null, the current context will be destroyed.</param>
+    public static void Destroy(Context? context = null)
     {
-        Value = native;
+        ImGui_DestroyContext(context == null ? null : context.Value.Value);
     }
 
     /// <summary>
@@ -183,11 +192,5 @@ public unsafe readonly struct Context: IDisposable
     public static void ShowUserGuide()
     {
         ImGui_ShowUserGuide();
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        ImGui_DestroyContext(Value);
     }
 }

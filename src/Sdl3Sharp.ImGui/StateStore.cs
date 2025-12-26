@@ -17,7 +17,7 @@ public unsafe sealed class StateStore : IDisposable
     private readonly List<nint> _storage = [];
     private bool _disposed;
 
-    public static StateStore Instance = new();
+    public static StateStore Instance { get; } = new();
 
     private StateStore()
     {
@@ -53,8 +53,9 @@ public unsafe sealed class StateStore : IDisposable
         var ptr = (nint)NativeMemory.Alloc((nuint)sizeof(T) * (uint)length);
         for (var i = 0; i < length; i++)
         {
-            *(T*)(ptr + sizeof(T) * i) = default;
+            *(T*)(ptr + (sizeof(T) * i)) = default;
         }
+
         _storage.Add(ptr);
 
         return new StateArrayRef<T>((T*)ptr, length);

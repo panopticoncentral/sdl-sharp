@@ -56,7 +56,7 @@ public unsafe readonly record struct Color
     /// <returns>The color as a 32-bit packed RGBA value with style alpha and multiplier applied.</returns>
     public static uint GetColorU32(StyleColor idx, float alphaMul = 1.0f)
     {
-        return ImGui_GetColorU32Ex((Native.ImGuiCol)idx, alphaMul);
+        return ImGui_GetColorU32Ex((ImGuiCol)idx, alphaMul);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public unsafe readonly record struct Color
     /// </remarks>
     public static Color GetStyleColorVec4(StyleColor idx)
     {
-        return new(*ImGui_GetStyleColorVec4((Native.ImGuiCol)idx));
+        return new(*ImGui_GetStyleColorVec4((ImGuiCol)idx));
     }
 
     /// <inheritdoc />

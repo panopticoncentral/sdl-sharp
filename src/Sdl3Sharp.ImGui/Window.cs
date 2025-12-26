@@ -2,13 +2,8 @@
 
 namespace Sdl3Sharp.ImGui;
 
-public readonly unsafe ref struct Window: IDisposable
+public static unsafe class Window
 {
-    /// <summary>
-    /// Whether the window is visible. Can skip submitting content if false.
-    /// </summary>
-    public bool IsVisible { get; }
-
     /// <summary>
     /// Returns true if the current window is appearing (was just created or unhidden this frame).
     /// </summary>
@@ -152,12 +147,20 @@ public readonly unsafe ref struct Window: IDisposable
     /// False if the window is collapsed or fully clipped (you can early out and skip submitting content).
     /// Always call <see cref="Dispose"/> regardless of this return value.
     /// </returns>
-    public Window(ReadOnlySpan<byte> name, StateRef<bool>? open = null, WindowFlags flags = WindowFlags.None)
+    public static bool Begin(ReadOnlySpan<byte> name, StateRef<bool>? open = null, WindowFlags flags = WindowFlags.None)
     {
         fixed (byte* ptr = name)
         {
-            IsVisible = ImGui_Begin(ptr, open == null ? null : open.Value.Ptr, (Native.ImGuiWindowFlags)flags);
+            return ImGui_Begin(ptr, open == null ? null : open.Value.Ptr, (Native.ImGuiWindowFlags)flags);
         }
+    }
+
+    /// <summary>
+    /// Ends the current window. Must be called for every <see cref="Begin"/> call, regardless of its return value.
+    /// </summary>
+    public static void End()
+    {
+        ImGui_End();
     }
 
     /// <summary>
@@ -439,11 +442,5 @@ public readonly unsafe ref struct Window: IDisposable
     public static float CalcItemWidth()
     {
         return ImGui_CalcItemWidth();
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        ImGui_End();
     }
 }
