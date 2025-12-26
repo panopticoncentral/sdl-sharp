@@ -34,6 +34,15 @@ public readonly record struct Point
         Value = value;
     }
 
+    /// <summary>
+    /// Implicitly converts a tuple to a Point.
+    /// </summary>
+    /// <param name="tuple">The tuple containing X and Y values.</param>
+    public static implicit operator Point((float X, float Y) tuple)
+    {
+        return new(tuple.X, tuple.Y);
+    }
+
     /// <inheritdoc />
     public override string ToString()
     {

@@ -305,5 +305,10 @@ public enum StyleColor
     /// <summary>
     /// Darken/colorize entire screen behind a modal window, when one is active.
     /// </summary>
-    ModalWindowDimBackground = ImGuiCol.ModalWindowDimBg
+    ModalWindowDimBackground = ImGuiCol.ModalWindowDimBg,
+
+    /// <summary>
+    /// The maximum style color.
+    /// </summary>
+    Max
 }

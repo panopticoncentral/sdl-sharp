@@ -2469,6 +2469,22 @@ public unsafe static class Widgets
     /// <param name="selected">Whether to show a check mark.</param>
     /// <param name="enabled">Whether the item is enabled.</param>
     /// <returns>True when activated.</returns>
+    public static bool MenuItem(ReadOnlySpan<byte> label)
+    {
+        fixed (byte* labelPtr = label)
+        {
+            return ImGui_MenuItem(labelPtr);
+        }
+    }
+
+    /// <summary>
+    /// Creates a menu item with explicit parameters.
+    /// </summary>
+    /// <param name="label">The item label.</param>
+    /// <param name="shortcut">Optional shortcut text displayed on the right.</param>
+    /// <param name="selected">Whether to show a check mark.</param>
+    /// <param name="enabled">Whether the item is enabled.</param>
+    /// <returns>True when activated.</returns>
     public static bool MenuItem(ReadOnlySpan<byte> label, ReadOnlySpan<byte> shortcut, bool selected = false, bool enabled = true)
     {
         fixed (byte* labelPtr = label)

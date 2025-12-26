@@ -47,6 +47,15 @@ public readonly record struct Vec4
         Value = value;
     }
 
+    /// <summary>
+    /// Implicitly converts a tuple to a Vec2.
+    /// </summary>
+    /// <param name="tuple">The tuple containing X, Y, Z, W values.</param>
+    public static implicit operator Vec4((float X, float Y, float Z, float W) tuple)
+    {
+        return new(tuple.X, tuple.Y, tuple.Z, tuple.W);
+    }
+
     /// <inheritdoc />
     public override string ToString()
     {

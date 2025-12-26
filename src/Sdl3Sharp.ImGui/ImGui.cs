@@ -907,6 +907,11 @@ public static unsafe class ImGui
         return ImGui_GetFrameCount();
     }
 
+    public static ReadOnlySpan<byte> GetStyleColorName(StyleColor color)
+    {
+        return MemoryMarshal.CreateReadOnlySpanFromNullTerminated(ImGui_GetStyleColorName((Native.ImGuiCol)color));
+    }
+
     #endregion
 
     #region Text Utilities

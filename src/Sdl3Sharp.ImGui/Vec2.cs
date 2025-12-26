@@ -39,4 +39,13 @@ public readonly record struct Vec2
     {
         return $"({X}, {Y})";
     }
+
+    /// <summary>
+    /// Implicitly converts a tuple to a Vec2.
+    /// </summary>
+    /// <param name="tuple">The tuple containing X and Y values.</param>
+    public static implicit operator Vec2((float X, float Y) tuple)
+    {
+        return new(tuple.X, tuple.Y);
+    }
 }

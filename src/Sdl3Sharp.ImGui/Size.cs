@@ -33,6 +33,16 @@ public readonly record struct Size
     {
         Value = value;
     }
+
+    /// <summary>
+    /// Implicitly converts a tuple to a Size.
+    /// </summary>
+    /// <param name="tuple">The tuple containing Width and Height values.</param>
+    public static implicit operator Size((float Width, float Height) tuple)
+    {
+        return new(tuple.Width, tuple.Height);
+    }
+
     /// <inheritdoc />
     public override string ToString()
     {
