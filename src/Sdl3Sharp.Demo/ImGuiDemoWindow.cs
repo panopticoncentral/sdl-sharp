@@ -1,6 +1,5 @@
 ﻿using Sdl3Sharp.ImGui;
 using Sdl3Sharp.ImGui.Native;
-using System.Text;
 
 namespace Sdl3Sharp.Demo;
 
@@ -137,81 +136,67 @@ public static class ImGuiDemoWindow
 
             Widgets.EndMenuBar();
         }
-    }
-
-    /*
-     * static void DemoWindowMenuBar(ImGuiDemoWindowData* demo_data)
-{
-    IMGUI_DEMO_MARKER("Menu");
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("Menu"))
+        if (Widgets.BeginMenu("Examples"u8))
         {
-            IMGUI_DEMO_MARKER("Menu/File");
-            ShowExampleMenuFile();
-            ImGui::EndMenu();
+            Widgets.MenuItem("Main menu bar"u8, null, _demoData.ShowMainMenuBar);
+
+            Widgets.SeparatorText("Mini apps"u8);
+            Widgets.MenuItem("Assets Browser"u8, null, _demoData.ShowAppAssetsBrowser);
+            Widgets.MenuItem("Console"u8, null, _demoData.ShowAppConsole);
+            Widgets.MenuItem("Custom rendering"u8, null, _demoData.ShowAppCustomRendering);
+            Widgets.MenuItem("Documents"u8, null, _demoData.ShowAppDocuments);
+            Widgets.MenuItem("Log"u8, null, _demoData.ShowAppLog);
+            Widgets.MenuItem("Property editor"u8, null, _demoData.ShowAppPropertyEditor);
+            Widgets.MenuItem("Simple layout"u8, null, _demoData.ShowAppLayout);
+            Widgets.MenuItem("Simple overlay"u8, null, _demoData.ShowAppSimpleOverlay);
+
+            Widgets.SeparatorText("Concepts"u8);
+            Widgets.MenuItem("Auto-resizing window"u8, null, _demoData.ShowAppAutoResize);
+            Widgets.MenuItem("Constrained-resizing window"u8, null, _demoData.ShowAppConstrainedResize);
+            Widgets.MenuItem("Fullscreen window"u8, null, _demoData.ShowAppFullscreen);
+            Widgets.MenuItem("Long text display"u8, null, _demoData.ShowAppLongText);
+            Widgets.MenuItem("Manipulating window titles"u8, null, _demoData.ShowAppWindowTitles);
+
+            Widgets.EndMenu();
         }
-        if (ImGui::BeginMenu("Examples"))
+        //if (Widgets.MenuItem("MenuItem"u8)) {} // You can also use MenuItem() inside a menu bar!
+        if (Widgets.BeginMenu("Tools"u8))
         {
-            IMGUI_DEMO_MARKER("Menu/Examples");
-            ImGui::MenuItem("Main menu bar", NULL, &demo_data->ShowMainMenuBar);
-
-            ImGui::SeparatorText("Mini apps");
-            ImGui::MenuItem("Assets Browser", NULL, &demo_data->ShowAppAssetsBrowser);
-            ImGui::MenuItem("Console", NULL, &demo_data->ShowAppConsole);
-            ImGui::MenuItem("Custom rendering", NULL, &demo_data->ShowAppCustomRendering);
-            ImGui::MenuItem("Documents", NULL, &demo_data->ShowAppDocuments);
-            ImGui::MenuItem("Log", NULL, &demo_data->ShowAppLog);
-            ImGui::MenuItem("Property editor", NULL, &demo_data->ShowAppPropertyEditor);
-            ImGui::MenuItem("Simple layout", NULL, &demo_data->ShowAppLayout);
-            ImGui::MenuItem("Simple overlay", NULL, &demo_data->ShowAppSimpleOverlay);
-
-            ImGui::SeparatorText("Concepts");
-            ImGui::MenuItem("Auto-resizing window", NULL, &demo_data->ShowAppAutoResize);
-            ImGui::MenuItem("Constrained-resizing window", NULL, &demo_data->ShowAppConstrainedResize);
-            ImGui::MenuItem("Fullscreen window", NULL, &demo_data->ShowAppFullscreen);
-            ImGui::MenuItem("Long text display", NULL, &demo_data->ShowAppLongText);
-            ImGui::MenuItem("Manipulating window titles", NULL, &demo_data->ShowAppWindowTitles);
-
-            ImGui::EndMenu();
-        }
-        //if (ImGui::MenuItem("MenuItem")) {} // You can also use MenuItem() inside a menu bar!
-        if (ImGui::BeginMenu("Tools"))
-        {
-            IMGUI_DEMO_MARKER("Menu/Tools");
-            ImGuiIO& io = ImGui::GetIO();
-#ifndef IMGUI_DISABLE_DEBUG_TOOLS
-            const bool has_debug_tools = true;
+            IO io = Context.IO;
+#if !IMGUI_DISABLE_DEBUG_TOOLS
+            const bool hasDebugTools = true;
 #else
-            const bool has_debug_tools = false;
+            const bool hasDebugTools = false;
 #endif
-            ImGui::MenuItem("Metrics/Debugger", NULL, &demo_data->ShowMetrics, has_debug_tools);
-            if (ImGui::BeginMenu("Debug Options"))
+            Widgets.MenuItem("Metrics/Debugger"u8, null, _demoData.ShowMetrics, hasDebugTools);
+            if (Widgets.BeginMenu("Debug Options"u8))
             {
-                ImGui::BeginDisabled(!has_debug_tools);
-                ImGui::Checkbox("Highlight ID Conflicts", &io.ConfigDebugHighlightIdConflicts);
-                ImGui::EndDisabled();
-                ImGui::Checkbox("Assert on error recovery", &io.ConfigErrorRecoveryEnableAssert);
-                ImGui::TextDisabled("(see Demo->Configuration for details & more)");
-                ImGui::EndMenu();
+                // TODO: Widgets.BeginDisabled(!has_debug_tools);
+                Widgets.Checkbox("Highlight ID Conflicts"u8, &io.ConfigDebugHighlightIdConflicts);
+                // TODO: Widgets.EndDisabled();
+                Widgets.Checkbox("Assert on error recovery"u8, &io.ConfigErrorRecoveryEnableAssert);
+                Widgets.TextDisabled("(see Demo->Configuration for details & more)"u8);
+                Widgets.EndMenu();
             }
-            ImGui::MenuItem("Debug Log", NULL, &demo_data->ShowDebugLog, has_debug_tools);
-            ImGui::MenuItem("ID Stack Tool", NULL, &demo_data->ShowIDStackTool, has_debug_tools);
-            bool is_debugger_present = io.ConfigDebugIsDebuggerPresent;
-            if (ImGui::MenuItem("Item Picker", NULL, false, has_debug_tools))// && is_debugger_present))
-                ImGui::DebugStartItemPicker();
-            if (!is_debugger_present)
-                ImGui::SetItemTooltip("Requires io.ConfigDebugIsDebuggerPresent=true to be set.\n\nWe otherwise disable some extra features to avoid casual users crashing the application.");
-            ImGui::MenuItem("Style Editor", NULL, &demo_data->ShowStyleEditor);
-            ImGui::MenuItem("About Dear ImGui", NULL, &demo_data->ShowAbout);
+            Widgets.MenuItem("Debug Log"u8, null, _demoData.ShowDebugLog, hasDebugTools);
+            Widgets.MenuItem("ID Stack Tool"u8, null, _demoData.ShowIDStackTool, hasDebugTools);
+            var isDebuggerPresent = io.ConfigDebugIsDebuggerPresent;
+            if (Widgets.MenuItem("Item Picker"u8, null, false, hasDebugTools))// && isDebuggerPresent))
+            {
+                // TODO: Widgets.DebugStartItemPicker();
+            }
 
-            ImGui::EndMenu();
+            if (!isDebuggerPresent)
+            {
+                // TODO: Widgets.SetItemTooltip("Requires io.ConfigDebugIsDebuggerPresent=true to be set.\n\nWe otherwise disable some extra features to avoid casual users crashing the application."u8);
+            }
+
+            Widgets.MenuItem("Style Editor"u8, null, _demoData.ShowStyleEditor);
+            Widgets.MenuItem("About Dear ImGui"u8, null, _demoData.ShowAbout);
+
+            Widgets.EndMenu();
         }
-        ImGui::EndMenuBar();
     }
-}
-
-     */
 
     public static void ShowDemoWindow(StateRef<bool>? open)
     {
