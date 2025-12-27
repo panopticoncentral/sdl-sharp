@@ -92,7 +92,7 @@ public static class ImGuiDemoWindow
             {
                 ReadOnlySpan<byte> name = ImGui.ImGui.GetStyleColorName(i);
                 Point p = Window.CursorScreenPosition;
-                //Widgets.GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), Widgets.GetColorU32((ImGuiCol)i));
+                Window.DrawList?.AddRectFilled((p, (p.X + sz, p.Y + sz)), Color.GetColorU32(i));
                 Widgets.Dummy((sz, sz));
                 Widgets.SameLine();
                 _ = Widgets.MenuItem(name);

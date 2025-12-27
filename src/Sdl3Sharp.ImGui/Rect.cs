@@ -36,6 +36,15 @@ public readonly record struct Rect
         Value = value;
     }
 
+    /// <summary>
+    /// Implicitly converts a tuple to a Rect.
+    /// </summary>
+    /// <param name="tuple">The tuple containing upper left and lower right values.</param>
+    public static implicit operator Rect((Point UpperLeft, Point LowerRight) tuple)
+    {
+        return new Rect(tuple.UpperLeft, tuple.LowerRight);
+    }
+
     /// <inheritdoc />
     public override string ToString()
     {

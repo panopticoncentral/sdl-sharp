@@ -1,4 +1,5 @@
-﻿using static Sdl3Sharp.ImGui.Native.ImGui;
+﻿using Sdl3Sharp.ImGui.Native;
+using static Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
 
@@ -136,6 +137,18 @@ public static unsafe class Window
     /// Call <see cref="CursorScreenPos"/> after Begin to get the absolute coordinates version.
     /// </remarks>
     public static Point CursorStartPosition => new(ImGui_GetCursorStartPos());
+
+    /// <summary>
+    /// Gets the draw list associated with the current window.
+    /// </summary>
+    public static DrawList? DrawList
+    {
+        get
+        {
+            ImDrawList* drawList = ImGui_GetWindowDrawList();
+            return drawList != null ? new DrawList(drawList) : null;
+        }
+    }
 
     /// <summary>
     /// Begins a new window.

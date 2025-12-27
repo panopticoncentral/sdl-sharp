@@ -1,4 +1,5 @@
 using Sdl3Sharp.ImGui.Native;
+using static Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
 
@@ -116,17 +117,43 @@ public unsafe sealed class Viewport
     /// Gets the center of the viewport (Main Area).
     /// </summary>
     /// <returns>The center point of the viewport.</returns>
-    public Point GetCenter()
-    {
-        return new(ImGuiViewport.GetCenter(Native));
-    }
+    public Point Center => new(ImGuiViewport.GetCenter(Native));
 
     /// <summary>
     /// Gets the center of the Work Area.
     /// </summary>
     /// <returns>The center point of the Work Area.</returns>
-    public Point GetWorkCenter()
+    public Point WorkCenter => new(ImGuiViewport.GetWorkCenter(Native));
+
+    /// <summary>
+    /// Gets the background draw list for the current viewport.
+    /// </summary>
+    /// <returns>The background draw list.</returns>
+    /// <remarks>
+    /// This draw list will be the first rendering one. Useful to quickly draw shapes/text behind dear ImGui contents.
+    /// </remarks>
+    public static DrawList? BackgroundDrawList
     {
-        return new(ImGuiViewport.GetWorkCenter(Native));
+        get
+        {
+            ImDrawList* drawList = ImGui_GetBackgroundDrawList();
+            return drawList != null ? new DrawList(drawList) : null;
+        }
+    }
+
+    /// <summary>
+    /// Gets the foreground draw list for the current viewport.
+    /// </summary>
+    /// <returns>The foreground draw list.</returns>
+    /// <remarks>
+    /// This draw list will be the last rendered one. Useful to quickly draw shapes/text over dear ImGui contents.
+    /// </remarks>
+    public static DrawList? ForegroundDrawList
+    {
+        get
+        {
+            ImDrawList* drawList = ImGui_GetForegroundDrawList();
+            return drawList != null ? new DrawList(drawList) : null;
+        }
     }
 }
