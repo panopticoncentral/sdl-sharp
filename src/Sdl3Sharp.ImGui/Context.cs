@@ -9,6 +9,9 @@ namespace Sdl3Sharp.ImGui;
 /// </summary>
 public unsafe readonly struct Context
 {
+    public const string VersionString = Native.ImGui.Version;
+    public const int VersionNumber = VersionNum;
+
     internal readonly ImGuiContext* Value { get; init; }
 
     /// <summary>

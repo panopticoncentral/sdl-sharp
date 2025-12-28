@@ -9,54 +9,6 @@ namespace Sdl3Sharp.ImGui;
 /// </summary>
 public static unsafe class ImGui
 {
-    #region Tooltips
-
-    /// <summary>
-    /// Begins a tooltip window.
-    /// </summary>
-    /// <returns>True if the tooltip is visible. Only call <see cref="EndTooltip"/> if this returns true.</returns>
-    public static bool BeginTooltip()
-    {
-        return ImGui_BeginTooltip();
-    }
-
-    /// <summary>
-    /// Ends a tooltip window. Only call if <see cref="BeginTooltip"/> or <see cref="BeginItemTooltip"/> returned true.
-    /// </summary>
-    public static void EndTooltip()
-    {
-        ImGui_EndTooltip();
-    }
-
-    /// <summary>
-    /// Begins a tooltip window if the preceding item was hovered.
-    /// </summary>
-    /// <returns>True if the tooltip is visible. Only call <see cref="EndTooltip"/> if this returns true.</returns>
-    /// <remarks>
-    /// Shortcut for: if (IsItemHovered(HoveredFlags.ForTooltip) &amp;&amp; BeginTooltip())
-    /// </remarks>
-    public static bool BeginItemTooltip()
-    {
-        return ImGui_BeginItemTooltip();
-    }
-
-    /// <summary>
-    /// Sets a text-only tooltip.
-    /// </summary>
-    /// <param name="text">The tooltip text.</param>
-    /// <remarks>
-    /// Often used after an IsItemHovered() check. Overrides any previous call to SetTooltip().
-    /// </remarks>
-    public static void SetTooltip(ReadOnlySpan<byte> text)
-    {
-        fixed (byte* ptr = text)
-        {
-            ImGui_SetTooltip(ptr);
-        }
-    }
-
-    #endregion
-
     #region Popups, Modals
 
     /// <summary>

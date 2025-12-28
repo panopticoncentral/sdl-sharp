@@ -11,6 +11,20 @@ namespace Sdl3Sharp.ImGui.Native;
 
 internal static unsafe partial class ImGui
 {
+    #region Version
+
+    /// <summary>
+    /// The Dear ImGui version string.
+    /// </summary>
+    public const string Version = "1.92.6 WIP";
+
+    /// <summary>
+    /// The Dear ImGui version number, encoded as XYYZZ for use in preprocessor conditionals.
+    /// </summary>
+    public const int VersionNum = 19251;
+
+    #endregion
+
     #region Context creation and access
 
     /// <summary>

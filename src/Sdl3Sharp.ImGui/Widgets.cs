@@ -1,4 +1,6 @@
-﻿using static Sdl3Sharp.ImGui.Native.ImGui;
+﻿using System;
+using System.Runtime.CompilerServices;
+using static Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
 
@@ -349,29 +351,49 @@ public unsafe static class Widgets
     /// <param name="flags">Reference to the flags value.</param>
     /// <param name="flagsValue">The flag bit(s) to toggle.</param>
     /// <returns>True when the value has been changed.</returns>
-    public static bool CheckboxFlags(ReadOnlySpan<byte> label, ref int flags, int flagsValue)
+    public static bool CheckboxFlags<T>(ReadOnlySpan<byte> label, ref T flags, T flagsValue)
+        where T : unmanaged, Enum
     {
-        fixed (byte* ptr = label)
-        fixed (int* flagsPtr = &flags)
+        uint flagsLocal;
+        uint flagsValueLocal;
+        switch (Unsafe.SizeOf<T>())
         {
-            return ImGui_CheckboxFlagsIntPtr(ptr, flagsPtr, flagsValue);
+            case 1:
+                flagsLocal = Unsafe.As<T, byte>(ref flags);
+                flagsValueLocal = Unsafe.As<T, byte>(ref Unsafe.AsRef(in flagsValue));
+                break;
+            case 2:
+                flagsLocal = Unsafe.As<T, ushort>(ref flags);
+                flagsValueLocal = Unsafe.As<T, ushort>(ref Unsafe.AsRef(in flagsValue));
+                break;
+            case 4:
+                flagsLocal = Unsafe.As<T, uint>(ref flags);
+                flagsValueLocal = Unsafe.As<T, uint>(ref Unsafe.AsRef(in flagsValue));
+                break;
+            default:
+                throw new NotSupportedException("CheckboxFlags does not support 64-bit enums. ImGui only provides 32-bit flag checkbox APIs.");
         }
-    }
 
-    /// <summary>
-    /// Creates a checkbox widget for unsigned integer flags.
-    /// </summary>
-    /// <param name="label">The checkbox label.</param>
-    /// <param name="flags">Reference to the flags value.</param>
-    /// <param name="flagsValue">The flag bit(s) to toggle.</param>
-    /// <returns>True when the value has been changed.</returns>
-    public static bool CheckboxFlags(ReadOnlySpan<byte> label, ref uint flags, uint flagsValue)
-    {
+        bool result;
         fixed (byte* ptr = label)
-        fixed (uint* flagsPtr = &flags)
         {
-            return ImGui_CheckboxFlagsUintPtr(ptr, flagsPtr, flagsValue);
+            result = ImGui_CheckboxFlagsUintPtr(ptr, &flagsLocal, flagsValueLocal);
         }
+
+        switch (Unsafe.SizeOf<T>())
+        {
+            case 1:
+                Unsafe.As<T, byte>(ref flags) = (byte)flagsLocal;
+                break;
+            case 2:
+                Unsafe.As<T, ushort>(ref flags) = (ushort)flagsLocal;
+                break;
+            case 4:
+                Unsafe.As<T, uint>(ref flags) = flagsLocal;
+                break;
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -2319,6 +2341,43 @@ public unsafe static class Widgets
     }
 
     /// <summary>
+    /// Pushes a new tree node onto the stack using the specified identifier.
+    /// </summary>
+    /// <remarks>This method is typically used to create a new scope in a tree structure, such as when
+    /// building hierarchical UI elements. Each call to this method should be paired with a corresponding call to the
+    /// method that pops the tree node to maintain stack balance.</remarks>
+    /// <param name="strId">A read-only span of bytes representing the identifier for the tree node. The identifier must remain valid for
+    /// the duration of the call.</param>
+    public static void TreePush(ReadOnlySpan<byte> strId)
+    {
+        fixed (byte* ptr = strId)
+        {
+            ImGui_TreePush(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Pushes a new tree node onto the stack using the specified identifier. Subsequent ImGui items will be considered
+    /// children of this node until a matching TreePop is called.
+    /// </summary>
+    /// <remarks>Call TreePop to close the tree node opened by this method. TreePush and TreePop must be used
+    /// in pairs to maintain a balanced tree structure. This method is typically used when building custom tree widgets
+    /// or hierarchical UI elements in ImGui.</remarks>
+    /// <param name="id">The identifier for the tree node. This value must uniquely identify the node within the current tree hierarchy.</param>
+    public static void TreePush(nint id)
+    {
+        ImGui_TreePushPtr((void*)id);
+    }
+
+    /// <summary>
+    /// Pops the last tree node from the stack.
+    /// </summary>
+    public static void TreePop()
+    {
+        ImGui_TreePop();
+    }
+
+    /// <summary>
     /// Gets the horizontal distance preceding a label when using TreeNode or Bullet.
     /// </summary>
     /// <returns>The spacing in pixels.</returns>
@@ -2594,6 +2653,65 @@ public unsafe static class Widgets
         fixed (bool* pSelectedPtr = &pSelected)
         {
             return ImGui_MenuItemBoolPtr(labelPtr, shortcutPtr, pSelectedPtr, enabled);
+        }
+    }
+
+    /// <summary>
+    /// Begins a tooltip window.
+    /// </summary>
+    /// <returns>True if the tooltip is visible. Only call <see cref="EndTooltip"/> if this returns true.</returns>
+    public static bool BeginTooltip()
+    {
+        return ImGui_BeginTooltip();
+    }
+
+    /// <summary>
+    /// Ends a tooltip window. Only call if <see cref="BeginTooltip"/> or <see cref="BeginItemTooltip"/> returned true.
+    /// </summary>
+    public static void EndTooltip()
+    {
+        ImGui_EndTooltip();
+    }
+
+    /// <summary>
+    /// Sets a text-only tooltip.
+    /// </summary>
+    /// <param name="text">The tooltip text.</param>
+    /// <remarks>
+    /// Often used after an IsItemHovered() check. Overrides any previous call to SetTooltip().
+    /// </remarks>
+    public static void SetTooltip(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_SetTooltip(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Begins a tooltip window if the preceding item was hovered.
+    /// </summary>
+    /// <returns>True if the tooltip is visible. Only call <see cref="EndTooltip"/> if this returns true.</returns>
+    /// <remarks>
+    /// Shortcut for: if (IsItemHovered(HoveredFlags.ForTooltip) &amp;&amp; BeginTooltip())
+    /// </remarks>
+    public static bool BeginItemTooltip()
+    {
+        return ImGui_BeginItemTooltip();
+    }
+
+    /// <summary>
+    /// Sets a text-only tooltip for the preceding item if it was hovered.
+    /// </summary>
+    /// <param name="text">The tooltip text.</param>
+    /// <remarks>
+    /// Shortcut for: if (IsItemHovered(ImGuiHoveredFlags_ForTooltip)) { SetTooltip(...); }.
+    /// </remarks>
+    public static void SetItemTooltip(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_SetItemTooltip(ptr);
         }
     }
 }

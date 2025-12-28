@@ -1,7 +1,6 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Sdl3Sharp.ImGui.Native;
-
-using static Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
 
@@ -21,386 +20,218 @@ public unsafe readonly struct IO
     /// Gets or sets the configuration flags.
     /// </summary>
     /// <seealso cref="ConfigFlags"/>
-    public ConfigFlags ConfigFlags
-    {
-        get => (ConfigFlags)Native->ConfigFlags;
-        set => Native->ConfigFlags = (ImGuiConfigFlags)value;
-    }
+    public ref ConfigFlags ConfigFlags => ref Unsafe.As<ImGuiConfigFlags, ConfigFlags>(ref Native->ConfigFlags);
 
     /// <summary>
     /// Gets or sets the backend flags.
     /// </summary>
     /// <seealso cref="BackendFlags"/>
-    public BackendFlags BackendFlags
-    {
-        get => (BackendFlags)Native->BackendFlags;
-        set => Native->BackendFlags = (ImGuiBackendFlags)value;
-    }
+    public ref BackendFlags BackendFlags => ref Unsafe.As<ImGuiBackendFlags, BackendFlags>(ref Native->BackendFlags);
 
     /// <summary>
     /// Gets or sets the main display size in pixels.
     /// </summary>
-    public Vec2 DisplaySize
-    {
-        get => new(Native->DisplaySize);
-        set => Native->DisplaySize = value.Value;
-    }
+    public ref Vec2 DisplaySize => ref Unsafe.As<ImVec2, Vec2>(ref Native->DisplaySize);
 
     /// <summary>
     /// Gets or sets the display framebuffer scale for retina displays.
     /// </summary>
-    public Vec2 DisplayFramebufferScale
-    {
-        get => new(Native->DisplayFramebufferScale);
-        set => Native->DisplayFramebufferScale = value.Value;
-    }
+    public ref Vec2 DisplayFramebufferScale => ref Unsafe.As<ImVec2, Vec2>(ref Native->DisplayFramebufferScale);
 
     /// <summary>
     /// Gets or sets the time elapsed since last frame, in seconds.
     /// </summary>
-    public float DeltaTime
-    {
-        get => Native->DeltaTime;
-        set => Native->DeltaTime = value;
-    }
+    public ref float DeltaTime => ref Native->DeltaTime;
 
     /// <summary>
     /// Gets or sets the minimum time between saving positions/sizes to .ini file, in seconds.
     /// </summary>
-    public float IniSavingRate
-    {
-        get => Native->IniSavingRate;
-        set => Native->IniSavingRate = value;
-    }
+    public ref float IniSavingRate => ref Native->IniSavingRate;
 
     /// <summary>
     /// Gets or sets custom user data for the IO.
     /// </summary>
-    public nint UserData
-    {
-        get => (nint)Native->UserData;
-        set => Native->UserData = (void*)value;
-    }
+    public ref nint UserData => ref Unsafe.AsRef<nint>(&Native->UserData);
 
     /// <summary>
     /// Gets the font atlas.
     /// </summary>
-    public FontAtlas Fonts => new(Native->Fonts);
+    public readonly ref FontAtlas Fonts => ref Unsafe.AsRef<FontAtlas>(&Native->Fonts);
 
     /// <summary>
     /// Gets or sets whether to allow user scaling text of individual windows with Ctrl+Wheel.
     /// </summary>
-    public bool FontAllowUserScaling
-    {
-        get => Native->FontAllowUserScaling;
-        set => Native->FontAllowUserScaling = value;
-    }
+    public ref bool FontAllowUserScaling => ref Native->FontAllowUserScaling;
 
     /// <summary>
     /// Gets or sets whether to swap Activate/Cancel (A/B) buttons for gamepad navigation.
     /// </summary>
-    public bool ConfigNavSwapGamepadButtons
-    {
-        get => Native->ConfigNavSwapGamepadButtons;
-        set => Native->ConfigNavSwapGamepadButtons = value;
-    }
+    public ref bool ConfigNavSwapGamepadButtons => ref Native->ConfigNavSwapGamepadButtons;
 
     /// <summary>
     /// Gets or sets whether directional/tabbing navigation teleports the mouse cursor.
     /// </summary>
-    public bool ConfigNavMoveSetMousePos
-    {
-        get => Native->ConfigNavMoveSetMousePos;
-        set => Native->ConfigNavMoveSetMousePos = value;
-    }
+    public ref bool ConfigNavMoveSetMousePos => ref Native->ConfigNavMoveSetMousePos;
 
     /// <summary>
     /// Gets or sets whether io.WantCaptureKeyboard is set when io.NavActive is set.
     /// </summary>
-    public bool ConfigNavCaptureKeyboard
-    {
-        get => Native->ConfigNavCaptureKeyboard;
-        set => Native->ConfigNavCaptureKeyboard = value;
-    }
+    public ref bool ConfigNavCaptureKeyboard => ref Native->ConfigNavCaptureKeyboard;
 
     /// <summary>
     /// Gets or sets whether pressing Escape can clear focused item and navigation id/highlight.
     /// </summary>
-    public bool ConfigNavEscapeClearFocusItem
-    {
-        get => Native->ConfigNavEscapeClearFocusItem;
-        set => Native->ConfigNavEscapeClearFocusItem = value;
-    }
+    public ref bool ConfigNavEscapeClearFocusItem => ref Native->ConfigNavEscapeClearFocusItem;
 
     /// <summary>
     /// Gets or sets whether pressing Escape can clear focused window as well.
     /// </summary>
-    public bool ConfigNavEscapeClearFocusWindow
-    {
-        get => Native->ConfigNavEscapeClearFocusWindow;
-        set => Native->ConfigNavEscapeClearFocusWindow = value;
-    }
+    public ref bool ConfigNavEscapeClearFocusWindow => ref Native->ConfigNavEscapeClearFocusWindow;
 
     /// <summary>
     /// Gets or sets whether using directional navigation key makes the cursor visible.
     /// </summary>
-    public bool ConfigNavCursorVisibleAuto
-    {
-        get => Native->ConfigNavCursorVisibleAuto;
-        set => Native->ConfigNavCursorVisibleAuto = value;
-    }
+    public ref bool ConfigNavCursorVisibleAuto => ref Native->ConfigNavCursorVisibleAuto;
 
     /// <summary>
     /// Gets or sets whether the navigation cursor is always visible.
     /// </summary>
-    public bool ConfigNavCursorVisibleAlways
-    {
-        get => Native->ConfigNavCursorVisibleAlways;
-        set => Native->ConfigNavCursorVisibleAlways = value;
-    }
+    public ref bool ConfigNavCursorVisibleAlways => ref Native->ConfigNavCursorVisibleAlways;
 
     /// <summary>
     /// Gets or sets whether ImGui should draw a mouse cursor for you.
     /// </summary>
-    public bool MouseDrawCursor
-    {
-        get => Native->MouseDrawCursor;
-        set => Native->MouseDrawCursor = value;
-    }
+    public ref bool MouseDrawCursor => ref Native->MouseDrawCursor;
 
     /// <summary>
     /// Gets or sets whether to use macOS-style behaviors (Cmd/Ctrl swap, Alt text editing, etc.).
     /// </summary>
-    public bool ConfigMacOSXBehaviors
-    {
-        get => Native->ConfigMacOSXBehaviors;
-        set => Native->ConfigMacOSXBehaviors = value;
-    }
+    public ref bool ConfigMacOSXBehaviors => ref Native->ConfigMacOSXBehaviors;
 
     /// <summary>
     /// Gets or sets whether to enable input queue trickling.
     /// </summary>
-    public bool ConfigInputTrickleEventQueue
-    {
-        get => Native->ConfigInputTrickleEventQueue;
-        set => Native->ConfigInputTrickleEventQueue = value;
-    }
+    public ref bool ConfigInputTrickleEventQueue => ref Native->ConfigInputTrickleEventQueue;
 
     /// <summary>
     /// Gets or sets whether to enable blinking cursor.
     /// </summary>
-    public bool ConfigInputTextCursorBlink
-    {
-        get => Native->ConfigInputTextCursorBlink;
-        set => Native->ConfigInputTextCursorBlink = value;
-    }
+    public ref bool ConfigInputTextCursorBlink => ref Native->ConfigInputTextCursorBlink;
 
     /// <summary>
     /// Gets or sets whether pressing Enter keeps item active and selects contents (single-line only).
     /// </summary>
-    public bool ConfigInputTextEnterKeepActive
-    {
-        get => Native->ConfigInputTextEnterKeepActive;
-        set => Native->ConfigInputTextEnterKeepActive = value;
-    }
+    public ref bool ConfigInputTextEnterKeepActive => ref Native->ConfigInputTextEnterKeepActive;
 
     /// <summary>
     /// Gets or sets whether clicking on DragXXX widgets turns them into text input.
     /// </summary>
-    public bool ConfigDragClickToInputText
-    {
-        get => Native->ConfigDragClickToInputText;
-        set => Native->ConfigDragClickToInputText = value;
-    }
+    public ref bool ConfigDragClickToInputText => ref Native->ConfigDragClickToInputText;
 
     /// <summary>
     /// Gets or sets whether to enable resizing of windows from their edges.
     /// </summary>
-    public bool ConfigWindowsResizeFromEdges
-    {
-        get => Native->ConfigWindowsResizeFromEdges;
-        set => Native->ConfigWindowsResizeFromEdges = value;
-    }
+    public ref bool ConfigWindowsResizeFromEdges => ref Native->ConfigWindowsResizeFromEdges;
 
     /// <summary>
     /// Gets or sets whether windows can only be moved by clicking on their title bar.
     /// </summary>
-    public bool ConfigWindowsMoveFromTitleBarOnly
-    {
-        get => Native->ConfigWindowsMoveFromTitleBarOnly;
-        set => Native->ConfigWindowsMoveFromTitleBarOnly = value;
-    }
+    public ref bool ConfigWindowsMoveFromTitleBarOnly => ref Native->ConfigWindowsMoveFromTitleBarOnly;
 
     /// <summary>
     /// Gets or sets whether Ctrl+C copies the contents of focused window into the clipboard.
     /// </summary>
-    public bool ConfigWindowsCopyContentsWithCtrlC
-    {
-        get => Native->ConfigWindowsCopyContentsWithCtrlC;
-        set => Native->ConfigWindowsCopyContentsWithCtrlC = value;
-    }
+    public ref bool ConfigWindowsCopyContentsWithCtrlC => ref Native->ConfigWindowsCopyContentsWithCtrlC;
 
     /// <summary>
     /// Gets or sets whether to enable scrolling page by page when clicking outside the scrollbar grab.
     /// </summary>
-    public bool ConfigScrollbarScrollByPage
-    {
-        get => Native->ConfigScrollbarScrollByPage;
-        set => Native->ConfigScrollbarScrollByPage = value;
-    }
+    public ref bool ConfigScrollbarScrollByPage => ref Native->ConfigScrollbarScrollByPage;
 
     /// <summary>
     /// Gets or sets the timer (in seconds) to free transient windows/tables memory buffers when unused.
     /// </summary>
-    public float ConfigMemoryCompactTimer
-    {
-        get => Native->ConfigMemoryCompactTimer;
-        set => Native->ConfigMemoryCompactTimer = value;
-    }
+    public ref float ConfigMemoryCompactTimer => ref Native->ConfigMemoryCompactTimer;
 
     /// <summary>
     /// Gets or sets the time for a double-click, in seconds.
     /// </summary>
-    public float MouseDoubleClickTime
-    {
-        get => Native->MouseDoubleClickTime;
-        set => Native->MouseDoubleClickTime = value;
-    }
+    public ref float MouseDoubleClickTime => ref Native->MouseDoubleClickTime;
 
     /// <summary>
     /// Gets or sets the distance threshold to stay in to validate a double-click, in pixels.
     /// </summary>
-    public float MouseDoubleClickMaxDist
-    {
-        get => Native->MouseDoubleClickMaxDist;
-        set => Native->MouseDoubleClickMaxDist = value;
-    }
+    public ref float MouseDoubleClickMaxDist => ref Native->MouseDoubleClickMaxDist;
 
     /// <summary>
     /// Gets or sets the distance threshold before considering we are dragging.
     /// </summary>
-    public float MouseDragThreshold
-    {
-        get => Native->MouseDragThreshold;
-        set => Native->MouseDragThreshold = value;
-    }
+    public ref float MouseDragThreshold => ref Native->MouseDragThreshold;
 
     /// <summary>
     /// Gets or sets the time before key/button repeat starts, in seconds.
     /// </summary>
-    public float KeyRepeatDelay
-    {
-        get => Native->KeyRepeatDelay;
-        set => Native->KeyRepeatDelay = value;
-    }
+    public ref float KeyRepeatDelay => ref Native->KeyRepeatDelay;
 
     /// <summary>
     /// Gets or sets the rate at which key/button repeats, in seconds.
     /// </summary>
-    public float KeyRepeatRate
-    {
-        get => Native->KeyRepeatRate;
-        set => Native->KeyRepeatRate = value;
-    }
+    public ref float KeyRepeatRate => ref Native->KeyRepeatRate;
 
     /// <summary>
     /// Gets or sets whether to enable error recovery support.
     /// </summary>
-    public bool ConfigErrorRecovery
-    {
-        get => Native->ConfigErrorRecovery;
-        set => Native->ConfigErrorRecovery = value;
-    }
+    public ref bool ConfigErrorRecovery => ref Native->ConfigErrorRecovery;
 
     /// <summary>
     /// Gets or sets whether to enable asserts on recoverable errors.
     /// </summary>
-    public bool ConfigErrorRecoveryEnableAssert
-    {
-        get => Native->ConfigErrorRecoveryEnableAssert;
-        set => Native->ConfigErrorRecoveryEnableAssert = value;
-    }
+    public ref bool ConfigErrorRecoveryEnableAssert => ref Native->ConfigErrorRecoveryEnableAssert;
 
     /// <summary>
     /// Gets or sets whether to enable debug log output on recoverable errors.
     /// </summary>
-    public bool ConfigErrorRecoveryEnableDebugLog
-    {
-        get => Native->ConfigErrorRecoveryEnableDebugLog;
-        set => Native->ConfigErrorRecoveryEnableDebugLog = value;
-    }
+    public ref bool ConfigErrorRecoveryEnableDebugLog => ref Native->ConfigErrorRecoveryEnableDebugLog;
 
     /// <summary>
     /// Gets or sets whether to enable tooltip on recoverable errors.
     /// </summary>
-    public bool ConfigErrorRecoveryEnableTooltip
-    {
-        get => Native->ConfigErrorRecoveryEnableTooltip;
-        set => Native->ConfigErrorRecoveryEnableTooltip = value;
-    }
+    public ref bool ConfigErrorRecoveryEnableTooltip => ref Native->ConfigErrorRecoveryEnableTooltip;
 
     /// <summary>
     /// Gets or sets whether a debugger is present.
     /// </summary>
-    public bool ConfigDebugIsDebuggerPresent
-    {
-        get => Native->ConfigDebugIsDebuggerPresent;
-        set => Native->ConfigDebugIsDebuggerPresent = value;
-    }
+    public ref bool ConfigDebugIsDebuggerPresent => ref Native->ConfigDebugIsDebuggerPresent;
 
     /// <summary>
     /// Gets or sets whether to highlight and show error message popup when multiple items have conflicting identifiers.
     /// </summary>
-    public bool ConfigDebugHighlightIdConflicts
-    {
-        get => Native->ConfigDebugHighlightIdConflicts;
-        set => Native->ConfigDebugHighlightIdConflicts = value;
-    }
+    public ref bool ConfigDebugHighlightIdConflicts => ref Native->ConfigDebugHighlightIdConflicts;
 
     /// <summary>
     /// Gets or sets whether to show "Item Picker" button in ID conflict popup.
     /// </summary>
-    public bool ConfigDebugHighlightIdConflictsShowItemPicker
-    {
-        get => Native->ConfigDebugHighlightIdConflictsShowItemPicker;
-        set => Native->ConfigDebugHighlightIdConflictsShowItemPicker = value;
-    }
+    public ref bool ConfigDebugHighlightIdConflictsShowItemPicker => ref Native->ConfigDebugHighlightIdConflictsShowItemPicker;
 
     /// <summary>
     /// Gets or sets whether first-time calls to Begin()/BeginChild() will return false.
     /// </summary>
-    public bool ConfigDebugBeginReturnValueOnce
-    {
-        get => Native->ConfigDebugBeginReturnValueOnce;
-        set => Native->ConfigDebugBeginReturnValueOnce = value;
-    }
+    public ref bool ConfigDebugBeginReturnValueOnce => ref Native->ConfigDebugBeginReturnValueOnce;
 
     /// <summary>
     /// Gets or sets whether some calls to Begin()/BeginChild() will return false (cycles through window depths).
     /// </summary>
-    public bool ConfigDebugBeginReturnValueLoop
-    {
-        get => Native->ConfigDebugBeginReturnValueLoop;
-        set => Native->ConfigDebugBeginReturnValueLoop = value;
-    }
+    public ref bool ConfigDebugBeginReturnValueLoop => ref Native->ConfigDebugBeginReturnValueLoop;
 
     /// <summary>
     /// Gets or sets whether to ignore io.AddFocusEvent(false).
     /// </summary>
-    public bool ConfigDebugIgnoreFocusLoss
-    {
-        get => Native->ConfigDebugIgnoreFocusLoss;
-        set => Native->ConfigDebugIgnoreFocusLoss = value;
-    }
+    public ref bool ConfigDebugIgnoreFocusLoss => ref Native->ConfigDebugIgnoreFocusLoss;
 
     /// <summary>
     /// Gets or sets whether to save .ini data with extra comments.
     /// </summary>
-    public bool ConfigDebugIniSettings
-    {
-        get => Native->ConfigDebugIniSettings;
-        set => Native->ConfigDebugIniSettings = value;
-    }
+    public ref bool ConfigDebugIniSettings => ref Native->ConfigDebugIniSettings;
 
     /// <summary>
     /// Gets the backend platform name.
@@ -415,29 +246,17 @@ public unsafe readonly struct IO
     /// <summary>
     /// Gets or sets the user data for the platform backend.
     /// </summary>
-    public nint BackendPlatformUserData
-    {
-        get => (nint)Native->BackendPlatformUserData;
-        set => Native->BackendPlatformUserData = (void*)value;
-    }
+    public ref nint BackendPlatformUserData => ref Unsafe.AsRef<nint>(&Native->BackendPlatformUserData);
 
     /// <summary>
     /// Gets or sets the user data for the renderer backend.
     /// </summary>
-    public nint BackendRendererUserData
-    {
-        get => (nint)Native->BackendRendererUserData;
-        set => Native->BackendRendererUserData = (void*)value;
-    }
+    public ref nint BackendRendererUserData => ref Unsafe.AsRef<nint>(&Native->BackendRendererUserData);
 
     /// <summary>
     /// Gets or sets the user data for non-C++ programming language backend.
     /// </summary>
-    public nint BackendLanguageUserData
-    {
-        get => (nint)Native->BackendLanguageUserData;
-        set => Native->BackendLanguageUserData = (void*)value;
-    }
+    public ref nint BackendLanguageUserData => ref Unsafe.AsRef<nint>(&Native->BackendLanguageUserData);
 
     /// <summary>
     /// Gets whether Dear ImGui will use mouse inputs.
@@ -462,11 +281,7 @@ public unsafe readonly struct IO
     /// <summary>
     /// Gets or sets whether .ini settings should be saved.
     /// </summary>
-    public bool WantSaveIniSettings
-    {
-        get => Native->WantSaveIniSettings;
-        set => Native->WantSaveIniSettings = value;
-    }
+    public ref bool WantSaveIniSettings => ref Native->WantSaveIniSettings;
 
     /// <summary>
     /// Gets whether keyboard/gamepad navigation is currently allowed.

@@ -111,11 +111,28 @@ public static class HeaderGenerator
 
         Console.WriteLine($"  Generated {valueStructCount} value struct files");
 
+        // === Extract version information from defines ===
+        string? version = null;
+        int? versionNum = null;
+
+        DefineInfo? versionDefine = root.Defines.FirstOrDefault(d => d.Name == "IMGUI_VERSION");
+        if (versionDefine?.Content != null)
+        {
+            // Content is in the form "\"1.92.6 WIP\"", so strip the quotes
+            version = versionDefine.Content.Trim('"');
+        }
+
+        DefineInfo? versionNumDefine = root.Defines.FirstOrDefault(d => d.Name == "IMGUI_VERSION_NUM");
+        if (versionNumDefine?.Content != null && int.TryParse(versionNumDefine.Content, out var num))
+        {
+            versionNum = num;
+        }
+
         // === Generate Native Methods (one file per class grouping) ===
         Console.WriteLine("\nGenerating native methods...");
         if (nonStructFunctions.Count != 0)
         {
-            var content = FunctionGenerator.GenerateForClass(typeMapper, nonStructFunctions, ns, className);
+            var content = FunctionGenerator.GenerateForClass(typeMapper, nonStructFunctions, ns, className, version, versionNum);
             var filePath = Path.Combine(outputDir, $"{className}.cs");
             File.WriteAllText(filePath, content);
 

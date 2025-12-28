@@ -8,7 +8,7 @@ public static class FunctionGenerator
     /// <summary>
     /// Generates a native methods class for a pre-filtered list of functions.
     /// </summary>
-    public static string GenerateForClass(TypeMapper typeMapper, IEnumerable<FunctionInfo> functions, string namespaceName, string className)
+    public static string GenerateForClass(TypeMapper typeMapper, IEnumerable<FunctionInfo> functions, string namespaceName, string className, string? version = null, int? versionNum = null)
     {
         var functionList = functions.ToList();
 
@@ -30,6 +30,34 @@ public static class FunctionGenerator
 
         writer.AppendLine($"internal static unsafe partial class {className}");
         writer.OpenBrace();
+
+        // Generate version constants if provided
+        if (version != null || versionNum != null)
+        {
+            writer.AppendLine("#region Version");
+            writer.AppendLine();
+
+            if (version != null)
+            {
+                writer.AppendLine("/// <summary>");
+                writer.AppendLine("/// The Dear ImGui version string.");
+                writer.AppendLine("/// </summary>");
+                writer.AppendLine($"public const string Version = \"{version}\";");
+                writer.AppendLine();
+            }
+
+            if (versionNum != null)
+            {
+                writer.AppendLine("/// <summary>");
+                writer.AppendLine("/// The Dear ImGui version number, encoded as XYYZZ for use in preprocessor conditionals.");
+                writer.AppendLine("/// </summary>");
+                writer.AppendLine($"public const int VersionNum = {versionNum};");
+                writer.AppendLine();
+            }
+
+            writer.AppendLine("#endregion");
+            writer.AppendLine();
+        }
 
         // Group functions by category (from preceding comments) while preserving original order
         List<FunctionGroup> groupedFunctions = GroupFunctions(functionList);
