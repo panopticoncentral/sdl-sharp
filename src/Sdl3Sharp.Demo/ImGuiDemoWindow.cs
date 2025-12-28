@@ -256,9 +256,9 @@ public static unsafe class ImGuiDemoWindow
                 _ = Widgets.Checkbox("io.ConfigDebugHighlightIdConflicts"u8, ref io.ConfigDebugHighlightIdConflicts);
                 Widgets.SameLine();
                 HelpMarker("Highlight and show an error message when multiple items have conflicting identifiers."u8);
-                // TODO: Widgets.BeginDisabled();
+                Widgets.BeginDisabled();
                 _ = Widgets.Checkbox("io.ConfigDebugBeginReturnValueOnce"u8, ref io.ConfigDebugBeginReturnValueOnce);
-                // TODO: Widgets.EndDisabled();
+                Widgets.EndDisabled();
                 Widgets.SameLine();
                 HelpMarker("First calls to Begin()/BeginChild() will return false.\n\nTHIS OPTION IS DISABLED because it needs to be set at application boot-time to make sense. Showing the disabled option is a way to make this feature easier to discover."u8);
                 _ = Widgets.Checkbox("io.ConfigDebugBeginReturnValueLoop"u8, ref io.ConfigDebugBeginReturnValueLoop);
@@ -282,13 +282,13 @@ public static unsafe class ImGuiDemoWindow
                     "Here we expose them as read-only fields to avoid breaking interactions with your backend."u8);
 
                 // FIXME: Maybe we need a BeginReadonly() equivalent to keep label bright?
-                // TODO: Widgets.BeginDisabled();
+                Widgets.BeginDisabled();
                 _ = Widgets.CheckboxFlags("io.BackendFlags: HasGamepad"u8, ref io.BackendFlags, BackendFlags.HasGamepad);
                 _ = Widgets.CheckboxFlags("io.BackendFlags: HasMouseCursors"u8, ref io.BackendFlags, BackendFlags.HasMouseCursors);
                 _ = Widgets.CheckboxFlags("io.BackendFlags: HasSetMousePos"u8, ref io.BackendFlags, BackendFlags.HasSetMousePos);
                 _ = Widgets.CheckboxFlags("io.BackendFlags: RendererHasVtxOffset"u8, ref io.BackendFlags, BackendFlags.RendererHasVtxOffset);
                 _ = Widgets.CheckboxFlags("io.BackendFlags: RendererHasTextures"u8, ref io.BackendFlags, BackendFlags.RendererHasTextures);
-                // TODO: Widgets.EndDisabled();
+                Widgets.EndDisabled();
 
                 Widgets.TreePop();
                 Widgets.Spacing();
@@ -309,14 +309,14 @@ public static unsafe class ImGuiDemoWindow
                     "The logging API redirects all text output so you can easily capture the content of "u8 +
                     "a window or a block. Tree nodes can be automatically expanded.\n"u8 +
                     "Try opening any of the contents below in this window and then click one of the \"u8Log To\" button."u8);
-                ImGui.ImGui.LogButtons();
+                Context.LogButtons();
 
                 HelpMarker("You can also call ImGui::LogText() to output directly to the log without a visual output."u8);
                 if (Widgets.Button("Copy \"Hello, world!\" to clipboard"u8))
                 {
-                    ImGui.ImGui.LogToClipboard();
-                    ImGui.ImGui.LogText("Hello, world!"u8);
-                    ImGui.ImGui.LogFinish();
+                    Context.LogToClipboard();
+                    Context.LogText("Hello, world!"u8);
+                    Context.LogFinish();
                 }
 
                 Widgets.TreePop();
@@ -558,9 +558,9 @@ public static unsafe class ImGuiDemoWindow
                 Widgets.MenuItem("Metrics/Debugger"u8, null, ref _demoData.ShowMetrics, hasDebugTools);
                 if (Widgets.BeginMenu("Debug Options"u8))
                 {
-                    // TODO: Widgets.BeginDisabled(!has_debug_tools);
+                    Widgets.BeginDisabled(!hasDebugTools);
                     Widgets.Checkbox("Highlight ID Conflicts"u8, ref io.ConfigDebugHighlightIdConflicts);
-                    // TODO: Widgets.EndDisabled();
+                    Widgets.EndDisabled();
                     Widgets.Checkbox("Assert on error recovery"u8, ref io.ConfigErrorRecoveryEnableAssert);
                     Widgets.TextDisabled("(see Demo->Configuration for details & more)"u8);
                     Widgets.EndMenu();

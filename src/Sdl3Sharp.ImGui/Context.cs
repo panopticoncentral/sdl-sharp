@@ -255,4 +255,71 @@ public unsafe readonly struct Context
     {
         ImGui_ShowUserGuide();
     }
+
+    /// <summary>
+    /// Starts logging to tty (stdout).
+    /// </summary>
+    /// <param name="autoOpenDepth">Depth to auto-open tree nodes (-1 for default).</param>
+    public static void LogToTTY(int autoOpenDepth = -1)
+    {
+        ImGui_LogToTTY(autoOpenDepth);
+    }
+
+    /// <summary>
+    /// Starts logging to a file.
+    /// </summary>
+    /// <param name="autoOpenDepth">Depth to auto-open tree nodes (-1 for default).</param>
+    /// <param name="filename">The filename to log to (null for default "imgui_log.txt").</param>
+    public static void LogToFile(int autoOpenDepth = -1, ReadOnlySpan<byte> filename = default)
+    {
+        fixed (byte* ptr = filename)
+        {
+            ImGui_LogToFile(autoOpenDepth, ptr);
+        }
+    }
+
+    /// <summary>
+    /// Starts logging to the OS clipboard.
+    /// </summary>
+    /// <param name="autoOpenDepth">Depth to auto-open tree nodes (-1 for default).</param>
+    public static void LogToClipboard(int autoOpenDepth = -1)
+    {
+        ImGui_LogToClipboard(autoOpenDepth);
+    }
+
+    /// <summary>
+    /// Stops logging (closes file, etc.).
+    /// </summary>
+    public static void LogFinish()
+    {
+        ImGui_LogFinish();
+    }
+
+    /// <summary>
+    /// Displays buttons for logging to tty/file/clipboard.
+    /// </summary>
+    public static void LogButtons()
+    {
+        ImGui_LogButtons();
+    }
+
+    /// <summary>
+    /// Passes text data straight to the log without being displayed.
+    /// </summary>
+    /// <param name="text">The text to log.</param>
+    public static void LogText(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_LogText(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Alter visibility of keyboard/gamepad cursor. by default: show when using an arrow key, hide when clicking with mouse.
+    /// </summary>
+    public static void SetNavCursorVisible(bool visible)
+    {
+        ImGui_SetNavCursorVisible(visible);
+    }
 }

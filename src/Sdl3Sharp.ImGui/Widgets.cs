@@ -3003,4 +3003,286 @@ public unsafe static class Widgets
             ImGui_SetTabItemClosed(ptr);
         }
     }
+
+    /// <summary>
+    /// Begins a drag-and-drop source. Call after submitting an item which may be dragged.
+    /// </summary>
+    /// <param name="flags">Drag-and-drop flags.</param>
+    /// <returns>True if drag source is active; call SetDragDropPayload() + EndDragDropSource().</returns>
+    public static bool BeginDragDropSource(DragDropFlags flags = DragDropFlags.None)
+    {
+        return ImGui_BeginDragDropSource((Native.ImGuiDragDropFlags)flags);
+    }
+
+    /// <summary>
+    /// Sets the payload data for the current drag-and-drop operation.
+    /// </summary>
+    /// <param name="type">A user-defined string type (max 32 characters).</param>
+    /// <param name="data">The data to be copied and held by ImGui.</param>
+    /// <param name="cond">Condition for setting the payload.</param>
+    /// <returns>True when payload has been accepted.</returns>
+    public static bool SetDragDropPayload(ReadOnlySpan<byte> type, ReadOnlySpan<byte> data, Condition cond = Condition.None)
+    {
+        fixed (byte* typePtr = type)
+        fixed (byte* dataPtr = data)
+        {
+            return ImGui_SetDragDropPayload(typePtr, dataPtr, (nuint)data.Length, (Native.ImGuiCond)cond);
+        }
+    }
+
+    /// <summary>
+    /// Ends the drag-and-drop source. Only call if BeginDragDropSource() returned true.
+    /// </summary>
+    public static void EndDragDropSource()
+    {
+        ImGui_EndDragDropSource();
+    }
+
+    /// <summary>
+    /// Begins a drag-and-drop target. Call after submitting an item that may receive a payload.
+    /// </summary>
+    /// <returns>True if can accept payload; call AcceptDragDropPayload() + EndDragDropTarget().</returns>
+    public static bool BeginDragDropTarget()
+    {
+        return ImGui_BeginDragDropTarget();
+    }
+
+    /// <summary>
+    /// Ends the drag-and-drop target. Only call if BeginDragDropTarget() returned true.
+    /// </summary>
+    public static void EndDragDropTarget()
+    {
+        ImGui_EndDragDropTarget();
+    }
+
+    /// <summary>
+    /// Begins a disabled section. Disables all user interactions and dims item visuals.
+    /// </summary>
+    /// <remarks>
+    /// <para>Applies style.DisabledAlpha over current colors.</para>
+    /// <para>These can be nested but cannot be used to enable an already disabled section
+    /// (a single BeginDisabled(true) in the stack is enough to keep everything disabled).</para>
+    /// <para>Tooltip windows are automatically opted out of disabling.</para>
+    /// <para>Note that IsItemHovered() by default returns false on disabled items, unless using HoveredFlags.AllowWhenDisabled.</para>
+    /// </remarks>
+    /// <param name="disabled">If true, the section is disabled. If false, this call essentially does nothing
+    /// but is provided to facilitate use of boolean expressions.</param>
+    public static void BeginDisabled(bool disabled = true)
+    {
+        ImGui_BeginDisabled(disabled);
+    }
+
+    /// <summary>
+    /// Ends a disabled section. Only call if BeginDisabled() was called.
+    /// </summary>
+    public static void EndDisabled()
+    {
+        ImGui_EndDisabled();
+    }
+
+    /// <summary>
+    /// Pushes a clipping rectangle for both ImGui logic (hit testing) and rendering.
+    /// </summary>
+    /// <param name="rect">Theclip rectangle.</param>
+    /// <param name="intersectWithCurrentClipRect">Whether to intersect with the current clip rectangle.</param>
+    public static void PushClipRect(Rect rect, bool intersectWithCurrentClipRect)
+    {
+        ImGui_PushClipRect(rect.UpperLeft.Value, rect.LowerRight.Value, intersectWithCurrentClipRect);
+    }
+
+    /// <summary>
+    /// Pops the last clip rectangle.
+    /// </summary>
+    public static void PopClipRect()
+    {
+        ImGui_PopClipRect();
+    }
+
+    /// <summary>
+    /// Makes the last item the default focused item of a newly appearing window.
+    /// </summary>
+    public static void SetItemDefaultFocus()
+    {
+        ImGui_SetItemDefaultFocus();
+    }
+
+    /// <summary>
+    /// Focuses keyboard on the next widget.
+    /// </summary>
+    public static void SetKeyboardFocusHere()
+    {
+        ImGui_SetKeyboardFocusHere();
+    }
+
+    /// <summary>
+    /// Focuses keyboard on a widget relative to current position.
+    /// </summary>
+    /// <param name="offset">Use positive offset to access sub components, -1 for previous widget.</param>
+    public static void SetKeyboardFocusHere(int offset)
+    {
+        ImGui_SetKeyboardFocusHereEx(offset);
+    }
+
+    /// <summary>
+    /// Allows the next item to be overlapped by a subsequent item.
+    /// </summary>
+    public static void SetNextItemAllowOverlap()
+    {
+        ImGui_SetNextItemAllowOverlap();
+    }
+
+    /// <summary>
+    /// Checks if the last item is hovered.
+    /// </summary>
+    /// <param name="flags">Hover behavior flags.</param>
+    /// <returns>True if the item is hovered.</returns>
+    public static bool IsItemHovered(HoveredFlags flags = HoveredFlags.None)
+    {
+        return ImGui_IsItemHovered((Native.ImGuiHoveredFlags)flags);
+    }
+
+    /// <summary>
+    /// Checks if the last item is active (e.g., button being held, text field being edited).
+    /// </summary>
+    /// <returns>True if the item is active.</returns>
+    public static bool IsItemActive()
+    {
+        return ImGui_IsItemActive();
+    }
+
+    /// <summary>
+    /// Checks if the last item is focused for keyboard/gamepad navigation.
+    /// </summary>
+    /// <returns>True if the item is focused.</returns>
+    public static bool IsItemFocused()
+    {
+        return ImGui_IsItemFocused();
+    }
+
+    /// <summary>
+    /// Checks if the last item was clicked with the left mouse button.
+    /// </summary>
+    /// <returns>True if the item was clicked.</returns>
+    public static bool IsItemClicked()
+    {
+        return ImGui_IsItemClicked();
+    }
+
+    /// <summary>
+    /// Checks if the last item was clicked with a specific mouse button.
+    /// </summary>
+    /// <param name="mouseButton">The mouse button to check.</param>
+    /// <returns>True if the item was clicked.</returns>
+    public static bool IsItemClicked(MouseButton mouseButton)
+    {
+        return ImGui_IsItemClickedEx((Native.ImGuiMouseButton)mouseButton);
+    }
+
+    /// <summary>
+    /// Checks if the last item is visible (not clipped/scrolled out of view).
+    /// </summary>
+    /// <returns>True if the item is visible.</returns>
+    public static bool IsItemVisible()
+    {
+        return ImGui_IsItemVisible();
+    }
+
+    /// <summary>
+    /// Checks if the last item modified its underlying value this frame.
+    /// </summary>
+    /// <returns>True if the item was edited.</returns>
+    public static bool IsItemEdited()
+    {
+        return ImGui_IsItemEdited();
+    }
+
+    /// <summary>
+    /// Checks if the last item was just made active (was previously inactive).
+    /// </summary>
+    /// <returns>True if the item was activated.</returns>
+    public static bool IsItemActivated()
+    {
+        return ImGui_IsItemActivated();
+    }
+
+    /// <summary>
+    /// Checks if the last item was just made inactive (was previously active).
+    /// </summary>
+    /// <returns>True if the item was deactivated.</returns>
+    public static bool IsItemDeactivated()
+    {
+        return ImGui_IsItemDeactivated();
+    }
+
+    /// <summary>
+    /// Checks if the last item was just made inactive and made a value change when active.
+    /// </summary>
+    /// <returns>True if the item was deactivated after edit.</returns>
+    public static bool IsItemDeactivatedAfterEdit()
+    {
+        return ImGui_IsItemDeactivatedAfterEdit();
+    }
+
+    /// <summary>
+    /// Checks if the last item's open state was toggled (set by TreeNode).
+    /// </summary>
+    /// <returns>True if the item was toggled open.</returns>
+    public static bool IsItemToggledOpen()
+    {
+        return ImGui_IsItemToggledOpen();
+    }
+
+    /// <summary>
+    /// Checks if any item is hovered.
+    /// </summary>
+    /// <returns>True if any item is hovered.</returns>
+    public static bool IsAnyItemHovered()
+    {
+        return ImGui_IsAnyItemHovered();
+    }
+
+    /// <summary>
+    /// Checks if any item is active.
+    /// </summary>
+    /// <returns>True if any item is active.</returns>
+    public static bool IsAnyItemActive()
+    {
+        return ImGui_IsAnyItemActive();
+    }
+
+    /// <summary>
+    /// Checks if any item is focused.
+    /// </summary>
+    /// <returns>True if any item is focused.</returns>
+    public static bool IsAnyItemFocused()
+    {
+        return ImGui_IsAnyItemFocused();
+    }
+
+    /// <summary>
+    /// Gets the ID of the last item.
+    /// </summary>
+    /// <returns>The ID of the last item.</returns>
+    public static Id GetItemID()
+    {
+        return new(ImGui_GetItemID());
+    }
+
+    /// <summary>
+    /// Gets the upper-left bounding rectangle of the last item (screen space).
+    /// </summary>
+    /// <returns>The minimum bounding rectangle position.</returns>
+    public static Rect GetItemRect()
+    {
+        return (new(ImGui_GetItemRectMin()), new(ImGui_GetItemRectMax()));
+    }
+
+    /// <summary>
+    /// Gets the size of the last item.
+    /// </summary>
+    /// <returns>The size of the last item.</returns>
+    public static Size GetItemRectSize()
+    {
+        return new(ImGui_GetItemRectSize());
+    }
 }
