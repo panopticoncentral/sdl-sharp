@@ -154,11 +154,12 @@ public static unsafe class Window
     /// Begins a new window.
     /// </summary>
     /// <param name="name">The window name, used as a unique identifier. Use "##" to pass a label that isn't displayed.</param>
+    /// <param name="flags">Window behavior flags.</param>
     /// <returns>
     /// False if the window is collapsed or fully clipped (you can early out and skip submitting content).
     /// Always call <see cref="End"/> regardless of this return value.
     /// </returns>
-    public static bool Begin(ReadOnlySpan<byte> name)
+    public static bool Begin(ReadOnlySpan<byte> name, WindowFlags flags = WindowFlags.None)
     {
         fixed (byte* ptr = name)
         {
@@ -472,5 +473,194 @@ public static unsafe class Window
     public static float CalcItemWidth()
     {
         return ImGui_CalcItemWidth();
+    }
+
+    /// <summary>
+    /// Begins a popup window.
+    /// </summary>
+    /// <param name="strId">The popup string ID.</param>
+    /// <param name="flags">Window behavior flags.</param>
+    /// <returns>True if the popup is open. Only call <see cref="EndPopup"/> if this returns true.</returns>
+    public static bool BeginPopup(ReadOnlySpan<byte> strId, WindowFlags flags = WindowFlags.None)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_BeginPopup(ptr, (ImGuiWindowFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Begins a modal popup window.
+    /// </summary>
+    /// <param name="name">The modal name.</param>
+    /// <returns>True if the modal is open. Only call <see cref="EndPopup"/> if this returns true.</returns>
+    /// <remarks>
+    /// Modal windows block all interaction behind them and cannot be closed by clicking outside.
+    /// </remarks>
+    public static bool BeginPopupModal(ReadOnlySpan<byte> name)
+    {
+        fixed (byte* ptr = name)
+        {
+            return ImGui_BeginPopupModal(ptr, null, Native.ImGuiWindowFlags.None);
+        }
+    }
+
+    /// <summary>
+    /// Begins a modal popup window.
+    /// </summary>
+    /// <param name="name">The modal name.</param>
+    /// <param name="pOpen">Optional pointer to open state. If provided, shows a close button.</param>
+    /// <param name="flags">Window behavior flags.</param>
+    /// <returns>True if the modal is open. Only call <see cref="EndPopup"/> if this returns true.</returns>
+    /// <remarks>
+    /// Modal windows block all interaction behind them and cannot be closed by clicking outside.
+    /// </remarks>
+    public static bool BeginPopupModal(ReadOnlySpan<byte> name, ref bool pOpen, WindowFlags flags = WindowFlags.None)
+    {
+        fixed (byte* ptr = name)
+        {
+            var localOpen = pOpen;
+            var result = ImGui_BeginPopupModal(ptr, &localOpen, (ImGuiWindowFlags)flags);
+            pOpen = localOpen;
+            return result;
+        }
+    }
+
+    /// <summary>
+    /// Ends a popup window. Only call if BeginPopup/BeginPopupModal returned true.
+    /// </summary>
+    public static void EndPopup()
+    {
+        ImGui_EndPopup();
+    }
+
+    /// <summary>
+    /// Opens a popup by string ID.
+    /// </summary>
+    /// <param name="strId">The popup string ID.</param>
+    /// <param name="popupFlags">Popup behavior flags.</param>
+    /// <remarks>
+    /// Call to mark popup as open (don't call every frame!).
+    /// </remarks>
+    public static void OpenPopup(ReadOnlySpan<byte> strId, PopupFlags popupFlags = PopupFlags.None)
+    {
+        fixed (byte* ptr = strId)
+        {
+            ImGui_OpenPopup(ptr, (ImGuiPopupFlags)popupFlags);
+        }
+    }
+
+    /// <summary>
+    /// Opens a popup by ID.
+    /// </summary>
+    /// <param name="id">The popup ID.</param>
+    /// <param name="popupFlags">Popup behavior flags.</param>
+    public static void OpenPopup(Id id, PopupFlags popupFlags = PopupFlags.None)
+    {
+        ImGui_OpenPopupID(id.Value, (ImGuiPopupFlags)popupFlags);
+    }
+
+    /// <summary>
+    /// Helper to open a popup when the last item was clicked.
+    /// </summary>
+    /// <param name="strId">The popup string ID. Use null to associate with previous item.</param>
+    /// <param name="popupFlags">Popup behavior flags. Defaults to right mouse button.</param>
+    public static void OpenPopupOnItemClick(ReadOnlySpan<byte> strId = default, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
+    {
+        fixed (byte* ptr = strId)
+        {
+            ImGui_OpenPopupOnItemClick(ptr, (ImGuiPopupFlags)popupFlags);
+        }
+    }
+
+    /// <summary>
+    /// Manually closes the current popup.
+    /// </summary>
+    public static void CloseCurrentPopup()
+    {
+        ImGui_CloseCurrentPopup();
+    }
+
+    /// <summary>
+    /// Opens and begins a popup when the last item was clicked.
+    /// </summary>
+    /// <returns>True if the popup is open.</returns>
+    public static bool BeginPopupContextItem()
+    {
+        return ImGui_BeginPopupContextItem();
+    }
+
+    /// <summary>
+    /// Opens and begins a popup when the last item was clicked, with explicit parameters.
+    /// </summary>
+    /// <param name="strId">The popup string ID. Use null to associate with previous item.</param>
+    /// <param name="popupFlags">Popup behavior flags. Defaults to right mouse button.</param>
+    /// <returns>True if the popup is open.</returns>
+    public static bool BeginPopupContextItem(ReadOnlySpan<byte> strId, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_BeginPopupContextItemEx(ptr, (ImGuiPopupFlags)popupFlags);
+        }
+    }
+
+    /// <summary>
+    /// Opens and begins a popup when the current window was clicked.
+    /// </summary>
+    /// <returns>True if the popup is open.</returns>
+    public static bool BeginPopupContextWindow()
+    {
+        return ImGui_BeginPopupContextWindow();
+    }
+
+    /// <summary>
+    /// Opens and begins a popup when the current window was clicked, with explicit parameters.
+    /// </summary>
+    /// <param name="strId">The popup string ID.</param>
+    /// <param name="popupFlags">Popup behavior flags. Defaults to right mouse button.</param>
+    /// <returns>True if the popup is open.</returns>
+    public static bool BeginPopupContextWindow(ReadOnlySpan<byte> strId, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_BeginPopupContextWindowEx(ptr, (ImGuiPopupFlags)popupFlags);
+        }
+    }
+
+    /// <summary>
+    /// Opens and begins a popup when clicking in void (where there are no windows).
+    /// </summary>
+    /// <returns>True if the popup is open.</returns>
+    public static bool BeginPopupContextVoid()
+    {
+        return ImGui_BeginPopupContextVoid();
+    }
+
+    /// <summary>
+    /// Opens and begins a popup when clicking in void, with explicit parameters.
+    /// </summary>
+    /// <param name="strId">The popup string ID.</param>
+    /// <param name="popupFlags">Popup behavior flags. Defaults to right mouse button.</param>
+    /// <returns>True if the popup is open.</returns>
+    public static bool BeginPopupContextVoid(ReadOnlySpan<byte> strId, PopupFlags popupFlags = PopupFlags.MouseButtonRight)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_BeginPopupContextVoidEx(ptr, (ImGuiPopupFlags)popupFlags);
+        }
+    }
+
+    /// <summary>
+    /// Checks if a popup is open.
+    /// </summary>
+    /// <param name="strId">The popup string ID.</param>
+    /// <param name="flags">Popup flags for query behavior.</param>
+    /// <returns>True if the popup is open.</returns>
+    public static bool IsPopupOpen(ReadOnlySpan<byte> strId, PopupFlags flags = PopupFlags.None)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_IsPopupOpen(ptr, (ImGuiPopupFlags)flags);
+        }
     }
 }

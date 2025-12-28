@@ -8,17 +8,17 @@ public static unsafe class ImGuiDemoWindow
     private static ImGuiDemoWindowData _demoData;
 
     // Demonstrate the various window flags. Typically you would just use the default!
-    private static bool _no_titlebar = false;
-    private static bool _no_scrollbar = false;
-    private static bool _no_menu = false;
-    private static bool _no_move = false;
-    private static bool _no_resize = false;
-    private static bool _no_collapse = false;
-    private static bool _no_close = false;
-    private static bool _no_nav = false;
-    private static bool _no_background = false;
-    private static bool _no_bring_to_front = false;
-    private static bool _unsaved_document = false;
+    private static bool _noTitlebar = false;
+    private static bool _noScrollbar = false;
+    private static bool _noMenu = false;
+    private static bool _noMove = false;
+    private static bool _noResize = false;
+    private static bool _noCollapse = false;
+    private static bool _noClose = false;
+    private static bool _noNav = false;
+    private static bool _noBackground = false;
+    private static bool _noBringToFront = false;
+    private static bool _unsavedDocument = false;
 
     private static bool _options_enabled = true;
     private static float _options_f = 0.5f;
@@ -40,62 +40,59 @@ public static unsafe class ImGuiDemoWindow
         Window.SetNextWindowSize((550, 680), Condition.FirstUseEver);
 
         WindowFlags windowFlags = 0;
-        if (_no_titlebar)
+        if (_noTitlebar)
         {
             windowFlags |= WindowFlags.NoTitleBar;
         }
 
-        if (_no_scrollbar)
+        if (_noScrollbar)
         {
             windowFlags |= WindowFlags.NoScrollbar;
         }
 
-        if (!_no_menu)
+        if (!_noMenu)
         {
             windowFlags |= WindowFlags.MenuBar;
         }
 
-        if (_no_move)
+        if (_noMove)
         {
             windowFlags |= WindowFlags.NoMove;
         }
 
-        if (_no_resize)
+        if (_noResize)
         {
             windowFlags |= WindowFlags.NoResize;
         }
 
-        if (_no_collapse)
+        if (_noCollapse)
         {
             windowFlags |= WindowFlags.NoCollapse;
         }
 
-        if (_no_nav)
+        if (_noNav)
         {
             windowFlags |= WindowFlags.NoNav;
         }
 
-        if (_no_background)
+        if (_noBackground)
         {
             windowFlags |= WindowFlags.NoBackground;
         }
 
-        if (_no_bring_to_front)
+        if (_noBringToFront)
         {
             windowFlags |= WindowFlags.NoBringToFrontOnFocus;
         }
 
-        if (_unsaved_document)
+        if (_unsavedDocument)
         {
             windowFlags |= WindowFlags.UnsavedDocument;
         }
 
-        if (_no_close)
-        {
-            open = true;
-        }
-
-        if (!Window.Begin("Dear ImGui Demo (managed)"u8, ref open, windowFlags))
+        if (_noClose 
+            ? !Window.Begin("Dear ImGui Demo (managed)"u8, windowFlags) 
+            : !Window.Begin("Dear ImGui Demo (managed)"u8, ref open, windowFlags))
         {
             return;
         }
@@ -247,7 +244,9 @@ public static unsafe class ImGuiDemoWindow
                 _ = Widgets.Checkbox("io.ConfigErrorRecoveryEnableDebugLog"u8, ref io.ConfigErrorRecoveryEnableDebugLog);
                 _ = Widgets.Checkbox("io.ConfigErrorRecoveryEnableTooltip"u8, ref io.ConfigErrorRecoveryEnableTooltip);
                 if (!io.ConfigErrorRecoveryEnableAssert && !io.ConfigErrorRecoveryEnableDebugLog && !io.ConfigErrorRecoveryEnableTooltip)
+                {
                     io.ConfigErrorRecoveryEnableAssert = io.ConfigErrorRecoveryEnableDebugLog = io.ConfigErrorRecoveryEnableTooltip = true;
+                }
 
                 // Also read: https://github.com/ocornut/imgui/wiki/Debug-Tools
                 Widgets.SeparatorText("Debug"u8);
@@ -319,35 +318,42 @@ public static unsafe class ImGuiDemoWindow
                     ImGui.ImGui.LogText("Hello, world!"u8);
                     ImGui.ImGui.LogFinish();
                 }
+
                 Widgets.TreePop();
             }
         }
 
-        /*
-    IMGUI_DEMO_MARKER("Help");
-
-    IMGUI_DEMO_MARKER("Configuration");
-
-    IMGUI_DEMO_MARKER("Window options");
-    if (ImGui::CollapsingHeader("Window options"))
-    {
-        if (ImGui::BeginTable("split", 3))
+        if (Widgets.CollapsingHeader("Window options"u8))
         {
-            ImGui::TableNextColumn(); ImGui::Checkbox("No titlebar", &no_titlebar);
-            ImGui::TableNextColumn(); ImGui::Checkbox("No scrollbar", &no_scrollbar);
-            ImGui::TableNextColumn(); ImGui::Checkbox("No menu", &no_menu);
-            ImGui::TableNextColumn(); ImGui::Checkbox("No move", &no_move);
-            ImGui::TableNextColumn(); ImGui::Checkbox("No resize", &no_resize);
-            ImGui::TableNextColumn(); ImGui::Checkbox("No collapse", &no_collapse);
-            ImGui::TableNextColumn(); ImGui::Checkbox("No close", &no_close);
-            ImGui::TableNextColumn(); ImGui::Checkbox("No nav", &no_nav);
-            ImGui::TableNextColumn(); ImGui::Checkbox("No background", &no_background);
-            ImGui::TableNextColumn(); ImGui::Checkbox("No bring to front", &no_bring_to_front);
-            ImGui::TableNextColumn(); ImGui::Checkbox("Unsaved document", &unsaved_document);
-            ImGui::EndTable();
+            if (Widgets.BeginTable("split"u8, 3))
+            {
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No titlebar"u8, ref _noTitlebar);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No scrollbar"u8, ref _noScrollbar);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No menu"u8, ref _noMenu);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No move"u8, ref _noMove);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No resize"u8, ref _noResize);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No collapse"u8, ref _noCollapse);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No close"u8, ref _noClose);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No nav"u8, ref _noNav);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No background"u8, ref _noBackground);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("No bring to front"u8, ref _noBringToFront);
+                _ = Widgets.TableNextColumn();
+                _ = Widgets.Checkbox("Unsaved document"u8, ref _unsavedDocument);
+                Widgets.EndTable();
+            }
         }
-    }
 
+        /*
     // All demo contents
     DemoWindowWidgets(&demo_data);
     DemoWindowLayout();
@@ -516,71 +522,71 @@ public static unsafe class ImGuiDemoWindow
                 ShowExampleMenuFile();
                 Widgets.EndMenu();
             }
-        }
 
-        if (Widgets.BeginMenu("Examples"u8))
-        {
-            Widgets.MenuItem("Main menu bar"u8, null, ref _demoData.ShowMainMenuBar);
+            if (Widgets.BeginMenu("Examples"u8))
+            {
+                Widgets.MenuItem("Main menu bar"u8, null, ref _demoData.ShowMainMenuBar);
 
-            Widgets.SeparatorText("Mini apps"u8);
-            Widgets.MenuItem("Assets Browser"u8, null, ref _demoData.ShowAppAssetsBrowser);
-            Widgets.MenuItem("Console"u8, null, ref _demoData.ShowAppConsole);
-            Widgets.MenuItem("Custom rendering"u8, null, ref _demoData.ShowAppCustomRendering);
-            Widgets.MenuItem("Documents"u8, null, ref _demoData.ShowAppDocuments);
-            Widgets.MenuItem("Log"u8, null, ref _demoData.ShowAppLog);
-            Widgets.MenuItem("Property editor"u8, null, ref _demoData.ShowAppPropertyEditor);
-            Widgets.MenuItem("Simple layout"u8, null, ref _demoData.ShowAppLayout);
-            Widgets.MenuItem("Simple overlay"u8, null, ref _demoData.ShowAppSimpleOverlay);
+                Widgets.SeparatorText("Mini apps"u8);
+                Widgets.MenuItem("Assets Browser"u8, null, ref _demoData.ShowAppAssetsBrowser);
+                Widgets.MenuItem("Console"u8, null, ref _demoData.ShowAppConsole);
+                Widgets.MenuItem("Custom rendering"u8, null, ref _demoData.ShowAppCustomRendering);
+                Widgets.MenuItem("Documents"u8, null, ref _demoData.ShowAppDocuments);
+                Widgets.MenuItem("Log"u8, null, ref _demoData.ShowAppLog);
+                Widgets.MenuItem("Property editor"u8, null, ref _demoData.ShowAppPropertyEditor);
+                Widgets.MenuItem("Simple layout"u8, null, ref _demoData.ShowAppLayout);
+                Widgets.MenuItem("Simple overlay"u8, null, ref _demoData.ShowAppSimpleOverlay);
 
-            Widgets.SeparatorText("Concepts"u8);
-            Widgets.MenuItem("Auto-resizing window"u8, null, ref _demoData.ShowAppAutoResize);
-            Widgets.MenuItem("Constrained-resizing window"u8, null, ref _demoData.ShowAppConstrainedResize);
-            Widgets.MenuItem("Fullscreen window"u8, null, ref _demoData.ShowAppFullscreen);
-            Widgets.MenuItem("Long text display"u8, null, ref _demoData.ShowAppLongText);
-            Widgets.MenuItem("Manipulating window titles"u8, null, ref _demoData.ShowAppWindowTitles);
+                Widgets.SeparatorText("Concepts"u8);
+                Widgets.MenuItem("Auto-resizing window"u8, null, ref _demoData.ShowAppAutoResize);
+                Widgets.MenuItem("Constrained-resizing window"u8, null, ref _demoData.ShowAppConstrainedResize);
+                Widgets.MenuItem("Fullscreen window"u8, null, ref _demoData.ShowAppFullscreen);
+                Widgets.MenuItem("Long text display"u8, null, ref _demoData.ShowAppLongText);
+                Widgets.MenuItem("Manipulating window titles"u8, null, ref _demoData.ShowAppWindowTitles);
 
-            Widgets.EndMenu();
-        }
-        //if (Widgets.MenuItem("MenuItem"u8)) {} // You can also use MenuItem() inside a menu bar!
-        if (Widgets.BeginMenu("Tools"u8))
-        {
-            IO io = Context.IO;
+                Widgets.EndMenu();
+            }
+            //if (Widgets.MenuItem("MenuItem"u8)) {} // You can also use MenuItem() inside a menu bar!
+            if (Widgets.BeginMenu("Tools"u8))
+            {
+                IO io = Context.IO;
 #if !IMGUI_DISABLE_DEBUG_TOOLS
-            const bool hasDebugTools = true;
+                const bool hasDebugTools = true;
 #else
             const bool hasDebugTools = false;
 #endif
-            Widgets.MenuItem("Metrics/Debugger"u8, null, ref _demoData.ShowMetrics, hasDebugTools);
-            if (Widgets.BeginMenu("Debug Options"u8))
-            {
-                // TODO: Widgets.BeginDisabled(!has_debug_tools);
-                Widgets.Checkbox("Highlight ID Conflicts"u8, ref io.ConfigDebugHighlightIdConflicts);
-                // TODO: Widgets.EndDisabled();
-                Widgets.Checkbox("Assert on error recovery"u8, ref io.ConfigErrorRecoveryEnableAssert);
-                Widgets.TextDisabled("(see Demo->Configuration for details & more)"u8);
+                Widgets.MenuItem("Metrics/Debugger"u8, null, ref _demoData.ShowMetrics, hasDebugTools);
+                if (Widgets.BeginMenu("Debug Options"u8))
+                {
+                    // TODO: Widgets.BeginDisabled(!has_debug_tools);
+                    Widgets.Checkbox("Highlight ID Conflicts"u8, ref io.ConfigDebugHighlightIdConflicts);
+                    // TODO: Widgets.EndDisabled();
+                    Widgets.Checkbox("Assert on error recovery"u8, ref io.ConfigErrorRecoveryEnableAssert);
+                    Widgets.TextDisabled("(see Demo->Configuration for details & more)"u8);
+                    Widgets.EndMenu();
+                }
+
+                Widgets.MenuItem("Debug Log"u8, null, ref _demoData.ShowDebugLog, hasDebugTools);
+                Widgets.MenuItem("ID Stack Tool"u8, null, ref _demoData.ShowIDStackTool, hasDebugTools);
+                var isDebuggerPresent = io.ConfigDebugIsDebuggerPresent;
+                if (Widgets.MenuItem("Item Picker"u8, null, false, hasDebugTools))// && isDebuggerPresent))
+                {
+                    // TODO: Widgets.DebugStartItemPicker();
+                }
+
+                if (!isDebuggerPresent)
+                {
+                    Widgets.SetItemTooltip("Requires io.ConfigDebugIsDebuggerPresent=true to be set.\n\nWe otherwise disable some extra features to avoid casual users crashing the application."u8);
+                }
+
+                Widgets.MenuItem("Style Editor"u8, null, ref _demoData.ShowStyleEditor);
+                Widgets.MenuItem("About Dear ImGui"u8, null, ref _demoData.ShowAbout);
+
                 Widgets.EndMenu();
             }
 
-            Widgets.MenuItem("Debug Log"u8, null, ref _demoData.ShowDebugLog, hasDebugTools);
-            Widgets.MenuItem("ID Stack Tool"u8, null, ref _demoData.ShowIDStackTool, hasDebugTools);
-            var isDebuggerPresent = io.ConfigDebugIsDebuggerPresent;
-            if (Widgets.MenuItem("Item Picker"u8, null, false, hasDebugTools))// && isDebuggerPresent))
-            {
-                // TODO: Widgets.DebugStartItemPicker();
-            }
-
-            if (!isDebuggerPresent)
-            {
-                Widgets.SetItemTooltip("Requires io.ConfigDebugIsDebuggerPresent=true to be set.\n\nWe otherwise disable some extra features to avoid casual users crashing the application."u8);
-            }
-
-            Widgets.MenuItem("Style Editor"u8, null, ref _demoData.ShowStyleEditor);
-            Widgets.MenuItem("About Dear ImGui"u8, null, ref _demoData.ShowAbout);
-
-            Widgets.EndMenu();
+            Widgets.EndMenuBar();
         }
-
-        Widgets.EndMenuBar();
     }
 
     // Data to be shared across different functions of the demo.

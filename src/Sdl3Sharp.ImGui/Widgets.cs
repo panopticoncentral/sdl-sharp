@@ -2714,4 +2714,206 @@ public unsafe static class Widgets
             ImGui_SetItemTooltip(ptr);
         }
     }
+
+    /// <summary>
+    /// Begins a table.
+    /// </summary>
+    /// <param name="strId">The table string ID.</param>
+    /// <param name="columns">The number of columns.</param>
+    /// <param name="flags">Table behavior flags.</param>
+    /// <returns>True if the table is visible. Only call <see cref="EndTable"/> if this returns true.</returns>
+    public static bool BeginTable(ReadOnlySpan<byte> strId, int columns, TableFlags flags = TableFlags.None)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_BeginTable(ptr, columns, (Native.ImGuiTableFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Begins a table with explicit size parameters.
+    /// </summary>
+    /// <param name="strId">The table string ID.</param>
+    /// <param name="columns">The number of columns.</param>
+    /// <param name="flags">Table behavior flags.</param>
+    /// <param name="outerSize">The outer size of the table.</param>
+    /// <param name="innerWidth">The inner width for scrolling.</param>
+    /// <returns>True if the table is visible. Only call <see cref="EndTable"/> if this returns true.</returns>
+    public static bool BeginTable(ReadOnlySpan<byte> strId, int columns, TableFlags flags, Vec2 outerSize, float innerWidth = 0.0f)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_BeginTableEx(ptr, columns, (Native.ImGuiTableFlags)flags, outerSize.Value, innerWidth);
+        }
+    }
+
+    /// <summary>
+    /// Ends a table. Only call if <see cref="BeginTable"/> returned true.
+    /// </summary>
+    public static void EndTable()
+    {
+        ImGui_EndTable();
+    }
+
+    /// <summary>
+    /// Appends into the first cell of a new row.
+    /// </summary>
+    public static void TableNextRow()
+    {
+        ImGui_TableNextRow();
+    }
+
+    /// <summary>
+    /// Appends into the first cell of a new row with explicit parameters.
+    /// </summary>
+    /// <param name="rowFlags">Row behavior flags.</param>
+    /// <param name="minRowHeight">Minimum row height.</param>
+    public static void TableNextRow(TableRowFlags rowFlags, float minRowHeight = 0.0f)
+    {
+        ImGui_TableNextRowEx((Native.ImGuiTableRowFlags)rowFlags, minRowHeight);
+    }
+
+    /// <summary>
+    /// Appends into the next column (or first column of next row if currently in last column).
+    /// </summary>
+    /// <returns>True when the column is visible.</returns>
+    public static bool TableNextColumn()
+    {
+        return ImGui_TableNextColumn();
+    }
+
+    /// <summary>
+    /// Appends into the specified column.
+    /// </summary>
+    /// <param name="columnN">The column index.</param>
+    /// <returns>True when the column is visible.</returns>
+    public static bool TableSetColumnIndex(int columnN)
+    {
+        return ImGui_TableSetColumnIndex(columnN);
+    }
+
+    /// <summary>
+    /// Sets up a column for the table.
+    /// </summary>
+    /// <param name="label">The column label.</param>
+    /// <param name="flags">Column behavior flags.</param>
+    public static void TableSetupColumn(ReadOnlySpan<byte> label, TableColumnFlags flags = TableColumnFlags.None)
+    {
+        fixed (byte* ptr = label)
+        {
+            ImGui_TableSetupColumn(ptr, (Native.ImGuiTableColumnFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Sets up a column for the table with explicit parameters.
+    /// </summary>
+    /// <param name="label">The column label.</param>
+    /// <param name="flags">Column behavior flags.</param>
+    /// <param name="initWidthOrWeight">Initial width or weight depending on flags.</param>
+    /// <param name="userId">User ID for the column.</param>
+    public static void TableSetupColumn(ReadOnlySpan<byte> label, TableColumnFlags flags, float initWidthOrWeight, Id userId = default)
+    {
+        fixed (byte* ptr = label)
+        {
+            ImGui_TableSetupColumnEx(ptr, (Native.ImGuiTableColumnFlags)flags, initWidthOrWeight, userId.Value);
+        }
+    }
+
+    /// <summary>
+    /// Locks columns/rows so they stay visible when scrolled.
+    /// </summary>
+    /// <param name="cols">Number of columns to freeze.</param>
+    /// <param name="rows">Number of rows to freeze.</param>
+    public static void TableSetupScrollFreeze(int cols, int rows)
+    {
+        ImGui_TableSetupScrollFreeze(cols, rows);
+    }
+
+    /// <summary>
+    /// Submits one header cell manually.
+    /// </summary>
+    /// <param name="label">The header label.</param>
+    public static void TableHeader(ReadOnlySpan<byte> label)
+    {
+        fixed (byte* ptr = label)
+        {
+            ImGui_TableHeader(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Submits a row with header cells based on data provided to <see cref="TableSetupColumn"/>.
+    /// </summary>
+    public static void TableHeadersRow()
+    {
+        ImGui_TableHeadersRow();
+    }
+
+    /// <summary>
+    /// Submits a row with angled headers for every column with the AngledHeader flag.
+    /// </summary>
+    /// <remarks>
+    /// Must be the first row.
+    /// </remarks>
+    public static void TableAngledHeadersRow()
+    {
+        ImGui_TableAngledHeadersRow();
+    }
+
+    /// <summary>
+    /// Gets the number of columns in the current table.
+    /// </summary>
+    /// <returns>The column count.</returns>
+    public static int TableGetColumnCount()
+    {
+        return ImGui_TableGetColumnCount();
+    }
+
+    /// <summary>
+    /// Gets the current column index.
+    /// </summary>
+    /// <returns>The current column index.</returns>
+    public static int TableGetColumnIndex()
+    {
+        return ImGui_TableGetColumnIndex();
+    }
+
+    /// <summary>
+    /// Gets the current row index.
+    /// </summary>
+    /// <returns>The current row index.</returns>
+    public static int TableGetRowIndex()
+    {
+        return ImGui_TableGetRowIndex();
+    }
+
+    /// <summary>
+    /// Gets the column flags for a column.
+    /// </summary>
+    /// <param name="columnN">The column index. Use -1 for current column.</param>
+    /// <returns>The column flags.</returns>
+    public static TableColumnFlags TableGetColumnFlags(int columnN = -1)
+    {
+        return (TableColumnFlags)ImGui_TableGetColumnFlags(columnN);
+    }
+
+    /// <summary>
+    /// Sets the enabled state of a column.
+    /// </summary>
+    /// <param name="columnN">The column index.</param>
+    /// <param name="v">Whether the column is enabled.</param>
+    public static void TableSetColumnEnabled(int columnN, bool v)
+    {
+        ImGui_TableSetColumnEnabled(columnN, v);
+    }
+
+    /// <summary>
+    /// Gets the hovered column index.
+    /// </summary>
+    /// <returns>The hovered column index, or -1 if table is not hovered.</returns>
+    public static int TableGetHoveredColumn()
+    {
+        return ImGui_TableGetHoveredColumn();
+    }
 }
