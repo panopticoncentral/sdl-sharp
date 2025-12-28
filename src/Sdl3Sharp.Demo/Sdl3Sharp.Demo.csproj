@@ -6,6 +6,7 @@
 		<PlatformTarget>x64</PlatformTarget>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<SdlVersion>3</SdlVersion>
 	</PropertyGroup>
 

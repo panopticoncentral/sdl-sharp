@@ -21,9 +21,9 @@ ImGui.Backends.SDLRenderer3Backend.Init(renderer);
 var quit = false;
 Application.Quitting += (sender, e) => quit = true;
 
-// Demo state
-ImGui.StateRef<bool> showDemoWindow = ImGui.StateStore.Instance.Create(true);
-ImGui.StateRef<bool> showManagedDemoWindow = ImGui.StateStore.Instance.Create(true);
+// Demo state - use static fields to allow taking their address
+var showDemoWindow = true;
+var showManagedDemoWindow = true;
 
 // Handle live resize: render during window resize on Windows
 void DoFrame()
@@ -34,10 +34,8 @@ void DoFrame()
     ImGui.Context.NewFrame();
 
     // Show the ImGui demo window
-    ImGui.Context.ShowDemoWindow(showDemoWindow);
-
-    // Show the managed ImGui demo window
-    ImGuiDemoWindow.ShowDemoWindow(showManagedDemoWindow);
+    ImGui.Context.ShowDemoWindow(ref showDemoWindow);
+    ImGuiDemoWindow.ShowDemoWindow(ref showManagedDemoWindow);
 
     // Rendering
     ImGui.Context.Render();

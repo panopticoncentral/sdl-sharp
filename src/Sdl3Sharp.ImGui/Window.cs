@@ -47,7 +47,7 @@ public static unsafe class Window
     /// Gets or sets the horizontal scrolling amount [0 .. <see cref="ScrollMaxX"/>].
     /// </summary>
     /// <remarks>
-    /// Any change of scroll will be applied at the beginning of next frame in the first call to <see cref="Window(ReadOnlySpan{byte}, StateRef{bool}?, WindowFlags)"/>.
+    /// Any change of scroll will be applied at the beginning of next frame in the first call to <see cref="Begin(ReadOnlySpan{byte}, bool*, WindowFlags)"/>.
     /// You may use <see cref="SetNextWindowScroll"/> prior to calling the constructor to avoid this delay.
     /// </remarks>
     public static float ScrollX
@@ -60,7 +60,7 @@ public static unsafe class Window
     /// Gets or sets the vertical scrolling amount [0 .. <see cref="ScrollMaxY"/>].
     /// </summary>
     /// <remarks>
-    /// Any change of scroll will be applied at the beginning of next frame in the first call to <see cref="Window(ReadOnlySpan{byte}, StateRef{bool}?, WindowFlags)"/>.
+    /// Any change of scroll will be applied at the beginning of next frame in the first call to <see cref="Begin(ReadOnlySpan{byte}, bool*, WindowFlags)"/>.
     /// You may use <see cref="SetNextWindowScroll"/> prior to calling the constructor to avoid this delay.
     /// </remarks>
     public static float ScrollY
@@ -154,17 +154,34 @@ public static unsafe class Window
     /// Begins a new window.
     /// </summary>
     /// <param name="name">The window name, used as a unique identifier. Use "##" to pass a label that isn't displayed.</param>
-    /// <param name="open">Optional reference to a boolean controlling the window's open state. If provided, a close button is shown.</param>
-    /// <param name="flags">Window behavior flags.</param>
     /// <returns>
     /// False if the window is collapsed or fully clipped (you can early out and skip submitting content).
-    /// Always call <see cref="Dispose"/> regardless of this return value.
+    /// Always call <see cref="End"/> regardless of this return value.
     /// </returns>
-    public static bool Begin(ReadOnlySpan<byte> name, StateRef<bool>? open = null, WindowFlags flags = WindowFlags.None)
+    public static bool Begin(ReadOnlySpan<byte> name)
     {
         fixed (byte* ptr = name)
         {
-            return ImGui_Begin(ptr, open == null ? null : open.Value.Ptr, (Native.ImGuiWindowFlags)flags);
+            return ImGui_Begin(ptr, null, ImGuiWindowFlags.None);
+        }
+    }
+
+    /// <summary>
+    /// Begins a new window.
+    /// </summary>
+    /// <param name="name">The window name, used as a unique identifier. Use "##" to pass a label that isn't displayed.</param>
+    /// <param name="open">Optional pointer to a boolean controlling the window's open state. If provided, a close button is shown.</param>
+    /// <param name="flags">Window behavior flags.</param>
+    /// <returns>
+    /// False if the window is collapsed or fully clipped (you can early out and skip submitting content).
+    /// Always call <see cref="End"/> regardless of this return value.
+    /// </returns>
+    public static bool Begin(ReadOnlySpan<byte> name, ref bool open, WindowFlags flags = WindowFlags.None)
+    {
+        fixed (byte* ptr = name)
+        fixed (bool* openPtr = &open)
+        {
+            return ImGui_Begin(ptr, openPtr, (ImGuiWindowFlags)flags);
         }
     }
 
@@ -183,7 +200,7 @@ public static unsafe class Window
     /// <returns>True if the current window is focused according to the specified flags.</returns>
     public static bool IsFocused(FocusedFlags flags = FocusedFlags.None)
     {
-        return ImGui_IsWindowFocused((Native.ImGuiFocusedFlags)flags);
+        return ImGui_IsWindowFocused((ImGuiFocusedFlags)flags);
     }
 
     /// <summary>
@@ -197,7 +214,7 @@ public static unsafe class Window
     /// </remarks>
     public static bool IsHovered(HoveredFlags flags = HoveredFlags.None)
     {
-        return ImGui_IsWindowHovered((Native.ImGuiHoveredFlags)flags);
+        return ImGui_IsWindowHovered((ImGuiHoveredFlags)flags);
     }
 
     /// <summary>
@@ -211,7 +228,7 @@ public static unsafe class Window
     /// </remarks>
     public static void SetNextWindowPos(Point position, Condition cond = Condition.None, Point pivot = default)
     {
-        ImGui_SetNextWindowPosEx(position.Value, (Native.ImGuiCond)cond, pivot.Value);
+        ImGui_SetNextWindowPosEx(position.Value, (ImGuiCond)cond, pivot.Value);
     }
 
     /// <summary>
@@ -221,7 +238,7 @@ public static unsafe class Window
     /// <param name="cond">Condition for applying the size.</param>
     public static void SetNextWindowSize(Size size, Condition cond = Condition.None)
     {
-        ImGui_SetNextWindowSize(size.Value, (Native.ImGuiCond)cond);
+        ImGui_SetNextWindowSize(size.Value, (ImGuiCond)cond);
     }
 
     /// <summary>
@@ -251,7 +268,7 @@ public static unsafe class Window
     /// <param name="cond">Condition for applying the collapsed state.</param>
     public static void SetNextWindowCollapsed(bool collapsed, Condition cond = Condition.None)
     {
-        ImGui_SetNextWindowCollapsed(collapsed, (Native.ImGuiCond)cond);
+        ImGui_SetNextWindowCollapsed(collapsed, (ImGuiCond)cond);
     }
 
     /// <summary>
@@ -294,7 +311,7 @@ public static unsafe class Window
     /// </remarks>
     public static void SetWindowPos(Vec2 pos, Condition cond = Condition.None)
     {
-        ImGui_SetWindowPos(pos.Value, (Native.ImGuiCond)cond);
+        ImGui_SetWindowPos(pos.Value, (ImGuiCond)cond);
     }
 
     /// <summary>
@@ -307,7 +324,7 @@ public static unsafe class Window
     /// </remarks>
     public static void SetWindowSize(Vec2 size, Condition cond = Condition.None)
     {
-        ImGui_SetWindowSize(size.Value, (Native.ImGuiCond)cond);
+        ImGui_SetWindowSize(size.Value, (ImGuiCond)cond);
     }
 
     /// <summary>
@@ -320,7 +337,7 @@ public static unsafe class Window
     /// </remarks>
     public static void SetWindowCollapsed(bool collapsed, Condition cond = Condition.None)
     {
-        ImGui_SetWindowCollapsed(collapsed, (Native.ImGuiCond)cond);
+        ImGui_SetWindowCollapsed(collapsed, (ImGuiCond)cond);
     }
 
     /// <summary>
@@ -344,7 +361,7 @@ public static unsafe class Window
     {
         fixed (byte* ptr = name)
         {
-            ImGui_SetWindowPosStr(ptr, pos.Value, (Native.ImGuiCond)cond);
+            ImGui_SetWindowPosStr(ptr, pos.Value, (ImGuiCond)cond);
         }
     }
 
@@ -358,7 +375,7 @@ public static unsafe class Window
     {
         fixed (byte* ptr = name)
         {
-            ImGui_SetWindowSizeStr(ptr, size.Value, (Native.ImGuiCond)cond);
+            ImGui_SetWindowSizeStr(ptr, size.Value, (ImGuiCond)cond);
         }
     }
 
@@ -372,7 +389,7 @@ public static unsafe class Window
     {
         fixed (byte* ptr = name)
         {
-            ImGui_SetWindowCollapsedStr(ptr, collapsed, (Native.ImGuiCond)cond);
+            ImGui_SetWindowCollapsedStr(ptr, collapsed, (ImGuiCond)cond);
         }
     }
 

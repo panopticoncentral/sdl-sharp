@@ -77,17 +77,36 @@ public static unsafe class ImGui
     /// Begins a modal popup window.
     /// </summary>
     /// <param name="name">The modal name.</param>
-    /// <param name="pOpen">Optional reference to open state. If provided, shows a close button.</param>
+    /// <returns>True if the modal is open. Only call <see cref="EndPopup"/> if this returns true.</returns>
+    /// <remarks>
+    /// Modal windows block all interaction behind them and cannot be closed by clicking outside.
+    /// </remarks>
+    public static bool BeginPopupModal(ReadOnlySpan<byte> name)
+    {
+        fixed (byte* ptr = name)
+        {
+            return ImGui_BeginPopupModal(ptr, null, Native.ImGuiWindowFlags.None);
+        }
+    }
+
+    /// <summary>
+    /// Begins a modal popup window.
+    /// </summary>
+    /// <param name="name">The modal name.</param>
+    /// <param name="pOpen">Optional pointer to open state. If provided, shows a close button.</param>
     /// <param name="flags">Window behavior flags.</param>
     /// <returns>True if the modal is open. Only call <see cref="EndPopup"/> if this returns true.</returns>
     /// <remarks>
     /// Modal windows block all interaction behind them and cannot be closed by clicking outside.
     /// </remarks>
-    public static bool BeginPopupModal(ReadOnlySpan<byte> name, StateRef<bool>? pOpen = null, WindowFlags flags = WindowFlags.None)
+    public static bool BeginPopupModal(ReadOnlySpan<byte> name, ref bool pOpen, WindowFlags flags = WindowFlags.None)
     {
         fixed (byte* ptr = name)
         {
-            return ImGui_BeginPopupModal(ptr, pOpen.HasValue ? pOpen.Value.Ptr : null, (Native.ImGuiWindowFlags)flags);
+            var localOpen = pOpen;
+            var result = ImGui_BeginPopupModal(ptr, &localOpen, (Native.ImGuiWindowFlags)flags);
+            pOpen = localOpen;
+            return result;
         }
     }
 
@@ -465,14 +484,30 @@ public static unsafe class ImGui
     /// Creates a tab.
     /// </summary>
     /// <param name="label">The tab label.</param>
-    /// <param name="pOpen">Optional reference to open state. If provided, shows a close button.</param>
-    /// <param name="flags">Tab item behavior flags.</param>
     /// <returns>True if the tab is selected. Only call <see cref="EndTabItem"/> if this returns true.</returns>
-    public static bool BeginTabItem(ReadOnlySpan<byte> label, StateRef<bool>? pOpen = null, TabItemFlags flags = TabItemFlags.None)
+    public static bool BeginTabItem(ReadOnlySpan<byte> label)
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_BeginTabItem(ptr, pOpen.HasValue ? pOpen.Value.Ptr : null, (Native.ImGuiTabItemFlags)flags);
+            return ImGui_BeginTabItem(ptr, null, Native.ImGuiTabItemFlags.None);
+        }
+    }
+
+    /// <summary>
+    /// Creates a tab.
+    /// </summary>
+    /// <param name="label">The tab label.</param>
+    /// <param name="pOpen">Optional pointer to open state. If provided, shows a close button.</param>
+    /// <param name="flags">Tab item behavior flags.</param>
+    /// <returns>True if the tab is selected. Only call <see cref="EndTabItem"/> if this returns true.</returns>
+    public static bool BeginTabItem(ReadOnlySpan<byte> label, ref bool pOpen, TabItemFlags flags = TabItemFlags.None)
+    {
+        fixed (byte* ptr = label)
+        {
+            var localOpen = pOpen;
+            var result = ImGui_BeginTabItem(ptr, &localOpen, (Native.ImGuiTabItemFlags)flags);
+            pOpen = localOpen;
+            return result;
         }
     }
 

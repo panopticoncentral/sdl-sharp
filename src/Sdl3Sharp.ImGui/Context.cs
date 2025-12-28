@@ -109,47 +109,106 @@ public unsafe readonly struct Context
     /// <summary>
     /// Shows the ImGui demo window, which demonstrates most ImGui features.
     /// </summary>
-    /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowDemoWindow(StateRef<bool>? open = null)
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowDemoWindow()
     {
-        ImGui_ShowDemoWindow(open == null ? null : open.Value.Ptr);
+        ImGui_ShowDemoWindow(null);
+    }
+
+    /// <summary>
+    /// Shows the ImGui demo window, which demonstrates most ImGui features.
+    /// </summary>
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowDemoWindow(ref bool open)
+    {
+        fixed (bool* openPtr = &open)
+        {
+            ImGui_ShowDemoWindow(openPtr);
+        }
     }
 
     /// <summary>
     /// Shows the ImGui metrics/debug window, displaying internal state information.
     /// </summary>
-    /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowMetricsWindow(StateRef<bool>? open = null)
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowMetricsWindow()
     {
-        ImGui_ShowMetricsWindow(open == null ? null : open.Value.Ptr);
+        ImGui_ShowMetricsWindow(null);
+    }
+
+    /// <summary>
+    /// Shows the ImGui metrics/debug window, displaying internal state information.
+    /// </summary>
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowMetricsWindow(ref bool open)
+    {
+        fixed (bool* openPtr = &open)
+        {
+            ImGui_ShowMetricsWindow(openPtr);
+        }
     }
 
     /// <summary>
     /// Shows the ImGui debug log window.
     /// </summary>
-    /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowDebugLogWindow(StateRef<bool>? open = null)
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowDebugLogWindow()
     {
-        ImGui_ShowDebugLogWindow(open == null ? null : open.Value.Ptr);
+        ImGui_ShowDebugLogWindow(null);
+    }
+
+    /// <summary>
+    /// Shows the ImGui debug log window.
+    /// </summary>
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowDebugLogWindow(ref bool open)
+    {
+        fixed (bool* openPtr = &open)
+        {
+            ImGui_ShowDebugLogWindow(openPtr);
+        }
     }
 
     /// <summary>
     /// Shows the ImGui ID stack tool window, useful for debugging ID conflicts.
     /// </summary>
-    /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowIDStackToolWindow(StateRef<bool>? open = null)
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowIDStackToolWindow()
     {
-        // TODO: Why does this one get an "Ex" but the others don't?
-        ImGui_ShowIDStackToolWindowEx(open == null ? null : open.Value.Ptr);
+        ImGui_ShowIDStackToolWindowEx(null);
+    }
+
+    /// <summary>
+    /// Shows the ImGui ID stack tool window, useful for debugging ID conflicts.
+    /// </summary>
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowIDStackToolWindow(ref bool open)
+    {
+        fixed (bool* openPtr = &open)
+        {
+            ImGui_ShowIDStackToolWindowEx(openPtr);
+        }
     }
 
     /// <summary>
     /// Shows the ImGui about window, displaying version and build information.
     /// </summary>
-    /// <param name="open">A reference to a boolean controlling the window's open state. The window can be closed by the user.</param>
-    public static void ShowAboutWindow(StateRef<bool>? open = null)
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowAboutWindow()
     {
-        ImGui_ShowAboutWindow(open == null ? null : open.Value.Ptr);
+        ImGui_ShowAboutWindow(null);
+    }
+
+    /// <summary>
+    /// Shows the ImGui about window, displaying version and build information.
+    /// </summary>
+    /// <param name="open">A pointer to a boolean controlling the window's open state. The window can be closed by the user.</param>
+    public static void ShowAboutWindow(ref bool open)
+    {
+        fixed (bool* openPtr = &open)
+        {
+            ImGui_ShowAboutWindow(openPtr);
+        }
     }
 
     /// <summary>

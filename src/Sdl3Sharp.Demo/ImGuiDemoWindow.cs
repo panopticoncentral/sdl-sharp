@@ -1,29 +1,29 @@
-﻿using Sdl3Sharp.ImGui;
+using Sdl3Sharp.ImGui;
 using Sdl3Sharp.ImGui.Native;
 
 namespace Sdl3Sharp.Demo;
 
-public static class ImGuiDemoWindow
+public static unsafe class ImGuiDemoWindow
 {
     private static ImGuiDemoWindowData _demoData;
 
     // Demonstrate the various window flags. Typically you would just use the default!
-    private readonly static StateRef<bool> _no_titlebar = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _no_scrollbar = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _no_menu = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _no_move = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _no_resize = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _no_collapse = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _no_close = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _no_nav = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _no_background = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _no_bring_to_front = StateStore.Instance.Create(false);
-    private readonly static StateRef<bool> _unsaved_document = StateStore.Instance.Create(false);
+    private static bool _no_titlebar = false;
+    private static bool _no_scrollbar = false;
+    private static bool _no_menu = false;
+    private static bool _no_move = false;
+    private static bool _no_resize = false;
+    private static bool _no_collapse = false;
+    private static bool _no_close = false;
+    private static bool _no_nav = false;
+    private static bool _no_background = false;
+    private static bool _no_bring_to_front = false;
+    private static bool _unsaved_document = false;
 
-    private readonly static StateRef<bool> _options_enabled = StateStore.Instance.Create(true);
-    private readonly static StateRef<float> _options_f = StateStore.Instance.Create(0.5f);
-    private readonly static StateRef<int> _options_n = StateStore.Instance.Create(0);
-    private readonly static StateRef<bool> _options_b = StateStore.Instance.Create(true);
+    private static bool _options_enabled = true;
+    private static float _options_f = 0.5f;
+    private static int _options_n = 0;
+    private static bool _options_b = true;
 
     // Note that shortcuts are currently provided for display only
     // (future version will add explicit flags to BeginMenu() to request processing shortcuts)
@@ -70,7 +70,7 @@ public static class ImGuiDemoWindow
         Widgets.Separator();
         if (Widgets.BeginMenu("Options"u8))
         {
-            _ = Widgets.MenuItem("Enabled"u8, ""u8, _options_enabled);
+            _ = Widgets.MenuItem("Enabled"u8, ""u8, ref _options_enabled);
             _ = Widgets.BeginChild("child"u8, (0, 60), ChildFlags.Borders);
             for (var i = 0; i < 10; i++)
             {
@@ -78,9 +78,9 @@ public static class ImGuiDemoWindow
             }
 
             Widgets.EndChild();
-            _ = Widgets.Slider("Value"u8, _options_f, 0.0f, 1.0f);
-            _ = Widgets.Input("Input"u8, _options_f, 0.1f);
-            _ = Widgets.Combo("Combo"u8, _options_n, "Yes\0No\0Maybe\0\0"u8);
+            _ = Widgets.Slider("Value"u8, ref _options_f, 0.0f, 1.0f);
+            _ = Widgets.Input("Input"u8, ref _options_f, 0.1f);
+            _ = Widgets.Combo("Combo"u8, ref _options_n, "Yes\0No\0Maybe\0\0"u8);
             Widgets.EndMenu();
         }
 
@@ -105,7 +105,7 @@ public static class ImGuiDemoWindow
         // In a real code-base using it would make senses to use this feature from very different code locations.
         if (Widgets.BeginMenu("Options"u8)) // <-- Append!
         {
-            _ = Widgets.Checkbox("SomeOption"u8, _options_b);
+            _ = Widgets.Checkbox("SomeOption"u8, ref _options_b);
             Widgets.EndMenu();
         }
 
@@ -133,29 +133,28 @@ public static class ImGuiDemoWindow
                 ShowExampleMenuFile();
                 Widgets.EndMenu();
             }
-
-            Widgets.EndMenuBar();
         }
+
         if (Widgets.BeginMenu("Examples"u8))
         {
-            Widgets.MenuItem("Main menu bar"u8, null, _demoData.ShowMainMenuBar);
+            Widgets.MenuItem("Main menu bar"u8, null, ref _demoData.ShowMainMenuBar);
 
             Widgets.SeparatorText("Mini apps"u8);
-            Widgets.MenuItem("Assets Browser"u8, null, _demoData.ShowAppAssetsBrowser);
-            Widgets.MenuItem("Console"u8, null, _demoData.ShowAppConsole);
-            Widgets.MenuItem("Custom rendering"u8, null, _demoData.ShowAppCustomRendering);
-            Widgets.MenuItem("Documents"u8, null, _demoData.ShowAppDocuments);
-            Widgets.MenuItem("Log"u8, null, _demoData.ShowAppLog);
-            Widgets.MenuItem("Property editor"u8, null, _demoData.ShowAppPropertyEditor);
-            Widgets.MenuItem("Simple layout"u8, null, _demoData.ShowAppLayout);
-            Widgets.MenuItem("Simple overlay"u8, null, _demoData.ShowAppSimpleOverlay);
+            Widgets.MenuItem("Assets Browser"u8, null, ref _demoData.ShowAppAssetsBrowser);
+            Widgets.MenuItem("Console"u8, null, ref _demoData.ShowAppConsole);
+            Widgets.MenuItem("Custom rendering"u8, null, ref _demoData.ShowAppCustomRendering);
+            Widgets.MenuItem("Documents"u8, null, ref _demoData.ShowAppDocuments);
+            Widgets.MenuItem("Log"u8, null, ref _demoData.ShowAppLog);
+            Widgets.MenuItem("Property editor"u8, null, ref _demoData.ShowAppPropertyEditor);
+            Widgets.MenuItem("Simple layout"u8, null, ref _demoData.ShowAppLayout);
+            Widgets.MenuItem("Simple overlay"u8, null, ref _demoData.ShowAppSimpleOverlay);
 
             Widgets.SeparatorText("Concepts"u8);
-            Widgets.MenuItem("Auto-resizing window"u8, null, _demoData.ShowAppAutoResize);
-            Widgets.MenuItem("Constrained-resizing window"u8, null, _demoData.ShowAppConstrainedResize);
-            Widgets.MenuItem("Fullscreen window"u8, null, _demoData.ShowAppFullscreen);
-            Widgets.MenuItem("Long text display"u8, null, _demoData.ShowAppLongText);
-            Widgets.MenuItem("Manipulating window titles"u8, null, _demoData.ShowAppWindowTitles);
+            Widgets.MenuItem("Auto-resizing window"u8, null, ref _demoData.ShowAppAutoResize);
+            Widgets.MenuItem("Constrained-resizing window"u8, null, ref _demoData.ShowAppConstrainedResize);
+            Widgets.MenuItem("Fullscreen window"u8, null, ref _demoData.ShowAppFullscreen);
+            Widgets.MenuItem("Long text display"u8, null, ref _demoData.ShowAppLongText);
+            Widgets.MenuItem("Manipulating window titles"u8, null, ref _demoData.ShowAppWindowTitles);
 
             Widgets.EndMenu();
         }
@@ -168,18 +167,22 @@ public static class ImGuiDemoWindow
 #else
             const bool hasDebugTools = false;
 #endif
-            Widgets.MenuItem("Metrics/Debugger"u8, null, _demoData.ShowMetrics, hasDebugTools);
+            Widgets.MenuItem("Metrics/Debugger"u8, null, ref _demoData.ShowMetrics, hasDebugTools);
             if (Widgets.BeginMenu("Debug Options"u8))
             {
                 // TODO: Widgets.BeginDisabled(!has_debug_tools);
-                Widgets.Checkbox("Highlight ID Conflicts"u8, &io.ConfigDebugHighlightIdConflicts);
+                var configDebugHighlightIdConflicts = io.ConfigDebugHighlightIdConflicts;
+                Widgets.Checkbox("Highlight ID Conflicts"u8, ref configDebugHighlightIdConflicts);
+                io.ConfigDebugHighlightIdConflicts = configDebugHighlightIdConflicts;
                 // TODO: Widgets.EndDisabled();
-                Widgets.Checkbox("Assert on error recovery"u8, &io.ConfigErrorRecoveryEnableAssert);
+                var configErrorRecoveryEnableAssert = io.ConfigErrorRecoveryEnableAssert;
+                Widgets.Checkbox("Assert on error recovery"u8, ref configErrorRecoveryEnableAssert);
+                io.ConfigErrorRecoveryEnableAssert = configErrorRecoveryEnableAssert;
                 Widgets.TextDisabled("(see Demo->Configuration for details & more)"u8);
                 Widgets.EndMenu();
             }
-            Widgets.MenuItem("Debug Log"u8, null, _demoData.ShowDebugLog, hasDebugTools);
-            Widgets.MenuItem("ID Stack Tool"u8, null, _demoData.ShowIDStackTool, hasDebugTools);
+            Widgets.MenuItem("Debug Log"u8, null, ref _demoData.ShowDebugLog, hasDebugTools);
+            Widgets.MenuItem("ID Stack Tool"u8, null, ref _demoData.ShowIDStackTool, hasDebugTools);
             var isDebuggerPresent = io.ConfigDebugIsDebuggerPresent;
             if (Widgets.MenuItem("Item Picker"u8, null, false, hasDebugTools))// && isDebuggerPresent))
             {
@@ -191,14 +194,22 @@ public static class ImGuiDemoWindow
                 // TODO: Widgets.SetItemTooltip("Requires io.ConfigDebugIsDebuggerPresent=true to be set.\n\nWe otherwise disable some extra features to avoid casual users crashing the application."u8);
             }
 
-            Widgets.MenuItem("Style Editor"u8, null, _demoData.ShowStyleEditor);
-            Widgets.MenuItem("About Dear ImGui"u8, null, _demoData.ShowAbout);
+            Widgets.MenuItem("Style Editor"u8, null, ref _demoData.ShowStyleEditor);
+            Widgets.MenuItem("About Dear ImGui"u8, null, ref _demoData.ShowAbout);
 
             Widgets.EndMenu();
         }
+
+        Widgets.EndMenuBar();
     }
 
-    public static void ShowDemoWindow(StateRef<bool>? open)
+    public static void ShowDemoWindow()
+    {
+        var open = true;
+        ShowDemoWindow(ref open);
+    }
+
+    public static void ShowDemoWindow(ref bool open)
     {
         // We specify a default position/size in case there's no data in the .ini file.
         // We only do it to make the demo applications a little more welcoming, but typically this isn't required.
@@ -259,10 +270,10 @@ public static class ImGuiDemoWindow
 
         if (_no_close)
         {
-            open = null; // Don't pass our bool* to Begin
+            open = true;
         }
 
-        if (!Window.Begin("Dear ImGui Demo (managed)"u8, open, windowFlags))
+        if (!Window.Begin("Dear ImGui Demo (managed)"u8, ref open, windowFlags))
         {
             return;
         }
@@ -288,30 +299,30 @@ public static class ImGuiDemoWindow
     internal struct ImGuiDemoWindowData()
     {
         // Examples Apps (accessible from the "Examples" menu)
-        public StateRef<bool> ShowMainMenuBar = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppAssetsBrowser = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppConsole = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppCustomRendering = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppDocuments = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppLog = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppLayout = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppPropertyEditor = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppSimpleOverlay = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppAutoResize = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppConstrainedResize = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppFullscreen = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppLongText = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAppWindowTitles = StateStore.Instance.Create(false);
+        public bool ShowMainMenuBar = false;
+        public bool ShowAppAssetsBrowser = false;
+        public bool ShowAppConsole = false;
+        public bool ShowAppCustomRendering = false;
+        public bool ShowAppDocuments = false;
+        public bool ShowAppLog = false;
+        public bool ShowAppLayout = false;
+        public bool ShowAppPropertyEditor = false;
+        public bool ShowAppSimpleOverlay = false;
+        public bool ShowAppAutoResize = false;
+        public bool ShowAppConstrainedResize = false;
+        public bool ShowAppFullscreen = false;
+        public bool ShowAppLongText = false;
+        public bool ShowAppWindowTitles = false;
 
         // Dear ImGui Tools (accessible from the "Tools" menu)
-        public StateRef<bool> ShowMetrics = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowDebugLog = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowIDStackTool = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowStyleEditor = StateStore.Instance.Create(false);
-        public StateRef<bool> ShowAbout = StateStore.Instance.Create(false);
+        public bool ShowMetrics = false;
+        public bool ShowDebugLog = false;
+        public bool ShowIDStackTool = false;
+        public bool ShowStyleEditor = false;
+        public bool ShowAbout = false;
 
         // Other data
-        public StateRef<bool> DisableSections = StateStore.Instance.Create(false);
+        public bool DisableSections = false;
 
         //~ImGuiDemoWindowData() { if (DemoTree) ExampleTree_DestroyNode(DemoTree); }
     }

@@ -333,11 +333,12 @@ public unsafe static class Widgets
     /// <param name="label">The checkbox label.</param>
     /// <param name="v">Reference to the boolean value.</param>
     /// <returns>True when the value has been changed.</returns>
-    public static bool Checkbox(ReadOnlySpan<byte> label, StateRef<bool> v)
+    public static bool Checkbox(ReadOnlySpan<byte> label, ref bool v)
     {
         fixed (byte* ptr = label)
+        fixed (bool* vPtr = &v)
         {
-            return ImGui_Checkbox(ptr, v.Ptr);
+            return ImGui_Checkbox(ptr, vPtr);
         }
     }
 
@@ -348,11 +349,12 @@ public unsafe static class Widgets
     /// <param name="flags">Reference to the flags value.</param>
     /// <param name="flagsValue">The flag bit(s) to toggle.</param>
     /// <returns>True when the value has been changed.</returns>
-    public static bool CheckboxFlags(ReadOnlySpan<byte> label, StateRef<int> flags, int flagsValue)
+    public static bool CheckboxFlags(ReadOnlySpan<byte> label, ref int flags, int flagsValue)
     {
         fixed (byte* ptr = label)
+        fixed (int* flagsPtr = &flags)
         {
-            return ImGui_CheckboxFlagsIntPtr(ptr, flags.Ptr, flagsValue);
+            return ImGui_CheckboxFlagsIntPtr(ptr, flagsPtr, flagsValue);
         }
     }
 
@@ -363,11 +365,12 @@ public unsafe static class Widgets
     /// <param name="flags">Reference to the flags value.</param>
     /// <param name="flagsValue">The flag bit(s) to toggle.</param>
     /// <returns>True when the value has been changed.</returns>
-    public static bool CheckboxFlags(ReadOnlySpan<byte> label, StateRef<uint> flags, uint flagsValue)
+    public static bool CheckboxFlags(ReadOnlySpan<byte> label, ref uint flags, uint flagsValue)
     {
         fixed (byte* ptr = label)
+        fixed (uint* flagsPtr = &flags)
         {
-            return ImGui_CheckboxFlagsUintPtr(ptr, flags.Ptr, flagsValue);
+            return ImGui_CheckboxFlagsUintPtr(ptr, flagsPtr, flagsValue);
         }
     }
 
@@ -398,11 +401,12 @@ public unsafe static class Widgets
     /// <remarks>
     /// Shortcut to handle the RadioButton pattern when the value is an integer.
     /// </remarks>
-    public static bool RadioButton(ReadOnlySpan<byte> label, StateRef<int> v, int vButton)
+    public static bool RadioButton(ReadOnlySpan<byte> label, ref int v, int vButton)
     {
         fixed (byte* ptr = label)
+        fixed (int* vPtr = &v)
         {
-            return ImGui_RadioButtonIntPtr(ptr, v.Ptr, vButton);
+            return ImGui_RadioButtonIntPtr(ptr, vPtr, vButton);
         }
     }
 
@@ -595,12 +599,13 @@ public unsafe static class Widgets
     /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
     /// <param name="popupMaxHeightInItems">Maximum height in items. Use -1 for default.</param>
     /// <returns>True if the selection changed.</returns>
-    public static bool Combo(ReadOnlySpan<byte> label, StateRef<int> currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems = -1)
+    public static bool Combo(ReadOnlySpan<byte> label, ref int currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems = -1)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* itemsPtr = itemsSeparatedByZeros)
+        fixed (int* currentItemPtr = &currentItem)
         {
-            return ImGui_ComboEx(labelPtr, currentItem.Ptr, itemsPtr, popupMaxHeightInItems);
+            return ImGui_ComboEx(labelPtr, currentItemPtr, itemsPtr, popupMaxHeightInItems);
         }
     }
 
@@ -615,12 +620,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<int> v, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref int v, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (int* vPtr = &v)
         {
-            return ImGui_DragIntEx(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragIntEx(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -635,12 +641,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<float> v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref float v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (float* vPtr = &v)
         {
-            return ImGui_DragFloatEx(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragFloatEx(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -655,12 +662,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<sbyte> v, float vSpeed, sbyte vMin = 0, sbyte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref sbyte v, float vSpeed, sbyte vMin = 0, sbyte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (sbyte* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S8, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -675,12 +683,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<byte> v, float vSpeed, byte vMin = 0, byte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref byte v, float vSpeed, byte vMin = 0, byte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (byte* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U8, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -695,12 +704,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<short> v, float vSpeed, short vMin = 0, short vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref short v, float vSpeed, short vMin = 0, short vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (short* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S16, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -715,12 +725,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<ushort> v, float vSpeed, ushort vMin = 0, ushort vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref ushort v, float vSpeed, ushort vMin = 0, ushort vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ushort* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U16, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -735,12 +746,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<uint> v, float vSpeed, uint vMin = 0, uint vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref uint v, float vSpeed, uint vMin = 0, uint vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (uint* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U32, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -755,12 +767,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%lld").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<long> v, float vSpeed, long vMin = 0, long vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref long v, float vSpeed, long vMin = 0, long vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (long* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S64, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -775,12 +788,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%llu").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<ulong> v, float vSpeed, ulong vMin = 0, ulong vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref ulong v, float vSpeed, ulong vMin = 0, ulong vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ulong* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U64, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -795,12 +809,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateRef<double> v, float vSpeed, double vMin = 0.0, double vMax = 0.0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref double v, float vSpeed, double vMin = 0.0, double vMax = 0.0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (double* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.Double, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -815,17 +830,18 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<int> v, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<int> v, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (int* vPtr = v)
         {
             return v.Length switch
             {
-                2 => ImGui_DragInt2Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                3 => ImGui_DragInt3Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                4 => ImGui_DragInt4Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                _ => ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S32, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                2 => ImGui_DragInt2Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                3 => ImGui_DragInt3Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                4 => ImGui_DragInt4Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                _ => ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S32, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
             };
         }
     }
@@ -841,17 +857,18 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<float> v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<float> v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (float* vPtr = v)
         {
             return v.Length switch
             {
-                2 => ImGui_DragFloat2Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                3 => ImGui_DragFloat3Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                4 => ImGui_DragFloat4Ex(labelPtr, v.Ptr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                _ => ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.Float, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                2 => ImGui_DragFloat2Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                3 => ImGui_DragFloat3Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                4 => ImGui_DragFloat4Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                _ => ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.Float, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
             };
         }
     }
@@ -867,12 +884,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<sbyte> v, float vSpeed, sbyte vMin = 0, sbyte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<sbyte> v, float vSpeed, sbyte vMin = 0, sbyte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (sbyte* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S8, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -887,12 +905,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<byte> v, float vSpeed, byte vMin = 0, byte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<byte> v, float vSpeed, byte vMin = 0, byte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (byte* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U8, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -907,12 +926,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<short> v, float vSpeed, short vMin = 0, short vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<short> v, float vSpeed, short vMin = 0, short vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (short* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S16, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -927,12 +947,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<ushort> v, float vSpeed, ushort vMin = 0, ushort vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<ushort> v, float vSpeed, ushort vMin = 0, ushort vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ushort* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U16, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -947,12 +968,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<uint> v, float vSpeed, uint vMin = 0, uint vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<uint> v, float vSpeed, uint vMin = 0, uint vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (uint* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U32, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -967,12 +989,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%lld").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<long> v, float vSpeed, long vMin = 0, long vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<long> v, float vSpeed, long vMin = 0, long vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (long* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S64, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -987,12 +1010,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%llu").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<ulong> v, float vSpeed, ulong vMin = 0, ulong vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<ulong> v, float vSpeed, ulong vMin = 0, ulong vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ulong* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U64, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1007,12 +1031,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, StateArrayRef<double> v, float vSpeed, double vMin = 0.0, double vMax = 0.0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<double> v, float vSpeed, double vMin = 0.0, double vMax = 0.0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (double* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.Double, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1029,13 +1054,15 @@ public unsafe static class Widgets
     /// <param name="formatMax">Printf format string for the max value. If null, uses format.</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if either value changed.</returns>
-    public static bool DragRange(ReadOnlySpan<byte> label, StateRef<float> vCurrentMin, StateRef<float> vCurrentMax, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
+    public static bool DragRange(ReadOnlySpan<byte> label, ref float vCurrentMin, ref float vCurrentMax, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (byte* formatMaxPtr = formatMax)
+        fixed (float* vCurrentMinPtr = &vCurrentMin)
+        fixed (float* vCurrentMaxPtr = &vCurrentMax)
         {
-            return ImGui_DragFloatRange2Ex(labelPtr, vCurrentMin.Ptr, vCurrentMax.Ptr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragFloatRange2Ex(labelPtr, vCurrentMinPtr, vCurrentMaxPtr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1052,13 +1079,15 @@ public unsafe static class Widgets
     /// <param name="formatMax">Printf format string for the max value. If null, uses format.</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if either value changed.</returns>
-    public static bool DragRange(ReadOnlySpan<byte> label, StateRef<int> vCurrentMin, StateRef<int> vCurrentMax, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
+    public static bool DragRange(ReadOnlySpan<byte> label, ref int vCurrentMin, ref int vCurrentMax, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (byte* formatMaxPtr = formatMax)
+        fixed (int* vCurrentMinPtr = &vCurrentMin)
+        fixed (int* vCurrentMaxPtr = &vCurrentMax)
         {
-            return ImGui_DragIntRange2Ex(labelPtr, vCurrentMin.Ptr, vCurrentMax.Ptr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragIntRange2Ex(labelPtr, vCurrentMinPtr, vCurrentMaxPtr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1072,12 +1101,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<int> v, int vMin, int vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref int v, int vMin, int vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (int* vPtr = &v)
         {
-            return ImGui_SliderIntEx(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderIntEx(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1091,12 +1121,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<float> v, float vMin, float vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref float v, float vMin, float vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (float* vPtr = &v)
         {
-            return ImGui_SliderFloatEx(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderFloatEx(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1110,12 +1141,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<sbyte> v, sbyte vMin, sbyte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref sbyte v, sbyte vMin, sbyte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (sbyte* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S8, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1129,12 +1161,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<byte> v, byte vMin, byte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref byte v, byte vMin, byte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (byte* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U8, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1148,12 +1181,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<short> v, short vMin, short vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref short v, short vMin, short vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (short* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S16, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1167,12 +1201,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<ushort> v, ushort vMin, ushort vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref ushort v, ushort vMin, ushort vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ushort* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U16, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1186,12 +1221,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<uint> v, uint vMin, uint vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref uint v, uint vMin, uint vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (uint* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U32, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1205,12 +1241,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%lld").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<long> v, long vMin, long vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref long v, long vMin, long vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (long* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S64, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1224,12 +1261,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%llu").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<ulong> v, ulong vMin, ulong vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref ulong v, ulong vMin, ulong vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ulong* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U64, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1243,12 +1281,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateRef<double> v, double vMin, double vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, ref double v, double vMin, double vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (double* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.Double, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1262,17 +1301,18 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<int> v, int vMin, int vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<int> v, int vMin, int vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (int* vPtr = v)
         {
             return v.Length switch
             {
-                2 => ImGui_SliderInt2Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                3 => ImGui_SliderInt3Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                4 => ImGui_SliderInt4Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                _ => ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S32, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                2 => ImGui_SliderInt2Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                3 => ImGui_SliderInt3Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                4 => ImGui_SliderInt4Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                _ => ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S32, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
             };
         }
     }
@@ -1287,17 +1327,18 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<float> v, float vMin, float vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<float> v, float vMin, float vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (float* vPtr = v)
         {
             return v.Length switch
             {
-                2 => ImGui_SliderFloat2Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                3 => ImGui_SliderFloat3Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                4 => ImGui_SliderFloat4Ex(labelPtr, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                _ => ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.Float, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                2 => ImGui_SliderFloat2Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                3 => ImGui_SliderFloat3Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                4 => ImGui_SliderFloat4Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                _ => ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.Float, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
             };
         }
     }
@@ -1312,12 +1353,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<sbyte> v, sbyte vMin, sbyte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<sbyte> v, sbyte vMin, sbyte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (sbyte* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S8, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1331,12 +1373,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<byte> v, byte vMin, byte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<byte> v, byte vMin, byte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (byte* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U8, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1350,12 +1393,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<short> v, short vMin, short vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<short> v, short vMin, short vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (short* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S16, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1369,12 +1413,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<ushort> v, ushort vMin, ushort vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<ushort> v, ushort vMin, ushort vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ushort* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U16, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1388,12 +1433,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<uint> v, uint vMin, uint vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<uint> v, uint vMin, uint vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (uint* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U32, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1407,12 +1453,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%lld").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<long> v, long vMin, long vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<long> v, long vMin, long vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (long* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S64, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1426,12 +1473,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%llu").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<ulong> v, ulong vMin, ulong vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<ulong> v, ulong vMin, ulong vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ulong* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U64, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1445,12 +1493,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Slider(ReadOnlySpan<byte> label, StateArrayRef<double> v, double vMin, double vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Slider(ReadOnlySpan<byte> label, Span<double> v, double vMin, double vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (double* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.Double, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1464,12 +1513,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.0f deg").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool SliderAngle(ReadOnlySpan<byte> label, StateRef<float> vRad, float vDegreesMin = -360.0f, float vDegreesMax = 360.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool SliderAngle(ReadOnlySpan<byte> label, ref float vRad, float vDegreesMin = -360.0f, float vDegreesMax = 360.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (float* vRadPtr = &vRad)
         {
-            return ImGui_SliderAngleEx(labelPtr, vRad.Ptr, vDegreesMin, vDegreesMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderAngleEx(labelPtr, vRadPtr, vDegreesMin, vDegreesMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1484,12 +1534,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<int> v, int vMin, int vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref int v, int vMin, int vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (int* vPtr = &v)
         {
-            return ImGui_VSliderIntEx(labelPtr, size.Value, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderIntEx(labelPtr, size.Value, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1504,12 +1555,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<float> v, float vMin, float vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref float v, float vMin, float vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (float* vPtr = &v)
         {
-            return ImGui_VSliderFloatEx(labelPtr, size.Value, v.Ptr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderFloatEx(labelPtr, size.Value, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1524,12 +1576,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<sbyte> v, sbyte vMin, sbyte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref sbyte v, sbyte vMin, sbyte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (sbyte* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S8, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S8, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1544,12 +1597,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<byte> v, byte vMin, byte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref byte v, byte vMin, byte vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (byte* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U8, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U8, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1564,12 +1618,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<short> v, short vMin, short vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref short v, short vMin, short vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (short* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S16, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S16, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1584,12 +1639,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<ushort> v, ushort vMin, ushort vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref ushort v, ushort vMin, ushort vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ushort* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U16, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U16, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1604,12 +1660,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<uint> v, uint vMin, uint vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref uint v, uint vMin, uint vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (uint* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U32, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U32, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1624,12 +1681,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%lld").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<long> v, long vMin, long vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref long v, long vMin, long vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (long* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S64, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S64, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1644,12 +1702,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%llu").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<ulong> v, ulong vMin, ulong vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref ulong v, ulong vMin, ulong vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ulong* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U64, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U64, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1664,12 +1723,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool VSlider(ReadOnlySpan<byte> label, Size size, StateRef<double> v, double vMin, double vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool VSlider(ReadOnlySpan<byte> label, Size size, ref double v, double vMin, double vMax, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (double* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.Double, v.Ptr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.Double, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
         }
     }
 
@@ -1682,11 +1742,12 @@ public unsafe static class Widgets
     /// <param name="stepFast">Fast step value when holding Ctrl.</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<int> v, int step = 0, int stepFast = 0, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref int v, int step = 0, int stepFast = 0, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
+        fixed (int* vPtr = &v)
         {
-            return ImGui_InputIntEx(labelPtr, v.Ptr, step, stepFast, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputIntEx(labelPtr, vPtr, step, stepFast, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1700,12 +1761,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<float> v, float step = 0.0f, float stepFast = 0.0f, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref float v, float step = 0.0f, float stepFast = 0.0f, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (float* vPtr = &v)
         {
-            return ImGui_InputFloatEx(labelPtr, v.Ptr, step, stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputFloatEx(labelPtr, vPtr, step, stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1719,12 +1781,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<double> v, double step = 0.0, double stepFast = 0.0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref double v, double step = 0.0, double stepFast = 0.0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (double* vPtr = &v)
         {
-            return ImGui_InputDoubleEx(labelPtr, v.Ptr, step, stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputDoubleEx(labelPtr, vPtr, step, stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1738,12 +1801,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<sbyte> v, sbyte step = 0, sbyte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref sbyte v, sbyte step = 0, sbyte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (sbyte* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S8, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1757,12 +1821,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<byte> v, byte step = 0, byte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref byte v, byte step = 0, byte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (byte* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U8, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1776,12 +1841,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<short> v, short step = 0, short stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref short v, short step = 0, short stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (short* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S16, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1795,12 +1861,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<ushort> v, ushort step = 0, ushort stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref ushort v, ushort step = 0, ushort stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ushort* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U16, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1814,12 +1881,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<uint> v, uint step = 0, uint stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref uint v, uint step = 0, uint stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (uint* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U32, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1833,12 +1901,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%lld").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<long> v, long step = 0, long stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref long v, long step = 0, long stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (long* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S64, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1852,12 +1921,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%llu").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateRef<ulong> v, ulong step = 0, ulong stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref ulong v, ulong step = 0, ulong stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ulong* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U64, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1870,16 +1940,17 @@ public unsafe static class Widgets
     /// <param name="stepFast">Fast step value when holding Ctrl.</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<int> v, int step = 0, int stepFast = 0, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<int> v, int step = 0, int stepFast = 0, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
+        fixed (int* vPtr = v)
         {
             return v.Length switch
             {
-                2 => ImGui_InputInt2(labelPtr, v.Ptr, (Native.ImGuiInputTextFlags)flags),
-                3 => ImGui_InputInt3(labelPtr, v.Ptr, (Native.ImGuiInputTextFlags)flags),
-                4 => ImGui_InputInt4(labelPtr, v.Ptr, (Native.ImGuiInputTextFlags)flags),
-                _ => ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S32, v.Ptr, v.Length, &step, &stepFast, null, (Native.ImGuiInputTextFlags)flags),
+                2 => ImGui_InputInt2(labelPtr, vPtr, (Native.ImGuiInputTextFlags)flags),
+                3 => ImGui_InputInt3(labelPtr, vPtr, (Native.ImGuiInputTextFlags)flags),
+                4 => ImGui_InputInt4(labelPtr, vPtr, (Native.ImGuiInputTextFlags)flags),
+                _ => ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S32, vPtr, v.Length, &step, &stepFast, null, (Native.ImGuiInputTextFlags)flags),
             };
         }
     }
@@ -1894,17 +1965,18 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<float> v, float step = 0.0f, float stepFast = 0.0f, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<float> v, float step = 0.0f, float stepFast = 0.0f, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (float* vPtr = v)
         {
             return v.Length switch
             {
-                2 => ImGui_InputFloat2Ex(labelPtr, v.Ptr, formatPtr, (Native.ImGuiInputTextFlags)flags),
-                3 => ImGui_InputFloat3Ex(labelPtr, v.Ptr, formatPtr, (Native.ImGuiInputTextFlags)flags),
-                4 => ImGui_InputFloat4Ex(labelPtr, v.Ptr, formatPtr, (Native.ImGuiInputTextFlags)flags),
-                _ => ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.Float, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags),
+                2 => ImGui_InputFloat2Ex(labelPtr, vPtr, formatPtr, (Native.ImGuiInputTextFlags)flags),
+                3 => ImGui_InputFloat3Ex(labelPtr, vPtr, formatPtr, (Native.ImGuiInputTextFlags)flags),
+                4 => ImGui_InputFloat4Ex(labelPtr, vPtr, formatPtr, (Native.ImGuiInputTextFlags)flags),
+                _ => ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.Float, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags),
             };
         }
     }
@@ -1919,12 +1991,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<sbyte> v, sbyte step = 0, sbyte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<sbyte> v, sbyte step = 0, sbyte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (sbyte* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S8, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S8, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1938,12 +2011,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<byte> v, byte step = 0, byte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<byte> v, byte step = 0, byte stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (byte* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U8, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U8, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1957,12 +2031,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<short> v, short step = 0, short stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<short> v, short step = 0, short stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (short* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S16, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S16, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1976,12 +2051,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<ushort> v, ushort step = 0, ushort stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<ushort> v, ushort step = 0, ushort stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ushort* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U16, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U16, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1995,12 +2071,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<uint> v, uint step = 0, uint stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<uint> v, uint step = 0, uint stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (uint* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U32, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U32, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2014,12 +2091,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%lld").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<long> v, long step = 0, long stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<long> v, long step = 0, long stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (long* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S64, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S64, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2033,12 +2111,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%llu").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<ulong> v, ulong step = 0, ulong stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<ulong> v, ulong step = 0, ulong stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (ulong* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U64, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U64, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2052,12 +2131,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, StateArrayRef<double> v, double step = 0.0, double stepFast = 0.0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, Span<double> v, double step = 0.0, double stepFast = 0.0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
+        fixed (double* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.Double, v.Ptr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.Double, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2124,14 +2204,15 @@ public unsafe static class Widgets
     /// and right-clicked to open an options menu.
     /// </remarks>
     /// <exception cref="ArgumentException">Thrown when the color array length is not 3 or 4.</exception>
-    public static bool ColorEdit(ReadOnlySpan<byte> label, StateArrayRef<float> col, ColorEditFlags flags = ColorEditFlags.None)
+    public static bool ColorEdit(ReadOnlySpan<byte> label, Span<float> col, ColorEditFlags flags = ColorEditFlags.None)
     {
         fixed (byte* labelPtr = label)
+        fixed (float* colPtr = col)
         {
             return col.Length switch
             {
-                3 => ImGui_ColorEdit3(labelPtr, col.Ptr, (Native.ImGuiColorEditFlags)flags),
-                4 => ImGui_ColorEdit4(labelPtr, col.Ptr, (Native.ImGuiColorEditFlags)flags),
+                3 => ImGui_ColorEdit3(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags),
+                4 => ImGui_ColorEdit4(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags),
                 _ => throw new ArgumentException("Color array must have 3 (RGB) or 4 (RGBA) elements.", nameof(col))
             };
         }
@@ -2150,14 +2231,16 @@ public unsafe static class Widgets
     /// When a reference color is provided (RGBA only), it is displayed alongside the current color for comparison.
     /// </remarks>
     /// <exception cref="ArgumentException">Thrown when the color array length is not 3 or 4.</exception>
-    public static bool ColorPicker(ReadOnlySpan<byte> label, StateArrayRef<float> col, ColorEditFlags flags = ColorEditFlags.None, StateArrayRef<float> refCol = default)
+    public static bool ColorPicker(ReadOnlySpan<byte> label, Span<float> col, ColorEditFlags flags = ColorEditFlags.None, Span<float> refCol = default)
     {
         fixed (byte* labelPtr = label)
+        fixed (float* colPtr = col)
+        fixed (float* refColPtr = refCol)
         {
             return col.Length switch
             {
-                3 => ImGui_ColorPicker3(labelPtr, col.Ptr, (Native.ImGuiColorEditFlags)flags),
-                4 => ImGui_ColorPicker4(labelPtr, col.Ptr, (Native.ImGuiColorEditFlags)flags, refCol.Ptr),
+                3 => ImGui_ColorPicker3(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags),
+                4 => ImGui_ColorPicker4(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags, refColPtr),
                 _ => throw new ArgumentException("Color array must have 3 (RGB) or 4 (RGBA) elements.", nameof(col))
             };
         }
@@ -2268,11 +2351,12 @@ public unsafe static class Widgets
     /// <param name="pVisible">Reference to visibility state. If false, header is not displayed.</param>
     /// <param name="flags">Tree node behavior flags.</param>
     /// <returns>True if the header is open.</returns>
-    public static bool CollapsingHeader(ReadOnlySpan<byte> label, StateRef<bool> pVisible, TreeNodeFlags flags = TreeNodeFlags.None)
+    public static bool CollapsingHeader(ReadOnlySpan<byte> label, ref bool pVisible, TreeNodeFlags flags = TreeNodeFlags.None)
     {
         fixed (byte* ptr = label)
+        fixed (bool* pVisiblePtr = &pVisible)
         {
-            return ImGui_CollapsingHeaderBoolPtr(ptr, pVisible.Ptr, (Native.ImGuiTreeNodeFlags)flags);
+            return ImGui_CollapsingHeaderBoolPtr(ptr, pVisiblePtr, (Native.ImGuiTreeNodeFlags)flags);
         }
     }
 
@@ -2319,11 +2403,12 @@ public unsafe static class Widgets
     /// <param name="flags">Selectable behavior flags.</param>
     /// <param name="size">The item size.</param>
     /// <returns>True when clicked.</returns>
-    public static bool Selectable(ReadOnlySpan<byte> label, StateRef<bool> pSelected, SelectableFlags flags = SelectableFlags.None, Size size = default)
+    public static bool Selectable(ReadOnlySpan<byte> label, ref bool pSelected, SelectableFlags flags = SelectableFlags.None, Size size = default)
     {
         fixed (byte* ptr = label)
+        fixed (bool* pSelectedPtr = &pSelected)
         {
-            return ImGui_SelectableBoolPtrEx(ptr, pSelected.Ptr, (Native.ImGuiSelectableFlags)flags, size.Value);
+            return ImGui_SelectableBoolPtrEx(ptr, pSelectedPtr, (Native.ImGuiSelectableFlags)flags, size.Value);
         }
     }
 
@@ -2502,12 +2587,13 @@ public unsafe static class Widgets
     /// <param name="pSelected">Reference to selection state (toggles on activation).</param>
     /// <param name="enabled">Whether the item is enabled.</param>
     /// <returns>True when activated.</returns>
-    public static bool MenuItem(ReadOnlySpan<byte> label, ReadOnlySpan<byte> shortcut, StateRef<bool> pSelected, bool enabled = true)
+    public static bool MenuItem(ReadOnlySpan<byte> label, ReadOnlySpan<byte> shortcut, ref bool pSelected, bool enabled = true)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* shortcutPtr = shortcut)
+        fixed (bool* pSelectedPtr = &pSelected)
         {
-            return ImGui_MenuItemBoolPtr(labelPtr, shortcutPtr, pSelected.Ptr, enabled);
+            return ImGui_MenuItemBoolPtr(labelPtr, shortcutPtr, pSelectedPtr, enabled);
         }
     }
 }
