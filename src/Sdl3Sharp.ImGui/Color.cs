@@ -89,9 +89,57 @@ public unsafe readonly record struct Color
     /// Use this to feed back into <see cref="PushStyleColor(StyleColor, Vec4)"/>.
     /// Otherwise use <see cref="GetColorU32(StyleColor)"/> to get style color with style alpha baked in.
     /// </remarks>
-    public static Color GetStyleColorVec4(StyleColor idx)
+    public static Color GetStyleColor(StyleColor idx)
     {
         return new(*ImGui_GetStyleColorVec4((ImGuiCol)idx));
+    }
+
+    /// <summary>
+    /// Converts a 32-bit color value to a Vec4 float color.
+    /// </summary>
+    /// <param name="color">The 32-bit color value (0xRRGGBBAA or ImU32 format).</param>
+    /// <returns>The color as a Vec4 (RGBA, 0-1 range).</returns>
+    public static Color ColorConvertU32ToColor(uint color)
+    {
+        return new(ImGui_ColorConvertU32ToFloat4(color));
+    }
+
+    /// <summary>
+    /// Converts a Vec4 float color to a 32-bit color value.
+    /// </summary>
+    /// <param name="color">The color as a Vec4 (RGBA, 0-1 range).</param>
+    /// <returns>The 32-bit color value.</returns>
+    public static uint ColorConvertColorToU32(Color color)
+    {
+        return ImGui_ColorConvertFloat4ToU32(color.Value);
+    }
+
+    /// <summary>
+    /// Converts RGB color values to HSV.
+    /// </summary>
+    /// <param name="r">Red component (0-1).</param>
+    /// <param name="g">Green component (0-1).</param>
+    /// <param name="b">Blue component (0-1).</param>
+    /// <returns>A tuple containing (H, S, V) values.</returns>
+    public static (float H, float S, float V) ColorConvertRGBtoHSV(float r, float g, float b)
+    {
+        float h, s, v;
+        ImGui_ColorConvertRGBtoHSV(r, g, b, &h, &s, &v);
+        return (h, s, v);
+    }
+
+    /// <summary>
+    /// Converts HSV color values to RGB.
+    /// </summary>
+    /// <param name="h">Hue component (0-1).</param>
+    /// <param name="s">Saturation component (0-1).</param>
+    /// <param name="v">Value component (0-1).</param>
+    /// <returns>A tuple containing (R, G, B) values.</returns>
+    public static (float R, float G, float B) ColorConvertHSVtoRGB(float h, float s, float v)
+    {
+        float r, g, b;
+        ImGui_ColorConvertHSVtoRGB(h, s, v, &r, &g, &b);
+        return (r, g, b);
     }
 
     /// <inheritdoc />

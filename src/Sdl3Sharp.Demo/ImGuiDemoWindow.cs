@@ -155,14 +155,14 @@ public static unsafe class ImGuiDemoWindow
                 // The "NoMouse"u8 option can get us stuck with a disabled mouse! Let's provide an alternative way to fix it:
                 if (io.ConfigFlags.HasFlag(ConfigFlags.NoMouse))
                 {
-                    if (((float)ImGui.ImGui.GetTime() % 0.40f) < 0.20f)
+                    if (((float)Context.GetTime() % 0.40f) < 0.20f)
                     {
                         Widgets.SameLine();
                         Widgets.Text("<<PRESS SPACE TO DISABLE>>"u8);
                     }
 
                     // Prevent both being checked
-                    if (ImGui.ImGui.IsKeyPressed(Key.Space) || io.ConfigFlags.HasFlag(ConfigFlags.NoKeyboard))
+                    if (Context.IsKeyPressed(Key.Space) || io.ConfigFlags.HasFlag(ConfigFlags.NoKeyboard))
                     {
                         io.ConfigFlags &= ~ConfigFlags.NoMouse;
                     }
@@ -478,7 +478,7 @@ public static unsafe class ImGuiDemoWindow
             var sz = Font.GetTextLineHeight();
             for (var i = (StyleColor)0; i < StyleColor.Max; i++)
             {
-                ReadOnlySpan<byte> name = ImGui.ImGui.GetStyleColorName(i);
+                ReadOnlySpan<byte> name = Style.GetStyleColorName(i);
                 Point p = Window.CursorScreenPosition;
                 Window.DrawList?.AddRectFilled((p, (p.X + sz, p.Y + sz)), Color.GetColorU32(i));
                 Widgets.Dummy((sz, sz));

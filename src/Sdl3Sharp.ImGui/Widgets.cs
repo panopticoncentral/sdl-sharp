@@ -3285,4 +3285,32 @@ public unsafe static class Widgets
     {
         return new(ImGui_GetItemRectSize());
     }
+
+    /// <summary>
+    /// Calculates the size of text.
+    /// </summary>
+    /// <param name="text">The text to measure.</param>
+    /// <returns>The calculated text size.</returns>
+    public static Size CalcTextSize(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            return new(ImGui_CalcTextSize(ptr));
+        }
+    }
+
+    /// <summary>
+    /// Calculates the size of text with extended options.
+    /// </summary>
+    /// <param name="text">The text to measure.</param>
+    /// <param name="hideTextAfterDoubleHash">If true, stop measuring at ##.</param>
+    /// <param name="wrapWidth">The wrap width (-1.0f for no wrapping).</param>
+    /// <returns>The calculated text size.</returns>
+    public static Size CalcTextSize(ReadOnlySpan<byte> text, bool hideTextAfterDoubleHash, float wrapWidth = -1.0f)
+    {
+        fixed (byte* ptr = text)
+        {
+            return new(ImGui_CalcTextSizeEx(ptr, null, hideTextAfterDoubleHash, wrapWidth));
+        }
+    }
 }

@@ -1,5 +1,6 @@
 using Sdl3Sharp.ImGui.Native;
 using System.Runtime.InteropServices;
+using System.Text;
 using static Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
@@ -321,5 +322,430 @@ public unsafe readonly struct Context
     public static void SetNavCursorVisible(bool visible)
     {
         ImGui_SetNavCursorVisible(visible);
+    }
+
+    /// <summary>
+    /// Gets the global ImGui time, incremented by io.DeltaTime every frame.
+    /// </summary>
+    /// <returns>The global time in seconds.</returns>
+    public static double GetTime()
+    {
+        return ImGui_GetTime();
+    }
+
+    /// <summary>
+    /// Gets the global ImGui frame count, incremented by 1 every frame.
+    /// </summary>
+    /// <returns>The frame count.</returns>
+    public static int GetFrameCount()
+    {
+        return ImGui_GetFrameCount();
+    }
+
+    /// <summary>
+    /// Checks if a key is being held.
+    /// </summary>
+    /// <param name="key">The key to check.</param>
+    /// <returns>True if the key is down.</returns>
+    public static bool IsKeyDown(Key key)
+    {
+        return ImGui_IsKeyDown((ImGuiKey)key);
+    }
+
+    /// <summary>
+    /// Checks if a key was pressed (went from !Down to Down).
+    /// </summary>
+    /// <param name="key">The key to check.</param>
+    /// <returns>True if the key was pressed.</returns>
+    public static bool IsKeyPressed(Key key)
+    {
+        return ImGui_IsKeyPressed((ImGuiKey)key);
+    }
+
+    /// <summary>
+    /// Checks if a key was pressed (went from !Down to Down).
+    /// </summary>
+    /// <param name="key">The key to check.</param>
+    /// <param name="repeat">If true, uses io.KeyRepeatDelay / KeyRepeatRate.</param>
+    /// <returns>True if the key was pressed.</returns>
+    public static bool IsKeyPressed(Key key, bool repeat)
+    {
+        return ImGui_IsKeyPressedEx((ImGuiKey)key, repeat);
+    }
+
+    /// <summary>
+    /// Checks if a key was released (went from Down to !Down).
+    /// </summary>
+    /// <param name="key">The key to check.</param>
+    /// <returns>True if the key was released.</returns>
+    public static bool IsKeyReleased(Key key)
+    {
+        return ImGui_IsKeyReleased((ImGuiKey)key);
+    }
+
+    /// <summary>
+    /// Gets how many times a key was pressed using provided repeat rate/delay.
+    /// </summary>
+    /// <param name="key">The key to check.</param>
+    /// <param name="repeatDelay">The repeat delay.</param>
+    /// <param name="rate">The repeat rate.</param>
+    /// <returns>The press count (most often 0 or 1, but can be higher).</returns>
+    public static int GetKeyPressedAmount(Key key, float repeatDelay, float rate)
+    {
+        return ImGui_GetKeyPressedAmount((ImGuiKey)key, repeatDelay, rate);
+    }
+
+    /// <summary>
+    /// Overrides the io.WantCaptureKeyboard flag next frame.
+    /// </summary>
+    /// <param name="wantCaptureKeyboard">Whether to capture keyboard input.</param>
+    public static void SetNextFrameWantCaptureKeyboard(bool wantCaptureKeyboard)
+    {
+        ImGui_SetNextFrameWantCaptureKeyboard(wantCaptureKeyboard);
+    }
+
+    /// <summary>
+    /// Gets the English name of a key for debugging purposes.
+    /// </summary>
+    /// <param name="key">The key to get the name of.</param>
+    /// <returns>The English name of the key.</returns>
+    /// <remarks>
+    /// These names are provided for debugging purpose and are not meant to be saved persistently nor compared.
+    /// </remarks>
+    public static string GetKeyName(Key key)
+    {
+        var namePtr = ImGui_GetKeyName((ImGuiKey)key);
+        return Marshal.PtrToStringUTF8((nint)namePtr) ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Checks if a key chord was pressed.
+    /// </summary>
+    /// <param name="keyChord">The key chord to check (a key combined with optional modifiers using bitwise OR).</param>
+    /// <returns>True if the key chord was pressed.</returns>
+    /// <remarks>
+    /// This function compares mods and calls IsKeyPressed() - it has no side-effects.
+    /// For shortcut routing (where only one owner gets the shortcut), use <see cref="Shortcut"/> instead.
+    /// </remarks>
+    public static bool IsKeyChordPressed(Key keyChord)
+    {
+        return ImGui_IsKeyChordPressed((int)keyChord);
+    }
+
+    /// <summary>
+    /// Tests for a shortcut with routing support.
+    /// </summary>
+    /// <param name="keyChord">The key chord to check (a key combined with optional modifiers using bitwise OR).</param>
+    /// <param name="flags">Flags controlling the shortcut behavior and routing.</param>
+    /// <returns>True if the shortcut was activated.</returns>
+    /// <remarks>
+    /// <para>
+    /// Unlike <see cref="IsKeyChordPressed"/>, this function submits a route for the shortcut.
+    /// Routes are resolved, and if the shortcut can currently be routed, it calls IsKeyChordPressed().
+    /// This has desirable side-effects as it can prevent another caller from getting the route.
+    /// </para>
+    /// <para>
+    /// The general idea is that several callers may register interest in a shortcut, and only one owner gets it.
+    /// The system is order-independent, so if Child1 makes its calls before Parent, results will be identical.
+    /// </para>
+    /// <para>
+    /// Visualize registered routes in 'Metrics/Debugger->Inputs'.
+    /// </para>
+    /// </remarks>
+    public static bool Shortcut(Key keyChord, InputFlags flags = InputFlags.None)
+    {
+        return ImGui_Shortcut((int)keyChord, (ImGuiInputFlags)flags);
+    }
+
+    /// <summary>
+    /// Sets a keyboard shortcut for the next item.
+    /// </summary>
+    /// <param name="keyChord">The key chord to assign (a key combined with optional modifiers using bitwise OR).</param>
+    /// <param name="flags">Flags controlling the shortcut behavior.</param>
+    /// <remarks>
+    /// Call this before adding a widget to associate a keyboard shortcut with it.
+    /// </remarks>
+    public static void SetNextItemShortcut(Key keyChord, InputFlags flags = InputFlags.None)
+    {
+        ImGui_SetNextItemShortcut((int)keyChord, (ImGuiInputFlags)flags);
+    }
+
+    /// <summary>
+    /// Sets the key owner to the last item's ID if it is hovered or active.
+    /// </summary>
+    /// <param name="key">The key to set ownership for.</param>
+    /// <remarks>
+    /// <para>
+    /// This is equivalent to: if (IsItemHovered() || IsItemActive()) { SetKeyOwner(key, GetItemID()); }
+    /// </para>
+    /// <para>
+    /// One common use case is to allow your items to disable standard input behaviors such as
+    /// Tab or Alt key handling, Mouse Wheel scrolling, etc.
+    /// </para>
+    /// <para>
+    /// Example: Button(...); SetItemKeyOwner(Key.MouseWheelY); // Makes hovering/activating the button disable wheel scrolling.
+    /// </para>
+    /// </remarks>
+    public static void SetItemKeyOwner(Key key)
+    {
+        ImGui_SetItemKeyOwner((ImGuiKey)key);
+    }
+
+    /// <summary>
+    /// Checks if a mouse button is held.
+    /// </summary>
+    /// <param name="button">The mouse button to check.</param>
+    /// <returns>True if the mouse button is down.</returns>
+    public static bool IsMouseDown(MouseButton button)
+    {
+        return ImGui_IsMouseDown((Native.ImGuiMouseButton)button);
+    }
+
+    /// <summary>
+    /// Checks if a mouse button was clicked (went from !Down to Down).
+    /// </summary>
+    /// <param name="button">The mouse button to check.</param>
+    /// <returns>True if the mouse button was clicked.</returns>
+    public static bool IsMouseClicked(MouseButton button)
+    {
+        return ImGui_IsMouseClicked((Native.ImGuiMouseButton)button);
+    }
+
+    /// <summary>
+    /// Checks if a mouse button was clicked (went from !Down to Down).
+    /// </summary>
+    /// <param name="button">The mouse button to check.</param>
+    /// <param name="repeat">If true, uses io.KeyRepeatDelay / KeyRepeatRate.</param>
+    /// <returns>True if the mouse button was clicked.</returns>
+    public static bool IsMouseClicked(MouseButton button, bool repeat)
+    {
+        return ImGui_IsMouseClickedEx((Native.ImGuiMouseButton)button, repeat);
+    }
+
+    /// <summary>
+    /// Checks if a mouse button was released (went from Down to !Down).
+    /// </summary>
+    /// <param name="button">The mouse button to check.</param>
+    /// <returns>True if the mouse button was released.</returns>
+    public static bool IsMouseReleased(MouseButton button)
+    {
+        return ImGui_IsMouseReleased((Native.ImGuiMouseButton)button);
+    }
+
+    /// <summary>
+    /// Checks if a mouse button was double-clicked.
+    /// </summary>
+    /// <param name="button">The mouse button to check.</param>
+    /// <returns>True if the mouse button was double-clicked.</returns>
+    public static bool IsMouseDoubleClicked(MouseButton button)
+    {
+        return ImGui_IsMouseDoubleClicked((Native.ImGuiMouseButton)button);
+    }
+
+    /// <summary>
+    /// Gets the number of successive mouse clicks at the time of click (otherwise 0).
+    /// </summary>
+    /// <param name="button">The mouse button to check.</param>
+    /// <returns>The click count.</returns>
+    public static int GetMouseClickedCount(MouseButton button)
+    {
+        return ImGui_GetMouseClickedCount((Native.ImGuiMouseButton)button);
+    }
+
+    /// <summary>
+    /// Checks if the mouse is hovering a given bounding rectangle.
+    /// </summary>
+    /// <param name="rMin">The upper-left corner of the rectangle.</param>
+    /// <param name="rMax">The lower-right corner of the rectangle.</param>
+    /// <param name="clip">If true, clip by current clipping settings.</param>
+    /// <returns>True if the mouse is hovering the rectangle.</returns>
+    public static bool IsMouseHoveringRect(Vec2 rMin, Vec2 rMax, bool clip = true)
+    {
+        return clip
+            ? ImGui_IsMouseHoveringRect(rMin.Value, rMax.Value)
+            : ImGui_IsMouseHoveringRectEx(rMin.Value, rMax.Value, false);
+    }
+
+    /// <summary>
+    /// Checks if any mouse button is held.
+    /// </summary>
+    /// <returns>True if any mouse button is down.</returns>
+    public static bool IsAnyMouseDown()
+    {
+        return ImGui_IsAnyMouseDown();
+    }
+
+    /// <summary>
+    /// Gets the current mouse position.
+    /// </summary>
+    /// <returns>The mouse position in screen space.</returns>
+    public static Vec2 GetMousePos()
+    {
+        return new(ImGui_GetMousePos());
+    }
+
+    /// <summary>
+    /// Gets the mouse position at the time of opening the current popup.
+    /// </summary>
+    /// <returns>The mouse position when the popup was opened.</returns>
+    public static Vec2 GetMousePosOnOpeningCurrentPopup()
+    {
+        return new(ImGui_GetMousePosOnOpeningCurrentPopup());
+    }
+
+    /// <summary>
+    /// Checks if the mouse is dragging.
+    /// </summary>
+    /// <param name="button">The mouse button to check.</param>
+    /// <param name="lockThreshold">The distance threshold (-1.0f uses io.MouseDraggingThreshold).</param>
+    /// <returns>True if dragging.</returns>
+    public static bool IsMouseDragging(MouseButton button, float lockThreshold = -1.0f)
+    {
+        return ImGui_IsMouseDragging((Native.ImGuiMouseButton)button, lockThreshold);
+    }
+
+    /// <summary>
+    /// Gets the delta from the initial clicking position while the mouse button is pressed.
+    /// </summary>
+    /// <param name="button">The mouse button to check.</param>
+    /// <param name="lockThreshold">The distance threshold (-1.0f uses io.MouseDraggingThreshold).</param>
+    /// <returns>The drag delta.</returns>
+    public static Vec2 GetMouseDragDelta(MouseButton button = MouseButton.Left, float lockThreshold = -1.0f)
+    {
+        return new(ImGui_GetMouseDragDelta((Native.ImGuiMouseButton)button, lockThreshold));
+    }
+
+    /// <summary>
+    /// Resets the mouse drag delta.
+    /// </summary>
+    /// <param name="button">The mouse button to reset (defaults to left button).</param>
+    public static void ResetMouseDragDelta(MouseButton button = MouseButton.Left)
+    {
+        if (button == MouseButton.Left)
+        {
+            ImGui_ResetMouseDragDelta();
+        }
+        else
+        {
+            ImGui_ResetMouseDragDeltaEx((Native.ImGuiMouseButton)button);
+        }
+    }
+
+    /// <summary>
+    /// Gets the desired mouse cursor shape.
+    /// </summary>
+    /// <returns>The current mouse cursor.</returns>
+    public static MouseCursor GetMouseCursor()
+    {
+        return (MouseCursor)ImGui_GetMouseCursor();
+    }
+
+    /// <summary>
+    /// Sets the desired mouse cursor shape.
+    /// </summary>
+    /// <param name="cursorType">The cursor to set.</param>
+    public static void SetMouseCursor(MouseCursor cursorType)
+    {
+        ImGui_SetMouseCursor((Native.ImGuiMouseCursor)cursorType);
+    }
+
+    /// <summary>
+    /// Overrides the io.WantCaptureMouse flag next frame.
+    /// </summary>
+    /// <param name="wantCaptureMouse">Whether to capture mouse input.</param>
+    public static void SetNextFrameWantCaptureMouse(bool wantCaptureMouse)
+    {
+        ImGui_SetNextFrameWantCaptureMouse(wantCaptureMouse);
+    }
+
+    /// <summary>
+    /// Gets the text from the clipboard.
+    /// </summary>
+    /// <returns>The clipboard text, or an empty string if empty.</returns>
+    public static string GetClipboardText()
+    {
+        var ptr = ImGui_GetClipboardText();
+
+        return ptr == null
+            ? string.Empty
+            : Encoding.UTF8.GetString(MemoryMarshal.CreateReadOnlySpanFromNullTerminated(ptr));
+    }
+
+    /// <summary>
+    /// Sets the clipboard text.
+    /// </summary>
+    /// <param name="text">The text to set.</param>
+    public static void SetClipboardText(ReadOnlySpan<byte> text)
+    {
+        fixed (byte* ptr = text)
+        {
+            ImGui_SetClipboardText(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Loads settings from a .ini file on disk.
+    /// </summary>
+    /// <param name="iniFilename">The path to the .ini file.</param>
+    /// <remarks>
+    /// Call after CreateContext() and before the first call to NewFrame().
+    /// NewFrame() automatically calls this with io.IniFilename if set.
+    /// </remarks>
+    public static void LoadIniSettingsFromDisk(ReadOnlySpan<byte> iniFilename)
+    {
+        fixed (byte* ptr = iniFilename)
+        {
+            ImGui_LoadIniSettingsFromDisk(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Loads settings from a memory buffer.
+    /// </summary>
+    /// <param name="iniData">The .ini data to load.</param>
+    /// <remarks>
+    /// Call after CreateContext() and before the first call to NewFrame()
+    /// to provide .ini data from your own data source.
+    /// </remarks>
+    public static void LoadIniSettingsFromMemory(ReadOnlySpan<byte> iniData)
+    {
+        fixed (byte* ptr = iniData)
+        {
+            ImGui_LoadIniSettingsFromMemory(ptr, (nuint)iniData.Length);
+        }
+    }
+
+    /// <summary>
+    /// Saves settings to a .ini file on disk.
+    /// </summary>
+    /// <param name="iniFilename">The path to the .ini file.</param>
+    /// <remarks>
+    /// This is automatically called (if io.IniFilename is not empty) a few seconds
+    /// after any modification that should be reflected in the .ini file, and also by DestroyContext().
+    /// </remarks>
+    public static void SaveIniSettingsToDisk(ReadOnlySpan<byte> iniFilename)
+    {
+        fixed (byte* ptr = iniFilename)
+        {
+            ImGui_SaveIniSettingsToDisk(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Saves settings to a string in memory.
+    /// </summary>
+    /// <returns>The .ini data as a string.</returns>
+    /// <remarks>
+    /// Call when io.WantSaveIniSettings is set, then save the data by your own means
+    /// and clear io.WantSaveIniSettings.
+    /// </remarks>
+    public static string SaveIniSettingsToMemory()
+    {
+        nuint size;
+        var ptr = ImGui_SaveIniSettingsToMemory(&size);
+
+        return ptr == null
+            ? string.Empty
+            : Encoding.UTF8.GetString(ptr, (int)size);
     }
 }

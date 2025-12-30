@@ -1,4 +1,5 @@
 using Sdl3Sharp.ImGui.Native;
+using System.Runtime.InteropServices;
 using static Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
@@ -970,5 +971,15 @@ public unsafe sealed class Style
     public static void PopTextWrapPosition()
     {
         ImGui_PopTextWrapPos();
+    }
+
+    /// <summary>
+    /// Gets the name of a style color enum value.
+    /// </summary>
+    /// <param name="color">The style color enum value.</param>
+    /// <returns>The name of the style color.</returns>
+    public static ReadOnlySpan<byte> GetStyleColorName(StyleColor color)
+    {
+        return MemoryMarshal.CreateReadOnlySpanFromNullTerminated(ImGui_GetStyleColorName((ImGuiCol)color));
     }
 }

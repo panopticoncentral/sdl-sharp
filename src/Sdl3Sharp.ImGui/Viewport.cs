@@ -156,4 +156,24 @@ public unsafe sealed class Viewport
             return drawList != null ? new DrawList(drawList) : null;
         }
     }
+
+    /// <summary>
+    /// Tests if a rectangle of given size starting from cursor position is visible/not clipped.
+    /// </summary>
+    /// <param name="size">The size of the rectangle to test.</param>
+    /// <returns>True if the rectangle is visible.</returns>
+    public static bool IsRectVisible(Size size)
+    {
+        return ImGui_IsRectVisibleBySize(size.Value);
+    }
+
+    /// <summary>
+    /// Tests if a rectangle in screen space is visible/not clipped.
+    /// </summary>
+    /// <param name="rect">The rectangle.</param>
+    /// <returns>True if the rectangle is visible.</returns>
+    public static bool IsRectVisible(Rect rect)
+    {
+        return ImGui_IsRectVisible(rect.UpperLeft.Value, rect.LowerRight.Value);
+    }
 }
