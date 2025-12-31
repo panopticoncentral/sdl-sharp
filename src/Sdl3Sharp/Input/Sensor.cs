@@ -1,5 +1,4 @@
 using static Sdl3Sharp.Native.Common;
-using static Sdl3Sharp.Native.Events;
 using static Sdl3Sharp.Native.Sensor;
 using static Sdl3Sharp.Native.StdInc;
 

@@ -1,5 +1,3 @@
-using Sdl3Sharp.ImGui.Native;
-
 namespace Sdl3Sharp.ImGui;
 
 /// <summary>

@@ -1,6 +1,5 @@
 using static Sdl3Sharp.Native.Camera;
 using static Sdl3Sharp.Native.Common;
-using static Sdl3Sharp.Native.Events;
 using static Sdl3Sharp.Native.StdInc;
 
 namespace Sdl3Sharp.Input;

@@ -1,6 +1,5 @@
 using static Sdl3Sharp.Native.BlendMode;
 using static Sdl3Sharp.Native.Common;
-using static Sdl3Sharp.Native.Events;
 using static Sdl3Sharp.Native.Rect;
 using static Sdl3Sharp.Native.Render;
 using static Sdl3Sharp.Native.Surface;

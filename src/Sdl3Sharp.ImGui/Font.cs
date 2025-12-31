@@ -51,7 +51,7 @@ public unsafe readonly struct Font
     /// <remarks>
     /// Do NOT pass this value to <see cref="PushFont"/>! Use Style.FontSizeBase to get the value before global scale factors.
     /// </remarks>
-    public static float GetFontSize()
+    public static float GetSize()
     {
         return ImGui_GetFontSize();
     }

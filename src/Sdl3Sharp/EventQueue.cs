@@ -1,7 +1,6 @@
 using Sdl3Sharp.Audio;
 using Sdl3Sharp.Graphics;
 using Sdl3Sharp.Input;
-using System.Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

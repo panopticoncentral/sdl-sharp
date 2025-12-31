@@ -1,4 +1,3 @@
-using static Sdl3Sharp.Native.Events;
 using static Sdl3Sharp.Native.Pen;
 
 namespace Sdl3Sharp.Input;

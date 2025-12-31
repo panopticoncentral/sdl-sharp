@@ -1,5 +1,5 @@
+using System.Runtime.CompilerServices;
 using Sdl3Sharp.ImGui;
-using Sdl3Sharp.ImGui.Native;
 
 namespace Sdl3Sharp.Demo;
 
@@ -25,20 +25,242 @@ public static unsafe class ImGuiDemoWindow
     private static int _options_n = 0;
     private static bool _options_b = true;
 
-    public static void ShowDemoWindow()
+    // Widget Demo Section
+    // State Fields - Basic Section
+
+    private static int _basicClicked;
+    private static bool _basicCheck = true;
+    private static int _basicRadio;
+    private static int _basicCounter;
+    private static readonly byte[] _basicStr0 = new byte[128];
+    private static readonly byte[] _basicStr1 = new byte[128];
+    private static int _basicInputInt = 123;
+    private static float _basicInputFloat = 0.001f;
+    private static double _basicInputDouble = 999999.00000001;
+    private static float _basicInputScientific = 1.0e10f;
+    private static readonly float[] _basicVec4a = [0.10f, 0.20f, 0.30f, 0.44f];
+    private static int _basicDragInt1 = 50;
+    private static int _basicDragInt2 = 42;
+    private static int _basicDragInt3 = 128;
+    private static float _basicDragFloat1 = 1.00f;
+    private static float _basicDragFloat2 = 0.0067f;
+    private static int _basicSliderInt = 0;
+    private static float _basicSliderFloat1 = 0.123f;
+    private static float _basicSliderFloat2 = 0.0f;
+    private static float _basicSliderAngle = 0.0f;
+    private static int _basicSliderEnum = 0;
+    private static readonly float[] _basicCol1 = [1.0f, 0.0f, 0.2f];
+    private static readonly float[] _basicCol2 = [0.4f, 0.7f, 0.0f, 0.5f];
+    private static int _basicComboItem;
+    private static int _basicListBoxItem = 1;
+
+    // State Fields - Collapsing Headers Section
+
+    private static bool _collapsingClosableGroup = true;
+
+    // State Fields - Combo Boxes Section
+
+    private static int _comboItemCurrent;
+    private static int _comboItemCurrent2;
+    private static int _comboItemCurrent3;
+    private static int _comboItemCurrent4;
+    private static ComboFlags _comboFlags = ComboFlags.None;
+
+    // State Fields - Color and Pickers Section
+
+    private static readonly float[] _colorCol1 = [1.0f, 0.0f, 0.2f];
+    private static readonly float[] _colorCol2 = [0.4f, 0.7f, 0.0f, 0.5f];
+    private static bool _colorAlphaPreview = true;
+    private static bool _colorAlphaHalfPreview;
+    private static bool _colorDragAndDrop = true;
+    private static bool _colorOptionsMenu = true;
+    private static bool _colorHdr;
+    private static ColorEditFlags _colorAlphaFlags = ColorEditFlags.None;
+    private static readonly float[] _colorColor = [114.0f / 255.0f, 144.0f / 255.0f, 154.0f / 255.0f, 200.0f / 255.0f];
+    private static bool _colorNoBorder;
+    private static readonly float[] _colorBackupColor = new float[4];
+    private static readonly float[] _colorSavedPalette = new float[32 * 4];
+    private static bool _colorSavedPaletteInit = true;
+
+    // State Fields - Data Types Section
+
+    private static sbyte _dataS8 = 1;
+    private static byte _dataU8 = 1;
+    private static short _dataS16 = 1;
+    private static ushort _dataU16 = 1;
+    private static int _dataS32 = 1;
+    private static uint _dataU32 = 1;
+    private static long _dataS64 = 1;
+    private static ulong _dataU64 = 1;
+    private static float _dataF32 = 0.123f;
+    private static double _dataF64 = 90000.01234567890123456789;
+    private static int _dataDragClamp;
+    private static int _dataInputsStep = 1;
+
+    // State Fields - Disable Blocks Section
+
+    // DisableSections is a public property below
+
+    // State Fields - Drag and Drop Section
+
+    private static readonly int[] _dragDropMode1Col1 = [1, 0, 2];
+    private static readonly int[] _dragDropMode1Col2 = [3, 4, 5];
+    private static int _dragDropMode;
+
+    // State Fields - Drags and Sliders Section
+
+    private static float _dragsClampingValue1 = 0.5f;
+    private static float _dragsClampingValue2 = 0.5f;
+    private static float _dragsClampingValue3 = 0.5f;
+    private static SliderFlags _dragsClampsFlags = SliderFlags.None;
+
+    // State Fields - Progress Bars Section
+
+    private static float _progressProgress;
+    private static float _progressProgressDir = 1.0f;
+    private static bool _progressAnimate = true;
+
+    // State Fields - Querying Statuses Section
+
+    private static int _queryingItemType = 1;
+    private static bool _queryingB;
+    private static readonly float[] _queryingCol4f = [1.0f, 0.5f, 0.0f, 1.0f];
+    private static readonly byte[] _queryingStr = new byte[16];
+    private static int _queryingCurrent1 = 1;
+    private static int _queryingCurrent2;
+    private static bool _queryingEmbedAllInsideAChildWindow;
+    private static bool _queryingTestWindow;
+
+    // State Fields - Selectables Section
+
+    private static readonly bool[] _selectablesBasic = [false, true, false, false];
+    private static readonly bool[] _selectablesSelected = new bool[5];
+    private static int _selectablesSelectedSingleOnly = -1;
+    private static readonly bool[] _selectablesSelectedSameLineFirst = new bool[3];
+    private static readonly bool[] _selectablesSelectedSameLineSecond = new bool[3];
+    private static readonly bool[] _selectablesSelectedSameLineThird = new bool[3];
+    private static readonly bool[] _selectablesGrid = new bool[16];
+    private static readonly bool[] _selectablesAlignment = [true, false, true, false, true, false, true, false, true];
+
+    // State Fields - Tabs Section
+
+    private static TabBarFlags _tabsFlags = TabBarFlags.Reorderable;
+    private static bool _tabsFittingResizeDown = true;
+    private static bool _tabsFittingScroll;
+    private static readonly bool[] _tabsOpened = [true, true, true, true];
+    private static int _tabsNextTabId;
+    private static readonly List<int> _tabsActiveTabs = [];
+
+    // State Fields - Text Section
+
+    private static bool _textWordWrappingEnabled = true;
+    private static bool _textWordSpacingEnabled;
+    private static float _textWordSpacing = 8.0f;
+
+    // State Fields - Text Input Section
+
+    private static readonly byte[] _textInputStr0 = new byte[64];
+    private static readonly byte[] _textInputStr1 = new byte[64];
+    private static int _textInputI0;
+    private static float _textInputF0;
+    private static double _textInputD0;
+    private static readonly byte[] _textInputBuf1 = new byte[64];
+    private static readonly byte[] _textInputBuf2 = new byte[64];
+    private static readonly byte[] _textInputBuf3 = new byte[64];
+    private static readonly byte[] _textInputBuf4 = new byte[128];
+    private static readonly byte[] _textInputBuf5 = new byte[128];
+    private static readonly byte[] _textInputBufMultiline = new byte[1024 * 16];
+    private static readonly byte[] _textInputPassword = new byte[64];
+    private static InputTextFlags _textInputFlags = InputTextFlags.AllowTabInput;
+
+    // State Fields - Tooltips Section
+
+    private static int _tooltipsAlwaysOn;
+    private static int _tooltipsOnDisabledItems;
+    private static bool _tooltipsDisabledItem;
+    private static bool _tooltipsWrap = true;
+    private static HoveredFlags _tooltipsHoveredFlags = HoveredFlags.None;
+
+    // State Fields - Tree Nodes Section
+
+    private static TreeNodeFlags _treeBaseFlags = TreeNodeFlags.OpenOnArrow | TreeNodeFlags.OpenOnDoubleClick | TreeNodeFlags.SpanAvailWidth;
+    private static bool _treeAlignLabelWithCurrentXPosition;
+    private static bool _treeTestDragAndDrop;
+    private static int _treeSelectionMask = 1 << 2;
+
+    // State Fields - Vertical Sliders Section
+
+    private static float _vslidersSize = 18.0f;
+    private static int _vslidersIntValue;
+    private static readonly float[] _vslidersValues = [0.0f, 0.60f, 0.35f, 0.9f, 0.70f, 0.20f, 0.0f];
+    private static readonly float[] _vslidersValues2 = [0.20f, 0.80f, 0.40f, 0.25f];
+
+    // State Fields - List Boxes Section
+
+    private static int _listBoxItemCurrent;
+
+    // State Fields - Images Section
+
+    private static bool _imageUseTextColor;
+    private static int _imageZoomImagePressedCount;
+
+    // State Fields - Multi-Components Section
+
+    private static readonly float[] _multiVec4f = [0.10f, 0.20f, 0.30f, 0.44f];
+    private static readonly int[] _multiVec4i = [1, 5, 100, 255];
+
+    // State Fields - Plotting Section
+
+    private static bool _plotAnimate = true;
+    private static readonly float[] _plotArrSin = new float[120];
+    private static readonly float[] _plotArrCos = new float[120];
+    private static int _plotValuesOffset;
+    private static double _plotRefreshTime;
+    private static float _plotPhase;
+    private static PlotType _plotFuncType;
+    private static int _plotDisplayCount = 70;
+
+    // Public Properties
+
+    /// <summary>
+    /// Gets or sets whether to disable all widget sections.
+    /// </summary>
+    public static bool DisableSections { get; set; }
+
+    // Shared Data
+
+    private static ReadOnlySpan<byte> ElementFireName => "Fire"u8;
+    private static ReadOnlySpan<byte> ElementEarthName => "Earth"u8;
+    private static ReadOnlySpan<byte> ElementAirName => "Air"u8;
+    private static ReadOnlySpan<byte> ElementWaterName => "Water"u8;
+
+    /// <summary>
+    /// Example names used throughout demos (vegetable names).
+    /// </summary>
+    private static readonly string[] ExampleNames =
+    [
+        "Artichoke", "Arugula", "Asparagus", "Avocado", "Bamboo Shoots", "Bean Sprouts", "Beans",
+        "Beet", "Belgian Endive", "Bell Pepper", "Bitter Gourd", "Bok Choy", "Broccoli", "Brussels Sprouts",
+        "Burdock Root", "Cabbage", "Calabash", "Capers", "Carrot", "Cassava", "Cauliflower", "Celery",
+        "Celery Root", "Chard", "Chayote", "Chinese Broccoli", "Corn", "Cucumber"
+    ];
+
+    // Helper to display a little (?) mark which shows a tooltip when hovered.
+    // In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
+    private static void HelpMarker(ReadOnlySpan<byte> desc)
     {
-        var open = true;
-        ShowDemoWindow(ref open);
+        Widgets.TextDisabled("(?)"u8);
+        if (Widgets.BeginItemTooltip())
+        {
+            Style.PushTextWrapPosition(Font.GetSize() * 35.0f);
+            Widgets.TextUnformatted(desc);
+            Style.PopTextWrapPosition();
+            Widgets.EndTooltip();
+        }
     }
 
     public static void ShowDemoWindow(ref bool open)
     {
-        // We specify a default position/size in case there's no data in the .ini file.
-        // We only do it to make the demo applications a little more welcoming, but typically this isn't required.
-        Viewport mainViewport = Context.MainViewport;
-        Window.SetNextWindowPos((mainViewport.WorkPosition.X + 50, mainViewport.WorkPosition.Y + 20), Condition.FirstUseEver);
-        Window.SetNextWindowSize((550, 680), Condition.FirstUseEver);
-
         WindowFlags windowFlags = 0;
         if (_noTitlebar)
         {
@@ -90,6 +312,12 @@ public static unsafe class ImGuiDemoWindow
             windowFlags |= WindowFlags.UnsavedDocument;
         }
 
+        // We specify a default position/size in case there's no data in the .ini file.
+        // We only do it to make the demo applications a little more welcoming, but typically this isn't required.
+        Viewport mainViewport = Context.MainViewport;
+        Window.SetNextWindowPos((mainViewport.WorkPosition.X + 50, mainViewport.WorkPosition.Y + 20), Condition.FirstUseEver);
+        Window.SetNextWindowSize((550, 680), Condition.FirstUseEver);
+
         if (_noClose 
             ? !Window.Begin("Dear ImGui Demo (managed)"u8, windowFlags) 
             : !Window.Begin("Dear ImGui Demo (managed)"u8, ref open, windowFlags))
@@ -103,7 +331,7 @@ public static unsafe class ImGuiDemoWindow
         // - The default value is about GetWindowWidth() * 0.65f.
         // - See 'Demo->Layout->Widgets Width' for details.
         // Here we change the frame width based on how much width we want to give to the label.
-        var labelWidthBase = Font.GetFontSize() * 12; // Some amount of width for label, based on font size.
+        var labelWidthBase = Font.GetSize() * 12; // Some amount of width for label, based on font size.
         var labelWidthMax = Window.ContentRegionAvail.Width * 0.40f; // ...but always leave some room for framed widgets.
         var labelWidth = Math.Min(labelWidthBase, labelWidthMax);
         Style.PushItemWidth(-labelWidth); // Right-align: framed items will leave 'label_width' available for the label.
@@ -353,31 +581,268 @@ public static unsafe class ImGuiDemoWindow
             }
         }
 
-        /*
-    // All demo contents
-    DemoWindowWidgets(&demo_data);
-    DemoWindowLayout();
-    DemoWindowPopups();
-    DemoWindowTables();
-    DemoWindowInputs();
-
-         */
+        DemoWindowWidgets();
+        //DemoWindowLayout();
+        //DemoWindowPopups();
+        //DemoWindowTables();
+        //DemoWindowInputs();
 
         Style.PopItemWidth();
         Window.End();
     }
 
-    // Helper to display a little (?) mark which shows a tooltip when hovered.
-    // In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
-    private static void HelpMarker(ReadOnlySpan<byte> desc)
+    private static void DemoWindowMenuBar()
     {
-        Widgets.TextDisabled("(?)"u8);
-        if (Widgets.BeginItemTooltip())
+        if (Widgets.BeginMenuBar())
         {
-            Style.PushTextWrapPosition(Font.GetFontSize() * 35.0f);
-            Widgets.TextUnformatted(desc);
-            Style.PopTextWrapPosition();
-            Widgets.EndTooltip();
+            if (Widgets.BeginMenu("Menu"u8))
+            {
+                ShowExampleMenuFile();
+                Widgets.EndMenu();
+            }
+
+            if (Widgets.BeginMenu("Examples"u8))
+            {
+                Widgets.MenuItem("Main menu bar"u8, null, ref _demoData.ShowMainMenuBar);
+
+                Widgets.SeparatorText("Mini apps"u8);
+                Widgets.MenuItem("Assets Browser"u8, null, ref _demoData.ShowAppAssetsBrowser);
+                Widgets.MenuItem("Console"u8, null, ref _demoData.ShowAppConsole);
+                Widgets.MenuItem("Custom rendering"u8, null, ref _demoData.ShowAppCustomRendering);
+                Widgets.MenuItem("Documents"u8, null, ref _demoData.ShowAppDocuments);
+                Widgets.MenuItem("Log"u8, null, ref _demoData.ShowAppLog);
+                Widgets.MenuItem("Property editor"u8, null, ref _demoData.ShowAppPropertyEditor);
+                Widgets.MenuItem("Simple layout"u8, null, ref _demoData.ShowAppLayout);
+                Widgets.MenuItem("Simple overlay"u8, null, ref _demoData.ShowAppSimpleOverlay);
+
+                Widgets.SeparatorText("Concepts"u8);
+                Widgets.MenuItem("Auto-resizing window"u8, null, ref _demoData.ShowAppAutoResize);
+                Widgets.MenuItem("Constrained-resizing window"u8, null, ref _demoData.ShowAppConstrainedResize);
+                Widgets.MenuItem("Fullscreen window"u8, null, ref _demoData.ShowAppFullscreen);
+                Widgets.MenuItem("Long text display"u8, null, ref _demoData.ShowAppLongText);
+                Widgets.MenuItem("Manipulating window titles"u8, null, ref _demoData.ShowAppWindowTitles);
+
+                Widgets.EndMenu();
+            }
+            //if (Widgets.MenuItem("MenuItem"u8)) {} // You can also use MenuItem() inside a menu bar!
+            if (Widgets.BeginMenu("Tools"u8))
+            {
+                IO io = Context.IO;
+#if !IMGUI_DISABLE_DEBUG_TOOLS
+                const bool hasDebugTools = true;
+#else
+            const bool hasDebugTools = false;
+#endif
+                Widgets.MenuItem("Metrics/Debugger"u8, null, ref _demoData.ShowMetrics, hasDebugTools);
+                if (Widgets.BeginMenu("Debug Options"u8))
+                {
+                    Widgets.BeginDisabled(!hasDebugTools);
+                    Widgets.Checkbox("Highlight ID Conflicts"u8, ref io.ConfigDebugHighlightIdConflicts);
+                    Widgets.EndDisabled();
+                    Widgets.Checkbox("Assert on error recovery"u8, ref io.ConfigErrorRecoveryEnableAssert);
+                    Widgets.TextDisabled("(see Demo->Configuration for details & more)"u8);
+                    Widgets.EndMenu();
+                }
+
+                Widgets.MenuItem("Debug Log"u8, null, ref _demoData.ShowDebugLog, hasDebugTools);
+                Widgets.MenuItem("ID Stack Tool"u8, null, ref _demoData.ShowIDStackTool, hasDebugTools);
+                var isDebuggerPresent = io.ConfigDebugIsDebuggerPresent;
+                if (Widgets.MenuItem("Item Picker"u8, null, false, hasDebugTools))// && isDebuggerPresent))
+                {
+                    // TODO: Widgets.DebugStartItemPicker();
+                }
+
+                if (!isDebuggerPresent)
+                {
+                    Widgets.SetItemTooltip("Requires io.ConfigDebugIsDebuggerPresent=true to be set.\n\nWe otherwise disable some extra features to avoid casual users crashing the application."u8);
+                }
+
+                Widgets.MenuItem("Style Editor"u8, null, ref _demoData.ShowStyleEditor);
+                Widgets.MenuItem("About Dear ImGui"u8, null, ref _demoData.ShowAbout);
+
+                Widgets.EndMenu();
+            }
+
+            Widgets.EndMenuBar();
+        }
+    }
+
+    private static void DemoWindowWidgetsBasic()
+    {
+        if (Widgets.TreeNode("Basic"u8))
+        {
+            Widgets.SeparatorText("General"u8);
+
+            // Button
+            if (Widgets.Button("Button"u8))
+            {
+                _basicClicked++;
+            }
+
+            if ((_basicClicked & 1) != 0)
+            {
+                Widgets.SameLine();
+                Widgets.Text("Thanks for clicking me!"u8);
+            }
+
+            // Checkbox
+            _ = Widgets.Checkbox("checkbox"u8, ref _basicCheck);
+
+            // Radio buttons
+            _ = Widgets.RadioButton("radio a"u8, ref _basicRadio, 0);
+            Widgets.SameLine();
+            _ = Widgets.RadioButton("radio b"u8, ref _basicRadio, 1);
+            Widgets.SameLine();
+            _ = Widgets.RadioButton("radio c"u8, ref _basicRadio, 2);
+
+            // Hyperlink
+            Font.AlignTextToFramePadding();
+            _ = Widgets.TextLinkOpenURL("Hyperlink"u8, "https://github.com/ocornut/imgui/wiki/Error-Handling"u8);
+
+            // Colored buttons
+            for (var i = 0; i < 7; i++)
+            {
+                if (i > 0)
+                {
+                    Widgets.SameLine();
+                }
+
+                Id.Push(i);
+                (var r1, var g1, var b1) = Color.ColorConvertHSVtoRGB(i / 7.0f, 0.6f, 0.6f);
+                (var r2, var g2, var b2) = Color.ColorConvertHSVtoRGB(i / 7.0f, 0.7f, 0.7f);
+                (var r3, var g3, var b3) = Color.ColorConvertHSVtoRGB(i / 7.0f, 0.8f, 0.8f);
+                Style.PushStyleColor(StyleColor.Button, new Color(r1, g1, b1, 1.0f));
+                Style.PushStyleColor(StyleColor.ButtonHovered, new Color(r2, g2, b2, 1.0f));
+                Style.PushStyleColor(StyleColor.ButtonActive, new Color(r3, g3, b3, 1.0f));
+                _ = Widgets.Button("Click"u8);
+                Style.PopStyleColor(3);
+                Id.Pop();
+            }
+
+            // Arrow buttons with repeater
+            Font.AlignTextToFramePadding();
+            Widgets.Text("Hold to repeat:"u8);
+            Widgets.SameLine();
+
+            var spacing = Context.Style.ItemInnerSpacing.X;
+            Style.PushItemFlag(ItemFlags.ButtonRepeat, true);
+            if (Widgets.ArrowButton("##left"u8, Dir.Left))
+            {
+                _basicCounter--;
+            }
+
+            Widgets.SameLine(0.0f, spacing);
+            if (Widgets.ArrowButton("##right"u8, Dir.Right))
+            {
+                _basicCounter++;
+            }
+
+            Style.PopItemFlag();
+            Widgets.SameLine();
+            Widgets.Text(System.Text.Encoding.UTF8.GetBytes(_basicCounter.ToString()));
+
+            _ = Widgets.Button("Tooltip"u8);
+            Widgets.SetItemTooltip("I am a tooltip"u8);
+
+            Widgets.LabelText("label"u8, "Value"u8);
+
+            Widgets.SeparatorText("Inputs"u8);
+
+            // Input text
+            _ = Widgets.InputText("input text"u8, _basicStr0);
+            Widgets.SameLine();
+            HelpMarker("USER:\nHold Shift or use mouse to select text.\nCtrl+Left/Right to word jump.\nCtrl+A or Double-Click to select all.\nCtrl+X,Ctrl+C,Ctrl+V for clipboard.\nCtrl+Z to undo, Ctrl+Y/Ctrl+Shift+Z to redo.\nEscape to revert.\n\nPROGRAMMER:\nYou can use the ImGuiInputTextFlags_CallbackResize facility if you need to wire InputText() to a dynamic string type."u8);
+
+            _ = Widgets.InputTextWithHint("input text (w/ hint)"u8, "enter text here"u8, _basicStr1);
+
+            _ = Widgets.Input("input int"u8, ref _basicInputInt);
+
+            _ = Widgets.Input("input float"u8, ref _basicInputFloat, 0.01f, 1.0f, "%.3f"u8);
+
+            _ = Widgets.Input("input double"u8, ref _basicInputDouble, 0.01, 1.0, "%.8f"u8);
+
+            _ = Widgets.Input("input scientific"u8, ref _basicInputScientific, 0.0f, 0.0f, "%e"u8);
+            Widgets.SameLine();
+            HelpMarker("You can input value using the scientific notation,\n  e.g. \"1e+8\" becomes \"100000000\"."u8);
+
+            _ = Widgets.Input("input float3"u8, _basicVec4a.AsSpan(0, 3));
+
+            Widgets.SeparatorText("Drags"u8);
+
+            _ = Widgets.Drag("drag int"u8, ref _basicDragInt1, 1);
+            Widgets.SameLine();
+            HelpMarker("Click and drag to edit value.\nHold Shift/Alt for faster/slower edit.\nDouble-Click or Ctrl+Click to input value."u8);
+
+            _ = Widgets.Drag("drag int 0..100"u8, ref _basicDragInt2, 1, 0, 100, "%d%%"u8, SliderFlags.AlwaysClamp);
+
+            _ = Widgets.Drag("drag int wrap 100..200"u8, ref _basicDragInt3, 1, 100, 200, "%d"u8, SliderFlags.WrapAround);
+
+            _ = Widgets.Drag("drag float"u8, ref _basicDragFloat1, 0.005f);
+
+            _ = Widgets.Drag("drag small float"u8, ref _basicDragFloat2, 0.0001f, 0.0f, 0.0f, "%.06f ns"u8);
+
+            Widgets.SeparatorText("Sliders"u8);
+
+            _ = Widgets.Slider("slider int"u8, ref _basicSliderInt, -1, 3);
+            Widgets.SameLine();
+            HelpMarker("Ctrl+Click to input value."u8);
+
+            _ = Widgets.Slider("slider float"u8, ref _basicSliderFloat1, 0.0f, 1.0f, "ratio = %.3f"u8);
+
+            _ = Widgets.Slider("slider float (log)"u8, ref _basicSliderFloat2, -10.0f, 10.0f, "%.4f"u8, SliderFlags.Logarithmic);
+
+            _ = Widgets.SliderAngle("slider angle"u8, ref _basicSliderAngle);
+
+            // Slider enum
+            ReadOnlySpan<byte> elemName = _basicSliderEnum switch
+            {
+                0 => ElementFireName,
+                1 => ElementEarthName,
+                2 => ElementAirName,
+                3 => ElementWaterName,
+                _ => "Unknown"u8
+            };
+            _ = Widgets.Slider("slider enum"u8, ref _basicSliderEnum, 0, 3, elemName);
+            Widgets.SameLine();
+            HelpMarker("Using the format string parameter to display a name instead of the underlying integer."u8);
+
+            Widgets.SeparatorText("Selectors/Pickers"u8);
+
+            _ = Widgets.ColorEdit("color 1"u8, _basicCol1);
+            Widgets.SameLine();
+            HelpMarker("Click on the color square to open a color picker.\nClick and hold to use drag and drop.\nRight-Click on the color square to show options.\nCtrl+Click on individual component to input value.\n"u8);
+
+            _ = Widgets.ColorEdit("color 2"u8, _basicCol2);
+
+            // Basic combo
+            _ = Widgets.Combo("combo"u8, ref _basicComboItem, "AAAA\0BBBB\0CCCC\0DDDD\0EEEE\0FFFF\0GGGG\0HHHH\0IIIIIII\0JJJJ\0KKKKKKK\0"u8);
+            Widgets.SameLine();
+            HelpMarker("Using the simplified one-liner Combo API here.\nRefer to the \"Combo\" section below for an explanation of how to use the more flexible and general BeginCombo/EndCombo API."u8);
+
+            // Basic list box
+            if (Widgets.BeginListBox("listbox"u8, new Vec2(0, 4 * Font.GetTextLineHeightWithSpacing())))
+            {
+                string[] listBoxItems = ["Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon"];
+                for (var i = 0; i < listBoxItems.Length; i++)
+                {
+                    var isSelected = _basicListBoxItem == i;
+                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes(listBoxItems[i]), isSelected))
+                    {
+                        _basicListBoxItem = i;
+                    }
+
+                    if (isSelected)
+                    {
+                        Widgets.SetItemDefaultFocus();
+                    }
+                }
+
+                Widgets.EndListBox();
+            }
+            Widgets.SameLine();
+            HelpMarker("Using the simplified one-liner ListBox API here.\nRefer to the \"List boxes\" section below for an explanation of how to use the more flexible and general BeginListBox/EndListBox API."u8);
+
+            Widgets.TreePop();
         }
     }
 
@@ -513,79 +978,1508 @@ public static unsafe class ImGuiDemoWindow
         }
     }
 
-    private static void DemoWindowMenuBar()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImGuiDemoWindow"/> class.
+    /// </summary>
+    static ImGuiDemoWindow()
     {
-        if (Widgets.BeginMenuBar())
+        // Initialize text buffers with default content
+        "Hello, world!"u8.CopyTo(_basicStr0);
+        "password123"u8.CopyTo(_textInputPassword);
+
+        // Initialize plotting arrays
+        for (var i = 0; i < _plotArrSin.Length; i++)
         {
-            if (Widgets.BeginMenu("Menu"u8))
+            _plotArrSin[i] = MathF.Sin(i * 0.2f);
+            _plotArrCos[i] = MathF.Cos(i * 0.2f);
+        }
+
+        // Initialize active tabs
+        _tabsActiveTabs.Add(0);
+        _tabsActiveTabs.Add(1);
+        _tabsActiveTabs.Add(2);
+        _tabsNextTabId = 3;
+
+        // Initialize querying statuses string
+        "Test"u8.CopyTo(_queryingStr);
+
+        // Initialize text input
+        "Hello, world!"u8.CopyTo(_textInputStr0);
+        "hello"u8.CopyTo(_textInputBuf1);
+        "hello"u8.CopyTo(_textInputBuf2);
+        "Enter text here"u8.CopyTo(_textInputBuf3);
+        "Dear ImGui\r\n\r\nWelcome to the demo!\r\n"u8.CopyTo(_textInputBufMultiline);
+    }
+
+    // Nested Types
+
+    private enum PlotType
+    {
+        Sin,
+        Saw
+    }
+
+    // Public Methods
+
+    /// <summary>
+    /// Shows the widgets demo section.
+    /// </summary>
+    public static void DemoWindowWidgets()
+    {
+        if (!Widgets.CollapsingHeader("Widgets"u8))
+        {
+            return;
+        }
+
+        var disableAll = DisableSections;
+        if (disableAll)
+        {
+            Widgets.BeginDisabled();
+        }
+
+        DemoWindowWidgetsBasic();
+        ShowBullets();
+        ShowCollapsingHeaders();
+        ShowComboBoxes();
+        ShowColorAndPickers();
+        ShowDataTypes();
+
+        if (disableAll)
+        {
+            Widgets.EndDisabled();
+        }
+
+        ShowDisableBlocks();
+
+        if (disableAll)
+        {
+            Widgets.BeginDisabled();
+        }
+
+        ShowDragAndDrop();
+        ShowDragsAndSliders();
+        ShowFonts();
+        ShowImages();
+        ShowListBoxes();
+        ShowMultiComponents();
+        ShowPlotting();
+        ShowProgressBars();
+        ShowQueryingStatuses();
+        ShowSelectables();
+        ShowSelectionAndMultiSelect();
+        ShowTabs();
+        ShowText();
+        ShowTextFilter();
+        ShowTextInput();
+        ShowTooltips();
+        ShowTreeNodes();
+        ShowVerticalSliders();
+
+        if (disableAll)
+        {
+            Widgets.EndDisabled();
+        }
+    }
+
+    // Helper Methods
+
+    // Private Section Methods
+
+    private static void ShowBullets()
+    {
+        if (Widgets.TreeNode("Bullets"u8))
+        {
+            Widgets.BulletText("Bullet point 1"u8);
+            Widgets.BulletText("Bullet point 2\nOn multiple lines"u8);
+            if (Widgets.TreeNode("Tree node"u8))
             {
-                ShowExampleMenuFile();
-                Widgets.EndMenu();
+                Widgets.BulletText("Another bullet point"u8);
+                Widgets.TreePop();
             }
 
-            if (Widgets.BeginMenu("Examples"u8))
+            Widgets.Bullet();
+            Widgets.Text("Bullet point 3 (two calls)"u8);
+            Widgets.Bullet();
+            _ = Widgets.SmallButton("Button"u8);
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowCollapsingHeaders()
+    {
+        if (Widgets.TreeNode("Collapsing Headers"u8))
+        {
+            _ = Widgets.Checkbox("Show 2nd header"u8, ref _collapsingClosableGroup);
+            if (Widgets.CollapsingHeader("Header"u8, TreeNodeFlags.None))
             {
-                Widgets.MenuItem("Main menu bar"u8, null, ref _demoData.ShowMainMenuBar);
-
-                Widgets.SeparatorText("Mini apps"u8);
-                Widgets.MenuItem("Assets Browser"u8, null, ref _demoData.ShowAppAssetsBrowser);
-                Widgets.MenuItem("Console"u8, null, ref _demoData.ShowAppConsole);
-                Widgets.MenuItem("Custom rendering"u8, null, ref _demoData.ShowAppCustomRendering);
-                Widgets.MenuItem("Documents"u8, null, ref _demoData.ShowAppDocuments);
-                Widgets.MenuItem("Log"u8, null, ref _demoData.ShowAppLog);
-                Widgets.MenuItem("Property editor"u8, null, ref _demoData.ShowAppPropertyEditor);
-                Widgets.MenuItem("Simple layout"u8, null, ref _demoData.ShowAppLayout);
-                Widgets.MenuItem("Simple overlay"u8, null, ref _demoData.ShowAppSimpleOverlay);
-
-                Widgets.SeparatorText("Concepts"u8);
-                Widgets.MenuItem("Auto-resizing window"u8, null, ref _demoData.ShowAppAutoResize);
-                Widgets.MenuItem("Constrained-resizing window"u8, null, ref _demoData.ShowAppConstrainedResize);
-                Widgets.MenuItem("Fullscreen window"u8, null, ref _demoData.ShowAppFullscreen);
-                Widgets.MenuItem("Long text display"u8, null, ref _demoData.ShowAppLongText);
-                Widgets.MenuItem("Manipulating window titles"u8, null, ref _demoData.ShowAppWindowTitles);
-
-                Widgets.EndMenu();
-            }
-            //if (Widgets.MenuItem("MenuItem"u8)) {} // You can also use MenuItem() inside a menu bar!
-            if (Widgets.BeginMenu("Tools"u8))
-            {
-                IO io = Context.IO;
-#if !IMGUI_DISABLE_DEBUG_TOOLS
-                const bool hasDebugTools = true;
-#else
-            const bool hasDebugTools = false;
-#endif
-                Widgets.MenuItem("Metrics/Debugger"u8, null, ref _demoData.ShowMetrics, hasDebugTools);
-                if (Widgets.BeginMenu("Debug Options"u8))
+                Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"IsItemHovered: {Widgets.IsItemHovered()}"));
+                for (var i = 0; i < 5; i++)
                 {
-                    Widgets.BeginDisabled(!hasDebugTools);
-                    Widgets.Checkbox("Highlight ID Conflicts"u8, ref io.ConfigDebugHighlightIdConflicts);
-                    Widgets.EndDisabled();
-                    Widgets.Checkbox("Assert on error recovery"u8, ref io.ConfigErrorRecoveryEnableAssert);
-                    Widgets.TextDisabled("(see Demo->Configuration for details & more)"u8);
-                    Widgets.EndMenu();
+                    Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"Some content {i}"));
                 }
-
-                Widgets.MenuItem("Debug Log"u8, null, ref _demoData.ShowDebugLog, hasDebugTools);
-                Widgets.MenuItem("ID Stack Tool"u8, null, ref _demoData.ShowIDStackTool, hasDebugTools);
-                var isDebuggerPresent = io.ConfigDebugIsDebuggerPresent;
-                if (Widgets.MenuItem("Item Picker"u8, null, false, hasDebugTools))// && isDebuggerPresent))
-                {
-                    // TODO: Widgets.DebugStartItemPicker();
-                }
-
-                if (!isDebuggerPresent)
-                {
-                    Widgets.SetItemTooltip("Requires io.ConfigDebugIsDebuggerPresent=true to be set.\n\nWe otherwise disable some extra features to avoid casual users crashing the application."u8);
-                }
-
-                Widgets.MenuItem("Style Editor"u8, null, ref _demoData.ShowStyleEditor);
-                Widgets.MenuItem("About Dear ImGui"u8, null, ref _demoData.ShowAbout);
-
-                Widgets.EndMenu();
             }
 
-            Widgets.EndMenuBar();
+            if (_collapsingClosableGroup)
+            {
+                if (Widgets.CollapsingHeader("Header with a close button"u8, ref _collapsingClosableGroup))
+                {
+                    Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"IsItemHovered: {Widgets.IsItemHovered()}"));
+                    for (var i = 0; i < 5; i++)
+                    {
+                        Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"More content {i}"));
+                    }
+                }
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowComboBoxes()
+    {
+        if (Widgets.TreeNode("Combo"u8))
+        {
+            // Combo flags
+            _ = Widgets.CheckboxFlags("ComboFlags.PopupAlignLeft"u8, ref _comboFlags, ComboFlags.PopupAlignLeft);
+            Widgets.SameLine();
+            HelpMarker("Only makes a difference if the popup is larger than the combo"u8);
+            if (Widgets.CheckboxFlags("ComboFlags.NoArrowButton"u8, ref _comboFlags, ComboFlags.NoArrowButton))
+            {
+                _comboFlags &= ~ComboFlags.NoPreview;
+            }
+
+            if (Widgets.CheckboxFlags("ComboFlags.NoPreview"u8, ref _comboFlags, ComboFlags.NoPreview))
+            {
+                _comboFlags &= ~(ComboFlags.NoArrowButton | ComboFlags.WidthFitPreview);
+            }
+
+            if (Widgets.CheckboxFlags("ComboFlags.WidthFitPreview"u8, ref _comboFlags, ComboFlags.WidthFitPreview))
+            {
+                _comboFlags &= ~ComboFlags.NoPreview;
+            }
+
+            // Simple combo
+            string[] items = ["AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO"];
+
+            if (Widgets.BeginCombo("combo 1"u8, System.Text.Encoding.UTF8.GetBytes(items[_comboItemCurrent]), _comboFlags))
+            {
+                for (var i = 0; i < items.Length; i++)
+                {
+                    var isSelected = _comboItemCurrent == i;
+                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes(items[i]), isSelected))
+                    {
+                        _comboItemCurrent = i;
+                    }
+
+                    if (isSelected)
+                    {
+                        Widgets.SetItemDefaultFocus();
+                    }
+                }
+
+                Widgets.EndCombo();
+            }
+
+            // Combo with null-separated items string
+            _ = Widgets.Combo("combo 2 (one-liner)"u8, ref _comboItemCurrent2, "aaaa\0bbbb\0cccc\0dddd\0eeee\0"u8);
+
+            // Combo with items
+            _ = Widgets.Combo("combo 3 (array)"u8, ref _comboItemCurrent3, "aaaa\0bbbb\0cccc\0dddd\0eeee\0"u8);
+
+            // Combo with items height
+            _ = Widgets.Combo("combo 4 (with height)"u8, ref _comboItemCurrent4, "aaaa\0bbbb\0cccc\0dddd\0eeee\0ffff\0gggg\0hhhh\0iiii\0jjjj\0kkkk\0lllll\0mmmm\0"u8, 4);
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowColorAndPickers()
+    {
+        if (Widgets.TreeNode("Color/Picker Widgets"u8))
+        {
+            Widgets.SeparatorText("Options"u8);
+            _ = Widgets.Checkbox("With Alpha Preview"u8, ref _colorAlphaPreview);
+            _ = Widgets.Checkbox("With Half Alpha Preview"u8, ref _colorAlphaHalfPreview);
+            _ = Widgets.Checkbox("With Drag and Drop"u8, ref _colorDragAndDrop);
+            _ = Widgets.Checkbox("With Options Menu"u8, ref _colorOptionsMenu);
+            Widgets.SameLine();
+            HelpMarker("Right-click on the individual color widget to show options."u8);
+            _ = Widgets.Checkbox("With HDR"u8, ref _colorHdr);
+            Widgets.SameLine();
+            HelpMarker("Currently all this does is to lift the 0..1 limits on dragging widgets."u8);
+            ColorEditFlags miscFlags = (_colorHdr ? ColorEditFlags.HDR : ColorEditFlags.None) |
+                                       (_colorDragAndDrop ? ColorEditFlags.None : ColorEditFlags.NoDragDrop) |
+                                       (_colorAlphaHalfPreview
+                                           ? ColorEditFlags.AlphaPreviewHalf
+                                           : (_colorAlphaPreview ? ColorEditFlags.AlphaPreviewHalf : ColorEditFlags.None)) |
+                                       (_colorOptionsMenu ? ColorEditFlags.None : ColorEditFlags.NoOptions);
+
+            Widgets.SeparatorText("Inline color editor"u8);
+            Widgets.Text("Color widget:"u8);
+            Widgets.SameLine();
+            HelpMarker("Click on the color square to open a color picker.\nCtrl+Click on individual component to input value.\n"u8);
+            _ = Widgets.ColorEdit("MyColor##1"u8, _colorCol1.AsSpan(0, 3), miscFlags);
+
+            Widgets.Text("Color widget HSV with Alpha:"u8);
+            _ = Widgets.ColorEdit("MyColor##2"u8, _colorCol2, ColorEditFlags.DisplayHSV | miscFlags);
+
+            Widgets.Text("Color widget with Float Display:"u8);
+            _ = Widgets.ColorEdit("MyColor##2f"u8, _colorCol2, ColorEditFlags.Float | miscFlags);
+
+            Widgets.Text("Color button with Picker:"u8);
+            Widgets.SameLine();
+            HelpMarker("With the ColorEditFlags.NoInputs flag you can hide all the slider/text inputs.\nWith the ColorEditFlags.NoLabel flag you can pass a non-empty label which will only be used for the tooltip and picker popup."u8);
+            _ = Widgets.ColorEdit("MyColor##3"u8, _colorCol2, ColorEditFlags.NoInputs | ColorEditFlags.NoLabel | miscFlags);
+
+            Widgets.Text("Color button with Custom Picker Popup:"u8);
+
+            // Generate a default palette
+            if (_colorSavedPaletteInit)
+            {
+                for (var n = 0; n < 32; n++)
+                {
+                    (var r, var g, var b) = Color.ColorConvertHSVtoRGB(n / 31.0f, 0.8f, 0.8f);
+                    _colorSavedPalette[(n * 4) + 0] = r;
+                    _colorSavedPalette[(n * 4) + 1] = g;
+                    _colorSavedPalette[(n * 4) + 2] = b;
+                    _colorSavedPalette[(n * 4) + 3] = 1.0f;
+                }
+
+                _colorSavedPaletteInit = false;
+            }
+
+            var openPopup = Widgets.ColorButton("MyColor##3b"u8, new Color(_colorColor[0], _colorColor[1], _colorColor[2], _colorColor[3]), miscFlags);
+            Widgets.SameLine(0, Context.Style.ItemInnerSpacing.X);
+            openPopup |= Widgets.Button("Palette"u8);
+            if (openPopup)
+            {
+                Window.OpenPopup("mypicker"u8);
+                _colorBackupColor[0] = _colorColor[0];
+                _colorBackupColor[1] = _colorColor[1];
+                _colorBackupColor[2] = _colorColor[2];
+                _colorBackupColor[3] = _colorColor[3];
+            }
+
+            if (Window.BeginPopup("mypicker"u8))
+            {
+                Widgets.Text("MY CUSTOM COLOR PICKER WITH AN ACTIVE PALETTE"u8);
+                Widgets.Separator();
+                _ = Widgets.ColorPicker("##picker"u8, _colorColor, ColorEditFlags.NoSidePreview | ColorEditFlags.NoSmallPreview | miscFlags);
+                Widgets.SameLine();
+
+                Widgets.BeginGroup();
+                Widgets.Text("Current"u8);
+                _ = Widgets.ColorButton("##current"u8, new Color(_colorColor[0], _colorColor[1], _colorColor[2], _colorColor[3]), ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, new Vec2(60, 40));
+                Widgets.Text("Previous"u8);
+                if (Widgets.ColorButton("##previous"u8, new Color(_colorBackupColor[0], _colorBackupColor[1], _colorBackupColor[2], _colorBackupColor[3]), ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, new Vec2(60, 40)))
+                {
+                    _colorColor[0] = _colorBackupColor[0];
+                    _colorColor[1] = _colorBackupColor[1];
+                    _colorColor[2] = _colorBackupColor[2];
+                    _colorColor[3] = _colorBackupColor[3];
+                }
+
+                Widgets.Separator();
+                Widgets.Text("Palette"u8);
+                for (var n = 0; n < 32; n++)
+                {
+                    Id.Push(n);
+                    if (n % 8 != 0)
+                    {
+                        Widgets.SameLine(0.0f, Context.Style.ItemSpacing.Y);
+                    }
+
+                    ColorEditFlags paletteButtonFlags = ColorEditFlags.NoAlpha | ColorEditFlags.NoPicker | ColorEditFlags.NoTooltip;
+                    if (Widgets.ColorButton("##palette"u8, new Color(_colorSavedPalette[(n * 4) + 0], _colorSavedPalette[(n * 4) + 1], _colorSavedPalette[(n * 4) + 2], _colorSavedPalette[(n * 4) + 3]), paletteButtonFlags, new Vec2(20, 20)))
+                    {
+                        _colorColor[0] = _colorSavedPalette[(n * 4) + 0];
+                        _colorColor[1] = _colorSavedPalette[(n * 4) + 1];
+                        _colorColor[2] = _colorSavedPalette[(n * 4) + 2];
+                        _colorColor[3] = 1.0f;
+                    }
+
+                    // Allow drag/drop reordering would go here if we wanted to implement it
+                    Id.Pop();
+                }
+
+                Widgets.EndGroup();
+                Window.EndPopup();
+            }
+
+            Widgets.Text("Color button only:"u8);
+            _ = Widgets.Checkbox("ColorEditFlags.NoBorder"u8, ref _colorNoBorder);
+            _ = Widgets.ColorButton("MyColor##3c"u8, new Color(_colorCol2[0], _colorCol2[1], _colorCol2[2], _colorCol2[3]),
+                miscFlags | (_colorNoBorder ? ColorEditFlags.NoBorder : ColorEditFlags.None), new Vec2(80, 80));
+
+            Widgets.SeparatorText("Color picker"u8);
+            _ = Widgets.Checkbox("With Alpha"u8, ref _colorAlphaPreview);
+            _ = Widgets.Checkbox("With Alpha Bar"u8, ref _colorAlphaHalfPreview);
+            _ = Widgets.Checkbox("With Side Preview"u8, ref _colorDragAndDrop);
+            if (_colorDragAndDrop)
+            {
+                Widgets.SameLine();
+                _ = Widgets.Checkbox("With Ref Color"u8, ref _colorOptionsMenu);
+            }
+
+            _ = Widgets.Checkbox("With Small Preview"u8, ref _colorHdr);
+            _ = Widgets.Checkbox("With Inputs"u8, ref _colorSavedPaletteInit);
+            _ = Widgets.Checkbox("With Label"u8, ref _colorNoBorder);
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowDataTypes()
+    {
+        if (Widgets.TreeNode("Data Types"u8))
+        {
+            Widgets.SeparatorText("Drags"u8);
+
+            _ = Widgets.Drag("drag s8"u8, ref _dataS8, 1, sbyte.MinValue, sbyte.MaxValue, "%d"u8);
+            Widgets.SameLine();
+            HelpMarker("Full 8-bit signed data type.\nMin = -128, Max = 127"u8);
+            _ = Widgets.Drag("drag u8"u8, ref _dataU8, 1, byte.MinValue, byte.MaxValue, "%u"u8);
+            _ = Widgets.Drag("drag s16"u8, ref _dataS16, 1, short.MinValue, short.MaxValue, "%d"u8);
+            _ = Widgets.Drag("drag u16"u8, ref _dataU16, 1, ushort.MinValue, ushort.MaxValue, "%u"u8);
+            _ = Widgets.Drag("drag s32"u8, ref _dataS32, 1, int.MinValue, int.MaxValue, "%d"u8);
+            Widgets.SameLine();
+            HelpMarker("Full 32-bit signed data type.\nMin = -2147483648, Max = 2147483647"u8);
+            _ = Widgets.Drag("drag s32 hex"u8, ref _dataS32, 1, int.MinValue, int.MaxValue, "0x%08X"u8);
+            _ = Widgets.Drag("drag u32"u8, ref _dataU32, 1, uint.MinValue, uint.MaxValue, "%u"u8);
+            _ = Widgets.Drag("drag s64"u8, ref _dataS64, 1, long.MinValue, long.MaxValue, "%lld"u8);
+            _ = Widgets.Drag("drag u64"u8, ref _dataU64, 1, ulong.MinValue, ulong.MaxValue, "%llu"u8);
+            _ = Widgets.Drag("drag float"u8, ref _dataF32, 0.005f, 0.0f, 1.0f, "%f"u8);
+            Widgets.SameLine();
+            HelpMarker("By default, a slider/drag clamps its value if you drag past min/max.\nHold Shift and drag to go beyond the clamped range."u8);
+            _ = Widgets.Drag("drag float log"u8, ref _dataF32, 0.005f, 0.0f, 10.0f, "%f"u8, SliderFlags.Logarithmic);
+            // Note: double drag not available, using float version
+            var dataF32Temp = (float)_dataF64;
+            if (Widgets.Drag("drag double"u8, ref dataF32Temp, 0.0005f, 0.0f, float.MaxValue, "%.10f grams"u8))
+            {
+                _dataF64 = dataF32Temp;
+            }
+
+            Widgets.SeparatorText("Sliders"u8);
+
+            _ = Widgets.Slider("slider s8 full"u8, ref _dataS8, sbyte.MinValue, sbyte.MaxValue, "%d"u8);
+            _ = Widgets.Slider("slider u8 full"u8, ref _dataU8, byte.MinValue, byte.MaxValue, "%u"u8);
+            _ = Widgets.Slider("slider s16 full"u8, ref _dataS16, short.MinValue, short.MaxValue, "%d"u8);
+            _ = Widgets.Slider("slider u16 full"u8, ref _dataU16, ushort.MinValue, ushort.MaxValue, "%u"u8);
+            _ = Widgets.Slider("slider s32 low"u8, ref _dataS32, -1000000, 1000000, "%d"u8);
+            _ = Widgets.Slider("slider s32 high"u8, ref _dataS32, int.MinValue / 2, int.MaxValue / 2, "%d"u8);
+            _ = Widgets.Slider("slider s32 full"u8, ref _dataS32, int.MinValue, int.MaxValue, "%d"u8);
+            Widgets.SameLine();
+            HelpMarker("For very large ranges, use SliderFlags.Logarithmic or equivalent."u8);
+            _ = Widgets.Slider("slider s32 hex"u8, ref _dataS32, -99, 99, "0x%04X"u8);
+            _ = Widgets.Slider("slider u32 low"u8, ref _dataU32, 0, 1000000, "%u"u8);
+            _ = Widgets.Slider("slider u32 full"u8, ref _dataU32, uint.MinValue, uint.MaxValue / 2, "%u"u8);
+            _ = Widgets.Slider("slider s64 low"u8, ref _dataS64, -1000000, 1000000, "%lld"u8);
+            _ = Widgets.Slider("slider s64 high"u8, ref _dataS64, long.MinValue / 2, long.MaxValue / 2, "%lld"u8);
+            _ = Widgets.Slider("slider u64 low"u8, ref _dataU64, 0, 1000000, "%llu"u8);
+            _ = Widgets.Slider("slider u64 high"u8, ref _dataU64, ulong.MinValue, ulong.MaxValue / 2, "%llu"u8);
+            _ = Widgets.Slider("slider float low"u8, ref _dataF32, 0.0f, 1.0f, "%.3f"u8);
+            _ = Widgets.Slider("slider float low log"u8, ref _dataF32, 0.0f, 10.0f, "%.3f"u8, SliderFlags.Logarithmic);
+            _ = Widgets.Slider("slider float high"u8, ref _dataF32, -1e6f, 1e6f, "%e"u8);
+            // Note: double slider not available, using float version
+            var dataF32ForSlider = (float)_dataF64;
+            if (Widgets.Slider("slider double low"u8, ref dataF32ForSlider, 0.0f, 1.0f, "%.10f"u8))
+            {
+                _dataF64 = dataF32ForSlider;
+            }
+
+            Widgets.SeparatorText("Inputs"u8);
+
+            var showStepButtons = _dataInputsStep != 0;
+            if (Widgets.Checkbox("Show step buttons"u8, ref showStepButtons))
+            {
+                _dataInputsStep = showStepButtons ? 1 : 0;
+            }
+
+            var step = _dataInputsStep != 0 ? 1 : 0;
+            var stepFast = _dataInputsStep != 0 ? 100 : 0;
+            _ = Widgets.Input("input s8"u8, ref _dataS8, (sbyte)step, (sbyte)(stepFast == 0 ? 0 : 10));
+            _ = Widgets.Input("input u8"u8, ref _dataU8, (byte)step, (byte)(stepFast == 0 ? 0 : 10));
+            _ = Widgets.Input("input s16"u8, ref _dataS16, (short)step, (short)stepFast);
+            _ = Widgets.Input("input u16"u8, ref _dataU16, (ushort)step, (ushort)stepFast);
+            _ = Widgets.Input("input s32"u8, ref _dataS32, step, stepFast);
+            _ = Widgets.Input("input s32 hex"u8, ref _dataS32, step, stepFast, InputTextFlags.CharsHexadecimal);
+            _ = Widgets.Input("input u32"u8, ref _dataU32, (uint)step, (uint)stepFast);
+            _ = Widgets.Input("input u32 hex"u8, ref _dataU32, (uint)step, (uint)stepFast, default, InputTextFlags.CharsHexadecimal);
+            _ = Widgets.Input("input s64"u8, ref _dataS64, step, stepFast);
+            _ = Widgets.Input("input u64"u8, ref _dataU64, (ulong)step, (ulong)stepFast);
+            _ = Widgets.Input("input float"u8, ref _dataF32, 0.01f, 1.0f);
+            _ = Widgets.Input("input double"u8, ref _dataF64, 0.01, 1.0, "%.8f"u8);
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowDisableBlocks()
+    {
+        if (Widgets.TreeNode("Disable block"u8))
+        {
+            var disableSections = DisableSections;
+            if (Widgets.Checkbox("Disable entire section above"u8, ref disableSections))
+            {
+                DisableSections = disableSections;
+            }
+
+            Widgets.SameLine();
+            HelpMarker("Demonstrate using BeginDisabled()/EndDisabled() across this section."u8);
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowDragAndDrop()
+    {
+        if (Widgets.TreeNode("Drag and Drop"u8))
+        {
+            // Drag and drop section - simplified for now
+            Widgets.BulletText("Drag and drop in standard widgets"u8);
+            Widgets.Indent();
+
+            float[] col1 = [1.0f, 0.0f, 0.2f];
+            float[] col2 = [0.4f, 0.7f, 0.0f, 0.5f];
+            _ = Widgets.ColorEdit("color 1"u8, col1);
+            _ = Widgets.ColorEdit("color 2"u8, col2);
+
+            Widgets.Unindent();
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowDragsAndSliders()
+    {
+        if (Widgets.TreeNode("Drag/Slider Flags"u8))
+        {
+            // Clamping flags
+            _ = Widgets.CheckboxFlags("SliderFlags.AlwaysClamp"u8, ref _dragsClampsFlags, SliderFlags.AlwaysClamp);
+            Widgets.SameLine();
+            HelpMarker("Always clamp value to min/max bounds (if any) when input manually with Ctrl+Click. By default Ctrl+Click allows going out of bounds."u8);
+            _ = Widgets.CheckboxFlags("SliderFlags.Logarithmic"u8, ref _dragsClampsFlags, SliderFlags.Logarithmic);
+            Widgets.SameLine();
+            HelpMarker("Enable logarithmic editing (more precision for small values)."u8);
+            _ = Widgets.CheckboxFlags("SliderFlags.NoRoundToFormat"u8, ref _dragsClampsFlags, SliderFlags.NoRoundToFormat);
+            Widgets.SameLine();
+            HelpMarker("Disable rounding underlying value to match precision of the display format string (e.g. %.3f values are rounded to those 3 digits)."u8);
+            _ = Widgets.CheckboxFlags("SliderFlags.NoInput"u8, ref _dragsClampsFlags, SliderFlags.NoInput);
+            Widgets.SameLine();
+            HelpMarker("Disable Ctrl+Click or Enter key allowing to input text directly into the widget."u8);
+            _ = Widgets.CheckboxFlags("SliderFlags.WrapAround"u8, ref _dragsClampsFlags, SliderFlags.WrapAround);
+            Widgets.SameLine();
+            HelpMarker("Enable wrapping around from max to min and from min to max (only supported by DragXXX() functions)."u8);
+
+            // Drags
+            _ = Widgets.Drag("DragFloat (0 -> 1)"u8, ref _dragsClampingValue1, 0.005f, 0.0f, 1.0f, "%.3f"u8, _dragsClampsFlags);
+            _ = Widgets.Drag("DragFloat (0 -> +inf)"u8, ref _dragsClampingValue2, 0.005f, 0.0f, float.MaxValue, "%.3f"u8, _dragsClampsFlags);
+            _ = Widgets.Drag("DragFloat (-inf -> 1)"u8, ref _dragsClampingValue3, 0.005f, float.MinValue, 1.0f, "%.3f"u8, _dragsClampsFlags);
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowFonts()
+    {
+        if (Widgets.TreeNode("Fonts"u8))
+        {
+            Widgets.Text("This section is for font showcasing."u8);
+            Widgets.Text("Font size is controlled via the IO object."u8);
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowImages()
+    {
+        if (Widgets.TreeNode("Images"u8))
+        {
+            _ = Widgets.Checkbox("Use text color for Tint"u8, ref _imageUseTextColor);
+            Widgets.Text("Image loading/display functionality would be demonstrated here."u8);
+            Widgets.Text("This requires texture handling which varies by backend."u8);
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowListBoxes()
+    {
+        if (Widgets.TreeNode("List boxes"u8))
+        {
+            // Using the simpler BeginListBox/EndListBox API
+            string[] items = ["Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon"];
+
+            if (Widgets.BeginListBox("listbox 1"u8))
+            {
+                for (var i = 0; i < items.Length; i++)
+                {
+                    var isSelected = _listBoxItemCurrent == i;
+                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes(items[i]), isSelected))
+                    {
+                        _listBoxItemCurrent = i;
+                    }
+
+                    if (isSelected)
+                    {
+                        Widgets.SetItemDefaultFocus();
+                    }
+                }
+
+                Widgets.EndListBox();
+            }
+
+            Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"Selected: {items[_listBoxItemCurrent]}"));
+
+            // Custom sized list box
+            Widgets.Text("Full-width:"u8);
+            if (Widgets.BeginListBox("##listbox 2"u8, new Vec2(-float.Epsilon, 5 * Font.GetTextLineHeightWithSpacing())))
+            {
+                for (var i = 0; i < items.Length; i++)
+                {
+                    var isSelected = _listBoxItemCurrent == i;
+                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes(items[i]), isSelected))
+                    {
+                        _listBoxItemCurrent = i;
+                    }
+
+                    if (isSelected)
+                    {
+                        Widgets.SetItemDefaultFocus();
+                    }
+                }
+
+                Widgets.EndListBox();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowMultiComponents()
+    {
+        if (Widgets.TreeNode("Multi-component Widgets"u8))
+        {
+            _ = Widgets.Input("input float4"u8, _multiVec4f);
+            _ = Widgets.Drag("drag float4"u8, _multiVec4f, 0.01f, 0.0f, 1.0f);
+            _ = Widgets.Slider("slider float4"u8, _multiVec4f, 0.0f, 1.0f);
+            _ = Widgets.Input("input int4"u8, _multiVec4i);
+            _ = Widgets.Drag("drag int4"u8, _multiVec4i, 1, 0, 255);
+            _ = Widgets.Slider("slider int4"u8, _multiVec4i, 0, 255);
+            Widgets.Spacing();
+
+            _ = Widgets.Input("input float3"u8, _multiVec4f.AsSpan(0, 3));
+            _ = Widgets.Drag("drag float3"u8, _multiVec4f.AsSpan(0, 3), 0.01f, 0.0f, 1.0f);
+            _ = Widgets.Slider("slider float3"u8, _multiVec4f.AsSpan(0, 3), 0.0f, 1.0f);
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowPlotting()
+    {
+        if (Widgets.TreeNode("Plotting"u8))
+        {
+            _ = Widgets.Checkbox("Animate"u8, ref _plotAnimate);
+
+            // Plot lines - using sin array
+            Widgets.PlotLines("Frame Times"u8, _plotArrSin, 0, "avg 0.0"u8);
+
+            // Fill the array with animated data
+            if (_plotAnimate)
+            {
+                var time = Context.GetTime();
+                if (_plotRefreshTime == 0.0)
+                {
+                    _plotRefreshTime = time;
+                }
+
+                while (_plotRefreshTime < time)
+                {
+                    _plotArrSin[_plotValuesOffset] = MathF.Cos(_plotPhase);
+                    _plotValuesOffset = (_plotValuesOffset + 1) % _plotArrSin.Length;
+                    _plotPhase += 0.10f * _plotValuesOffset;
+                    _plotRefreshTime += 1.0 / 60.0;
+                }
+            }
+
+            // Plot histogram
+            Widgets.PlotHistogram("Histogram"u8, _plotArrCos, 0, default, -1.0f, 1.0f, new Vec2(0, 80.0f));
+
+            Widgets.Separator();
+
+            // Plot type selection
+            _ = Widgets.RadioButton("Sin"u8, ref Unsafe.As<PlotType, int>(ref _plotFuncType), 0);
+            Widgets.SameLine();
+            _ = Widgets.RadioButton("Saw"u8, ref Unsafe.As<PlotType, int>(ref _plotFuncType), 1);
+
+            _ = Widgets.Slider("Sample count"u8, ref _plotDisplayCount, 1, 400);
+
+            // Generate data based on plot type
+            var data = new float[_plotDisplayCount];
+            for (var i = 0; i < _plotDisplayCount; i++)
+            {
+                data[i] = _plotFuncType == PlotType.Sin ? MathF.Sin(i * 0.1f) : (i & 1) == 1 ? 1.0f : -1.0f;
+            }
+
+            Widgets.PlotLines("Lines"u8, data, 0, default, -1.0f, 1.0f, new Vec2(0, 80));
+            Widgets.PlotHistogram("Histogram"u8, data, 0, default, -1.0f, 1.0f, new Vec2(0, 80));
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowProgressBars()
+    {
+        if (Widgets.TreeNode("Progress Bars"u8))
+        {
+            // Animate a simple progress bar
+            if (_progressAnimate)
+            {
+                _progressProgress += _progressProgressDir * 0.4f * Context.IO.DeltaTime;
+                if (_progressProgress >= +1.1f)
+                {
+                    _progressProgress = +1.1f;
+                    _progressProgressDir *= -1.0f;
+                }
+
+                if (_progressProgress <= -0.1f)
+                {
+                    _progressProgress = -0.1f;
+                    _progressProgressDir *= -1.0f;
+                }
+            }
+
+            // Default progress bar
+            Widgets.ProgressBar(_progressProgress, default, default);
+            Widgets.SameLine(0.0f, Context.Style.ItemInnerSpacing.X);
+            Widgets.Text("Progress Bar"u8);
+
+            var progressSaturated = Math.Clamp(_progressProgress, 0.0f, 1.0f);
+            Span<byte> buf = stackalloc byte[32];
+            var len = System.Text.Encoding.UTF8.GetBytes($"{(int)(progressSaturated * 1753)}/1753", buf);
+            Widgets.ProgressBar(_progressProgress, new Size(0.0f, 0.0f), buf[..len]);
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowQueryingStatuses()
+    {
+        if (Widgets.TreeNode("Querying Item Status (Edited/Active/Hovered etc.)"u8))
+        {
+            // Select an item type
+            _ = Widgets.Combo("Item Type"u8, ref _queryingItemType, "Text\0Button\0Button (w/ repeat)\0Checkbox\0SliderFloat\0InputText\0InputTextMultiline\0InputFloat\0InputFloat3\0ColorEdit4\0Selectable\0MenuItem\0TreeNode\0TreeNode (w/ double-click)\0Combo\0ListBox\0"u8);
+            Widgets.SameLine();
+            HelpMarker("Testing how various types of items are interacting with the IsItemXXX functions. Note that the bool return value of most ImGui function is generally equivalent to calling ImGui::IsItemClicked()."u8);
+
+            // Submit selected item type
+            var itemDisabled = false;
+            var ret = false;
+            Id.Push(_queryingItemType);
+            if (_queryingItemType == 0)
+            {
+                Widgets.Text("ITEM: Text"u8);
+                ret = true;
+            }
+            else if (_queryingItemType == 1)
+            {
+                ret = Widgets.Button("ITEM: Button"u8);
+            }
+            else if (_queryingItemType == 2)
+            {
+                Style.PushItemFlag(ItemFlags.ButtonRepeat, true);
+                ret = Widgets.Button("ITEM: Button"u8);
+                Style.PopItemFlag();
+            }
+            else if (_queryingItemType == 3)
+            {
+                ret = Widgets.Checkbox("ITEM: Checkbox"u8, ref _queryingB);
+            }
+            else if (_queryingItemType == 4)
+            {
+                ret = Widgets.Slider("ITEM: SliderFloat"u8, ref _queryingCol4f[0], 0.0f, 1.0f);
+            }
+            else if (_queryingItemType == 5)
+            {
+                ret = Widgets.InputText("ITEM: InputText"u8, _queryingStr);
+            }
+            else if (_queryingItemType == 6)
+            {
+                ret = Widgets.InputTextMultiline("ITEM: InputTextMultiline"u8, _queryingStr, new Size(200, 100));
+            }
+            else if (_queryingItemType == 7)
+            {
+                ret = Widgets.Input("ITEM: InputFloat"u8, ref _queryingCol4f[0], 1.0f);
+            }
+            else if (_queryingItemType == 8)
+            {
+                ret = Widgets.Input("ITEM: InputFloat3"u8, _queryingCol4f.AsSpan(0, 3));
+            }
+            else if (_queryingItemType == 9)
+            {
+                ret = Widgets.ColorEdit("ITEM: ColorEdit4"u8, _queryingCol4f);
+            }
+            else if (_queryingItemType == 10)
+            {
+                ret = Widgets.Selectable("ITEM: Selectable"u8, false);
+            }
+            else if (_queryingItemType == 11)
+            {
+                ret = Widgets.MenuItem("ITEM: MenuItem"u8);
+            }
+            else if (_queryingItemType == 12)
+            {
+                ret = Widgets.TreeNode("ITEM: TreeNode"u8);
+                if (ret)
+                {
+                    Widgets.TreePop();
+                }
+            }
+            else if (_queryingItemType == 13)
+            {
+                ret = Widgets.TreeNode("ITEM: TreeNode w/ TreeNodeFlags.OpenOnDoubleClick"u8, TreeNodeFlags.OpenOnDoubleClick | TreeNodeFlags.NoTreePushOnOpen);
+            }
+            else if (_queryingItemType == 14)
+            {
+                ret = Widgets.BeginCombo("ITEM: Combo"u8, "preview"u8);
+                if (ret)
+                {
+                    Widgets.EndCombo();
+                }
+            }
+            else if (_queryingItemType == 15)
+            {
+                _ = Widgets.BeginListBox("ITEM: ListBox"u8);
+                Widgets.EndListBox();
+                ret = true;
+            }
+
+            Id.Pop();
+
+            if (itemDisabled)
+            {
+                Widgets.EndDisabled();
+            }
+
+            // Display item status
+            var hoveredDelayNone = Widgets.IsItemHovered();
+            var hoveredDelayShort = Widgets.IsItemHovered(HoveredFlags.DelayShort);
+            var hoveredDelayNormal = Widgets.IsItemHovered(HoveredFlags.DelayNormal);
+            var hoveredNoNav = Widgets.IsItemHovered(HoveredFlags.NoNavOverride);
+
+            Widgets.Text(System.Text.Encoding.UTF8.GetBytes(
+                $"Return value = {ret}\n" +
+                $"IsItemFocused() = {Widgets.IsItemFocused()}\n" +
+                $"IsItemHovered() = {Widgets.IsItemHovered()}\n" +
+                $"IsItemHovered(_AllowWhenBlockedByPopup) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenBlockedByPopup)}\n" +
+                $"IsItemHovered(_AllowWhenBlockedByActiveItem) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenBlockedByActiveItem)}\n" +
+                $"IsItemHovered(_AllowWhenOverlappedByItem) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenOverlappedByItem)}\n" +
+                $"IsItemHovered(_AllowWhenOverlappedByWindow) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenOverlappedByWindow)}\n" +
+                $"IsItemHovered(_AllowWhenDisabled) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenDisabled)}\n" +
+                $"IsItemHovered(_RectOnly) = {Widgets.IsItemHovered(HoveredFlags.RectOnly)}\n" +
+                $"IsItemActive() = {Widgets.IsItemActive()}\n" +
+                $"IsItemEdited() = {Widgets.IsItemEdited()}\n" +
+                $"IsItemActivated() = {Widgets.IsItemActivated()}\n" +
+                $"IsItemDeactivated() = {Widgets.IsItemDeactivated()}\n" +
+                $"IsItemDeactivatedAfterEdit() = {Widgets.IsItemDeactivatedAfterEdit()}\n" +
+                $"IsItemVisible() = {Widgets.IsItemVisible()}\n" +
+                $"IsItemClicked() = {Widgets.IsItemClicked()}\n" +
+                $"IsItemToggledOpen() = {Widgets.IsItemToggledOpen()}\n" +
+                $"GetItemRectSize() = ({Widgets.GetItemRectSize().Width:F1}, {Widgets.GetItemRectSize().Height:F1})"
+            ));
+
+            Widgets.Text(System.Text.Encoding.UTF8.GetBytes(
+                $"w/ Hovering Delay: None = {hoveredDelayNone}, Short = {hoveredDelayShort}, Normal = {hoveredDelayNormal}"
+            ));
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowSelectables()
+    {
+        if (Widgets.TreeNode("Selectables"u8))
+        {
+            // Basic
+            if (Widgets.TreeNode("Basic"u8))
+            {
+                _ = Widgets.Selectable("1. I am selectable"u8, ref _selectablesBasic[0]);
+                _ = Widgets.Selectable("2. I am selectable"u8, ref _selectablesBasic[1]);
+                Widgets.Text("(I am not selectable)"u8);
+                _ = Widgets.Selectable("4. I am selectable"u8, ref _selectablesBasic[3]);
+                if (Widgets.Selectable("5. I am double clickable"u8, _selectablesBasic[4], SelectableFlags.AllowDoubleClick))
+                {
+                    if (Context.IsMouseDoubleClicked(MouseButton.Left))
+                    {
+                        _selectablesBasic[4] = !_selectablesBasic[4];
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            // Selection state - single selection
+            if (Widgets.TreeNode("Selection State: Single Selection"u8))
+            {
+                for (var i = 0; i < 5; i++)
+                {
+                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Object {i}"), _selectablesSelectedSingleOnly == i))
+                    {
+                        _selectablesSelectedSingleOnly = i;
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            // Selection state - multiple selection
+            if (Widgets.TreeNode("Selection State: Multiple Selection"u8))
+            {
+                HelpMarker("Hold Ctrl and click to select multiple items."u8);
+                for (var i = 0; i < 5; i++)
+                {
+                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Object {i}"), _selectablesSelected[i]))
+                    {
+                        if (!Context.IsKeyDown(Key.LeftCtrl) && !Context.IsKeyDown(Key.RightCtrl))
+                        {
+                            Array.Clear(_selectablesSelected);
+                        }
+
+                        _selectablesSelected[i] ^= true;
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            // Rendering more items on the same line
+            if (Widgets.TreeNode("Rendering more items on the same line"u8))
+            {
+                _ = Widgets.Selectable("main.c"u8, ref _selectablesSelectedSameLineFirst[0]);
+                Widgets.SameLine(300);
+                Widgets.Text(" 2,345 bytes"u8);
+                _ = Widgets.Selectable("Hello.cpp"u8, ref _selectablesSelectedSameLineFirst[1]);
+                Widgets.SameLine(300);
+                Widgets.Text("12,345 bytes"u8);
+                _ = Widgets.Selectable("Hello.h"u8, ref _selectablesSelectedSameLineFirst[2]);
+                Widgets.SameLine(300);
+                Widgets.Text(" 2,345 bytes"u8);
+                Widgets.TreePop();
+            }
+
+            // In columns
+            if (Widgets.TreeNode("In columns"u8))
+            {
+                if (Widgets.BeginTable("split1"u8, 3, TableFlags.Resizable | TableFlags.NoSavedSettings | TableFlags.Borders))
+                {
+                    for (var i = 0; i < 10; i++)
+                    {
+                        _ = Widgets.TableNextColumn();
+                        _ = Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Item {i}"), ref _selectablesSelectedSameLineSecond[i % 3]);
+                    }
+
+                    Widgets.EndTable();
+                }
+
+                Widgets.Separator();
+
+                if (Widgets.BeginTable("split2"u8, 3, TableFlags.Resizable | TableFlags.NoSavedSettings | TableFlags.Borders))
+                {
+                    for (var i = 0; i < 10; i++)
+                    {
+                        Widgets.TableNextRow();
+                        _ = Widgets.TableNextColumn();
+                        _ = Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Item {i}"), ref _selectablesSelectedSameLineThird[i % 3], SelectableFlags.SpanAllColumns);
+                        _ = Widgets.TableNextColumn();
+                        Widgets.Text("Some text"u8);
+                        _ = Widgets.TableNextColumn();
+                        Widgets.Text("123456"u8);
+                    }
+
+                    Widgets.EndTable();
+                }
+
+                Widgets.TreePop();
+            }
+
+            // Grid
+            if (Widgets.TreeNode("Grid"u8))
+            {
+                var winningState = 0.0f;
+                for (var i = 0; i < 16; i++)
+                {
+                    winningState += _selectablesGrid[i] ? 1.0f : 0.0f;
+                }
+
+                Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"Squares clicked: {(int)winningState}/16"));
+
+                var spacing = Context.Style.ItemInnerSpacing.X;
+                Style.PushStyleVar(StyleVariable.ItemSpacing, new Vec2(spacing, spacing));
+                for (var i = 0; i < 16; i++)
+                {
+                    Id.Push(i);
+                    if (Widgets.Selectable("##square"u8, _selectablesGrid[i], SelectableFlags.None, new Size(50, 50)))
+                    {
+                        _selectablesGrid[i] = !_selectablesGrid[i];
+
+                        // Toggle neighbors
+                        var x = i % 4;
+                        var y = i / 4;
+                        if (x > 0)
+                        {
+                            _selectablesGrid[i - 1] ^= true;
+                        }
+
+                        if (x < 3)
+                        {
+                            _selectablesGrid[i + 1] ^= true;
+                        }
+
+                        if (y > 0)
+                        {
+                            _selectablesGrid[i - 4] ^= true;
+                        }
+
+                        if (y < 3)
+                        {
+                            _selectablesGrid[i + 4] ^= true;
+                        }
+                    }
+
+                    if ((i % 4) < 3)
+                    {
+                        Widgets.SameLine();
+                    }
+
+                    Id.Pop();
+                }
+
+                Style.PopStyleVar();
+                Widgets.TreePop();
+            }
+
+            // Alignment
+            if (Widgets.TreeNode("Alignment"u8))
+            {
+                HelpMarker("By default, Selectables uses style.SelectableTextAlign but it can be overridden on a per-item basis using PushStyleVar(). You'll probably want to always keep your default situation to left-align otherwise it becomes difficult to layout multiple items on a same line"u8);
+                for (var y = 0; y < 3; y++)
+                {
+                    for (var x = 0; x < 3; x++)
+                    {
+                        var alignment = new Vec2(x / 2.0f, y / 2.0f);
+                        var index = (y * 3) + x;
+                        Id.Push(index);
+                        if (Widgets.Selectable("Yo"u8, _selectablesAlignment[index], SelectableFlags.None, new Size(80, 80)))
+                        {
+                            _selectablesAlignment[index] = !_selectablesAlignment[index];
+                        }
+
+                        if (x < 2)
+                        {
+                            Widgets.SameLine();
+                        }
+
+                        Id.Pop();
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowSelectionAndMultiSelect()
+    {
+        if (Widgets.TreeNode("Selection (Adv), Multi-Select"u8))
+        {
+            // Note: BeginMultiSelect and EndMultiSelect are complex APIs not yet available in the bindings
+            Widgets.Text("Multi-Select functionality requires BeginMultiSelect/EndMultiSelect APIs."u8);
+            Widgets.Text("This section demonstrates the concept."u8);
+            Widgets.Spacing();
+
+            HelpMarker("This section would demonstrate advanced selection patterns.\nFor now showing a simple example using manual multi-select."u8);
+
+            // Simple manual multi-select example
+            for (var i = 0; i < 10; i++)
+            {
+                var selected = (_treeSelectionMask & (1 << i)) != 0;
+                if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Object {i}"), selected))
+                {
+                    if (!Context.IsKeyDown(Key.LeftCtrl) && !Context.IsKeyDown(Key.RightCtrl))
+                    {
+                        _treeSelectionMask = 0;
+                    }
+
+                    _treeSelectionMask ^= 1 << i;
+                }
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowTabs()
+    {
+        if (Widgets.TreeNode("Tabs"u8))
+        {
+            if (Widgets.TreeNode("Basic"u8))
+            {
+                if (Widgets.BeginTabBar("MyTabBar"u8, TabBarFlags.None))
+                {
+                    if (Widgets.BeginTabItem("Avocado"u8))
+                    {
+                        Widgets.Text("This is the Avocado tab!\nblah blah blah blah blah"u8);
+                        Widgets.EndTabItem();
+                    }
+
+                    if (Widgets.BeginTabItem("Broccoli"u8))
+                    {
+                        Widgets.Text("This is the Broccoli tab!\nblah blah blah blah blah"u8);
+                        Widgets.EndTabItem();
+                    }
+
+                    if (Widgets.BeginTabItem("Cucumber"u8))
+                    {
+                        Widgets.Text("This is the Cucumber tab!\nblah blah blah blah blah"u8);
+                        Widgets.EndTabItem();
+                    }
+
+                    Widgets.EndTabBar();
+                }
+
+                Widgets.Separator();
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Advanced & Close Button"u8))
+            {
+                // Flags setup
+                _ = Widgets.CheckboxFlags("TabBarFlags.Reorderable"u8, ref _tabsFlags, TabBarFlags.Reorderable);
+                _ = Widgets.CheckboxFlags("TabBarFlags.AutoSelectNewTabs"u8, ref _tabsFlags, TabBarFlags.AutoSelectNewTabs);
+                _ = Widgets.CheckboxFlags("TabBarFlags.TabListPopupButton"u8, ref _tabsFlags, TabBarFlags.TabListPopupButton);
+                _ = Widgets.CheckboxFlags("TabBarFlags.NoCloseWithMiddleMouseButton"u8, ref _tabsFlags, TabBarFlags.NoCloseWithMiddleMouseButton);
+
+                if (Widgets.CheckboxFlags("TabBarFlags.FittingPolicyShrink"u8, ref _tabsFlags, TabBarFlags.FittingPolicyShrink))
+                {
+                    _tabsFlags &= ~TabBarFlags.FittingPolicyScroll;
+                }
+
+                if (Widgets.CheckboxFlags("TabBarFlags.FittingPolicyScroll"u8, ref _tabsFlags, TabBarFlags.FittingPolicyScroll))
+                {
+                    _tabsFlags &= ~TabBarFlags.FittingPolicyShrink;
+                }
+
+                // Tab bar with close buttons
+                string[] names = ["Artichoke", "Beetroot", "Celery", "Daikon"];
+
+                if (Widgets.BeginTabBar("MyTabBar"u8, _tabsFlags))
+                {
+                    for (var i = 0; i < _tabsOpened.Length; i++)
+                    {
+                        if (_tabsOpened[i] && Widgets.BeginTabItem(System.Text.Encoding.UTF8.GetBytes(names[i]), ref _tabsOpened[i], TabItemFlags.None))
+                        {
+                            Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"This is the {names[i]} tab!"));
+                            if (Widgets.Button("Delete Me"u8))
+                            {
+                                _tabsOpened[i] = false;
+                            }
+
+                            Widgets.EndTabItem();
+                        }
+                    }
+
+                    Widgets.EndTabBar();
+                }
+
+                Widgets.Separator();
+                Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"Opened: {_tabsOpened[0]}, {_tabsOpened[1]}, {_tabsOpened[2]}, {_tabsOpened[3]}"));
+
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("TabItemButton & Leading/Trailing flags"u8))
+            {
+                if (Widgets.BeginTabBar("MyTabBar"u8, TabBarFlags.Reorderable | TabBarFlags.TabListPopupButton | TabBarFlags.FittingPolicyShrink))
+                {
+                    // Leading buttons
+                    if (Widgets.TabItemButton("+"u8, TabItemFlags.Leading | TabItemFlags.NoTooltip))
+                    {
+                        _tabsActiveTabs.Add(_tabsNextTabId++);
+                    }
+
+                    // Active tabs
+                    for (var i = 0; i < _tabsActiveTabs.Count; i++)
+                    {
+                        var open = true;
+                        if (Widgets.BeginTabItem(System.Text.Encoding.UTF8.GetBytes($"{_tabsActiveTabs[i]:D4}"), ref open, TabItemFlags.None))
+                        {
+                            Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"This is the {_tabsActiveTabs[i]:D4} tab!"));
+                            Widgets.EndTabItem();
+                        }
+
+                        if (!open)
+                        {
+                            _tabsActiveTabs.RemoveAt(i);
+                            i--;
+                        }
+                    }
+
+                    Widgets.EndTabBar();
+                }
+
+                Widgets.TreePop();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowText()
+    {
+        if (Widgets.TreeNode("Text"u8))
+        {
+            if (Widgets.TreeNode("Colorful Text"u8))
+            {
+                // Using shortcut.
+                Widgets.TextColored(new Vec4(1.0f, 0.0f, 1.0f, 1.0f), "Pink"u8);
+                Widgets.TextColored(new Vec4(1.0f, 1.0f, 0.0f, 1.0f), "Yellow"u8);
+                Widgets.TextDisabled("Disabled"u8);
+                Widgets.SameLine();
+                HelpMarker("The TextDisabled color is stored in ImGuiStyle."u8);
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Word Wrapping"u8))
+            {
+                _ = Widgets.Checkbox("Enable word wrapping"u8, ref _textWordWrappingEnabled);
+                if (_textWordWrappingEnabled)
+                {
+                    Widgets.TextWrapped("This text should automatically wrap on this window. The current implementation of text wrapping follows simple rules suitable for English and other languages that use Latin characters."u8);
+                }
+                else
+                {
+                    Widgets.Text("This text should automatically wrap on this window. The current implementation of text wrapping follows simple rules suitable for English and other languages that use Latin characters."u8);
+                }
+
+                Widgets.Spacing();
+
+                _ = Widgets.Slider("Wrap position"u8, ref _textWordSpacing, 0.0f, 500.0f, "%.0f"u8);
+                Style.PushTextWrapPosition(Window.CursorPosition.X + _textWordSpacing);
+                Widgets.Text("The lazy dog is a good dog. This paragraph should fit within the wrap width without being clipped."u8);
+                Size textSize = Widgets.GetItemRectSize();
+                Style.PopTextWrapPosition();
+
+                // Draw actual text bounding box, following by wrap position marker
+                // Note: DrawList would require additional implementation
+                Widgets.Dummy(new Size((_textWordSpacing > 0.0f ? _textWordSpacing : float.MaxValue) - textSize.Width, 0.0f));
+
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("UTF-8 Text"u8))
+            {
+                // UTF-8 test with a japanese font:
+                Widgets.TextWrapped("CJK: 日本語, 한국어, 中文. Japanese kana: こんにちは。Hiragana: あいうえお. Katakana: アイウエオ。"u8);
+                Widgets.Text("Greek: Αα Ββ Γγ Δδ Εε Ζζ Ηη Θθ Ιι Κκ Λλ Μμ Νν Ξξ Οο Ππ Ρρ Σσ Ττ Υυ Φφ Χχ Ψψ Ωω"u8);
+                Widgets.Text("Emoji: 💎🤖🖥️👾🎮"u8);
+                Widgets.TreePop();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowTextFilter()
+    {
+        if (Widgets.TreeNode("Text Filter"u8))
+        {
+            // Note: ImGuiTextFilter is not yet wrapped - showing concept
+            HelpMarker("Not a widget per se, but ImGuiTextFilter is a helper to perform simple filtering on string data. It creates a text input with a filter pattern."u8);
+            Widgets.Text("Filter text input would go here."u8);
+            Widgets.Text("Filtered items would appear below."u8);
+
+            string[] lines = ["aaa1.c", "bbb1.c", "ccc1.c", "aaa2.cpp", "bbb2.cpp", "ccc2.cpp", "abc.h", "hello, world"];
+            for (var i = 0; i < lines.Length; i++)
+            {
+                Widgets.BulletText(System.Text.Encoding.UTF8.GetBytes(lines[i]));
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowTextInput()
+    {
+        if (Widgets.TreeNode("Text Input"u8))
+        {
+            if (Widgets.TreeNode("Multi-line Text Input"u8))
+            {
+                _ = Widgets.CheckboxFlags("InputTextFlags.ReadOnly"u8, ref _textInputFlags, InputTextFlags.ReadOnly);
+                _ = Widgets.CheckboxFlags("InputTextFlags.AllowTabInput"u8, ref _textInputFlags, InputTextFlags.AllowTabInput);
+                Widgets.SameLine();
+                HelpMarker("When enabled, pressing TAB input a '\\t' character into the text field."u8);
+                _ = Widgets.CheckboxFlags("InputTextFlags.CtrlEnterForNewLine"u8, ref _textInputFlags, InputTextFlags.CtrlEnterForNewLine);
+                _ = Widgets.InputTextMultiline("##source"u8, _textInputBufMultiline, new Size(-float.Epsilon, Font.GetTextLineHeight() * 16), _textInputFlags);
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Filtered Text Input"u8))
+            {
+                _ = Widgets.InputText("default"u8, _textInputBuf1);
+                _ = Widgets.InputText("decimal"u8, _textInputBuf2, InputTextFlags.CharsDecimal);
+                _ = Widgets.InputText("hexadecimal"u8, _textInputBuf3, InputTextFlags.CharsHexadecimal | InputTextFlags.CharsUppercase);
+                _ = Widgets.InputText("uppercase"u8, _textInputBuf4, InputTextFlags.CharsUppercase);
+                _ = Widgets.InputText("no blank"u8, _textInputBuf5, InputTextFlags.CharsNoBlank);
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Password Input"u8))
+            {
+                _ = Widgets.InputText("password"u8, _textInputPassword, InputTextFlags.Password);
+                Widgets.SameLine();
+                HelpMarker("Display all characters as '*'.\nDisable clipboard cut and copy.\nDisable logging.\n"u8);
+                _ = Widgets.InputTextWithHint("password (w/ hint)"u8, "<password>"u8, _textInputPassword, InputTextFlags.Password);
+                _ = Widgets.InputText("password (clear)"u8, _textInputPassword);
+                Widgets.TreePop();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowTooltips()
+    {
+        if (Widgets.TreeNode("Tooltips"u8))
+        {
+            // Basic tooltip
+            Widgets.TextWrapped("Hover the buttons to see the tooltips."u8);
+
+            _ = Widgets.Button("Basic"u8);
+            if (Widgets.IsItemHovered())
+            {
+                Widgets.SetTooltip("I am a tooltip"u8);
+            }
+
+            _ = Widgets.Button("Fancy"u8);
+            if (Widgets.IsItemHovered() && Widgets.BeginTooltip())
+            {
+                Widgets.Text("I am a fancy tooltip"u8);
+                Widgets.PlotLines("Curve"u8, _plotArrSin.AsSpan(0, 30), 0, default, -1.0f, 1.0f, new Vec2(0, 40));
+                Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"Sin(time) = {MathF.Sin((float)Context.GetTime())}"));
+                Widgets.EndTooltip();
+            }
+
+            _ = Widgets.Button("Delayed"u8);
+            if (Widgets.IsItemHovered(HoveredFlags.DelayNormal))
+            {
+                Widgets.SetTooltip("I am a tooltip with more delay!"u8);
+            }
+
+            _ = Widgets.Button("Stationary"u8);
+            if (Widgets.IsItemHovered(HoveredFlags.Stationary))
+            {
+                Widgets.SetTooltip("I am a tooltip requiring mouse to be stationary before appearing."u8);
+            }
+
+            Widgets.SeparatorText("Custom"u8);
+
+            HelpMarker("Tooltip are created by default when hovering an item.\nYou can disable this by setting ImGuiConfigFlags_NoMouseCursorChange in your IO config."u8);
+
+            // Simple tooltip override
+            var tooltipsAlwaysOn = _tooltipsAlwaysOn != 0;
+            if (Widgets.Checkbox("Always On"u8, ref tooltipsAlwaysOn))
+            {
+                _tooltipsAlwaysOn = tooltipsAlwaysOn ? 1 : 0;
+            }
+
+            Widgets.SameLine();
+            var tooltipsOnDisabledItems = _tooltipsOnDisabledItems != 0;
+            if (Widgets.Checkbox("On Disabled Items"u8, ref tooltipsOnDisabledItems))
+            {
+                _tooltipsOnDisabledItems = tooltipsOnDisabledItems ? 1 : 0;
+            }
+
+            Widgets.SameLine();
+            _ = Widgets.Checkbox("Wrap"u8, ref _tooltipsWrap);
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowTreeNodes()
+    {
+        if (Widgets.TreeNode("Tree Nodes"u8))
+        {
+            if (Widgets.TreeNode("Basic trees"u8))
+            {
+                for (var i = 0; i < 5; i++)
+                {
+                    // Use SetNextItemOpen() to set default state
+                    if (i == 0)
+                    {
+                        Widgets.SetNextItemOpen(true, Condition.Once);
+                    }
+
+                    if (Widgets.TreeNode(System.Text.Encoding.UTF8.GetBytes($"Child {i}")))
+                    {
+                        Widgets.Text("blah blah"u8);
+                        Widgets.SameLine();
+                        if (Widgets.SmallButton("button"u8))
+                        {
+                            // Button pressed
+                        }
+
+                        Widgets.TreePop();
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Advanced, with Selectable nodes"u8))
+            {
+                HelpMarker("This is a more typical looking tree with selectable nodes.\nClick to select, Ctrl+Click to toggle, click on arrows or double-click to open."u8);
+                _ = Widgets.CheckboxFlags("TreeNodeFlags.OpenOnArrow"u8, ref _treeBaseFlags, TreeNodeFlags.OpenOnArrow);
+                _ = Widgets.CheckboxFlags("TreeNodeFlags.OpenOnDoubleClick"u8, ref _treeBaseFlags, TreeNodeFlags.OpenOnDoubleClick);
+                _ = Widgets.CheckboxFlags("TreeNodeFlags.SpanAvailWidth"u8, ref _treeBaseFlags, TreeNodeFlags.SpanAvailWidth);
+                _ = Widgets.CheckboxFlags("TreeNodeFlags.SpanFullWidth"u8, ref _treeBaseFlags, TreeNodeFlags.SpanFullWidth);
+                _ = Widgets.CheckboxFlags("TreeNodeFlags.SpanLabelWidth"u8, ref _treeBaseFlags, TreeNodeFlags.SpanLabelWidth);
+                _ = Widgets.CheckboxFlags("TreeNodeFlags.SpanAllColumns"u8, ref _treeBaseFlags, TreeNodeFlags.SpanAllColumns);
+                _ = Widgets.Checkbox("Align label with current X position"u8, ref _treeAlignLabelWithCurrentXPosition);
+                _ = Widgets.Checkbox("Test tree node as drag source"u8, ref _treeTestDragAndDrop);
+
+                if (_treeAlignLabelWithCurrentXPosition)
+                {
+                    Widgets.Unindent(Widgets.GetTreeNodeToLabelSpacing());
+                }
+
+                // Tree node example
+                var nodeClicked = -1;
+                for (var i = 0; i < 6; i++)
+                {
+                    TreeNodeFlags nodeFlags = _treeBaseFlags;
+                    var isSelected = (_treeSelectionMask & (1 << i)) != 0;
+                    if (isSelected)
+                    {
+                        nodeFlags |= TreeNodeFlags.Selected;
+                    }
+
+                    if (i < 3)
+                    {
+                        // Nodes 0..2 are Tree Nodes
+                        var nodeOpen = Widgets.TreeNode(System.Text.Encoding.UTF8.GetBytes($"Selectable Node {i}"), nodeFlags);
+                        if (Widgets.IsItemClicked() && !Widgets.IsItemToggledOpen())
+                        {
+                            nodeClicked = i;
+                        }
+
+                        if (_treeTestDragAndDrop && Widgets.BeginDragDropSource())
+                        {
+                            _ = Widgets.SetDragDropPayload("_TREENODE"u8, default);
+                            Widgets.Text("This is a drag and drop source"u8);
+                            Widgets.EndDragDropSource();
+                        }
+
+                        if (nodeOpen)
+                        {
+                            Widgets.BulletText("Blah blah\nBlah Blah"u8);
+                            Widgets.TreePop();
+                        }
+                    }
+                    else
+                    {
+                        // Nodes 3..5 are Tree Leaves
+                        nodeFlags |= TreeNodeFlags.Leaf | TreeNodeFlags.NoTreePushOnOpen;
+                        _ = Widgets.TreeNode(System.Text.Encoding.UTF8.GetBytes($"Selectable Leaf {i}"), nodeFlags);
+                        if (Widgets.IsItemClicked() && !Widgets.IsItemToggledOpen())
+                        {
+                            nodeClicked = i;
+                        }
+
+                        if (_treeTestDragAndDrop && Widgets.BeginDragDropSource())
+                        {
+                            _ = Widgets.SetDragDropPayload("_TREENODE"u8, default);
+                            Widgets.Text("This is a drag and drop source"u8);
+                            Widgets.EndDragDropSource();
+                        }
+                    }
+                }
+
+                if (nodeClicked != -1)
+                {
+                    // Update selection state
+                    if (Context.IsKeyDown(Key.LeftCtrl) || Context.IsKeyDown(Key.RightCtrl))
+                    {
+                        _treeSelectionMask ^= 1 << nodeClicked;
+                    }
+                    else
+                    {
+                        _treeSelectionMask = 1 << nodeClicked;
+                    }
+                }
+
+                if (_treeAlignLabelWithCurrentXPosition)
+                {
+                    Widgets.Indent(Widgets.GetTreeNodeToLabelSpacing());
+                }
+
+                Widgets.TreePop();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void ShowVerticalSliders()
+    {
+        if (Widgets.TreeNode("Vertical Sliders"u8))
+        {
+            _ = Widgets.Slider("Size"u8, ref _vslidersSize, 10.0f, 60.0f, "%.0f"u8);
+            Widgets.Spacing();
+
+            // Using the generic VSlider
+            Style.PushStyleVar(StyleVariable.ItemSpacing, new Vec2(4, 4));
+            _ = Widgets.VSlider("##int"u8, new Size(_vslidersSize, 160), ref _vslidersIntValue, 0, 100, "%d"u8);
+            Widgets.SameLine();
+
+            for (var i = 0; i < _vslidersValues.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Widgets.SameLine();
+                }
+
+                Id.Push(i);
+                _ = Widgets.VSlider("##v"u8, new Size(_vslidersSize, 160), ref _vslidersValues[i], 0.0f, 1.0f, default);
+                if (Widgets.IsItemActive() || Widgets.IsItemHovered())
+                {
+                    Widgets.SetTooltip(System.Text.Encoding.UTF8.GetBytes($"{_vslidersValues[i]:F3}"));
+                }
+
+                Id.Pop();
+            }
+
+            Widgets.SameLine();
+
+            // Vertical sliders showing values
+            Id.Push("set2"u8);
+            for (var i = 0; i < 4; i++)
+            {
+                if (i > 0)
+                {
+                    Widgets.SameLine();
+                }
+
+                Id.Push(i);
+                _ = Widgets.VSlider("##v"u8, new Size(_vslidersSize, 160), ref _vslidersValues2[i], 0.0f, 1.0f, default);
+                Id.Pop();
+            }
+
+            Id.Pop();
+
+            Style.PopStyleVar();
+
+            Widgets.TreePop();
         }
     }
 
