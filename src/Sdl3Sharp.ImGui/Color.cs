@@ -49,6 +49,19 @@ public unsafe readonly record struct Color
     }
 
     /// <summary>
+    /// Creates a color from HSV (Hue, Saturation, Value) color space.
+    /// </summary>
+    /// <param name="h">The hue component.</param>
+    /// <param name="s">The saturation component.</param>
+    /// <param name="v">The value (brightness) component.</param>
+    /// <param name="alpha">The alpha component.</param>
+    public static Color FromHSV(float h, float s, float v, float alpha = 1.0f)
+    {
+        (var r, var g, var b) = ColorConvertHSVtoRGB(h, s, v);
+        return new Color(r, g, b, alpha);
+    }
+
+    /// <summary>
     /// Gets a style color as a 32-bit packed value with an additional alpha multiplier.
     /// </summary>
     /// <param name="idx">The color index.</param>

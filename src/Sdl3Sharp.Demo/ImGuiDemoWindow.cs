@@ -229,11 +229,6 @@ public static unsafe class ImGuiDemoWindow
 
     // Shared Data
 
-    private static ReadOnlySpan<byte> ElementFireName => "Fire"u8;
-    private static ReadOnlySpan<byte> ElementEarthName => "Earth"u8;
-    private static ReadOnlySpan<byte> ElementAirName => "Air"u8;
-    private static ReadOnlySpan<byte> ElementWaterName => "Water"u8;
-
     /// <summary>
     /// Example names used throughout demos (vegetable names).
     /// </summary>
@@ -244,6 +239,39 @@ public static unsafe class ImGuiDemoWindow
         "Burdock Root", "Cabbage", "Calabash", "Capers", "Carrot", "Cassava", "Cauliflower", "Celery",
         "Celery Root", "Chard", "Chayote", "Chinese Broccoli", "Corn", "Cucumber"
     ];
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImGuiDemoWindow"/> class.
+    /// </summary>
+    static ImGuiDemoWindow()
+    {
+        // Initialize text buffers with default content
+        "Hello, world!"u8.CopyTo(_basicStr0);
+        "password123"u8.CopyTo(_textInputPassword);
+
+        // Initialize plotting arrays
+        for (var i = 0; i < _plotArrSin.Length; i++)
+        {
+            _plotArrSin[i] = MathF.Sin(i * 0.2f);
+            _plotArrCos[i] = MathF.Cos(i * 0.2f);
+        }
+
+        // Initialize active tabs
+        _tabsActiveTabs.Add(0);
+        _tabsActiveTabs.Add(1);
+        _tabsActiveTabs.Add(2);
+        _tabsNextTabId = 3;
+
+        // Initialize querying statuses string
+        "Test"u8.CopyTo(_queryingStr);
+
+        // Initialize text input
+        "Hello, world!"u8.CopyTo(_textInputStr0);
+        "hello"u8.CopyTo(_textInputBuf1);
+        "hello"u8.CopyTo(_textInputBuf2);
+        "Enter text here"u8.CopyTo(_textInputBuf3);
+        "Dear ImGui\r\n\r\nWelcome to the demo!\r\n"u8.CopyTo(_textInputBufMultiline);
+    }
 
     // Helper to display a little (?) mark which shows a tooltip when hovered.
     // In your own code you may want to display an actual icon if you are using a merged icon fonts (see docs/FONTS.md)
@@ -708,18 +736,17 @@ public static unsafe class ImGuiDemoWindow
                 }
 
                 Id.Push(i);
-                (var r1, var g1, var b1) = Color.ColorConvertHSVtoRGB(i / 7.0f, 0.6f, 0.6f);
-                (var r2, var g2, var b2) = Color.ColorConvertHSVtoRGB(i / 7.0f, 0.7f, 0.7f);
-                (var r3, var g3, var b3) = Color.ColorConvertHSVtoRGB(i / 7.0f, 0.8f, 0.8f);
-                Style.PushStyleColor(StyleColor.Button, new Color(r1, g1, b1, 1.0f));
-                Style.PushStyleColor(StyleColor.ButtonHovered, new Color(r2, g2, b2, 1.0f));
-                Style.PushStyleColor(StyleColor.ButtonActive, new Color(r3, g3, b3, 1.0f));
+                Style.PushStyleColor(StyleColor.Button, Color.FromHSV(i / 7.0f, 0.6f, 0.6f));
+                Style.PushStyleColor(StyleColor.ButtonHovered, Color.FromHSV(i / 7.0f, 0.7f, 0.7f));
+                Style.PushStyleColor(StyleColor.ButtonActive, Color.FromHSV(i / 7.0f, 0.8f, 0.8f));
                 _ = Widgets.Button("Click"u8);
                 Style.PopStyleColor(3);
                 Id.Pop();
             }
 
-            // Arrow buttons with repeater
+            // Use AlignTextToFramePadding() to align text baseline to the baseline of framed widgets elements
+            // (otherwise a Text+SameLine+Button sequence will have the text a little too high by default!)
+            // See 'Demo->Layout->Text Baseline Alignment' for details.
             Font.AlignTextToFramePadding();
             Widgets.Text("Hold to repeat:"u8);
             Widgets.SameLine();
@@ -739,7 +766,7 @@ public static unsafe class ImGuiDemoWindow
 
             Style.PopItemFlag();
             Widgets.SameLine();
-            Widgets.Text(System.Text.Encoding.UTF8.GetBytes(_basicCounter.ToString()));
+            Widgets.Text(_basicCounter.ToString().ToUtf8());
 
             _ = Widgets.Button("Tooltip"u8);
             Widgets.SetItemTooltip("I am a tooltip"u8);
@@ -751,7 +778,16 @@ public static unsafe class ImGuiDemoWindow
             // Input text
             _ = Widgets.InputText("input text"u8, _basicStr0);
             Widgets.SameLine();
-            HelpMarker("USER:\nHold Shift or use mouse to select text.\nCtrl+Left/Right to word jump.\nCtrl+A or Double-Click to select all.\nCtrl+X,Ctrl+C,Ctrl+V for clipboard.\nCtrl+Z to undo, Ctrl+Y/Ctrl+Shift+Z to redo.\nEscape to revert.\n\nPROGRAMMER:\nYou can use the ImGuiInputTextFlags_CallbackResize facility if you need to wire InputText() to a dynamic string type."u8);
+            HelpMarker(@"USER:
+Hold Shift or use mouse to select text.
+Ctrl+Left/Right to word jump.
+Ctrl+A or Double-Click to select all.
+Ctrl+X,Ctrl+C,Ctrl+V for clipboard.
+Ctrl+Z to undo, Ctrl+Y/Ctrl+Shift+Z to redo.
+Escape to revert.
+
+PROGRAMMER:
+You can use the ImGuiInputTextFlags_CallbackResize facility if you need to wire InputText() to a dynamic string type."u8);
 
             _ = Widgets.InputTextWithHint("input text (w/ hint)"u8, "enter text here"u8, _basicStr1);
 
@@ -763,15 +799,18 @@ public static unsafe class ImGuiDemoWindow
 
             _ = Widgets.Input("input scientific"u8, ref _basicInputScientific, 0.0f, 0.0f, "%e"u8);
             Widgets.SameLine();
-            HelpMarker("You can input value using the scientific notation,\n  e.g. \"1e+8\" becomes \"100000000\"."u8);
+            HelpMarker(@"You can input value using the scientific notation,
+  e.g. ""1e+8"" becomes ""100000000""."u8);
 
-            _ = Widgets.Input("input float3"u8, _basicVec4a.AsSpan(0, 3));
+            _ = Widgets.Input("input float3"u8, _basicVec4a);
 
             Widgets.SeparatorText("Drags"u8);
 
             _ = Widgets.Drag("drag int"u8, ref _basicDragInt1, 1);
             Widgets.SameLine();
-            HelpMarker("Click and drag to edit value.\nHold Shift/Alt for faster/slower edit.\nDouble-Click or Ctrl+Click to input value."u8);
+            HelpMarker(@"Click and drag to edit value.
+Hold Shift/Alt for faster/slower edit.
+Double-Click or Ctrl+Click to input value."u8);
 
             _ = Widgets.Drag("drag int 0..100"u8, ref _basicDragInt2, 1, 0, 100, "%d%%"u8, SliderFlags.AlwaysClamp);
 
@@ -794,15 +833,7 @@ public static unsafe class ImGuiDemoWindow
             _ = Widgets.SliderAngle("slider angle"u8, ref _basicSliderAngle);
 
             // Slider enum
-            ReadOnlySpan<byte> elemName = _basicSliderEnum switch
-            {
-                0 => ElementFireName,
-                1 => ElementEarthName,
-                2 => ElementAirName,
-                3 => ElementWaterName,
-                _ => "Unknown"u8
-            };
-            _ = Widgets.Slider("slider enum"u8, ref _basicSliderEnum, 0, 3, elemName);
+            _ = Widgets.Slider("slider enum"u8, ref _basicSliderEnum, 0, 3, ((Element)_basicSliderEnum).ToString().ToUtf8());
             Widgets.SameLine();
             HelpMarker("Using the format string parameter to display a name instead of the underlying integer."u8);
 
@@ -810,7 +841,11 @@ public static unsafe class ImGuiDemoWindow
 
             _ = Widgets.ColorEdit("color 1"u8, _basicCol1);
             Widgets.SameLine();
-            HelpMarker("Click on the color square to open a color picker.\nClick and hold to use drag and drop.\nRight-Click on the color square to show options.\nCtrl+Click on individual component to input value.\n"u8);
+            HelpMarker(@"Click on the color square to open a color picker.
+Click and hold to use drag and drop.
+Right-Click on the color square to show options.
+Ctrl+Click on individual component to input value.
+"u8);
 
             _ = Widgets.ColorEdit("color 2"u8, _basicCol2);
 
@@ -839,6 +874,7 @@ public static unsafe class ImGuiDemoWindow
 
                 Widgets.EndListBox();
             }
+
             Widgets.SameLine();
             HelpMarker("Using the simplified one-liner ListBox API here.\nRefer to the \"List boxes\" section below for an explanation of how to use the more flexible and general BeginListBox/EndListBox API."u8);
 
@@ -976,39 +1012,6 @@ public static unsafe class ImGuiDemoWindow
         if (Widgets.MenuItem("Quit"u8, "Alt+F4"u8))
         {
         }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ImGuiDemoWindow"/> class.
-    /// </summary>
-    static ImGuiDemoWindow()
-    {
-        // Initialize text buffers with default content
-        "Hello, world!"u8.CopyTo(_basicStr0);
-        "password123"u8.CopyTo(_textInputPassword);
-
-        // Initialize plotting arrays
-        for (var i = 0; i < _plotArrSin.Length; i++)
-        {
-            _plotArrSin[i] = MathF.Sin(i * 0.2f);
-            _plotArrCos[i] = MathF.Cos(i * 0.2f);
-        }
-
-        // Initialize active tabs
-        _tabsActiveTabs.Add(0);
-        _tabsActiveTabs.Add(1);
-        _tabsActiveTabs.Add(2);
-        _tabsNextTabId = 3;
-
-        // Initialize querying statuses string
-        "Test"u8.CopyTo(_queryingStr);
-
-        // Initialize text input
-        "Hello, world!"u8.CopyTo(_textInputStr0);
-        "hello"u8.CopyTo(_textInputBuf1);
-        "hello"u8.CopyTo(_textInputBuf2);
-        "Enter text here"u8.CopyTo(_textInputBuf3);
-        "Dear ImGui\r\n\r\nWelcome to the demo!\r\n"u8.CopyTo(_textInputBufMultiline);
     }
 
     // Nested Types
@@ -2513,5 +2516,14 @@ public static unsafe class ImGuiDemoWindow
         public bool DisableSections = false;
 
         //~ImGuiDemoWindowData() { if (DemoTree) ExampleTree_DestroyNode(DemoTree); }
+    }
+
+    private enum Element
+    {
+        Fire,
+        Earth,
+        Air,
+        Water,
+        Max
     }
 }
