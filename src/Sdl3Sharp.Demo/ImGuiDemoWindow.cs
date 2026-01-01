@@ -697,88 +697,90 @@ public static unsafe class ImGuiDemoWindow
 
     private static void DemoWindowWidgetsBasic()
     {
-        if (Widgets.TreeNode("Basic"u8))
+        if (!Widgets.TreeNode("Basic"u8))
         {
-            Widgets.SeparatorText("General"u8);
+            return;
+        }
 
-            // Button
-            if (Widgets.Button("Button"u8))
-            {
-                _basicClicked++;
-            }
+        Widgets.SeparatorText("General"u8);
 
-            if ((_basicClicked & 1) != 0)
+        // Button
+        if (Widgets.Button("Button"u8))
+        {
+            _basicClicked++;
+        }
+
+        if ((_basicClicked & 1) != 0)
+        {
+            Widgets.SameLine();
+            Widgets.Text("Thanks for clicking me!"u8);
+        }
+
+        // Checkbox
+        _ = Widgets.Checkbox("checkbox"u8, ref _basicCheck);
+
+        // Radio buttons
+        _ = Widgets.RadioButton("radio a"u8, ref _basicRadio, 0);
+        Widgets.SameLine();
+        _ = Widgets.RadioButton("radio b"u8, ref _basicRadio, 1);
+        Widgets.SameLine();
+        _ = Widgets.RadioButton("radio c"u8, ref _basicRadio, 2);
+
+        // Hyperlink
+        Font.AlignTextToFramePadding();
+        _ = Widgets.TextLinkOpenURL("Hyperlink"u8, "https://github.com/ocornut/imgui/wiki/Error-Handling"u8);
+
+        // Colored buttons
+        for (var i = 0; i < 7; i++)
+        {
+            if (i > 0)
             {
                 Widgets.SameLine();
-                Widgets.Text("Thanks for clicking me!"u8);
             }
 
-            // Checkbox
-            _ = Widgets.Checkbox("checkbox"u8, ref _basicCheck);
+            Id.Push(i);
+            Style.PushStyleColor(StyleColor.Button, Color.FromHSV(i / 7.0f, 0.6f, 0.6f));
+            Style.PushStyleColor(StyleColor.ButtonHovered, Color.FromHSV(i / 7.0f, 0.7f, 0.7f));
+            Style.PushStyleColor(StyleColor.ButtonActive, Color.FromHSV(i / 7.0f, 0.8f, 0.8f));
+            _ = Widgets.Button("Click"u8);
+            Style.PopStyleColor(3);
+            Id.Pop();
+        }
 
-            // Radio buttons
-            _ = Widgets.RadioButton("radio a"u8, ref _basicRadio, 0);
-            Widgets.SameLine();
-            _ = Widgets.RadioButton("radio b"u8, ref _basicRadio, 1);
-            Widgets.SameLine();
-            _ = Widgets.RadioButton("radio c"u8, ref _basicRadio, 2);
+        // Use AlignTextToFramePadding() to align text baseline to the baseline of framed widgets elements
+        // (otherwise a Text+SameLine+Button sequence will have the text a little too high by default!)
+        // See 'Demo->Layout->Text Baseline Alignment' for details.
+        Font.AlignTextToFramePadding();
+        Widgets.Text("Hold to repeat:"u8);
+        Widgets.SameLine();
 
-            // Hyperlink
-            Font.AlignTextToFramePadding();
-            _ = Widgets.TextLinkOpenURL("Hyperlink"u8, "https://github.com/ocornut/imgui/wiki/Error-Handling"u8);
+        var spacing = Context.Style.ItemInnerSpacing.X;
+        Style.PushItemFlag(ItemFlags.ButtonRepeat, true);
+        if (Widgets.ArrowButton("##left"u8, Dir.Left))
+        {
+            _basicCounter--;
+        }
 
-            // Colored buttons
-            for (var i = 0; i < 7; i++)
-            {
-                if (i > 0)
-                {
-                    Widgets.SameLine();
-                }
+        Widgets.SameLine(0.0f, spacing);
+        if (Widgets.ArrowButton("##right"u8, Dir.Right))
+        {
+            _basicCounter++;
+        }
 
-                Id.Push(i);
-                Style.PushStyleColor(StyleColor.Button, Color.FromHSV(i / 7.0f, 0.6f, 0.6f));
-                Style.PushStyleColor(StyleColor.ButtonHovered, Color.FromHSV(i / 7.0f, 0.7f, 0.7f));
-                Style.PushStyleColor(StyleColor.ButtonActive, Color.FromHSV(i / 7.0f, 0.8f, 0.8f));
-                _ = Widgets.Button("Click"u8);
-                Style.PopStyleColor(3);
-                Id.Pop();
-            }
+        Style.PopItemFlag();
+        Widgets.SameLine();
+        Widgets.Text(_basicCounter.ToString().ToUtf8());
 
-            // Use AlignTextToFramePadding() to align text baseline to the baseline of framed widgets elements
-            // (otherwise a Text+SameLine+Button sequence will have the text a little too high by default!)
-            // See 'Demo->Layout->Text Baseline Alignment' for details.
-            Font.AlignTextToFramePadding();
-            Widgets.Text("Hold to repeat:"u8);
-            Widgets.SameLine();
+        _ = Widgets.Button("Tooltip"u8);
+        Widgets.SetItemTooltip("I am a tooltip"u8);
+        Widgets.LabelText("label"u8, "Value"u8);
 
-            var spacing = Context.Style.ItemInnerSpacing.X;
-            Style.PushItemFlag(ItemFlags.ButtonRepeat, true);
-            if (Widgets.ArrowButton("##left"u8, Dir.Left))
-            {
-                _basicCounter--;
-            }
+        Widgets.SeparatorText("Inputs"u8);
 
-            Widgets.SameLine(0.0f, spacing);
-            if (Widgets.ArrowButton("##right"u8, Dir.Right))
-            {
-                _basicCounter++;
-            }
-
-            Style.PopItemFlag();
-            Widgets.SameLine();
-            Widgets.Text(_basicCounter.ToString().ToUtf8());
-
-            _ = Widgets.Button("Tooltip"u8);
-            Widgets.SetItemTooltip("I am a tooltip"u8);
-
-            Widgets.LabelText("label"u8, "Value"u8);
-
-            Widgets.SeparatorText("Inputs"u8);
-
-            // Input text
-            _ = Widgets.InputText("input text"u8, _basicStr0);
-            Widgets.SameLine();
-            HelpMarker(@"USER:
+        // Input text
+        _ = Widgets.InputText("input text"u8, _basicStr0);
+        Widgets.SameLine();
+        HelpMarker(@"USER:
 Hold Shift or use mouse to select text.
 Ctrl+Left/Right to word jump.
 Ctrl+A or Double-Click to select all.
@@ -788,72 +790,54 @@ Escape to revert.
 
 PROGRAMMER:
 You can use the ImGuiInputTextFlags_CallbackResize facility if you need to wire InputText() to a dynamic string type."u8);
-
-            _ = Widgets.InputTextWithHint("input text (w/ hint)"u8, "enter text here"u8, _basicStr1);
-
-            _ = Widgets.Input("input int"u8, ref _basicInputInt);
-
-            _ = Widgets.Input("input float"u8, ref _basicInputFloat, 0.01f, 1.0f, "%.3f"u8);
-
-            _ = Widgets.Input("input double"u8, ref _basicInputDouble, 0.01, 1.0, "%.8f"u8);
-
-            _ = Widgets.Input("input scientific"u8, ref _basicInputScientific, 0.0f, 0.0f, "%e"u8);
-            Widgets.SameLine();
-            HelpMarker(@"You can input value using the scientific notation,
+        _ = Widgets.InputTextWithHint("input text (w/ hint)"u8, "enter text here"u8, _basicStr1);
+        _ = Widgets.Input("input int"u8, ref _basicInputInt);
+        _ = Widgets.Input("input float"u8, ref _basicInputFloat, 0.01f, 1.0f, "%.3f"u8);
+        _ = Widgets.Input("input double"u8, ref _basicInputDouble, 0.01, 1.0, "%.8f"u8);
+        _ = Widgets.Input("input scientific"u8, ref _basicInputScientific, 0.0f, 0.0f, "%e"u8);
+        Widgets.SameLine();
+        HelpMarker(@"You can input value using the scientific notation,
   e.g. ""1e+8"" becomes ""100000000""."u8);
+        _ = Widgets.Input("input float3"u8, _basicVec4a);
 
-            _ = Widgets.Input("input float3"u8, _basicVec4a);
-
-            Widgets.SeparatorText("Drags"u8);
-
-            _ = Widgets.Drag("drag int"u8, ref _basicDragInt1, 1);
-            Widgets.SameLine();
-            HelpMarker(@"Click and drag to edit value.
+        Widgets.SeparatorText("Drags"u8);
+        _ = Widgets.Drag("drag int"u8, ref _basicDragInt1, 1);
+        Widgets.SameLine();
+        HelpMarker(@"Click and drag to edit value.
 Hold Shift/Alt for faster/slower edit.
 Double-Click or Ctrl+Click to input value."u8);
+        _ = Widgets.Drag("drag int 0..100"u8, ref _basicDragInt2, 1, 0, 100, "%d%%"u8, SliderFlags.AlwaysClamp);
+        _ = Widgets.Drag("drag int wrap 100..200"u8, ref _basicDragInt3, 1, 100, 200, "%d"u8, SliderFlags.WrapAround);
+        _ = Widgets.Drag("drag float"u8, ref _basicDragFloat1, 0.005f);
+        _ = Widgets.Drag("drag small float"u8, ref _basicDragFloat2, 0.0001f, 0.0f, 0.0f, "%.06f ns"u8);
 
-            _ = Widgets.Drag("drag int 0..100"u8, ref _basicDragInt2, 1, 0, 100, "%d%%"u8, SliderFlags.AlwaysClamp);
+        Widgets.SeparatorText("Sliders"u8);
+        _ = Widgets.Slider("slider int"u8, ref _basicSliderInt, -1, 3);
+        Widgets.SameLine();
+        HelpMarker("Ctrl+Click to input value."u8);
+        _ = Widgets.Slider("slider float"u8, ref _basicSliderFloat1, 0.0f, 1.0f, "ratio = %.3f"u8);
+        _ = Widgets.Slider("slider float (log)"u8, ref _basicSliderFloat2, -10.0f, 10.0f, "%.4f"u8, SliderFlags.Logarithmic);
+        _ = Widgets.SliderAngle("slider angle"u8, ref _basicSliderAngle);
+        _ = Widgets.Slider("slider enum"u8, ref _basicSliderEnum, 0, 3, ((Element)_basicSliderEnum).ToString().ToUtf8());
+        Widgets.SameLine();
+        HelpMarker("Using the format string parameter to display a name instead of the underlying integer."u8);
 
-            _ = Widgets.Drag("drag int wrap 100..200"u8, ref _basicDragInt3, 1, 100, 200, "%d"u8, SliderFlags.WrapAround);
-
-            _ = Widgets.Drag("drag float"u8, ref _basicDragFloat1, 0.005f);
-
-            _ = Widgets.Drag("drag small float"u8, ref _basicDragFloat2, 0.0001f, 0.0f, 0.0f, "%.06f ns"u8);
-
-            Widgets.SeparatorText("Sliders"u8);
-
-            _ = Widgets.Slider("slider int"u8, ref _basicSliderInt, -1, 3);
-            Widgets.SameLine();
-            HelpMarker("Ctrl+Click to input value."u8);
-
-            _ = Widgets.Slider("slider float"u8, ref _basicSliderFloat1, 0.0f, 1.0f, "ratio = %.3f"u8);
-
-            _ = Widgets.Slider("slider float (log)"u8, ref _basicSliderFloat2, -10.0f, 10.0f, "%.4f"u8, SliderFlags.Logarithmic);
-
-            _ = Widgets.SliderAngle("slider angle"u8, ref _basicSliderAngle);
-
-            // Slider enum
-            _ = Widgets.Slider("slider enum"u8, ref _basicSliderEnum, 0, 3, ((Element)_basicSliderEnum).ToString().ToUtf8());
-            Widgets.SameLine();
-            HelpMarker("Using the format string parameter to display a name instead of the underlying integer."u8);
-
-            Widgets.SeparatorText("Selectors/Pickers"u8);
-
-            _ = Widgets.ColorEdit("color 1"u8, _basicCol1);
-            Widgets.SameLine();
-            HelpMarker(@"Click on the color square to open a color picker.
+        Widgets.SeparatorText("Selectors/Pickers"u8);
+        _ = Widgets.ColorEdit("color 1"u8, _basicCol1);
+        Widgets.SameLine();
+        HelpMarker(@"Click on the color square to open a color picker.
 Click and hold to use drag and drop.
 Right-Click on the color square to show options.
 Ctrl+Click on individual component to input value.
 "u8);
+        _ = Widgets.ColorEdit("color 2"u8, _basicCol2);
 
-            _ = Widgets.ColorEdit("color 2"u8, _basicCol2);
+        // Basic combo
+        _ = Widgets.Combo("combo"u8, ref _basicComboItem, "AAAA\0BBBB\0CCCC\0DDDD\0EEEE\0FFFF\0GGGG\0HHHH\0IIIIIII\0JJJJ\0KKKKKKK\0"u8);
+        Widgets.SameLine();
+        HelpMarker("Using the simplified one-liner Combo API here.\nRefer to the \"Combo\" section below for an explanation of how to use the more flexible and general BeginCombo/EndCombo API."u8);
 
-            // Basic combo
-            _ = Widgets.Combo("combo"u8, ref _basicComboItem, "AAAA\0BBBB\0CCCC\0DDDD\0EEEE\0FFFF\0GGGG\0HHHH\0IIIIIII\0JJJJ\0KKKKKKK\0"u8);
-            Widgets.SameLine();
-            HelpMarker("Using the simplified one-liner Combo API here.\nRefer to the \"Combo\" section below for an explanation of how to use the more flexible and general BeginCombo/EndCombo API."u8);
-
+        {
             // Basic list box
             if (Widgets.BeginListBox("listbox"u8, new Vec2(0, 4 * Font.GetTextLineHeightWithSpacing())))
             {
@@ -877,9 +861,9 @@ Ctrl+Click on individual component to input value.
 
             Widgets.SameLine();
             HelpMarker("Using the simplified one-liner ListBox API here.\nRefer to the \"List boxes\" section below for an explanation of how to use the more flexible and general BeginListBox/EndListBox API."u8);
-
-            Widgets.TreePop();
         }
+
+        Widgets.TreePop();
     }
 
     private static void ShowUserGuide()
