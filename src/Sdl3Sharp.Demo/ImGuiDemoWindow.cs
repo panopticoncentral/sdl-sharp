@@ -621,78 +621,80 @@ public static unsafe class ImGuiDemoWindow
 
     private static void DemoWindowMenuBar()
     {
-        if (Widgets.BeginMenuBar())
+        if (!Widgets.BeginMenuBar())
         {
-            if (Widgets.BeginMenu("Menu"u8))
-            {
-                ShowExampleMenuFile();
-                Widgets.EndMenu();
-            }
+            return;
+        }
 
-            if (Widgets.BeginMenu("Examples"u8))
-            {
-                Widgets.MenuItem("Main menu bar"u8, null, ref _demoData.ShowMainMenuBar);
+        if (Widgets.BeginMenu("Menu"u8))
+        {
+            ShowExampleMenuFile();
+            Widgets.EndMenu();
+        }
 
-                Widgets.SeparatorText("Mini apps"u8);
-                Widgets.MenuItem("Assets Browser"u8, null, ref _demoData.ShowAppAssetsBrowser);
-                Widgets.MenuItem("Console"u8, null, ref _demoData.ShowAppConsole);
-                Widgets.MenuItem("Custom rendering"u8, null, ref _demoData.ShowAppCustomRendering);
-                Widgets.MenuItem("Documents"u8, null, ref _demoData.ShowAppDocuments);
-                Widgets.MenuItem("Log"u8, null, ref _demoData.ShowAppLog);
-                Widgets.MenuItem("Property editor"u8, null, ref _demoData.ShowAppPropertyEditor);
-                Widgets.MenuItem("Simple layout"u8, null, ref _demoData.ShowAppLayout);
-                Widgets.MenuItem("Simple overlay"u8, null, ref _demoData.ShowAppSimpleOverlay);
+        if (Widgets.BeginMenu("Examples"u8))
+        {
+            Widgets.MenuItem("Main menu bar"u8, null, ref _demoData.ShowMainMenuBar);
 
-                Widgets.SeparatorText("Concepts"u8);
-                Widgets.MenuItem("Auto-resizing window"u8, null, ref _demoData.ShowAppAutoResize);
-                Widgets.MenuItem("Constrained-resizing window"u8, null, ref _demoData.ShowAppConstrainedResize);
-                Widgets.MenuItem("Fullscreen window"u8, null, ref _demoData.ShowAppFullscreen);
-                Widgets.MenuItem("Long text display"u8, null, ref _demoData.ShowAppLongText);
-                Widgets.MenuItem("Manipulating window titles"u8, null, ref _demoData.ShowAppWindowTitles);
+            Widgets.SeparatorText("Mini apps"u8);
+            Widgets.MenuItem("Assets Browser"u8, null, ref _demoData.ShowAppAssetsBrowser);
+            Widgets.MenuItem("Console"u8, null, ref _demoData.ShowAppConsole);
+            Widgets.MenuItem("Custom rendering"u8, null, ref _demoData.ShowAppCustomRendering);
+            Widgets.MenuItem("Documents"u8, null, ref _demoData.ShowAppDocuments);
+            Widgets.MenuItem("Log"u8, null, ref _demoData.ShowAppLog);
+            Widgets.MenuItem("Property editor"u8, null, ref _demoData.ShowAppPropertyEditor);
+            Widgets.MenuItem("Simple layout"u8, null, ref _demoData.ShowAppLayout);
+            Widgets.MenuItem("Simple overlay"u8, null, ref _demoData.ShowAppSimpleOverlay);
 
-                Widgets.EndMenu();
-            }
-            //if (Widgets.MenuItem("MenuItem"u8)) {} // You can also use MenuItem() inside a menu bar!
-            if (Widgets.BeginMenu("Tools"u8))
-            {
-                IO io = Context.IO;
+            Widgets.SeparatorText("Concepts"u8);
+            Widgets.MenuItem("Auto-resizing window"u8, null, ref _demoData.ShowAppAutoResize);
+            Widgets.MenuItem("Constrained-resizing window"u8, null, ref _demoData.ShowAppConstrainedResize);
+            Widgets.MenuItem("Fullscreen window"u8, null, ref _demoData.ShowAppFullscreen);
+            Widgets.MenuItem("Long text display"u8, null, ref _demoData.ShowAppLongText);
+            Widgets.MenuItem("Manipulating window titles"u8, null, ref _demoData.ShowAppWindowTitles);
+
+            Widgets.EndMenu();
+        }
+
+        if (Widgets.BeginMenu("Tools"u8))
+        {
+            IO io = Context.IO;
 #if !IMGUI_DISABLE_DEBUG_TOOLS
-                const bool hasDebugTools = true;
+            const bool hasDebugTools = true;
 #else
             const bool hasDebugTools = false;
 #endif
-                Widgets.MenuItem("Metrics/Debugger"u8, null, ref _demoData.ShowMetrics, hasDebugTools);
-                if (Widgets.BeginMenu("Debug Options"u8))
-                {
-                    Widgets.BeginDisabled(!hasDebugTools);
-                    Widgets.Checkbox("Highlight ID Conflicts"u8, ref io.ConfigDebugHighlightIdConflicts);
-                    Widgets.EndDisabled();
-                    Widgets.Checkbox("Assert on error recovery"u8, ref io.ConfigErrorRecoveryEnableAssert);
-                    Widgets.TextDisabled("(see Demo->Configuration for details & more)"u8);
-                    Widgets.EndMenu();
-                }
-
-                Widgets.MenuItem("Debug Log"u8, null, ref _demoData.ShowDebugLog, hasDebugTools);
-                Widgets.MenuItem("ID Stack Tool"u8, null, ref _demoData.ShowIDStackTool, hasDebugTools);
-                var isDebuggerPresent = io.ConfigDebugIsDebuggerPresent;
-                if (Widgets.MenuItem("Item Picker"u8, null, false, hasDebugTools))// && isDebuggerPresent))
-                {
-                    // TODO: Widgets.DebugStartItemPicker();
-                }
-
-                if (!isDebuggerPresent)
-                {
-                    Widgets.SetItemTooltip("Requires io.ConfigDebugIsDebuggerPresent=true to be set.\n\nWe otherwise disable some extra features to avoid casual users crashing the application."u8);
-                }
-
-                Widgets.MenuItem("Style Editor"u8, null, ref _demoData.ShowStyleEditor);
-                Widgets.MenuItem("About Dear ImGui"u8, null, ref _demoData.ShowAbout);
-
+            Widgets.MenuItem("Metrics/Debugger"u8, null, ref _demoData.ShowMetrics, hasDebugTools);
+            if (Widgets.BeginMenu("Debug Options"u8))
+            {
+                Widgets.BeginDisabled(!hasDebugTools);
+                Widgets.Checkbox("Highlight ID Conflicts"u8, ref io.ConfigDebugHighlightIdConflicts);
+                Widgets.EndDisabled();
+                Widgets.Checkbox("Assert on error recovery"u8, ref io.ConfigErrorRecoveryEnableAssert);
+                Widgets.TextDisabled("(see Demo->Configuration for details & more)"u8);
                 Widgets.EndMenu();
             }
 
-            Widgets.EndMenuBar();
+            Widgets.MenuItem("Debug Log"u8, null, ref _demoData.ShowDebugLog, hasDebugTools);
+            Widgets.MenuItem("ID Stack Tool"u8, null, ref _demoData.ShowIDStackTool, hasDebugTools);
+            var isDebuggerPresent = io.ConfigDebugIsDebuggerPresent;
+            if (Widgets.MenuItem("Item Picker"u8, null, false, hasDebugTools))// && isDebuggerPresent))
+            {
+                // TODO: Widgets.DebugStartItemPicker();
+            }
+
+            if (!isDebuggerPresent)
+            {
+                Widgets.SetItemTooltip("Requires io.ConfigDebugIsDebuggerPresent=true to be set.\n\nWe otherwise disable some extra features to avoid casual users crashing the application."u8);
+            }
+
+            Widgets.MenuItem("Style Editor"u8, null, ref _demoData.ShowStyleEditor);
+            Widgets.MenuItem("About Dear ImGui"u8, null, ref _demoData.ShowAbout);
+
+            Widgets.EndMenu();
         }
+
+        Widgets.EndMenuBar();
     }
 
     private static void DemoWindowWidgetsBasic()
@@ -778,9 +780,10 @@ public static unsafe class ImGuiDemoWindow
         Widgets.SeparatorText("Inputs"u8);
 
         // Input text
-        _ = Widgets.InputText("input text"u8, _basicStr0);
-        Widgets.SameLine();
-        HelpMarker(@"USER:
+        {
+            _ = Widgets.InputText("input text"u8, _basicStr0);
+            Widgets.SameLine();
+            HelpMarker(@"USER:
 Hold Shift or use mouse to select text.
 Ctrl+Left/Right to word jump.
 Ctrl+A or Double-Click to select all.
@@ -790,55 +793,63 @@ Escape to revert.
 
 PROGRAMMER:
 You can use the ImGuiInputTextFlags_CallbackResize facility if you need to wire InputText() to a dynamic string type."u8);
-        _ = Widgets.InputTextWithHint("input text (w/ hint)"u8, "enter text here"u8, _basicStr1);
-        _ = Widgets.Input("input int"u8, ref _basicInputInt);
-        _ = Widgets.Input("input float"u8, ref _basicInputFloat, 0.01f, 1.0f, "%.3f"u8);
-        _ = Widgets.Input("input double"u8, ref _basicInputDouble, 0.01, 1.0, "%.8f"u8);
-        _ = Widgets.Input("input scientific"u8, ref _basicInputScientific, 0.0f, 0.0f, "%e"u8);
-        Widgets.SameLine();
-        HelpMarker(@"You can input value using the scientific notation,
+            _ = Widgets.InputTextWithHint("input text (w/ hint)"u8, "enter text here"u8, _basicStr1);
+            _ = Widgets.Input("input int"u8, ref _basicInputInt);
+            _ = Widgets.Input("input float"u8, ref _basicInputFloat, 0.01f, 1.0f, "%.3f"u8);
+            _ = Widgets.Input("input double"u8, ref _basicInputDouble, 0.01, 1.0, "%.8f"u8);
+            _ = Widgets.Input("input scientific"u8, ref _basicInputScientific, 0.0f, 0.0f, "%e"u8);
+            Widgets.SameLine();
+            HelpMarker(@"You can input value using the scientific notation,
   e.g. ""1e+8"" becomes ""100000000""."u8);
-        _ = Widgets.Input("input float3"u8, _basicVec4a);
+            _ = Widgets.Input("input float3"u8, _basicVec4a);
+        }
 
-        Widgets.SeparatorText("Drags"u8);
-        _ = Widgets.Drag("drag int"u8, ref _basicDragInt1, 1);
-        Widgets.SameLine();
-        HelpMarker(@"Click and drag to edit value.
+        {
+            Widgets.SeparatorText("Drags"u8);
+            _ = Widgets.Drag("drag int"u8, ref _basicDragInt1, 1);
+            Widgets.SameLine();
+            HelpMarker(@"Click and drag to edit value.
 Hold Shift/Alt for faster/slower edit.
 Double-Click or Ctrl+Click to input value."u8);
-        _ = Widgets.Drag("drag int 0..100"u8, ref _basicDragInt2, 1, 0, 100, "%d%%"u8, SliderFlags.AlwaysClamp);
-        _ = Widgets.Drag("drag int wrap 100..200"u8, ref _basicDragInt3, 1, 100, 200, "%d"u8, SliderFlags.WrapAround);
-        _ = Widgets.Drag("drag float"u8, ref _basicDragFloat1, 0.005f);
-        _ = Widgets.Drag("drag small float"u8, ref _basicDragFloat2, 0.0001f, 0.0f, 0.0f, "%.06f ns"u8);
+            _ = Widgets.Drag("drag int 0..100"u8, ref _basicDragInt2, 1, 0, 100, "%d%%"u8, SliderFlags.AlwaysClamp);
+            _ = Widgets.Drag("drag int wrap 100..200"u8, ref _basicDragInt3, 1, 100, 200, "%d"u8, SliderFlags.WrapAround);
+            _ = Widgets.Drag("drag float"u8, ref _basicDragFloat1, 0.005f);
+            _ = Widgets.Drag("drag small float"u8, ref _basicDragFloat2, 0.0001f, 0.0f, 0.0f, "%.06f ns"u8);
 
-        Widgets.SeparatorText("Sliders"u8);
-        _ = Widgets.Slider("slider int"u8, ref _basicSliderInt, -1, 3);
-        Widgets.SameLine();
-        HelpMarker("Ctrl+Click to input value."u8);
-        _ = Widgets.Slider("slider float"u8, ref _basicSliderFloat1, 0.0f, 1.0f, "ratio = %.3f"u8);
-        _ = Widgets.Slider("slider float (log)"u8, ref _basicSliderFloat2, -10.0f, 10.0f, "%.4f"u8, SliderFlags.Logarithmic);
-        _ = Widgets.SliderAngle("slider angle"u8, ref _basicSliderAngle);
-        _ = Widgets.Slider("slider enum"u8, ref _basicSliderEnum, 0, 3, ((Element)_basicSliderEnum).ToString().ToUtf8());
-        Widgets.SameLine();
-        HelpMarker("Using the format string parameter to display a name instead of the underlying integer."u8);
+            Widgets.SeparatorText("Sliders"u8);
+            _ = Widgets.Slider("slider int"u8, ref _basicSliderInt, -1, 3);
+            Widgets.SameLine();
+            HelpMarker("Ctrl+Click to input value."u8);
+            _ = Widgets.Slider("slider float"u8, ref _basicSliderFloat1, 0.0f, 1.0f, "ratio = %.3f"u8);
+            _ = Widgets.Slider("slider float (log)"u8, ref _basicSliderFloat2, -10.0f, 10.0f, "%.4f"u8, SliderFlags.Logarithmic);
+            _ = Widgets.SliderAngle("slider angle"u8, ref _basicSliderAngle);
+            _ = Widgets.Slider("slider enum"u8, ref _basicSliderEnum, 0, 3, ((Element)_basicSliderEnum).ToString().ToUtf8());
+            Widgets.SameLine();
+            HelpMarker("Using the format string parameter to display a name instead of the underlying integer."u8);
+        }
 
-        Widgets.SeparatorText("Selectors/Pickers"u8);
-        _ = Widgets.ColorEdit("color 1"u8, _basicCol1);
-        Widgets.SameLine();
-        HelpMarker(@"Click on the color square to open a color picker.
+        {
+            // TODO: Color editors
+            Widgets.SeparatorText("Selectors/Pickers"u8);
+            _ = Widgets.ColorEdit("color 1"u8, _basicCol1);
+            Widgets.SameLine();
+            HelpMarker(@"Click on the color square to open a color picker.
 Click and hold to use drag and drop.
 Right-Click on the color square to show options.
 Ctrl+Click on individual component to input value.
 "u8);
-        _ = Widgets.ColorEdit("color 2"u8, _basicCol2);
-
-        // Basic combo
-        _ = Widgets.Combo("combo"u8, ref _basicComboItem, "AAAA\0BBBB\0CCCC\0DDDD\0EEEE\0FFFF\0GGGG\0HHHH\0IIIIIII\0JJJJ\0KKKKKKK\0"u8);
-        Widgets.SameLine();
-        HelpMarker("Using the simplified one-liner Combo API here.\nRefer to the \"Combo\" section below for an explanation of how to use the more flexible and general BeginCombo/EndCombo API."u8);
+            _ = Widgets.ColorEdit("color 2"u8, _basicCol2);
+        }
 
         {
-            // Basic list box
+            // TODO: Basic combos
+            _ = Widgets.Combo("combo"u8, ref _basicComboItem, "AAAA\0BBBB\0CCCC\0DDDD\0EEEE\0FFFF\0GGGG\0HHHH\0IIIIIII\0JJJJ\0KKKKKKK\0"u8);
+            Widgets.SameLine();
+            HelpMarker("Using the simplified one-liner Combo API here.\nRefer to the \"Combo\" section below for an explanation of how to use the more flexible and general BeginCombo/EndCombo API."u8);
+        }
+
+        {
+            // TODO: Basic list box
             if (Widgets.BeginListBox("listbox"u8, new Vec2(0, 4 * Font.GetTextLineHeightWithSpacing())))
             {
                 string[] listBoxItems = ["Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon"];
@@ -862,6 +873,198 @@ Ctrl+Click on individual component to input value.
             Widgets.SameLine();
             HelpMarker("Using the simplified one-liner ListBox API here.\nRefer to the \"List boxes\" section below for an explanation of how to use the more flexible and general BeginListBox/EndListBox API."u8);
         }
+
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsBullets()
+    {
+        if (!Widgets.TreeNode("Bullets"u8))
+        {
+            return;
+        }
+
+        Widgets.BulletText("Bullet point 1"u8);
+        Widgets.BulletText("Bullet point 2\nOn multiple lines"u8);
+        if (Widgets.TreeNode("Tree node"u8))
+        {
+            Widgets.BulletText("Another bullet point"u8);
+            Widgets.TreePop();
+        }
+
+        Widgets.Bullet();
+        Widgets.Text("Bullet point 3 (two calls)"u8);
+        Widgets.Bullet();
+        _ = Widgets.SmallButton("Button"u8);
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsCollapsingHeaders()
+    {
+        if (!Widgets.TreeNode("Collapsing Headers"u8))
+        {
+            return;
+        }
+
+        _ = Widgets.Checkbox("Show 2nd header"u8, ref _collapsingClosableGroup);
+        if (Widgets.CollapsingHeader("Header"u8, TreeNodeFlags.None))
+        {
+            Widgets.Text($"IsItemHovered: {Widgets.IsItemHovered()}".ToUtf8());
+            for (var i = 0; i < 5; i++)
+            {
+                Widgets.Text($"Some content {i}".ToUtf8());
+            }
+        }
+
+        if (_collapsingClosableGroup)
+        {
+            if (Widgets.CollapsingHeader("Header with a close button"u8, ref _collapsingClosableGroup))
+            {
+                Widgets.Text($"IsItemHovered: {Widgets.IsItemHovered()}".ToUtf8());
+                for (var i = 0; i < 5; i++)
+                {
+                    Widgets.Text($"More content {i}".ToUtf8());
+                }
+            }
+        }
+
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsColorAndPickers()
+    {
+        if (!Widgets.TreeNode("Color/Picker Widgets"u8))
+        {
+            return;
+        }
+
+        Widgets.SeparatorText("Options"u8);
+        _ = Widgets.Checkbox("With Alpha Preview"u8, ref _colorAlphaPreview);
+        _ = Widgets.Checkbox("With Half Alpha Preview"u8, ref _colorAlphaHalfPreview);
+        _ = Widgets.Checkbox("With Drag and Drop"u8, ref _colorDragAndDrop);
+        _ = Widgets.Checkbox("With Options Menu"u8, ref _colorOptionsMenu);
+        Widgets.SameLine();
+        HelpMarker("Right-click on the individual color widget to show options."u8);
+        _ = Widgets.Checkbox("With HDR"u8, ref _colorHdr);
+        Widgets.SameLine();
+        HelpMarker("Currently all this does is to lift the 0..1 limits on dragging widgets."u8);
+        ColorEditFlags miscFlags = (_colorHdr ? ColorEditFlags.HDR : ColorEditFlags.None) |
+                                   (_colorDragAndDrop ? ColorEditFlags.None : ColorEditFlags.NoDragDrop) |
+                                   (_colorAlphaHalfPreview
+                                       ? ColorEditFlags.AlphaPreviewHalf
+                                       : (_colorAlphaPreview ? ColorEditFlags.AlphaPreviewHalf : ColorEditFlags.None)) |
+                                   (_colorOptionsMenu ? ColorEditFlags.None : ColorEditFlags.NoOptions);
+
+        Widgets.SeparatorText("Inline color editor"u8);
+        Widgets.Text("Color widget:"u8);
+        Widgets.SameLine();
+        HelpMarker("Click on the color square to open a color picker.\nCtrl+Click on individual component to input value.\n"u8);
+        _ = Widgets.ColorEdit("MyColor##1"u8, _colorCol1.AsSpan(0, 3), miscFlags);
+
+        Widgets.Text("Color widget HSV with Alpha:"u8);
+        _ = Widgets.ColorEdit("MyColor##2"u8, _colorCol2, ColorEditFlags.DisplayHSV | miscFlags);
+
+        Widgets.Text("Color widget with Float Display:"u8);
+        _ = Widgets.ColorEdit("MyColor##2f"u8, _colorCol2, ColorEditFlags.Float | miscFlags);
+
+        Widgets.Text("Color button with Picker:"u8);
+        Widgets.SameLine();
+        HelpMarker("With the ColorEditFlags.NoInputs flag you can hide all the slider/text inputs.\nWith the ColorEditFlags.NoLabel flag you can pass a non-empty label which will only be used for the tooltip and picker popup."u8);
+        _ = Widgets.ColorEdit("MyColor##3"u8, _colorCol2, ColorEditFlags.NoInputs | ColorEditFlags.NoLabel | miscFlags);
+
+        Widgets.Text("Color button with Custom Picker Popup:"u8);
+
+        // Generate a default palette
+        if (_colorSavedPaletteInit)
+        {
+            for (var n = 0; n < 32; n++)
+            {
+                (var r, var g, var b) = Color.ColorConvertHSVtoRGB(n / 31.0f, 0.8f, 0.8f);
+                _colorSavedPalette[(n * 4) + 0] = r;
+                _colorSavedPalette[(n * 4) + 1] = g;
+                _colorSavedPalette[(n * 4) + 2] = b;
+                _colorSavedPalette[(n * 4) + 3] = 1.0f;
+            }
+
+            _colorSavedPaletteInit = false;
+        }
+
+        var openPopup = Widgets.ColorButton("MyColor##3b"u8, new Color(_colorColor[0], _colorColor[1], _colorColor[2], _colorColor[3]), miscFlags);
+        Widgets.SameLine(0, Context.Style.ItemInnerSpacing.X);
+        openPopup |= Widgets.Button("Palette"u8);
+        if (openPopup)
+        {
+            Window.OpenPopup("mypicker"u8);
+            _colorBackupColor[0] = _colorColor[0];
+            _colorBackupColor[1] = _colorColor[1];
+            _colorBackupColor[2] = _colorColor[2];
+            _colorBackupColor[3] = _colorColor[3];
+        }
+
+        if (Window.BeginPopup("mypicker"u8))
+        {
+            Widgets.Text("MY CUSTOM COLOR PICKER WITH AN ACTIVE PALETTE"u8);
+            Widgets.Separator();
+            _ = Widgets.ColorPicker("##picker"u8, _colorColor, ColorEditFlags.NoSidePreview | ColorEditFlags.NoSmallPreview | miscFlags);
+            Widgets.SameLine();
+
+            Widgets.BeginGroup();
+            Widgets.Text("Current"u8);
+            _ = Widgets.ColorButton("##current"u8, new Color(_colorColor[0], _colorColor[1], _colorColor[2], _colorColor[3]), ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, new Vec2(60, 40));
+            Widgets.Text("Previous"u8);
+            if (Widgets.ColorButton("##previous"u8, new Color(_colorBackupColor[0], _colorBackupColor[1], _colorBackupColor[2], _colorBackupColor[3]), ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, new Vec2(60, 40)))
+            {
+                _colorColor[0] = _colorBackupColor[0];
+                _colorColor[1] = _colorBackupColor[1];
+                _colorColor[2] = _colorBackupColor[2];
+                _colorColor[3] = _colorBackupColor[3];
+            }
+
+            Widgets.Separator();
+            Widgets.Text("Palette"u8);
+            for (var n = 0; n < 32; n++)
+            {
+                Id.Push(n);
+                if (n % 8 != 0)
+                {
+                    Widgets.SameLine(0.0f, Context.Style.ItemSpacing.Y);
+                }
+
+                ColorEditFlags paletteButtonFlags = ColorEditFlags.NoAlpha | ColorEditFlags.NoPicker | ColorEditFlags.NoTooltip;
+                if (Widgets.ColorButton("##palette"u8, new Color(_colorSavedPalette[(n * 4) + 0], _colorSavedPalette[(n * 4) + 1], _colorSavedPalette[(n * 4) + 2], _colorSavedPalette[(n * 4) + 3]), paletteButtonFlags, new Vec2(20, 20)))
+                {
+                    _colorColor[0] = _colorSavedPalette[(n * 4) + 0];
+                    _colorColor[1] = _colorSavedPalette[(n * 4) + 1];
+                    _colorColor[2] = _colorSavedPalette[(n * 4) + 2];
+                    _colorColor[3] = 1.0f;
+                }
+
+                // Allow drag/drop reordering would go here if we wanted to implement it
+                Id.Pop();
+            }
+
+            Widgets.EndGroup();
+            Window.EndPopup();
+        }
+
+        Widgets.Text("Color button only:"u8);
+        _ = Widgets.Checkbox("ColorEditFlags.NoBorder"u8, ref _colorNoBorder);
+        _ = Widgets.ColorButton("MyColor##3c"u8, new Color(_colorCol2[0], _colorCol2[1], _colorCol2[2], _colorCol2[3]),
+            miscFlags | (_colorNoBorder ? ColorEditFlags.NoBorder : ColorEditFlags.None), new Vec2(80, 80));
+
+        Widgets.SeparatorText("Color picker"u8);
+        _ = Widgets.Checkbox("With Alpha"u8, ref _colorAlphaPreview);
+        _ = Widgets.Checkbox("With Alpha Bar"u8, ref _colorAlphaHalfPreview);
+        _ = Widgets.Checkbox("With Side Preview"u8, ref _colorDragAndDrop);
+        if (_colorDragAndDrop)
+        {
+            Widgets.SameLine();
+            _ = Widgets.Checkbox("With Ref Color"u8, ref _colorOptionsMenu);
+        }
+
+        _ = Widgets.Checkbox("With Small Preview"u8, ref _colorHdr);
+        _ = Widgets.Checkbox("With Inputs"u8, ref _colorSavedPaletteInit);
+        _ = Widgets.Checkbox("With Label"u8, ref _colorNoBorder);
 
         Widgets.TreePop();
     }
@@ -1025,10 +1228,10 @@ Ctrl+Click on individual component to input value.
         }
 
         DemoWindowWidgetsBasic();
-        ShowBullets();
-        ShowCollapsingHeaders();
+        DemoWindowWidgetsBullets();
+        DemoWindowWidgetsCollapsingHeaders();
         ShowComboBoxes();
-        ShowColorAndPickers();
+        DemoWindowWidgetsColorAndPickers();
         ShowDataTypes();
 
         if (disableAll)
@@ -1071,56 +1274,6 @@ Ctrl+Click on individual component to input value.
     // Helper Methods
 
     // Private Section Methods
-
-    private static void ShowBullets()
-    {
-        if (Widgets.TreeNode("Bullets"u8))
-        {
-            Widgets.BulletText("Bullet point 1"u8);
-            Widgets.BulletText("Bullet point 2\nOn multiple lines"u8);
-            if (Widgets.TreeNode("Tree node"u8))
-            {
-                Widgets.BulletText("Another bullet point"u8);
-                Widgets.TreePop();
-            }
-
-            Widgets.Bullet();
-            Widgets.Text("Bullet point 3 (two calls)"u8);
-            Widgets.Bullet();
-            _ = Widgets.SmallButton("Button"u8);
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowCollapsingHeaders()
-    {
-        if (Widgets.TreeNode("Collapsing Headers"u8))
-        {
-            _ = Widgets.Checkbox("Show 2nd header"u8, ref _collapsingClosableGroup);
-            if (Widgets.CollapsingHeader("Header"u8, TreeNodeFlags.None))
-            {
-                Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"IsItemHovered: {Widgets.IsItemHovered()}"));
-                for (var i = 0; i < 5; i++)
-                {
-                    Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"Some content {i}"));
-                }
-            }
-
-            if (_collapsingClosableGroup)
-            {
-                if (Widgets.CollapsingHeader("Header with a close button"u8, ref _collapsingClosableGroup))
-                {
-                    Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"IsItemHovered: {Widgets.IsItemHovered()}"));
-                    for (var i = 0; i < 5; i++)
-                    {
-                        Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"More content {i}"));
-                    }
-                }
-            }
-
-            Widgets.TreePop();
-        }
-    }
 
     private static void ShowComboBoxes()
     {
@@ -1175,142 +1328,6 @@ Ctrl+Click on individual component to input value.
 
             // Combo with items height
             _ = Widgets.Combo("combo 4 (with height)"u8, ref _comboItemCurrent4, "aaaa\0bbbb\0cccc\0dddd\0eeee\0ffff\0gggg\0hhhh\0iiii\0jjjj\0kkkk\0lllll\0mmmm\0"u8, 4);
-
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowColorAndPickers()
-    {
-        if (Widgets.TreeNode("Color/Picker Widgets"u8))
-        {
-            Widgets.SeparatorText("Options"u8);
-            _ = Widgets.Checkbox("With Alpha Preview"u8, ref _colorAlphaPreview);
-            _ = Widgets.Checkbox("With Half Alpha Preview"u8, ref _colorAlphaHalfPreview);
-            _ = Widgets.Checkbox("With Drag and Drop"u8, ref _colorDragAndDrop);
-            _ = Widgets.Checkbox("With Options Menu"u8, ref _colorOptionsMenu);
-            Widgets.SameLine();
-            HelpMarker("Right-click on the individual color widget to show options."u8);
-            _ = Widgets.Checkbox("With HDR"u8, ref _colorHdr);
-            Widgets.SameLine();
-            HelpMarker("Currently all this does is to lift the 0..1 limits on dragging widgets."u8);
-            ColorEditFlags miscFlags = (_colorHdr ? ColorEditFlags.HDR : ColorEditFlags.None) |
-                                       (_colorDragAndDrop ? ColorEditFlags.None : ColorEditFlags.NoDragDrop) |
-                                       (_colorAlphaHalfPreview
-                                           ? ColorEditFlags.AlphaPreviewHalf
-                                           : (_colorAlphaPreview ? ColorEditFlags.AlphaPreviewHalf : ColorEditFlags.None)) |
-                                       (_colorOptionsMenu ? ColorEditFlags.None : ColorEditFlags.NoOptions);
-
-            Widgets.SeparatorText("Inline color editor"u8);
-            Widgets.Text("Color widget:"u8);
-            Widgets.SameLine();
-            HelpMarker("Click on the color square to open a color picker.\nCtrl+Click on individual component to input value.\n"u8);
-            _ = Widgets.ColorEdit("MyColor##1"u8, _colorCol1.AsSpan(0, 3), miscFlags);
-
-            Widgets.Text("Color widget HSV with Alpha:"u8);
-            _ = Widgets.ColorEdit("MyColor##2"u8, _colorCol2, ColorEditFlags.DisplayHSV | miscFlags);
-
-            Widgets.Text("Color widget with Float Display:"u8);
-            _ = Widgets.ColorEdit("MyColor##2f"u8, _colorCol2, ColorEditFlags.Float | miscFlags);
-
-            Widgets.Text("Color button with Picker:"u8);
-            Widgets.SameLine();
-            HelpMarker("With the ColorEditFlags.NoInputs flag you can hide all the slider/text inputs.\nWith the ColorEditFlags.NoLabel flag you can pass a non-empty label which will only be used for the tooltip and picker popup."u8);
-            _ = Widgets.ColorEdit("MyColor##3"u8, _colorCol2, ColorEditFlags.NoInputs | ColorEditFlags.NoLabel | miscFlags);
-
-            Widgets.Text("Color button with Custom Picker Popup:"u8);
-
-            // Generate a default palette
-            if (_colorSavedPaletteInit)
-            {
-                for (var n = 0; n < 32; n++)
-                {
-                    (var r, var g, var b) = Color.ColorConvertHSVtoRGB(n / 31.0f, 0.8f, 0.8f);
-                    _colorSavedPalette[(n * 4) + 0] = r;
-                    _colorSavedPalette[(n * 4) + 1] = g;
-                    _colorSavedPalette[(n * 4) + 2] = b;
-                    _colorSavedPalette[(n * 4) + 3] = 1.0f;
-                }
-
-                _colorSavedPaletteInit = false;
-            }
-
-            var openPopup = Widgets.ColorButton("MyColor##3b"u8, new Color(_colorColor[0], _colorColor[1], _colorColor[2], _colorColor[3]), miscFlags);
-            Widgets.SameLine(0, Context.Style.ItemInnerSpacing.X);
-            openPopup |= Widgets.Button("Palette"u8);
-            if (openPopup)
-            {
-                Window.OpenPopup("mypicker"u8);
-                _colorBackupColor[0] = _colorColor[0];
-                _colorBackupColor[1] = _colorColor[1];
-                _colorBackupColor[2] = _colorColor[2];
-                _colorBackupColor[3] = _colorColor[3];
-            }
-
-            if (Window.BeginPopup("mypicker"u8))
-            {
-                Widgets.Text("MY CUSTOM COLOR PICKER WITH AN ACTIVE PALETTE"u8);
-                Widgets.Separator();
-                _ = Widgets.ColorPicker("##picker"u8, _colorColor, ColorEditFlags.NoSidePreview | ColorEditFlags.NoSmallPreview | miscFlags);
-                Widgets.SameLine();
-
-                Widgets.BeginGroup();
-                Widgets.Text("Current"u8);
-                _ = Widgets.ColorButton("##current"u8, new Color(_colorColor[0], _colorColor[1], _colorColor[2], _colorColor[3]), ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, new Vec2(60, 40));
-                Widgets.Text("Previous"u8);
-                if (Widgets.ColorButton("##previous"u8, new Color(_colorBackupColor[0], _colorBackupColor[1], _colorBackupColor[2], _colorBackupColor[3]), ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, new Vec2(60, 40)))
-                {
-                    _colorColor[0] = _colorBackupColor[0];
-                    _colorColor[1] = _colorBackupColor[1];
-                    _colorColor[2] = _colorBackupColor[2];
-                    _colorColor[3] = _colorBackupColor[3];
-                }
-
-                Widgets.Separator();
-                Widgets.Text("Palette"u8);
-                for (var n = 0; n < 32; n++)
-                {
-                    Id.Push(n);
-                    if (n % 8 != 0)
-                    {
-                        Widgets.SameLine(0.0f, Context.Style.ItemSpacing.Y);
-                    }
-
-                    ColorEditFlags paletteButtonFlags = ColorEditFlags.NoAlpha | ColorEditFlags.NoPicker | ColorEditFlags.NoTooltip;
-                    if (Widgets.ColorButton("##palette"u8, new Color(_colorSavedPalette[(n * 4) + 0], _colorSavedPalette[(n * 4) + 1], _colorSavedPalette[(n * 4) + 2], _colorSavedPalette[(n * 4) + 3]), paletteButtonFlags, new Vec2(20, 20)))
-                    {
-                        _colorColor[0] = _colorSavedPalette[(n * 4) + 0];
-                        _colorColor[1] = _colorSavedPalette[(n * 4) + 1];
-                        _colorColor[2] = _colorSavedPalette[(n * 4) + 2];
-                        _colorColor[3] = 1.0f;
-                    }
-
-                    // Allow drag/drop reordering would go here if we wanted to implement it
-                    Id.Pop();
-                }
-
-                Widgets.EndGroup();
-                Window.EndPopup();
-            }
-
-            Widgets.Text("Color button only:"u8);
-            _ = Widgets.Checkbox("ColorEditFlags.NoBorder"u8, ref _colorNoBorder);
-            _ = Widgets.ColorButton("MyColor##3c"u8, new Color(_colorCol2[0], _colorCol2[1], _colorCol2[2], _colorCol2[3]),
-                miscFlags | (_colorNoBorder ? ColorEditFlags.NoBorder : ColorEditFlags.None), new Vec2(80, 80));
-
-            Widgets.SeparatorText("Color picker"u8);
-            _ = Widgets.Checkbox("With Alpha"u8, ref _colorAlphaPreview);
-            _ = Widgets.Checkbox("With Alpha Bar"u8, ref _colorAlphaHalfPreview);
-            _ = Widgets.Checkbox("With Side Preview"u8, ref _colorDragAndDrop);
-            if (_colorDragAndDrop)
-            {
-                Widgets.SameLine();
-                _ = Widgets.Checkbox("With Ref Color"u8, ref _colorOptionsMenu);
-            }
-
-            _ = Widgets.Checkbox("With Small Preview"u8, ref _colorHdr);
-            _ = Widgets.Checkbox("With Inputs"u8, ref _colorSavedPaletteInit);
-            _ = Widgets.Checkbox("With Label"u8, ref _colorNoBorder);
 
             Widgets.TreePop();
         }
