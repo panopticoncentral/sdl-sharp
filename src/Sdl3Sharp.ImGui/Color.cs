@@ -1,5 +1,5 @@
 using Sdl3Sharp.ImGui.Native;
-
+using System.Runtime.InteropServices;
 using static Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
@@ -9,7 +9,7 @@ namespace Sdl3Sharp.ImGui;
 /// </summary>
 public unsafe readonly record struct Color
 {
-    internal readonly ImVec4 Value { get; }
+    internal readonly ImVec4 Value;
 
     /// <summary>
     /// The red component of the vector.
@@ -41,6 +41,16 @@ public unsafe readonly record struct Color
     public Color(float red, float green, float blue, float alpha)
     {
         Value = new ImVec4() { X = red, Y = green, Z = blue, W = alpha };
+    }
+
+    /// <summary>
+    /// Creates a new Color instance from a ColorRGB and an alpha value.
+    /// </summary>
+    /// <param name="color">The RGB color.</param>
+    /// <param name="alpha">The alpha component.</param>
+    public Color(ColorRGB color, float alpha)
+        : this(color.Red, color.Green, color.Blue, alpha)
+    {
     }
 
     internal Color(ImVec4 value)
@@ -153,6 +163,11 @@ public unsafe readonly record struct Color
         float r, g, b;
         ImGui_ColorConvertHSVtoRGB(h, s, v, &r, &g, &b);
         return (r, g, b);
+    }
+
+    public static implicit operator Color((float R, float G, float B, float A) tuple)
+    {
+        return new(tuple.R, tuple.G, tuple.B, tuple.A);
     }
 
     /// <inheritdoc />

@@ -71,7 +71,7 @@ public enum ColorEditFlags
     /// <summary>
     /// ColorEdit, ColorPicker, ColorButton: disable rendering a checkerboard background behind transparent color.
     /// </summary>
-    AlphaNoBg = ImGuiColorEditFlags.AlphaNoBg,
+    AlphaNoBackground = ImGuiColorEditFlags.AlphaNoBg,
 
     /// <summary>
     /// ColorEdit, ColorPicker, ColorButton: display half opaque / half transparent preview.

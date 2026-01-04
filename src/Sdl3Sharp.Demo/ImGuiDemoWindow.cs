@@ -1,5 +1,6 @@
-using System.Runtime.CompilerServices;
 using Sdl3Sharp.ImGui;
+using Sdl3Sharp.ImGui.Native;
+using System.Runtime.CompilerServices;
 
 namespace Sdl3Sharp.Demo;
 
@@ -49,8 +50,8 @@ public static unsafe class ImGuiDemoWindow
     private static float _basicSliderFloat2 = 0.0f;
     private static float _basicSliderAngle = 0.0f;
     private static int _basicSliderEnum = 0;
-    private static readonly float[] _basicCol1 = [1.0f, 0.0f, 0.2f];
-    private static readonly float[] _basicCol2 = [0.4f, 0.7f, 0.0f, 0.5f];
+    private static ColorRGB _basicCol1 = (1.0f, 0.0f, 0.2f);
+    private static Color _basicCol2 = (0.4f, 0.7f, 0.0f, 0.5f);
     private static int _basicComboItem;
     private static int _basicListBoxItem = 1;
 
@@ -68,19 +69,17 @@ public static unsafe class ImGuiDemoWindow
 
     // State Fields - Color and Pickers Section
 
-    private static readonly float[] _colorCol1 = [1.0f, 0.0f, 0.2f];
-    private static readonly float[] _colorCol2 = [0.4f, 0.7f, 0.0f, 0.5f];
-    private static bool _colorAlphaPreview = true;
-    private static bool _colorAlphaHalfPreview;
-    private static bool _colorDragAndDrop = true;
-    private static bool _colorOptionsMenu = true;
-    private static bool _colorHdr;
-    private static ColorEditFlags _colorAlphaFlags = ColorEditFlags.None;
-    private static readonly float[] _colorColor = [114.0f / 255.0f, 144.0f / 255.0f, 154.0f / 255.0f, 200.0f / 255.0f];
+    private static ColorEditFlags _colorBaseFlags = ColorEditFlags.None;
+    private static Color _colorColor = (114.0f / 255.0f, 144.0f / 255.0f, 154.0f / 255.0f, 200.0f / 255.0f);
     private static bool _colorNoBorder;
-    private static readonly float[] _colorBackupColor = new float[4];
-    private static readonly float[] _colorSavedPalette = new float[32 * 4];
-    private static bool _colorSavedPaletteInit = true;
+    private static Color _colorBackupColor;
+    private static readonly Color[] _colorSavedPalette = new Color[32];
+    private static bool _colorRefColor = false;
+    private static Color _colorRefColorV = (1.0f, 0.0f, 1.0f, 0.5f);
+    private static ColorEditFlags _colorColorPickerFlags = ColorEditFlags.AlphaBar;
+    private static int _colorPickerMode = 0;
+    private static int _colorDisplayMode = 0;
+    private static Color _colorColorHsv = (0.23f, 1.0f, 1.0f, 1.0f);
 
     // State Fields - Data Types Section
 
@@ -124,7 +123,9 @@ public static unsafe class ImGuiDemoWindow
 
     private static int _queryingItemType = 1;
     private static bool _queryingB;
-    private static readonly float[] _queryingCol4f = [1.0f, 0.5f, 0.0f, 1.0f];
+    private static float _queryingF = 1.0f;
+    private static float[] _queryingFArray = [1.0f, 0.5f, 0.0f];
+    private static Color _queryingCol4f = (1.0f, 0.5f, 0.0f, 1.0f);
     private static readonly byte[] _queryingStr = new byte[16];
     private static int _queryingCurrent1 = 1;
     private static int _queryingCurrent2;
@@ -248,6 +249,13 @@ public static unsafe class ImGuiDemoWindow
         // Initialize text buffers with default content
         "Hello, world!"u8.CopyTo(_basicStr0);
         "password123"u8.CopyTo(_textInputPassword);
+
+        // Generate a default palette
+        for (var n = 0; n < 32; n++)
+        {
+            (var r, var g, var b) = Color.ColorConvertHSVtoRGB(n / 31.0f, 0.8f, 0.8f);
+            _colorSavedPalette[n] = new(r, g, b, 1.0f);
+        }
 
         // Initialize plotting arrays
         for (var i = 0; i < _plotArrSin.Length; i++)
@@ -829,16 +837,15 @@ Double-Click or Ctrl+Click to input value."u8);
         }
 
         {
-            // TODO: Color editors
             Widgets.SeparatorText("Selectors/Pickers"u8);
-            _ = Widgets.ColorEdit("color 1"u8, _basicCol1);
+            _ = Widgets.ColorEdit("color 1"u8, ref _basicCol1);
             Widgets.SameLine();
             HelpMarker(@"Click on the color square to open a color picker.
 Click and hold to use drag and drop.
 Right-Click on the color square to show options.
 Ctrl+Click on individual component to input value.
 "u8);
-            _ = Widgets.ColorEdit("color 2"u8, _basicCol2);
+            _ = Widgets.ColorEdit("color 2"u8, ref _basicCol2);
         }
 
         {
@@ -939,85 +946,59 @@ Ctrl+Click on individual component to input value.
         }
 
         Widgets.SeparatorText("Options"u8);
-        _ = Widgets.Checkbox("With Alpha Preview"u8, ref _colorAlphaPreview);
-        _ = Widgets.Checkbox("With Half Alpha Preview"u8, ref _colorAlphaHalfPreview);
-        _ = Widgets.Checkbox("With Drag and Drop"u8, ref _colorDragAndDrop);
-        _ = Widgets.Checkbox("With Options Menu"u8, ref _colorOptionsMenu);
-        Widgets.SameLine();
-        HelpMarker("Right-click on the individual color widget to show options."u8);
-        _ = Widgets.Checkbox("With HDR"u8, ref _colorHdr);
-        Widgets.SameLine();
-        HelpMarker("Currently all this does is to lift the 0..1 limits on dragging widgets."u8);
-        ColorEditFlags miscFlags = (_colorHdr ? ColorEditFlags.HDR : ColorEditFlags.None) |
-                                   (_colorDragAndDrop ? ColorEditFlags.None : ColorEditFlags.NoDragDrop) |
-                                   (_colorAlphaHalfPreview
-                                       ? ColorEditFlags.AlphaPreviewHalf
-                                       : (_colorAlphaPreview ? ColorEditFlags.AlphaPreviewHalf : ColorEditFlags.None)) |
-                                   (_colorOptionsMenu ? ColorEditFlags.None : ColorEditFlags.NoOptions);
+        _ = Widgets.CheckboxFlags("ColorEditFlags.NoAlpha"u8, ref _colorBaseFlags, ColorEditFlags.NoAlpha);
+        _ = Widgets.CheckboxFlags("ColorEditFlags.AlphaOpaque"u8, ref _colorBaseFlags, ColorEditFlags.AlphaOpaque);
+        _ = Widgets.CheckboxFlags("ColorEditFlags.AlphaNoBackground"u8, ref _colorBaseFlags, ColorEditFlags.AlphaNoBackground);
+        _ = Widgets.CheckboxFlags("ColorEditFlags.AlphaPreviewHalf"u8, ref _colorBaseFlags, ColorEditFlags.AlphaPreviewHalf);
+        _ = Widgets.CheckboxFlags("ColorEditFlags.NoDragDrop"u8, ref _colorBaseFlags, ColorEditFlags.NoDragDrop);
+        _ = Widgets.CheckboxFlags("ColorEditFlags.NoOptions"u8, ref _colorBaseFlags, ColorEditFlags.NoOptions);
+        _ = Widgets.CheckboxFlags("ColorEditFlags.HDR"u8, ref _colorBaseFlags, ColorEditFlags.HDR);
 
         Widgets.SeparatorText("Inline color editor"u8);
         Widgets.Text("Color widget:"u8);
         Widgets.SameLine();
-        HelpMarker("Click on the color square to open a color picker.\nCtrl+Click on individual component to input value.\n"u8);
-        _ = Widgets.ColorEdit("MyColor##1"u8, _colorCol1.AsSpan(0, 3), miscFlags);
+        HelpMarker(@"Click on the color square to open a color picker.
+Ctrl+Click on individual component to input value.
+"u8);
+        _ = Widgets.ColorEdit("MyColor##1"u8, ref _colorColor, _colorBaseFlags);
 
         Widgets.Text("Color widget HSV with Alpha:"u8);
-        _ = Widgets.ColorEdit("MyColor##2"u8, _colorCol2, ColorEditFlags.DisplayHSV | miscFlags);
+        _ = Widgets.ColorEdit("MyColor##2"u8, ref _colorColor, ColorEditFlags.DisplayHSV | _colorBaseFlags);
 
         Widgets.Text("Color widget with Float Display:"u8);
-        _ = Widgets.ColorEdit("MyColor##2f"u8, _colorCol2, ColorEditFlags.Float | miscFlags);
+        _ = Widgets.ColorEdit("MyColor##2f"u8, ref _colorColor, ColorEditFlags.Float | _colorBaseFlags);
 
         Widgets.Text("Color button with Picker:"u8);
         Widgets.SameLine();
-        HelpMarker("With the ColorEditFlags.NoInputs flag you can hide all the slider/text inputs.\nWith the ColorEditFlags.NoLabel flag you can pass a non-empty label which will only be used for the tooltip and picker popup."u8);
-        _ = Widgets.ColorEdit("MyColor##3"u8, _colorCol2, ColorEditFlags.NoInputs | ColorEditFlags.NoLabel | miscFlags);
+        HelpMarker(@"With the ColorEditFlags.NoInputs flag you can hide all the slider/text inputs.
+With the ColorEditFlags.NoLabel flag you can pass a non-empty label which will only be used for the tooltip and picker popup."u8);
+        _ = Widgets.ColorEdit("MyColor##3"u8, ref _colorColor, ColorEditFlags.NoInputs | ColorEditFlags.NoLabel | _colorBaseFlags);
 
         Widgets.Text("Color button with Custom Picker Popup:"u8);
 
-        // Generate a default palette
-        if (_colorSavedPaletteInit)
-        {
-            for (var n = 0; n < 32; n++)
-            {
-                (var r, var g, var b) = Color.ColorConvertHSVtoRGB(n / 31.0f, 0.8f, 0.8f);
-                _colorSavedPalette[(n * 4) + 0] = r;
-                _colorSavedPalette[(n * 4) + 1] = g;
-                _colorSavedPalette[(n * 4) + 2] = b;
-                _colorSavedPalette[(n * 4) + 3] = 1.0f;
-            }
-
-            _colorSavedPaletteInit = false;
-        }
-
-        var openPopup = Widgets.ColorButton("MyColor##3b"u8, new Color(_colorColor[0], _colorColor[1], _colorColor[2], _colorColor[3]), miscFlags);
+        var openPopup = Widgets.ColorButton("MyColor##3b"u8, _colorColor, _colorBaseFlags);
         Widgets.SameLine(0, Context.Style.ItemInnerSpacing.X);
         openPopup |= Widgets.Button("Palette"u8);
         if (openPopup)
         {
             Window.OpenPopup("mypicker"u8);
-            _colorBackupColor[0] = _colorColor[0];
-            _colorBackupColor[1] = _colorColor[1];
-            _colorBackupColor[2] = _colorColor[2];
-            _colorBackupColor[3] = _colorColor[3];
+            _colorBackupColor = _colorColor;
         }
 
         if (Window.BeginPopup("mypicker"u8))
         {
             Widgets.Text("MY CUSTOM COLOR PICKER WITH AN ACTIVE PALETTE"u8);
             Widgets.Separator();
-            _ = Widgets.ColorPicker("##picker"u8, _colorColor, ColorEditFlags.NoSidePreview | ColorEditFlags.NoSmallPreview | miscFlags);
+            _ = Widgets.ColorPicker("##picker"u8, ref _colorColor, ColorEditFlags.NoSidePreview | ColorEditFlags.NoSmallPreview | _colorBaseFlags);
             Widgets.SameLine();
 
             Widgets.BeginGroup();
             Widgets.Text("Current"u8);
-            _ = Widgets.ColorButton("##current"u8, new Color(_colorColor[0], _colorColor[1], _colorColor[2], _colorColor[3]), ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, new Vec2(60, 40));
+            _ = Widgets.ColorButton("##current"u8, _colorColor, ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, (60, 40));
             Widgets.Text("Previous"u8);
-            if (Widgets.ColorButton("##previous"u8, new Color(_colorBackupColor[0], _colorBackupColor[1], _colorBackupColor[2], _colorBackupColor[3]), ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, new Vec2(60, 40)))
+            if (Widgets.ColorButton("##previous"u8, _colorBackupColor, ColorEditFlags.NoPicker | ColorEditFlags.AlphaPreviewHalf, (60, 40)))
             {
-                _colorColor[0] = _colorBackupColor[0];
-                _colorColor[1] = _colorBackupColor[1];
-                _colorColor[2] = _colorBackupColor[2];
-                _colorColor[3] = _colorBackupColor[3];
+                _colorColor = _colorBackupColor;
             }
 
             Widgets.Separator();
@@ -1031,15 +1012,30 @@ Ctrl+Click on individual component to input value.
                 }
 
                 ColorEditFlags paletteButtonFlags = ColorEditFlags.NoAlpha | ColorEditFlags.NoPicker | ColorEditFlags.NoTooltip;
-                if (Widgets.ColorButton("##palette"u8, new Color(_colorSavedPalette[(n * 4) + 0], _colorSavedPalette[(n * 4) + 1], _colorSavedPalette[(n * 4) + 2], _colorSavedPalette[(n * 4) + 3]), paletteButtonFlags, new Vec2(20, 20)))
+                if (Widgets.ColorButton("##palette"u8, _colorSavedPalette[n], paletteButtonFlags, (20, 20)))
                 {
-                    _colorColor[0] = _colorSavedPalette[(n * 4) + 0];
-                    _colorColor[1] = _colorSavedPalette[(n * 4) + 1];
-                    _colorColor[2] = _colorSavedPalette[(n * 4) + 2];
-                    _colorColor[3] = 1.0f;
+                    _colorColor = new(_colorSavedPalette[n].Red, _colorSavedPalette[n].Green, _colorSavedPalette[n].Blue, _colorColor.Alpha);  // Preserve alpha!
                 }
 
-                // Allow drag/drop reordering would go here if we wanted to implement it
+                // Allow user to drop colors into each palette entry. Note that ColorButton() is already a
+                // drag source by default, unless specifying the ImGuiColorEditFlags_NoDragDrop flag.
+                if (Widgets.BeginDragDropTarget())
+                {
+                    Payload payload = Widgets.AcceptDragDropPayload(Payload.TypeColor3F);
+                    if (payload.IsValid)
+                    {
+                        _colorSavedPalette[n] = new(payload.GetData<ColorRGB>(), _colorSavedPalette[n].Alpha);
+                    }
+
+                    payload = Widgets.AcceptDragDropPayload(Payload.TypeColor4F);
+                    if (payload.IsValid)
+                    {
+                        _colorSavedPalette[n] = payload.GetData<Color>();
+                    }
+
+                    Widgets.EndDragDropTarget();
+                }
+
                 Id.Pop();
             }
 
@@ -1049,22 +1045,103 @@ Ctrl+Click on individual component to input value.
 
         Widgets.Text("Color button only:"u8);
         _ = Widgets.Checkbox("ColorEditFlags.NoBorder"u8, ref _colorNoBorder);
-        _ = Widgets.ColorButton("MyColor##3c"u8, new Color(_colorCol2[0], _colorCol2[1], _colorCol2[2], _colorCol2[3]),
-            miscFlags | (_colorNoBorder ? ColorEditFlags.NoBorder : ColorEditFlags.None), new Vec2(80, 80));
+        _ = Widgets.ColorButton("MyColor##3c"u8, _colorColor,
+            _colorBaseFlags | (_colorNoBorder ? ColorEditFlags.NoBorder : ColorEditFlags.None), (80, 80));
 
-        Widgets.SeparatorText("Color picker"u8);
-        _ = Widgets.Checkbox("With Alpha"u8, ref _colorAlphaPreview);
-        _ = Widgets.Checkbox("With Alpha Bar"u8, ref _colorAlphaHalfPreview);
-        _ = Widgets.Checkbox("With Side Preview"u8, ref _colorDragAndDrop);
-        if (_colorDragAndDrop)
+        Id.Push("Color picker"u8);
+        _ = Widgets.CheckboxFlags("No Alpha"u8, ref _colorColorPickerFlags, ColorEditFlags.NoAlpha);
+        _ = Widgets.CheckboxFlags("Alpha Bar"u8, ref _colorColorPickerFlags, ColorEditFlags.AlphaBar);
+        _ = Widgets.CheckboxFlags("No Side Preview"u8, ref _colorColorPickerFlags, ColorEditFlags.NoSidePreview);
+        if (_colorColorPickerFlags.HasFlag(ColorEditFlags.NoSidePreview))
         {
             Widgets.SameLine();
-            _ = Widgets.Checkbox("With Ref Color"u8, ref _colorOptionsMenu);
+            _ = Widgets.Checkbox("With Ref Color"u8, ref _colorRefColor);
+            if (_colorRefColor)
+            {
+                Widgets.SameLine();
+                _ = Widgets.ColorEdit("##RefColor"u8, ref _colorRefColorV, ColorEditFlags.NoInputs | _colorBaseFlags);
+            }
         }
 
-        _ = Widgets.Checkbox("With Small Preview"u8, ref _colorHdr);
-        _ = Widgets.Checkbox("With Inputs"u8, ref _colorSavedPaletteInit);
-        _ = Widgets.Checkbox("With Label"u8, ref _colorNoBorder);
+        _ = Widgets.Combo("Picker Mode"u8, ref _colorPickerMode, "Auto/Current\0ImGuiColorEditFlags_PickerHueBar\0ImGuiColorEditFlags_PickerHueWheel\0"u8);
+        Widgets.SameLine();
+        HelpMarker("When not specified explicitly, user can right-click the picker to change mode."u8);
+
+        _ = Widgets.Combo("Display Mode"u8, ref _colorDisplayMode, "Auto/Current\0ImGuiColorEditFlags_NoInputs\0ImGuiColorEditFlags_DisplayRGB\0ImGuiColorEditFlags_DisplayHSV\0ImGuiColorEditFlags_DisplayHex\0"u8);
+        Widgets.SameLine(); 
+        HelpMarker(@"ColorEdit defaults to displaying RGB inputs if you don't specify a display mode, but the user can change it with a right-click on those inputs.
+
+ColorPicker defaults to displaying RGB+HSV+Hex if you don't specify a display mode.
+
+You can change the defaults using SetColorEditOptions()."u8);
+
+        ColorEditFlags flags = _colorBaseFlags | _colorColorPickerFlags;
+        if (_colorPickerMode == 1)
+        {
+            flags |= ColorEditFlags.PickerHueBar;
+        }
+
+        if (_colorPickerMode == 2)
+        {
+            flags |= ColorEditFlags.PickerHueWheel;
+        }
+
+        if (_colorDisplayMode == 1)
+        {
+            flags |= ColorEditFlags.NoInputs;       // Disable all RGB/HSV/Hex displays
+        }
+
+        if (_colorDisplayMode == 2)
+        {
+            flags |= ColorEditFlags.DisplayRGB;     // Override display mode
+        }
+
+        if (_colorDisplayMode == 3)
+        {
+            flags |= ColorEditFlags.DisplayHSV;
+        }
+
+        if (_colorDisplayMode == 4)
+        {
+            flags |= ColorEditFlags.DisplayHex;
+        }
+
+        _ = Widgets.ColorPicker("MyColor##4"u8, ref _colorColor, flags, _colorRefColor ? _colorRefColorV : null);
+
+        Widgets.Text("Set defaults in code:"u8);
+        Widgets.SameLine(); 
+        HelpMarker(@"SetColorEditOptions() is designed to allow you to set boot-time default.
+We don't have Push/Pop functions because you can force options on a per-widget basis if needed, and the user can change non-forced ones with the options menu.
+We don't have a getter to avoid encouraging you to persistently save values that aren't forward-compatible."u8);
+        if (Widgets.Button("Default: Uint8 + HSV + Hue Bar"u8))
+        {
+            Widgets.SetColorEditOptions(ColorEditFlags.Uint8 | ColorEditFlags.DisplayHSV | ColorEditFlags.PickerHueBar);
+        }
+
+        if (Widgets.Button("Default: Float + HDR + Hue Wheel"u8))
+        {
+            Widgets.SetColorEditOptions(ColorEditFlags.Float | ColorEditFlags.HDR | ColorEditFlags.PickerHueWheel);
+        }
+
+        // Always display a small version of both types of pickers
+        // (that's in order to make it more visible in the demo to people who are skimming quickly through it)
+        Widgets.Text("Both types:"u8);
+        var w = (Window.ContentRegionAvail.Width - Context.Style.ItemSpacing.Y) * 0.40f;
+        Style.SetNextItemWidth(w);
+        _ = Widgets.ColorPicker("##MyColor##5"u8, ref _colorColor, ColorEditFlags.PickerHueBar | ColorEditFlags.NoSidePreview | ColorEditFlags.NoInputs | ColorEditFlags.NoAlpha);
+        Widgets.SameLine();
+        Style.SetNextItemWidth(w);
+        _ = Widgets.ColorPicker("##MyColor##6"u8, ref _colorColor, ColorEditFlags.PickerHueWheel | ColorEditFlags.NoSidePreview | ColorEditFlags.NoInputs | ColorEditFlags.NoAlpha);
+        Id.Pop();
+
+        Widgets.Spacing();
+        Widgets.Text("HSV encoded colors"u8);
+        Widgets.SameLine(); 
+        HelpMarker(@"By default, colors are given to ColorEdit and ColorPicker in RGB, but ImGuiColorEditFlags_InputHSV allows you to store colors as HSV and pass them to ColorEdit and ColorPicker as HSV. This comes with the added benefit that you can manipulate hue values with the picker even when saturation or value are zero."u8);
+        Widgets.Text("Color widget with InputHSV:"u8);
+        _ = Widgets.ColorEdit("HSV shown as RGB##1"u8, ref _colorColorHsv, ColorEditFlags.DisplayRGB | ColorEditFlags.InputHSV | ColorEditFlags.Float);
+        _ = Widgets.ColorEdit("HSV shown as HSV##1"u8, ref _colorColorHsv, ColorEditFlags.DisplayHSV | ColorEditFlags.InputHSV | ColorEditFlags.Float);
+        //Widgets.Drag("Raw HSV values"u8, ref _colorColorHsv, 0.01f, 0.0f, 1.0f);
 
         Widgets.TreePop();
     }
@@ -1442,10 +1519,10 @@ Ctrl+Click on individual component to input value.
             Widgets.BulletText("Drag and drop in standard widgets"u8);
             Widgets.Indent();
 
-            float[] col1 = [1.0f, 0.0f, 0.2f];
-            float[] col2 = [0.4f, 0.7f, 0.0f, 0.5f];
-            _ = Widgets.ColorEdit("color 1"u8, col1);
-            _ = Widgets.ColorEdit("color 2"u8, col2);
+            ColorRGB col1 = (1.0f, 0.0f, 0.2f);
+            Color col2 = (0.4f, 0.7f, 0.0f, 0.5f);
+            _ = Widgets.ColorEdit("color 1"u8, ref col1);
+            _ = Widgets.ColorEdit("color 2"u8, ref col2);
 
             Widgets.Unindent();
 
@@ -1699,7 +1776,7 @@ Ctrl+Click on individual component to input value.
             }
             else if (_queryingItemType == 4)
             {
-                ret = Widgets.Slider("ITEM: SliderFloat"u8, ref _queryingCol4f[0], 0.0f, 1.0f);
+                ret = Widgets.Slider("ITEM: SliderFloat"u8, ref _queryingF, 0.0f, 1.0f);
             }
             else if (_queryingItemType == 5)
             {
@@ -1711,15 +1788,15 @@ Ctrl+Click on individual component to input value.
             }
             else if (_queryingItemType == 7)
             {
-                ret = Widgets.Input("ITEM: InputFloat"u8, ref _queryingCol4f[0], 1.0f);
+                ret = Widgets.Input("ITEM: InputFloat"u8, ref _queryingF, 1.0f);
             }
             else if (_queryingItemType == 8)
             {
-                ret = Widgets.Input("ITEM: InputFloat3"u8, _queryingCol4f.AsSpan(0, 3));
+                ret = Widgets.Input("ITEM: InputFloat3"u8, _queryingFArray);
             }
             else if (_queryingItemType == 9)
             {
-                ret = Widgets.ColorEdit("ITEM: ColorEdit4"u8, _queryingCol4f);
+                ret = Widgets.ColorEdit("ITEM: ColorEdit4"u8, ref _queryingCol4f);
             }
             else if (_queryingItemType == 10)
             {

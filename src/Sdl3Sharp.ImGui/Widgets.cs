@@ -2225,17 +2225,33 @@ public unsafe static class Widgets
     /// and right-clicked to open an options menu.
     /// </remarks>
     /// <exception cref="ArgumentException">Thrown when the color array length is not 3 or 4.</exception>
-    public static bool ColorEdit(ReadOnlySpan<byte> label, Span<float> col, ColorEditFlags flags = ColorEditFlags.None)
+    public static bool ColorEdit(ReadOnlySpan<byte> label, ref Color col, ColorEditFlags flags = ColorEditFlags.None)
     {
         fixed (byte* labelPtr = label)
-        fixed (float* colPtr = col)
+        fixed (Native.ImVec4* colPtr = &col.Value)
         {
-            return col.Length switch
-            {
-                3 => ImGui_ColorEdit3(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags),
-                4 => ImGui_ColorEdit4(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags),
-                _ => throw new ArgumentException("Color array must have 3 (RGB) or 4 (RGBA) elements.", nameof(col))
-            };
+            return ImGui_ColorEdit4(labelPtr, (float*)colPtr, (Native.ImGuiColorEditFlags)flags);
+        }
+    }
+
+    /// <summary>
+    /// Creates a color editor for an RGB or RGBA color value.
+    /// </summary>
+    /// <param name="label">The label for the color editor.</param>
+    /// <param name="col">Reference to the color values (3 floats for RGB, 4 floats for RGBA).</param>
+    /// <param name="flags">Color edit behavior flags.</param>
+    /// <returns>True if the color was modified.</returns>
+    /// <remarks>
+    /// The color editor displays a small color preview square that can be clicked to open a picker,
+    /// and right-clicked to open an options menu.
+    /// </remarks>
+    /// <exception cref="ArgumentException">Thrown when the color array length is not 3 or 4.</exception>
+    public static bool ColorEdit(ReadOnlySpan<byte> label, ref ColorRGB col, ColorEditFlags flags = ColorEditFlags.None)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (ColorRGB* colPtr = &col)
+        {
+            return ImGui_ColorEdit3(labelPtr, (float*)colPtr, (Native.ImGuiColorEditFlags)flags);
         }
     }
 
@@ -2252,25 +2268,41 @@ public unsafe static class Widgets
     /// When a reference color is provided (RGBA only), it is displayed alongside the current color for comparison.
     /// </remarks>
     /// <exception cref="ArgumentException">Thrown when the color array length is not 3 or 4.</exception>
-    public static bool ColorPicker(ReadOnlySpan<byte> label, Span<float> col, ColorEditFlags flags = ColorEditFlags.None, Span<float> refCol = default)
+    public static bool ColorPicker(ReadOnlySpan<byte> label, ref Color col, ColorEditFlags flags = ColorEditFlags.None, Color? refCol = null)
+    {
+        Color refColorValue = refCol ?? new Color(0, 0, 0, 0);
+        fixed (byte* labelPtr = label)
+        fixed (Native.ImVec4* colPtr = &col.Value)
+        {
+            return ImGui_ColorPicker4(labelPtr, (float*)colPtr, (Native.ImGuiColorEditFlags)flags, refCol == null ? null : (float*)&refColorValue);
+        }
+    }
+
+    /// <summary>
+    /// Creates a color picker for an RGB or RGBA color value.
+    /// </summary>
+    /// <param name="label">The label for the color picker.</param>
+    /// <param name="col">Reference to the color values (3 floats for RGB, 4 floats for RGBA).</param>
+    /// <param name="flags">Color edit behavior flags.</param>
+    /// <returns>True if the color was modified.</returns>
+    /// <remarks>
+    /// The color picker displays a full color selection interface with a hue bar/wheel and saturation/value selector.
+    /// When a reference color is provided (RGBA only), it is displayed alongside the current color for comparison.
+    /// </remarks>
+    /// <exception cref="ArgumentException">Thrown when the color array length is not 3 or 4.</exception>
+    public static bool ColorPicker(ReadOnlySpan<byte> label, ref ColorRGB col, ColorEditFlags flags = ColorEditFlags.None)
     {
         fixed (byte* labelPtr = label)
-        fixed (float* colPtr = col)
-        fixed (float* refColPtr = refCol)
+        fixed (ColorRGB* colPtr = &col)
         {
-            return col.Length switch
-            {
-                3 => ImGui_ColorPicker3(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags),
-                4 => ImGui_ColorPicker4(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags, refColPtr),
-                _ => throw new ArgumentException("Color array must have 3 (RGB) or 4 (RGBA) elements.", nameof(col))
-            };
+            return ImGui_ColorPicker3(labelPtr, (float*)colPtr, (Native.ImGuiColorEditFlags)flags);
         }
     }
 
     /// <summary>
     /// Displays a color button that opens a color picker when clicked.
     /// </summary>
-    /// <param name="descId">Description ID for the button.</param>
+    /// <param name="descId">Description ID for the button.</param> 
     /// <param name="color">The color to display.</param>
     /// <param name="flags">Color edit behavior flags.</param>
     /// <returns>True when clicked.</returns>
@@ -2290,7 +2322,7 @@ public unsafe static class Widgets
     /// <param name="flags">Color edit behavior flags.</param>
     /// <param name="size">The button size.</param>
     /// <returns>True when clicked.</returns>
-    public static bool ColorButton(ReadOnlySpan<byte> descId, Color color, ColorEditFlags flags, Vec2 size)
+    public static bool ColorButton(ReadOnlySpan<byte> descId, Color color, ColorEditFlags flags, Size size)
     {
         fixed (byte* ptr = descId)
         {
@@ -3016,6 +3048,26 @@ public unsafe static class Widgets
     /// <summary>
     /// Sets the payload data for the current drag-and-drop operation.
     /// </summary>
+    /// <typeparam name="T">The unmanaged type of the payload data.</typeparam>
+    /// <param name="type">A user-defined type string (max 32 characters). Strings starting with '_' are reserved for Dear ImGui internal types.</param>
+    /// <param name="data">The payload data to set.</param>
+    /// <param name="cond">Condition for setting the payload.</param>
+    /// <returns>True when the payload has been accepted.</returns>
+    /// <remarks>
+    /// The data is copied and held by Dear ImGui.
+    /// </remarks>
+    public static bool SetDragDropPayload<T>(ReadOnlySpan<byte> type, ref T data, Condition cond = Condition.None) where T : unmanaged
+    {
+        fixed (byte* typePtr = type)
+        fixed (T* dataPtr = &data)
+        {
+            return ImGui_SetDragDropPayload(typePtr, dataPtr, (nuint)sizeof(T), (Native.ImGuiCond)cond);
+        }
+    }
+
+    /// <summary>
+    /// Sets the payload data for the current drag-and-drop operation using raw bytes.
+    /// </summary>
     /// <param name="type">A user-defined string type (max 32 characters).</param>
     /// <param name="data">The data to be copied and held by ImGui.</param>
     /// <param name="cond">Condition for setting the payload.</param>
@@ -3033,7 +3085,7 @@ public unsafe static class Widgets
     /// Ends the drag-and-drop source. Only call if BeginDragDropSource() returned true.
     /// </summary>
     public static void EndDragDropSource()
-    {
+    {   
         ImGui_EndDragDropSource();
     }
 
@@ -3047,11 +3099,49 @@ public unsafe static class Widgets
     }
 
     /// <summary>
+    /// Accepts a drag and drop payload of the specified type.
+    /// </summary>
+    /// <param name="type">The type string to accept (max 32 characters).</param>
+    /// <param name="flags">Accept behavior flags.</param>
+    /// <returns>A payload wrapper. Check <see cref="Payload.IsValid"/> to see if a payload was accepted.</returns>
+    /// <remarks>
+    /// <para>
+    /// If <see cref="DragDropFlags.AcceptBeforeDelivery"/> is set, you can peek into the payload before the
+    /// mouse button is released. Use <see cref="Payload.IsDelivery"/> to test if the payload needs to be delivered.
+    /// </para>
+    /// </remarks>
+    public static Payload AcceptDragDropPayload(ReadOnlySpan<byte> type, DragDropFlags flags = DragDropFlags.None)
+    {
+        fixed (byte* typePtr = type)
+        {
+            return new Payload(ImGui_AcceptDragDropPayload(typePtr, (Native.ImGuiDragDropFlags)flags));
+        }
+    }
+
+    /// <summary>
     /// Ends the drag-and-drop target. Only call if BeginDragDropTarget() returned true.
     /// </summary>
     public static void EndDragDropTarget()
     {
         ImGui_EndDragDropTarget();
+    }
+
+    /// <summary>
+    /// Gets the current drag and drop payload from anywhere.
+    /// </summary>
+    /// <returns>A payload wrapper. Check <see cref="Payload.IsValid"/> to see if a drag operation is in progress.</returns>
+    /// <remarks>
+    /// <para>
+    /// This allows peeking directly into the current payload from anywhere.
+    /// Returns an invalid payload when drag and drop is finished or inactive.
+    /// </para>
+    /// <para>
+    /// Use <see cref="Payload.IsDataType"/> to test for the payload type.
+    /// </para>
+    /// </remarks>
+    public static Payload GetDragDropPayload()
+    {
+        return new Payload(ImGui_GetDragDropPayload());
     }
 
     /// <summary>
