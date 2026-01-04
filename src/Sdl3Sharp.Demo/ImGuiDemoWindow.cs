@@ -79,7 +79,7 @@ public static unsafe class ImGuiDemoWindow
     private static ColorEditFlags _colorColorPickerFlags = ColorEditFlags.AlphaBar;
     private static int _colorPickerMode = 0;
     private static int _colorDisplayMode = 0;
-    private static Color _colorColorHsv = (0.23f, 1.0f, 1.0f, 1.0f);
+    private static float[] _colorColorHsv = [0.23f, 1.0f, 1.0f, 1.0f];
 
     // State Fields - Data Types Section
 
@@ -1141,7 +1141,7 @@ We don't have a getter to avoid encouraging you to persistently save values that
         Widgets.Text("Color widget with InputHSV:"u8);
         _ = Widgets.ColorEdit("HSV shown as RGB##1"u8, ref _colorColorHsv, ColorEditFlags.DisplayRGB | ColorEditFlags.InputHSV | ColorEditFlags.Float);
         _ = Widgets.ColorEdit("HSV shown as HSV##1"u8, ref _colorColorHsv, ColorEditFlags.DisplayHSV | ColorEditFlags.InputHSV | ColorEditFlags.Float);
-        //Widgets.Drag("Raw HSV values"u8, ref _colorColorHsv, 0.01f, 0.0f, 1.0f);
+        _ = Widgets.Drag("Raw HSV values"u8, _colorColorHsv, 0.01f, 0.0f, 1.0f);
 
         Widgets.TreePop();
     }
