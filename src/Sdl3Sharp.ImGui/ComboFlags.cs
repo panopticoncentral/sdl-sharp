@@ -51,5 +51,12 @@ public enum ComboFlags
     /// <summary>
     /// Width dynamically calculated from preview contents.
     /// </summary>
-    WidthFitPreview = ImGuiComboFlags.WidthFitPreview
+    WidthFitPreview = ImGuiComboFlags.WidthFitPreview,
+
+    /// <summary>
+    /// A bitmask that includes all defined height values.
+    /// </summary>
+    /// <remarks>This value can be used to select or filter all height-related flags in bitwise
+    /// operations.</remarks>
+    HeightMask = HeightSmall | HeightRegular | HeightLarge | HeightLargest,
 }

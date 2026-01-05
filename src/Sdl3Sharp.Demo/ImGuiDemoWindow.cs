@@ -61,6 +61,21 @@ public static unsafe class ImGuiDemoWindow
 
     // State Fields - Combo Boxes Section
 
+    private static byte[][] _comboItems = [
+            "AAAA"u8.ToArray(),
+            "BBBB"u8.ToArray(),
+            "CCCC"u8.ToArray(),
+            "DDDD"u8.ToArray(),
+            "EEEE"u8.ToArray(),
+            "FFFF"u8.ToArray(),
+            "GGGG"u8.ToArray(),
+            "HHHH"u8.ToArray(),
+            "IIII"u8.ToArray(),
+            "JJJJ"u8.ToArray(),
+            "KKKK"u8.ToArray(),
+            "LLLLLLL"u8.ToArray(),
+            "MMMM"u8.ToArray(),
+            "OOOOOOO"u8.ToArray()];
     private static int _comboItemCurrent;
     private static int _comboItemCurrent2;
     private static int _comboItemCurrent3;
@@ -1139,9 +1154,117 @@ We don't have a getter to avoid encouraging you to persistently save values that
         Widgets.SameLine(); 
         HelpMarker(@"By default, colors are given to ColorEdit and ColorPicker in RGB, but ImGuiColorEditFlags_InputHSV allows you to store colors as HSV and pass them to ColorEdit and ColorPicker as HSV. This comes with the added benefit that you can manipulate hue values with the picker even when saturation or value are zero."u8);
         Widgets.Text("Color widget with InputHSV:"u8);
-        _ = Widgets.ColorEdit("HSV shown as RGB##1"u8, ref _colorColorHsv, ColorEditFlags.DisplayRGB | ColorEditFlags.InputHSV | ColorEditFlags.Float);
-        _ = Widgets.ColorEdit("HSV shown as HSV##1"u8, ref _colorColorHsv, ColorEditFlags.DisplayHSV | ColorEditFlags.InputHSV | ColorEditFlags.Float);
+        _ = Widgets.ColorEdit("HSV shown as RGB##1"u8, _colorColorHsv, ColorEditFlags.DisplayRGB | ColorEditFlags.InputHSV | ColorEditFlags.Float);
+        _ = Widgets.ColorEdit("HSV shown as HSV##1"u8, _colorColorHsv, ColorEditFlags.DisplayHSV | ColorEditFlags.InputHSV | ColorEditFlags.Float);
         _ = Widgets.Drag("Raw HSV values"u8, _colorColorHsv, 0.01f, 0.0f, 1.0f);
+
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsComboBoxes()
+    {
+        if (!Widgets.TreeNode("Combo"u8))
+        {
+            return;
+        }
+
+        // Combo Boxes are also called "Dropdown" in other systems
+        // Expose flags as checkbox for the demo
+        _ = Widgets.CheckboxFlags("ComboFlags.PopupAlignLeft"u8, ref _comboFlags, ComboFlags.PopupAlignLeft);
+        Widgets.SameLine();
+        HelpMarker("Only makes a difference if the popup is larger than the combo"u8);
+        if (Widgets.CheckboxFlags("ComboFlags.NoArrowButton"u8, ref _comboFlags, ComboFlags.NoArrowButton))
+        {
+            _comboFlags &= ~ComboFlags.NoPreview;
+        }
+
+        if (Widgets.CheckboxFlags("ComboFlags.NoPreview"u8, ref _comboFlags, ComboFlags.NoPreview))
+        {
+            _comboFlags &= ~(ComboFlags.NoArrowButton | ComboFlags.WidthFitPreview);
+        }
+
+        if (Widgets.CheckboxFlags("ComboFlags.WidthFitPreview"u8, ref _comboFlags, ComboFlags.WidthFitPreview))
+        {
+            _comboFlags &= ~ComboFlags.NoPreview;
+        }
+
+        // Override default popup height
+        if (Widgets.CheckboxFlags("ImGuiComboFlags_HeightSmall"u8, ref _comboFlags, ComboFlags.HeightSmall))
+        {
+            _comboFlags &= ~(ComboFlags.HeightMask & ~ComboFlags.HeightSmall);
+        }
+
+        if (Widgets.CheckboxFlags("ImGuiComboFlags_HeightRegular"u8, ref _comboFlags, ComboFlags.HeightRegular))
+        {
+            _comboFlags &= ~(ComboFlags.HeightMask & ~ComboFlags.HeightRegular);
+        }
+
+        if (Widgets.CheckboxFlags("ImGuiComboFlags_HeightLargest"u8, ref _comboFlags, ComboFlags.HeightLargest))
+        {
+            _comboFlags &= ~(ComboFlags.HeightMask & ~ComboFlags.HeightLargest);
+        }
+
+        // Using the generic BeginCombo() API, you have full control over how to display the combo contents.
+        // (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
+        // stored in the object itself, etc.)
+
+
+        // Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
+        var comboPreviewValue = _comboItems[_comboItemCurrent];
+        if (Widgets.BeginCombo("combo 1"u8, comboPreviewValue, _comboFlags))
+        {
+            for (var i = 0; i < _comboItems.Length; i++)
+            {
+                var isSelected = _comboItemCurrent == i;
+                if (Widgets.Selectable(_comboItems[i], isSelected))
+                {
+                    _comboItemCurrent = i;
+                }
+
+                if (isSelected)
+                {
+                    Widgets.SetItemDefaultFocus();
+                }
+            }
+
+            Widgets.EndCombo();
+        }
+
+        //// Show case embedding a filter using a simple trick: displaying the filter inside combo contents.
+        //// See https://github.com/ocornut/imgui/issues/718 for advanced/esoteric alternatives.
+        //if (Widgets.BeginCombo("combo 2 (w/ filter)"u8, comboPreviewValue, _comboFlags))
+        //{
+        //    static ImGuiTextFilter filter;
+        //    if (Window.IsAppearing)
+        //    {
+        //        Widgets.SetKeyboardFocusHere();
+        //        filter.Clear();
+        //    }
+        //    Context.SetNextItemShortcut(Key.ModCtrl | Key.F);
+        //    filter.Draw("##Filter", -float.MinValue);
+
+        //    for (var n = 0; n < _comboItems.Length; n++)
+        //    {
+        //        var is_selected = _comboItemCurrent == n;
+        //        if (filter.PassFilter(items[n]))
+        //        {
+        //            if (Widgets.Selectable(_comboItems[n], is_selected))
+        //            {
+        //                _comboItemCurrent = n;
+        //            }
+        //        }
+        //    }
+        //    Widgets.EndCombo();
+        //}
+
+        // Combo with null-separated items string
+        _ = Widgets.Combo("combo 2 (one-liner)"u8, ref _comboItemCurrent2, "aaaa\0bbbb\0cccc\0dddd\0eeee\0"u8);
+
+        // Combo with items
+        _ = Widgets.Combo("combo 3 (array)"u8, ref _comboItemCurrent3, "aaaa\0bbbb\0cccc\0dddd\0eeee\0"u8);
+
+        // Combo with items height
+        _ = Widgets.Combo("combo 4 (with height)"u8, ref _comboItemCurrent4, "aaaa\0bbbb\0cccc\0dddd\0eeee\0ffff\0gggg\0hhhh\0iiii\0jjjj\0kkkk\0lllll\0mmmm\0"u8, 4);
 
         Widgets.TreePop();
     }
@@ -1307,7 +1430,7 @@ We don't have a getter to avoid encouraging you to persistently save values that
         DemoWindowWidgetsBasic();
         DemoWindowWidgetsBullets();
         DemoWindowWidgetsCollapsingHeaders();
-        ShowComboBoxes();
+        DemoWindowWidgetsComboBoxes();
         DemoWindowWidgetsColorAndPickers();
         ShowDataTypes();
 
@@ -1351,64 +1474,6 @@ We don't have a getter to avoid encouraging you to persistently save values that
     // Helper Methods
 
     // Private Section Methods
-
-    private static void ShowComboBoxes()
-    {
-        if (Widgets.TreeNode("Combo"u8))
-        {
-            // Combo flags
-            _ = Widgets.CheckboxFlags("ComboFlags.PopupAlignLeft"u8, ref _comboFlags, ComboFlags.PopupAlignLeft);
-            Widgets.SameLine();
-            HelpMarker("Only makes a difference if the popup is larger than the combo"u8);
-            if (Widgets.CheckboxFlags("ComboFlags.NoArrowButton"u8, ref _comboFlags, ComboFlags.NoArrowButton))
-            {
-                _comboFlags &= ~ComboFlags.NoPreview;
-            }
-
-            if (Widgets.CheckboxFlags("ComboFlags.NoPreview"u8, ref _comboFlags, ComboFlags.NoPreview))
-            {
-                _comboFlags &= ~(ComboFlags.NoArrowButton | ComboFlags.WidthFitPreview);
-            }
-
-            if (Widgets.CheckboxFlags("ComboFlags.WidthFitPreview"u8, ref _comboFlags, ComboFlags.WidthFitPreview))
-            {
-                _comboFlags &= ~ComboFlags.NoPreview;
-            }
-
-            // Simple combo
-            string[] items = ["AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO"];
-
-            if (Widgets.BeginCombo("combo 1"u8, System.Text.Encoding.UTF8.GetBytes(items[_comboItemCurrent]), _comboFlags))
-            {
-                for (var i = 0; i < items.Length; i++)
-                {
-                    var isSelected = _comboItemCurrent == i;
-                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes(items[i]), isSelected))
-                    {
-                        _comboItemCurrent = i;
-                    }
-
-                    if (isSelected)
-                    {
-                        Widgets.SetItemDefaultFocus();
-                    }
-                }
-
-                Widgets.EndCombo();
-            }
-
-            // Combo with null-separated items string
-            _ = Widgets.Combo("combo 2 (one-liner)"u8, ref _comboItemCurrent2, "aaaa\0bbbb\0cccc\0dddd\0eeee\0"u8);
-
-            // Combo with items
-            _ = Widgets.Combo("combo 3 (array)"u8, ref _comboItemCurrent3, "aaaa\0bbbb\0cccc\0dddd\0eeee\0"u8);
-
-            // Combo with items height
-            _ = Widgets.Combo("combo 4 (with height)"u8, ref _comboItemCurrent4, "aaaa\0bbbb\0cccc\0dddd\0eeee\0ffff\0gggg\0hhhh\0iiii\0jjjj\0kkkk\0lllll\0mmmm\0"u8, 4);
-
-            Widgets.TreePop();
-        }
-    }
 
     private static void ShowDataTypes()
     {
