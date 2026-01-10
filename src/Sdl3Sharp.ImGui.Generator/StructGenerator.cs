@@ -10,7 +10,7 @@ public static class StructGenerator
         return !Conditional.IsObsolete(field.Conditionals) && !field.IsInternal && !field.IsAnonymous;
     }
 
-    public static string GenerateValueStruct(TypeMapper typeMapper, StructInfo structInfo, string namespaceName, List<FunctionInfo>? methods, bool referenced)
+    public static string GenerateValueStruct(TypeMapper typeMapper, StructInfo structInfo, string namespaceName, List<FunctionInfo>? methods, bool value)
     {
         var writer = new CodeWriter();
 
@@ -37,7 +37,7 @@ public static class StructGenerator
         writer.AppendLine($"namespace {namespaceName};");
         writer.AppendLine();
 
-        if (!referenced)
+        if (!value)
         {
             writer.AppendLine("// This type is only referenced");
             writer.AppendLine();

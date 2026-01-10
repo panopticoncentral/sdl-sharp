@@ -23247,7 +23247,7 @@
                     "comments": {
                         "attached": "// [Internal] Number of errors submitted this frame."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui_internal.h",
                         "line": 2515
@@ -23267,7 +23267,7 @@
                     "comments": {
                         "attached": "// [Internal]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui_internal.h",
                         "line": 2516
@@ -23290,7 +23290,7 @@
                     "comments": {
                         "attached": "// [Internal]"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui_internal.h",
                         "line": 2517

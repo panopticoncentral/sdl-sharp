@@ -48,11 +48,12 @@ TypeMapper mainTypes = HeaderGenerator.Generate(
     "Sdl3Sharp.ImGui.Native",
     outputDir,
     "ImGui",
+    [("ImGuiTextFilter", true)],
     [],
     null);
 
 // Load backend JSONs
-var backendFiles = new List<(string Name, string HeaderPath, HashSet<string> ExcludedFunctions)>
+var backendFiles = new List<(string Name, string HeaderPath, List<string> ExcludedFunctions)>
 {
     ("ImGuiSdl3", Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdl3.json"), [
         "cImGui_ImplSDL3_InitForOpenGL",
@@ -65,13 +66,14 @@ var backendFiles = new List<(string Name, string HeaderPath, HashSet<string> Exc
     ("ImGuiSdl3Renderer", Path.Combine(dearBindingsDir, "backends", "dcimgui_impl_sdlrenderer3.json"), []),
 };
 
-foreach ((var name, var headerPath, HashSet<string> excludedFunctions) in backendFiles)
+foreach ((var name, var headerPath, List<string> excludedFunctions) in backendFiles)
 {
     _ = HeaderGenerator.Generate(
         headerPath,
         "Sdl3Sharp.ImGui.Native.Backends",
         Path.Combine(outputDir, "Backends"),
         name,
+        [],
         excludedFunctions,
         mainTypes);
 }

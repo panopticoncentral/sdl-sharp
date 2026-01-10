@@ -2,7 +2,7 @@
     "defines": [
         {
             "name": "IMGUI_VERSION",
-            "content": "\"1.92.6 WIP\"",
+            "content": "\"1.92.5\"",
             "is_internal": false,
             "source_location": {
                 "filename": "imgui.h",
@@ -11,7 +11,7 @@
         },
         {
             "name": "IMGUI_VERSION_NUM",
-            "content": "19251",
+            "content": "19250",
             "is_internal": false,
             "source_location": {
                 "filename": "imgui.h",
@@ -19008,7 +19008,7 @@
                             }
                         }
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2726
@@ -19025,7 +19025,7 @@
                             "name": "ImVector_ImGuiTextRange"
                         }
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2727
@@ -19042,7 +19042,7 @@
                             "builtin_type": "int"
                         }
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2728

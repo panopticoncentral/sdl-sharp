@@ -16,12 +16,12 @@ internal static unsafe partial class ImGui
     /// <summary>
     /// The Dear ImGui version string.
     /// </summary>
-    public const string Version = "1.92.6 WIP";
+    public const string Version = "1.92.5";
 
     /// <summary>
     /// The Dear ImGui version number, encoded as XYYZZ for use in preprocessor conditionals.
     /// </summary>
-    public const int VersionNum = 19251;
+    public const int VersionNum = 19250;
 
     #endregion
 

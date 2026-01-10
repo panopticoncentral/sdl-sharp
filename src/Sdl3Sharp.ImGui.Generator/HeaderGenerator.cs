@@ -10,7 +10,7 @@ public static class HeaderGenerator
         ReadCommentHandling = JsonCommentHandling.Skip
     };
 
-    public static TypeMapper Generate(string path, string ns, string outputDir, string className, HashSet<string> excludedFunctions, TypeMapper? mainTypes)
+    public static TypeMapper Generate(string path, string ns, string outputDir, string className, List<(string Name, bool Value)> includedTypes, List<string> excludedFunctions, TypeMapper? mainTypes)
     {
         // Load and parse JSON file
         Console.WriteLine($"\nLoading {path}...");
@@ -22,6 +22,10 @@ public static class HeaderGenerator
         typeMapper.Initialize(root);
 
         Dictionary<string, bool> referencedTypes = ReferenceCollector.CollectReferencedTypes(root);
+        foreach ((var Name, var Value) in includedTypes)
+        {
+            referencedTypes.Add(Name, Value);
+        }
 
         var enums = root.Enums
             .Where(e => !e.IsInternal

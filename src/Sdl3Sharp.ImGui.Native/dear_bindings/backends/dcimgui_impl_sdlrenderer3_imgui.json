@@ -2,7 +2,7 @@
     "defines": [
         {
             "name": "IMGUI_VERSION",
-            "content": "\"1.92.6 WIP\"",
+            "content": "\"1.92.5\"",
             "is_internal": false,
             "source_location": {
                 "filename": "imgui.h",
@@ -11,7 +11,7 @@
         },
         {
             "name": "IMGUI_VERSION_NUM",
-            "content": "19251",
+            "content": "19250",
             "is_internal": false,
             "source_location": {
                 "filename": "imgui.h",
@@ -9695,7 +9695,7 @@
                     "comments": {
                         "attached": "// [Internal] Disabled modifying table row counters. Avoid assumption that 1 clipper item == 1 table row."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2812
@@ -10544,7 +10544,7 @@
                     "comments": {
                         "attached": "// [Internal] Disable loading new glyphs."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3818
@@ -10558,7 +10558,7 @@
                     "comments": {
                         "attached": "// [Internal] Disable loading new baked sizes, disable garbage collecting current ones. e.g. if you want to lock a font to a single size. Important: if you use this to preload given sizes, consider the possibility of multiple font density used on Retina display."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3819
@@ -17288,7 +17288,7 @@
                     "comments": {
                         "attached": "// Parent UI context (needs to be set explicitly by parent)."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2541
@@ -17313,7 +17313,7 @@
                         ],
                         "attached": "// Mouse position, in pixels. Set to ImVec2(-FLT_MAX, -FLT_MAX) if mouse is unavailable (on another screen, etc.)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2546
@@ -17338,7 +17338,7 @@
                     "comments": {
                         "attached": "// Mouse buttons: 0=left, 1=right, 2=middle + extras (ImGuiMouseButton_COUNT == 5). Dear ImGui mostly uses left and right buttons. Other buttons allow us to track if the mouse is being used by your application + available to user as a convenience via IsMouse** API."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2547
@@ -17358,7 +17358,7 @@
                     "comments": {
                         "attached": "// Mouse wheel Vertical: 1 unit scrolls about 5 lines text. >0 scrolls Up, <0 scrolls Down. Hold Shift to turn vertical scroll into horizontal scroll."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2548
@@ -17378,7 +17378,7 @@
                     "comments": {
                         "attached": "// Mouse wheel Horizontal. >0 scrolls Left, <0 scrolls Right. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2549
@@ -17398,7 +17398,7 @@
                     "comments": {
                         "attached": "// Mouse actual input peripheral (Mouse/TouchScreen/Pen)."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2550
@@ -17418,7 +17418,7 @@
                     "comments": {
                         "attached": "// Keyboard modifier down: Ctrl (non-macOS), Cmd (macOS)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2551
@@ -17438,7 +17438,7 @@
                     "comments": {
                         "attached": "// Keyboard modifier down: Shift"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2552
@@ -17458,7 +17458,7 @@
                     "comments": {
                         "attached": "// Keyboard modifier down: Alt"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2553
@@ -17478,7 +17478,7 @@
                     "comments": {
                         "attached": "// Keyboard modifier down: Windows/Super (non-macOS), Ctrl (macOS)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2554
@@ -17501,7 +17501,7 @@
                         ],
                         "attached": "// Key mods flags (any of ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Alt/ImGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags). Read-only, updated by NewFrame()"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2557
@@ -17526,7 +17526,7 @@
                     "comments": {
                         "attached": "// Key state for all known keys. MUST use 'key - ImGuiKey_NamedKey_BEGIN' as index. Use IsKeyXXX() functions to access this."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2558
@@ -17546,7 +17546,7 @@
                     "comments": {
                         "attached": "// Alternative to WantCaptureMouse: (WantCaptureMouse == true && WantCaptureMouseUnlessPopupClose == false) when a click over void is expected to close a popup."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2559
@@ -17566,7 +17566,7 @@
                     "comments": {
                         "attached": "// Previous mouse position (note that MouseDelta is not necessary == MousePos-MousePosPrev, in case either position is invalid)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2560
@@ -17591,7 +17591,7 @@
                     "comments": {
                         "attached": "// Position at time of clicking"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2561
@@ -17616,7 +17616,7 @@
                     "comments": {
                         "attached": "// Time of last click (used to figure out double-click)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2562
@@ -17641,7 +17641,7 @@
                     "comments": {
                         "attached": "// Mouse button went from !Down to Down (same as MouseClickedCount[x] != 0)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2563
@@ -17666,7 +17666,7 @@
                     "comments": {
                         "attached": "// Has mouse button been double-clicked? (same as MouseClickedCount[x] == 2)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2564
@@ -17691,7 +17691,7 @@
                     "comments": {
                         "attached": "// == 0 (not clicked), == 1 (same as MouseClicked[]), == 2 (double-clicked), == 3 (triple-clicked) etc. when going from !Down to Down"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2565
@@ -17716,7 +17716,7 @@
                     "comments": {
                         "attached": "// Count successive number of clicks. Stays valid after mouse release. Reset after another click is done."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2566
@@ -17741,7 +17741,7 @@
                     "comments": {
                         "attached": "// Mouse button went from Down to !Down"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2567
@@ -17766,7 +17766,7 @@
                     "comments": {
                         "attached": "// Time of last released (rarely used! but useful to handle delayed single-click when trying to disambiguate them from double-click)."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2568
@@ -17791,7 +17791,7 @@
                     "comments": {
                         "attached": "// Track if button was clicked inside a dear imgui window or over void blocked by a popup. We don't request mouse capture from the application if click started outside ImGui bounds."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2569
@@ -17816,7 +17816,7 @@
                     "comments": {
                         "attached": "// Track if button was clicked inside a dear imgui window."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2570
@@ -17836,7 +17836,7 @@
                     "comments": {
                         "attached": "// On a non-Mac system, holding Shift requests WheelY to perform the equivalent of a WheelX event. On a Mac system this is already enforced by the system."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2571
@@ -17856,7 +17856,7 @@
                     "comments": {
                         "attached": "// (OSX) Set to true when the current click was a Ctrl+Click that spawned a simulated right click"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2572
@@ -17881,7 +17881,7 @@
                     "comments": {
                         "attached": "// Duration the mouse button has been down (0.0f == just clicked)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2573
@@ -17906,7 +17906,7 @@
                     "comments": {
                         "attached": "// Previous time the mouse button has been down"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2574
@@ -17931,7 +17931,7 @@
                     "comments": {
                         "attached": "// Squared maximum distance of how much mouse has traveled from the clicking point (used for moving thresholds)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2575
@@ -17951,7 +17951,7 @@
                     "comments": {
                         "attached": "// Touch/Pen pressure (0.0f to 1.0f, should be >0.0f only when MouseDown[0] == true). Helper storage currently unused by Dear ImGui."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2576
@@ -17971,7 +17971,7 @@
                     "comments": {
                         "attached": "// Only modify via AddFocusEvent()"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2577
@@ -17991,7 +17991,7 @@
                     "comments": {
                         "attached": "// Only modify via SetAppAcceptingEvents()"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2578
@@ -18011,7 +18011,7 @@
                     "comments": {
                         "attached": "// For AddInputCharacterUTF16()"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2579
@@ -18031,7 +18031,7 @@
                     "comments": {
                         "attached": "// Queue of _characters_ input (obtained by platform backend). Fill using AddInputCharacter() helper."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2580
@@ -19031,7 +19031,7 @@
                     "// Helper: Parse and apply text filters. In format \"aaaaa[,bbbb][,ccccc]\""
                 ]
             },
-            "is_internal": true,
+            "is_internal": false,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 2706
@@ -19331,7 +19331,7 @@
                     "comments": {
                         "attached": "// [Internal] Number of items"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2840
@@ -19351,7 +19351,7 @@
                     "comments": {
                         "attached": "// [Internal] Height of item after a first step and item submission can calculate it"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2841
@@ -19371,7 +19371,7 @@
                     "comments": {
                         "attached": "// [Internal] Cursor position at the time of Begin() or after table frozen rows are all processed"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2842
@@ -19391,7 +19391,7 @@
                     "comments": {
                         "attached": "// [Internal] Account for frozen rows in a table and initial loss of precision in very large windows."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2843
@@ -19414,7 +19414,7 @@
                     "comments": {
                         "attached": "// [Internal] Internal data"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2844
@@ -19434,7 +19434,7 @@
                     "comments": {
                         "attached": "// [Internal] Flags, currently not yet well exposed."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 2845
@@ -19960,7 +19960,7 @@
                     "comments": {
                         "attached": "// [Internal] Increasing counter to store selection order"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3075
@@ -19980,7 +19980,7 @@
                     "comments": {
                         "attached": "// [Internal] Selection set. Think of this as similar to e.g. std::set<ImGuiID>. Prefer not accessing directly: iterate with GetNextSelectedItem()."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3076
@@ -20357,7 +20357,7 @@
                     "comments": {
                         "attached": "// 4 // [Internal] Offset of callback user data when using storage, otherwise -1."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3151
@@ -21705,7 +21705,7 @@
                     "comments": {
                         "attached": "// rw   -   // [Internal] Queued to set ImTextureStatus_WantDestroy next frame. May still be used in the current frame."
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3489
@@ -22582,7 +22582,7 @@
                     "comments": {
                         "attached": "// [Internal] ImFontAtlasRectId value (FIXME: Cold data, could be moved elsewhere?)"
                     },
-                    "is_internal": false,
+                    "is_internal": true,
                     "source_location": {
                         "filename": "imgui.h",
                         "line": 3564
@@ -70265,7 +70265,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImFont",
-            "is_internal": true,
+            "is_internal": false,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3852
@@ -70310,7 +70310,7 @@
             "is_unformatted_helper": false,
             "is_static": false,
             "original_class": "ImFont",
-            "is_internal": true,
+            "is_internal": false,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3853
@@ -70364,7 +70364,7 @@
             "comments": {
                 "attached": "// Fill ImFontConfig::Name."
             },
-            "is_internal": true,
+            "is_internal": false,
             "source_location": {
                 "filename": "imgui.h",
                 "line": 3854

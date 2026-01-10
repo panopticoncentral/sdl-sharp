@@ -1208,7 +1208,6 @@ We don't have a getter to avoid encouraging you to persistently save values that
         // (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
         // stored in the object itself, etc.)
 
-
         // Pass in the preview value visible before opening the combo (it could technically be different contents or not pulled from items[])
         var comboPreviewValue = _comboItems[_comboItemCurrent];
         if (Widgets.BeginCombo("combo 1"u8, comboPreviewValue, _comboFlags))
