@@ -47,6 +47,67 @@ public unsafe partial struct ImDrawList
     public ImDrawListFlags Flags;
 
     /// <summary>
+    /// [Internal, used while building lists]
+    /// [Internal] generally == VtxBuffer.Size unless we are past 64K vertices, in which case this gets reset to 0.
+    /// </summary>
+    public uint VtxCurrentIdx;
+
+    /// <summary>
+    /// Pointer to shared draw data (you can use ImGui::GetDrawListSharedData() to get the one from current ImGui context)
+    /// </summary>
+    public ImDrawListSharedData* Data;
+
+    /// <summary>
+    /// [Internal] point within VtxBuffer.Data after each add command (to avoid using the ImVector&lt;&gt; operators too much)
+    /// </summary>
+    public ImDrawVert* VtxWritePtr;
+
+    /// <summary>
+    /// [Internal] point within IdxBuffer.Data after each add command (to avoid using the ImVector&lt;&gt; operators too much)
+    /// </summary>
+    public ImDrawIdx* IdxWritePtr;
+
+    /// <summary>
+    /// [Internal] current path building
+    /// </summary>
+    public ImVector_ImVec2 Path;
+
+    /// <summary>
+    /// [Internal] template of active commands. Fields should match those of CmdBuffer.back().
+    /// </summary>
+    public ImDrawCmdHeader CmdHeader;
+
+    /// <summary>
+    /// [Internal] for channels api (note: prefer using your own persistent instance of ImDrawListSplitter!)
+    /// </summary>
+    public ImDrawListSplitter Splitter;
+
+    /// <summary>
+    /// [Internal]
+    /// </summary>
+    public ImVector_ImVec4 ClipRectStack;
+
+    /// <summary>
+    /// [Internal]
+    /// </summary>
+    public ImVector_ImTextureRef TextureStack;
+
+    /// <summary>
+    /// [Internal]
+    /// </summary>
+    public ImVector_ImU8 CallbacksDataBuf;
+
+    /// <summary>
+    /// [Internal] anti-alias fringe is scaled by this value, this helps to keep things sharp while zooming at vertex buffer content
+    /// </summary>
+    public float FringeScale;
+
+    /// <summary>
+    /// Pointer to owner window's name for debugging
+    /// </summary>
+    public byte* OwnerName;
+
+    /// <summary>
     /// Render-level scissoring. This is passed down to your render function but not used for CPU-side coarse clipping. Prefer using higher-level ImGui::PushClipRect() to affect logic (hit-testing and widget culling)
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_PushClipRect")]
@@ -389,5 +450,44 @@ public unsafe partial struct ImDrawList
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList_PrimVtx")]
     public static partial void PrimVtx(ImDrawList* self, ImVec2 pos, ImVec2 uv, uint col);
+
+    /// <summary>
+    /// [Internal helpers]
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__SetDrawListSharedData")]
+    public static partial void _SetDrawListSharedData(ImDrawList* self, ImDrawListSharedData* data);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__ResetForNewFrame")]
+    public static partial void _ResetForNewFrame(ImDrawList* self);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__ClearFreeMemory")]
+    public static partial void _ClearFreeMemory(ImDrawList* self);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__PopUnusedDrawCmd")]
+    public static partial void _PopUnusedDrawCmd(ImDrawList* self);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__TryMergeDrawCmds")]
+    public static partial void _TryMergeDrawCmds(ImDrawList* self);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__OnChangedClipRect")]
+    public static partial void _OnChangedClipRect(ImDrawList* self);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__OnChangedTexture")]
+    public static partial void _OnChangedTexture(ImDrawList* self);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__OnChangedVtxOffset")]
+    public static partial void _OnChangedVtxOffset(ImDrawList* self);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__SetTexture")]
+    public static partial void _SetTexture(ImDrawList* self, ImTextureRef tex_ref);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__CalcCircleAutoSegmentCount")]
+    public static partial int _CalcCircleAutoSegmentCount(ImDrawList* self, float radius);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__PathArcToFastEx")]
+    public static partial void _PathArcToFastEx(ImDrawList* self, ImVec2 center, float radius, int a_min_sample, int a_max_sample, int a_step);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImDrawList__PathArcToN")]
+    public static partial void _PathArcToN(ImDrawList* self, ImVec2 center, float radius, float a_min, float a_max, int num_segments);
 
 }

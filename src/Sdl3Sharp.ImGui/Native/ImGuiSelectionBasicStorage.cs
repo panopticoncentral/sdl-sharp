@@ -54,6 +54,16 @@ public unsafe partial struct ImGuiSelectionBasicStorage
     public delegate* unmanaged[Cdecl]<ImGuiSelectionBasicStorage*, int, ImGuiID> AdapterIndexToStorageId;
 
     /// <summary>
+    /// [Internal] Increasing counter to store selection order
+    /// </summary>
+    public int SelectionOrder;
+
+    /// <summary>
+    /// [Internal] Selection set. Think of this as similar to e.g. std::set&lt;ImGuiID&gt;. Prefer not accessing directly: iterate with GetNextSelectedItem().
+    /// </summary>
+    public ImGuiStorage Storage;
+
+    /// <summary>
     /// Apply selection requests coming from BeginMultiSelect() and EndMultiSelect() functions. It uses 'items_count' passed to BeginMultiSelect()
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiSelectionBasicStorage_ApplyRequests")]
@@ -89,7 +99,7 @@ public unsafe partial struct ImGuiSelectionBasicStorage
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiSelectionBasicStorage_GetNextSelectedItem")]
     [return: MarshalAs(UnmanagedType.U1)]
-    public static partial bool GetNextSelectedItem(ImGuiSelectionBasicStorage* self, nint opaque_it, ImGuiID* out_id);
+    public static partial bool GetNextSelectedItem(ImGuiSelectionBasicStorage* self, void** opaque_it, ImGuiID* out_id);
 
     /// <summary>
     /// Convert index to item id based on provided adapter.

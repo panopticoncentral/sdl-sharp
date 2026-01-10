@@ -62,9 +62,7 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
         ["ImWchar16"] = "ushort",
         ["ImWchar32"] = "uint",
         ["ImWchar"] = "ushort",     // Default is 16-bit
-        ["size_t"] = "nuint",
-        ["va_list"] = "nint", // Will be filtered out at function level
-        ["ImStr"] = "nint",   // Will be filtered out at function level
+        ["size_t"] = "nuint"
     };
 
     /// <summary>
@@ -75,11 +73,7 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
         "va_list",
         "ImColor",
         "ImStr",
-        "ImColor",
-        "ImDrawTextFlags",
-        "ImFontAtlasCustomRect",
-        "ImFontGlyphRangesBuilder",
-        "ImGuiPlatformIO"
+        "ImFontAtlasCustomRect"
     ];
 
     /// <summary>
@@ -113,13 +107,14 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
 
     public void Initialize(DearBindingsRoot root)
     {
-        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous))
+        // Collect all structs (including internal ones) for type resolution
+        // Internal structs are still valid types for pointer resolution
+        foreach (StructInfo? s in root.Structs.Where(s => !s.ForwardDeclaration && !s.IsAnonymous))
         {
-            // Collect public structs (internal/anonymous structs are filtered out at generation sites)
             _ = _structs.Add(s.Name);
         }
 
-        foreach (StructInfo? s in root.Structs.Where(s => s.ForwardDeclaration && !s.IsInternal && !s.IsAnonymous))
+        foreach (StructInfo? s in root.Structs.Where(s => s.ForwardDeclaration && !s.IsAnonymous))
         {
             if (!_structs.Contains(s.Name))
             {
@@ -383,10 +378,18 @@ public sealed class TypeMapper(TypeMapper? mainTypeMapper)
             return "nint";
         }
 
-        // Pointer to pointer
+        // Pointer to pointer - recursively map and add another level of indirection
         if (innerType.Kind == "Pointer")
         {
-            return "nint"; // Double pointers become nint
+            var innerPointerType = MapPointerType(innerType);
+            // If inner type mapped to a typed pointer, add another level of indirection
+            if (innerPointerType.EndsWith('*'))
+            {
+                return $"{innerPointerType}*";
+            }
+
+            // Otherwise fall back to nint
+            return "nint";
         }
 
         return "nint";

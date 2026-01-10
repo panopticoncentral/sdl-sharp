@@ -86,6 +86,107 @@ public unsafe partial struct ImFontAtlas
     /// </summary>
     public ImTextureData* TexData;
 
+    /// <summary>
+    /// [Internal]
+    /// Texture list (most often TexList.Size == 1). TexData is always == TexList.back(). DO NOT USE DIRECTLY, USE GetDrawData().Textures[]/GetPlatformIO().Textures[] instead!
+    /// </summary>
+    public ImVector_ImTextureDataPtr TexList;
+
+    /// <summary>
+    /// Marked as locked during ImGui::NewFrame()..EndFrame() scope if TexUpdates are not supported. Any attempt to modify the atlas will assert.
+    /// </summary>
+    public bool Locked;
+
+    /// <summary>
+    /// Copy of (BackendFlags &amp; ImGuiBackendFlags_RendererHasTextures) from supporting context.
+    /// </summary>
+    public bool RendererHasTextures;
+
+    /// <summary>
+    /// Set when texture was built matching current font input. Mostly useful for legacy IsBuilt() call.
+    /// </summary>
+    public bool TexIsBuilt;
+
+    /// <summary>
+    /// Tell whether our texture data is known to use colors (rather than just alpha channel), in order to help backend select a format or conversion process.
+    /// </summary>
+    public bool TexPixelsUseColors;
+
+    /// <summary>
+    /// = (1.0f/TexData-&gt;TexWidth, 1.0f/TexData-&gt;TexHeight). May change as new texture gets created.
+    /// </summary>
+    public ImVec2 TexUvScale;
+
+    /// <summary>
+    /// Texture coordinates to a white pixel. May change as new texture gets created.
+    /// </summary>
+    public ImVec2 TexUvWhitePixel;
+
+    /// <summary>
+    /// Hold all the fonts returned by AddFont*. Fonts[0] is the default font upon calling ImGui::NewFrame(), use ImGui::PushFont()/PopFont() to change the current font.
+    /// </summary>
+    public ImVector_ImFontPtr Fonts;
+
+    /// <summary>
+    /// Source/configuration data
+    /// </summary>
+    public ImVector_ImFontConfig Sources;
+
+    /// <summary>
+    /// UVs for baked anti-aliased lines
+    /// </summary>
+    public fixed byte TexUvLines[1024];
+
+    /// <summary>
+    /// Next value to be stored in TexData-&gt;UniqueID
+    /// </summary>
+    public int TexNextUniqueID;
+
+    /// <summary>
+    /// Next value to be stored in ImFont-&gt;FontID
+    /// </summary>
+    public int FontNextUniqueID;
+
+    /// <summary>
+    /// List of users for this atlas. Typically one per Dear ImGui context.
+    /// </summary>
+    public ImVector_ImDrawListSharedDataPtr DrawListSharedDatas;
+
+    /// <summary>
+    /// Opaque interface to our data that doesn't need to be public and may be discarded when rebuilding.
+    /// </summary>
+    public ImFontAtlasBuilder* Builder;
+
+    /// <summary>
+    /// Font loader opaque interface (default to use FreeType when IMGUI_ENABLE_FREETYPE is defined, otherwise default to use stb_truetype). Use SetFontLoader() to change this at runtime.
+    /// </summary>
+    public ImFontLoader* FontLoader;
+
+    /// <summary>
+    /// Font loader name (for display e.g. in About box) == FontLoader-&gt;Name
+    /// </summary>
+    public byte* FontLoaderName;
+
+    /// <summary>
+    /// Font backend opaque storage
+    /// </summary>
+    public void* FontLoaderData;
+
+    /// <summary>
+    /// Shared flags (for all fonts) for font loader. THIS IS BUILD IMPLEMENTATION DEPENDENT (e.g. Per-font override is also available in ImFontConfig).
+    /// </summary>
+    public uint FontLoaderFlags;
+
+    /// <summary>
+    /// Number of contexts using this atlas
+    /// </summary>
+    public int RefCount;
+
+    /// <summary>
+    /// Context which own the atlas will be in charge of updating and destroying it.
+    /// </summary>
+    public ImGuiContext* OwnerContext;
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontAtlas_AddFont")]
     public static partial ImFont* AddFont(ImFontAtlas* self, ImFontConfig* font_cfg);
 

@@ -9,15 +9,13 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
-/// Instantiation of ImVector&lt;ImDrawList*&gt;
+/// [Internal] Key+Value for ImGuiStorage
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct ImVector_ImDrawListPtr
+public partial struct ImGuiStoragePair
 {
-    public int Size;
-
-    public int Capacity;
-
-    public ImDrawList** Data;
+    public ImGuiID Key;
 }

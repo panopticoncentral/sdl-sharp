@@ -28,24 +28,18 @@ public static class HeaderGenerator
         }
 
         var enums = root.Enums
-            .Where(e => !e.IsInternal
-                && !TypeMapper.UnsupportedTypes.Contains(e.Name))
             .Select(e => NamingConventions.CleanEnumName(e.Name))
             .ToHashSet();
 
         var structs = root.Structs
-            .Where(s => !s.IsInternal
-                && !s.IsAnonymous
+            .Where(s => !s.IsAnonymous
                 && !TypeMapper.UnsupportedTypes.Contains(s.Name)
                 && !TypeMapper.SdlTypeToModule.ContainsKey(s.Name)
-                && (mainTypes == null || !mainTypes.Structs.Contains(s.Name))
-                && referencedTypes.ContainsKey(s.Name))
+                && (mainTypes == null || !mainTypes.Structs.Contains(s.Name)))
             .ToHashSet();
 
         var functions = root.Functions
-            .Where(f => !f.IsInternal
-                && !f.IsImstrHelper
-                && !f.Name.Contains("__")
+            .Where(f => !f.IsImstrHelper
                 && !TypeMapper.FunctionHasUnsupportedTypes(f)
                 && !Conditional.IsObsolete(f.Conditionals)
                 && !excludedFunctions.Contains(f.Name))
@@ -65,10 +59,7 @@ public static class HeaderGenerator
         // === Generate Enums (one file per enum) ===
         Console.WriteLine("\nGenerating enums...");
         var enumCount = 0;
-        foreach (EnumInfo? enumInfo in root.Enums
-            .Where(e => !e.IsInternal 
-                && !TypeMapper.UnsupportedTypes.Contains(NamingConventions.CleanEnumName(e.Name))
-                && referencedTypes.ContainsKey(NamingConventions.CleanEnumName(e.Name))))
+        foreach (EnumInfo? enumInfo in root.Enums)
         {
             var cleanName = NamingConventions.CleanEnumName(enumInfo.Name);
             var content = EnumGenerator.GenerateSingleEnum(enumInfo, ns);
@@ -83,14 +74,12 @@ public static class HeaderGenerator
         Console.WriteLine("\nGenerating typedefs...");
         var typeDefCount = 0;
         foreach (TypedefInfo typedefInfo in root.Typedefs
-            .Where(t => !t.IsInternal
-                && !enums.Contains(t.Name)
+            .Where(t => !enums.Contains(t.Name)
                 && !TypeMapper.KnownTypedefs.ContainsKey(t.Name)
                 && !TypeMapper.UnsupportedTypes.Contains(t.Name)
                 && !TypeMapper.SdlTypeToModule.ContainsKey(t.Name)
                 && t.Type?.TypeDetails?.Flavour != "function_pointer"
-                && (mainTypes == null || !mainTypes.TypeDefs.Contains(t.Name))
-                && referencedTypes.ContainsKey(t.Name)))
+                && (mainTypes == null || !mainTypes.TypeDefs.Contains(t.Name))))
         {
             var content = TypedefGenerator.GenerateSingleTypedef(typedefInfo, typeMapper.MapType(typedefInfo.Type), ns);
             var filePath = Path.Combine(outputDir, $"{typedefInfo.Name}.cs");
@@ -107,7 +96,7 @@ public static class HeaderGenerator
         foreach (StructInfo? structInfo in structs)
         {
             _ = structFunctions.TryGetValue(structInfo.Name, out List<FunctionInfo>? methods);
-            var content = StructGenerator.GenerateValueStruct(typeMapper, structInfo, ns, methods, referencedTypes[structInfo.Name]);
+            var content = StructGenerator.GenerateValueStruct(typeMapper, structInfo, ns, methods, !referencedTypes.TryGetValue(structInfo.Name, out var value) || value);
             var filePath = Path.Combine(outputDir, $"{structInfo.Name}.cs");
             File.WriteAllText(filePath, content);
             valueStructCount++;

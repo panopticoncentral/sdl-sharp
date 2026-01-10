@@ -9,17 +9,15 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
-// This type is only referenced
-
 /// <summary>
 /// Instantiation of ImVector&lt;ImTextureData*&gt;
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct ImVector_ImTextureDataPtr
+public unsafe partial struct ImVector_ImTextureDataPtr
 {
     public int Size;
 
     public int Capacity;
 
-    public nint Data;
+    public ImTextureData** Data;
 }

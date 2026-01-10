@@ -9,15 +9,12 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
-/// Instantiation of ImVector&lt;ImDrawList*&gt;
+/// Opaque storage for building a ImFontAtlas
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct ImVector_ImDrawListPtr
+public partial struct ImFontAtlasBuilder
 {
-    public int Size;
-
-    public int Capacity;
-
-    public ImDrawList** Data;
 }

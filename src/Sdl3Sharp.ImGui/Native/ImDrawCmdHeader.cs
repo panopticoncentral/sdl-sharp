@@ -10,14 +10,14 @@ using System.Runtime.InteropServices;
 namespace Sdl3Sharp.ImGui.Native;
 
 /// <summary>
-/// Instantiation of ImVector&lt;ImDrawList*&gt;
+/// [Internal] For use by ImDrawList
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct ImVector_ImDrawListPtr
+public partial struct ImDrawCmdHeader
 {
-    public int Size;
+    public ImVec4 ClipRect;
 
-    public int Capacity;
+    public ImTextureRef TexRef;
 
-    public ImDrawList** Data;
+    public uint VtxOffset;
 }

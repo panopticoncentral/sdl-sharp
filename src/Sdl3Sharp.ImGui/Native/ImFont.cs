@@ -21,6 +21,69 @@ namespace Sdl3Sharp.ImGui.Native;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe partial struct ImFont
 {
+    /// <summary>
+    /// [Internal] Members: Hot ~12-20 bytes
+    /// 4-8   // Cache last bound baked. NEVER USE DIRECTLY. Use GetFontBaked().
+    /// </summary>
+    public ImFontBaked* LastBaked;
+
+    /// <summary>
+    /// 4-8   // What we have been loaded into.
+    /// </summary>
+    public ImFontAtlas* OwnerAtlas;
+
+    /// <summary>
+    /// 4     // Font flags.
+    /// </summary>
+    public ImFontFlags Flags;
+
+    /// <summary>
+    /// Current rasterizer density. This is a varying state of the font.
+    /// </summary>
+    public float CurrentRasterizerDensity;
+
+    /// <summary>
+    /// [Internal] Members: Cold ~24-52 bytes
+    /// Conceptually Sources[] is the list of font sources merged to create this font.
+    /// Unique identifier for the font
+    /// </summary>
+    public ImGuiID FontId;
+
+    /// <summary>
+    /// 4     // in  // Font size passed to AddFont(). Use for old code calling PushFont() expecting to use that size. (use ImGui::GetFontBaked() to get font baked at current bound size).
+    /// </summary>
+    public float LegacySize;
+
+    /// <summary>
+    /// 16    // in  // List of sources. Pointers within OwnerAtlas-&gt;Sources[]
+    /// </summary>
+    public ImVector_ImFontConfigPtr Sources;
+
+    /// <summary>
+    /// 2-4   // out // Character used for ellipsis rendering ('...').
+    /// </summary>
+    public ushort EllipsisChar;
+
+    /// <summary>
+    /// 2-4   // out // Character used if a glyph isn't found (U+FFFD, '?')
+    /// </summary>
+    public ushort FallbackChar;
+
+    /// <summary>
+    /// 1 bytes if ImWchar=ImWchar16, 16 bytes if ImWchar==ImWchar32. Store 1-bit for each block of 4K codepoints that has one active glyph. This is mainly used to facilitate iterations across all used codepoints.
+    /// </summary>
+    public fixed byte Used8kPagesMap[17];
+
+    /// <summary>
+    /// 1     //     // Mark when the "..." glyph needs to be generated.
+    /// </summary>
+    public bool EllipsisAutoBake;
+
+    /// <summary>
+    /// 16    //     // Remapping pairs when using AddRemapChar(), otherwise empty.
+    /// </summary>
+    public ImGuiStorage RemapPairs;
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_IsGlyphInFont")]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool IsGlyphInFont(ImFont* self, ushort c);
@@ -34,5 +97,60 @@ public unsafe partial struct ImFont
     /// </summary>
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_GetDebugName")]
     public static partial byte* GetDebugName(ImFont* self);
+
+    /// <summary>
+    /// [Internal] Don't use!
+    /// 'max_width' stops rendering after a certain width (could be turned into a 2d size). FLT_MAX to disable.
+    /// 'wrap_width' enable automatic word-wrapping across multiple lines to fit into given width. 0.0f to disable.
+    /// Implied density = -1.0f
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_GetFontBaked")]
+    public static partial ImFontBaked* GetFontBaked(ImFont* self, float font_size);
+
+    /// <summary>
+    /// Get or create baked data for given size
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_GetFontBakedEx")]
+    public static partial ImFontBaked* GetFontBaked(ImFont* self, float font_size, float density);
+
+    /// <summary>
+    /// Implied text_end = NULL, out_remaining = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_CalcTextSizeA")]
+    public static partial ImVec2 CalcTextSizeA(ImFont* self, float size, float max_width, float wrap_width, byte* text_begin);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_CalcTextSizeAEx")]
+    public static partial ImVec2 CalcTextSizeA(ImFont* self, float size, float max_width, float wrap_width, byte* text_begin, byte* text_end, byte** out_remaining);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_CalcWordWrapPosition")]
+    public static partial byte* CalcWordWrapPosition(ImFont* self, float size, byte* text, byte* text_end, float wrap_width);
+
+    /// <summary>
+    /// Implied cpu_fine_clip = NULL
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_RenderChar")]
+    public static partial void RenderChar(ImFont* self, ImDrawList* draw_list, float size, ImVec2 pos, uint col, ushort c);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_RenderCharEx")]
+    public static partial void RenderChar(ImFont* self, ImDrawList* draw_list, float size, ImVec2 pos, uint col, ushort c, ImVec4* cpu_fine_clip);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_RenderText")]
+    public static partial void RenderText(ImFont* self, ImDrawList* draw_list, float size, ImVec2 pos, uint col, ImVec4 clip_rect, byte* text_begin, byte* text_end, float wrap_width, ImDrawTextFlags flags);
+
+    /// <summary>
+    /// [Internal] Don't use!
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_ClearOutputData")]
+    public static partial void ClearOutputData(ImFont* self);
+
+    /// <summary>
+    /// Makes 'from_codepoint' character points to 'to_codepoint' glyph.
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_AddRemapChar")]
+    public static partial void AddRemapChar(ImFont* self, ushort from_codepoint, ushort to_codepoint);
+
+    [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFont_IsGlyphRangeUnused")]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IsGlyphRangeUnused(ImFont* self, uint c_begin, uint c_last);
 
 }

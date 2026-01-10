@@ -30,12 +30,8 @@ public static class ReferenceCollector
         {
             if (defineInfo.Name == typeName)
             {
-                if (!defineInfo.IsInternal)
-                {
-                    AddUsage(referencedTypes, typeName, isPointer);
-                }
-
-                return !defineInfo.IsInternal;
+                AddUsage(referencedTypes, typeName, isPointer);
+                return true;
             }
         }
 
@@ -43,12 +39,8 @@ public static class ReferenceCollector
         {
             if (enumInfo.Name == typeName)
             {
-                if (!enumInfo.IsInternal)
-                {
-                    AddUsage(referencedTypes, typeName, isPointer);
-                }
-
-                return !enumInfo.IsInternal;
+                AddUsage(referencedTypes, typeName, isPointer);
+                return true;
             }
         }
 
@@ -56,12 +48,8 @@ public static class ReferenceCollector
         {
             if (typedefInfo.Name == typeName)
             {
-                if (!typedefInfo.IsInternal)
-                {
-                    AddUsage(referencedTypes, typeName, isPointer);
-                }
-
-                return !typedefInfo.IsInternal;
+                AddUsage(referencedTypes, typeName, isPointer);
+                return true;
             }
         }
 
@@ -69,26 +57,22 @@ public static class ReferenceCollector
         {
             if (structInfo.Name == typeName)
             {
-                if (!structInfo.IsInternal)
+                if (typeName.StartsWith("ImVector_"))
                 {
-                    if (typeName.StartsWith("ImVector_"))
+                    FieldInfo dataField = structInfo.Fields.Single(f => f.Name == "Data");
+                    TypeDescriptionDetail? elementType = dataField.Type?.Description?.InnerType;
+                    if (elementType != null
+                        && elementType.Kind == "User"
+                        && elementType.Name != null
+                        && !TypeMapper.KnownTypedefs.ContainsKey(elementType.Name)
+                        && !CollectUserType(root, referencedTypes, elementType.Name, true))
                     {
-                        FieldInfo dataField = structInfo.Fields.Single(f => f.Name == "Data");
-                        TypeDescriptionDetail? elementType = dataField.Type?.Description?.InnerType;
-                        if (elementType != null
-                            && elementType.Kind == "User"
-                            && elementType.Name != null
-                            && !TypeMapper.KnownTypedefs.ContainsKey(elementType.Name)
-                            && !CollectUserType(root, referencedTypes, elementType.Name, true))
-                        {
-                            return false;
-                        }
+                        return false;
                     }
-
-                    AddUsage(referencedTypes, typeName, isPointer);
                 }
 
-                return !structInfo.IsInternal;
+                AddUsage(referencedTypes, typeName, isPointer);
+                return true;
             }
         }
 
@@ -137,7 +121,7 @@ public static class ReferenceCollector
         // Collect types from functions
         foreach (FunctionInfo function in root.Functions)
         {
-            if (function.IsInternal || (function.OriginalClass != null && TypeMapper.UnsupportedTypes.Contains(function.OriginalClass)))
+            if (function.OriginalClass != null && TypeMapper.UnsupportedTypes.Contains(function.OriginalClass))
             {
                 continue;
             }
@@ -157,18 +141,13 @@ public static class ReferenceCollector
         // Collect types from structs
         foreach (StructInfo structInfo in root.Structs)
         {
-            if (structInfo.IsInternal || TypeMapper.UnsupportedTypes.Contains(structInfo.Name))
+            if (TypeMapper.UnsupportedTypes.Contains(structInfo.Name))
             {
                 continue;
             }
 
             foreach (FieldInfo field in structInfo.Fields)
             {
-                if (field.IsInternal)
-                {
-                    continue;
-                }
-
                 CollectType(root, referencedTypes, field.Type?.Description, field.Type?.TypeDetails);
             }
         }
@@ -176,7 +155,7 @@ public static class ReferenceCollector
         // Collect types from typedefs
         foreach (TypedefInfo typedefInfo in root.Typedefs)
         {
-            if (typedefInfo.IsInternal || TypeMapper.UnsupportedTypes.Contains(typedefInfo.Name))
+            if (TypeMapper.UnsupportedTypes.Contains(typedefInfo.Name))
             {
                 continue;
             }

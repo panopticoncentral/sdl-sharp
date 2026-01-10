@@ -329,7 +329,7 @@ public unsafe partial struct ImGuiStyle
     /// <summary>
     /// Colors
     /// </summary>
-    public fixed byte Colors[60 * 4 * 4];
+    public fixed byte Colors[960];
 
     /// <summary>
     /// Behaviors
@@ -357,6 +357,17 @@ public unsafe partial struct ImGuiStyle
     /// Default flags when using IsItemHovered(ImGuiHoveredFlags_ForTooltip) or BeginItemTooltip()/SetItemTooltip() while using keyboard/gamepad.
     /// </summary>
     public ImGuiHoveredFlags HoverFlagsForTooltipNav;
+
+    /// <summary>
+    /// [Internal]
+    /// FIXME-WIP: Reference scale, as applied by ScaleAllSizes().
+    /// </summary>
+    public float MainScale;
+
+    /// <summary>
+    /// FIXME: Temporary hack until we finish remaining work.
+    /// </summary>
+    public float NextFrameFontSizeBase;
 
     /// <summary>
     /// Scale all spacing/padding/thickness values. Do not scale fonts.

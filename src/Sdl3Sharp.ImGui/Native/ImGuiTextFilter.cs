@@ -15,6 +15,12 @@ namespace Sdl3Sharp.ImGui.Native;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe partial struct ImGuiTextFilter
 {
+    public fixed byte InputBuf[256];
+
+    public ImVector_ImGuiTextRange Filters;
+
+    public int CountGrep;
+
     /// <summary>
     /// Helper calling InputText+Build
     /// </summary>

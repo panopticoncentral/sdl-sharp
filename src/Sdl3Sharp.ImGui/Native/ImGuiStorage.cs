@@ -9,8 +9,6 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
-// This type is only referenced
-
 /// <summary>
 /// Helper: Key-&gt;Value storage
 /// Typically you don't have to worry about this since a storage is held within each Window.
@@ -24,6 +22,11 @@ namespace Sdl3Sharp.ImGui.Native;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe partial struct ImGuiStorage
 {
+    /// <summary>
+    /// [Internal]
+    /// </summary>
+    public ImVector_ImGuiStoragePair Data;
+
     /// <summary>
     /// - Get***() functions find pair, never add/allocate. Pairs are sorted so a query is O(log N)
     /// - Set***() functions find pair, insertion on demand if missing.
@@ -76,7 +79,7 @@ public unsafe partial struct ImGuiStorage
     public static partial float* GetFloatRef(ImGuiStorage* self, ImGuiID key, float default_val);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiStorage_GetVoidPtrRef")]
-    public static partial nint GetVoidPtrRef(ImGuiStorage* self, ImGuiID key, void* default_val);
+    public static partial void** GetVoidPtrRef(ImGuiStorage* self, ImGuiID key, void* default_val);
 
     /// <summary>
     /// Advanced: for quicker full rebuild of a storage (instead of an incremental one), you may add all your contents and then sort once.

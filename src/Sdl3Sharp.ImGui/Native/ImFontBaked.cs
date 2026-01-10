@@ -18,6 +18,113 @@ namespace Sdl3Sharp.ImGui.Native;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe partial struct ImFontBaked
 {
+    /// <summary>
+    /// [Internal] Members: Hot ~20/24 bytes (for CalcTextSize)
+    /// 12-16 // out // Sparse. Glyphs-&gt;AdvanceX in a directly indexable way (cache-friendly for CalcTextSize functions which only this info, and are often bottleneck in large UI).
+    /// </summary>
+    public ImVector_float IndexAdvanceX;
+
+    /// <summary>
+    /// 4     // out // FindGlyph(FallbackChar)-&gt;AdvanceX
+    /// </summary>
+    public float FallbackAdvanceX;
+
+    /// <summary>
+    /// 4     // in  // Height of characters/line, set during loading (doesn't change after loading)
+    /// </summary>
+    public float Size;
+
+    /// <summary>
+    /// 4     // in  // Density this is baked at
+    /// </summary>
+    public float RasterizerDensity;
+
+    /// <summary>
+    /// [Internal] Members: Hot ~28/36 bytes (for RenderText loop)
+    /// 12-16 // out // Sparse. Index glyphs by Unicode code-point.
+    /// </summary>
+    public ImVector_ImU16 IndexLookup;
+
+    /// <summary>
+    /// 12-16 // out // All glyphs.
+    /// </summary>
+    public ImVector_ImFontGlyph Glyphs;
+
+    /// <summary>
+    /// 4     // out // Index of FontFallbackChar
+    /// </summary>
+    public int FallbackGlyphIndex;
+
+    /// <summary>
+    /// [Internal] Members: Cold
+    /// 4+4   // out // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize] (unscaled)
+    /// </summary>
+    public float Ascent;
+
+    /// <summary>
+    /// [Internal] Members: Cold
+    /// 4+4   // out // Ascent: distance from top to bottom of e.g. 'A' [0..FontSize] (unscaled)
+    /// </summary>
+    public float Descent;
+
+    private uint _bitfield0;
+
+    /// <summary>
+    /// 3  // out // Total surface in pixels to get an idea of the font rasterization/texture cost (not exact, we approximate the cost of padding between glyphs)
+    /// </summary>
+    public uint MetricsTotalSurface
+    {
+        readonly get => (uint)(_bitfield0 & 0x3FFFFFFU);
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x3FFFFFFU) | ((uint)value & 0x3FFFFFFU));
+    }
+
+    /// <summary>
+    /// 0  //     // Queued for destroy
+    /// </summary>
+    public bool WantDestroy
+    {
+        readonly get => (_bitfield0 & 0x4000000U) != 0;
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x4000000U) | (value ? 0x4000000U : 0));
+    }
+
+    /// <summary>
+    /// 0  //     // Disable loading fallback in lower-level calls.
+    /// </summary>
+    public bool LoadNoFallback
+    {
+        readonly get => (_bitfield0 & 0x8000000U) != 0;
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x8000000U) | (value ? 0x8000000U : 0));
+    }
+
+    /// <summary>
+    /// 0  //     // Enable a two-steps mode where CalcTextSize() calls will load AdvanceX *without* rendering/packing glyphs. Only advantagous if you know that the glyph is unlikely to actually be rendered, otherwise it is slower because we'd do one query on the first CalcTextSize and one query on the first Draw.
+    /// </summary>
+    public bool LoadNoRenderOnLayout
+    {
+        readonly get => (_bitfield0 & 0x10000000U) != 0;
+        set => _bitfield0 = (uint)((_bitfield0 & ~0x10000000U) | (value ? 0x10000000U : 0));
+    }
+
+    /// <summary>
+    /// 4  //     // Record of that time this was bounds
+    /// </summary>
+    public int LastUsedFrame;
+
+    /// <summary>
+    /// 4     //     // Unique ID for this baked storage
+    /// </summary>
+    public ImGuiID BakedId;
+
+    /// <summary>
+    /// 4-8   // in  // Parent font
+    /// </summary>
+    public ImFont* OwnerFont;
+
+    /// <summary>
+    /// 4-8   //     // Font loader opaque storage (per baked font * sources): single contiguous buffer allocated by imgui, passed to loader.
+    /// </summary>
+    public void* FontLoaderDatas;
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImFontBaked_ClearOutputData")]
     public static partial void ClearOutputData(ImFontBaked* self);
 

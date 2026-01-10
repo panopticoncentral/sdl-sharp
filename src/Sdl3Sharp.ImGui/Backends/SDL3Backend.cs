@@ -93,7 +93,7 @@ public static unsafe class SDL3Backend
     /// </remarks>
     public static void SetGamepadMode(ImGui_ImplSDL3_GamepadMode mode)
     {
-        ImGuiSdl3.SetGamepadModeEx(mode, 0, 0);
+        ImGuiSdl3.SetGamepadModeEx(mode, null, 0);
     }
 
     /// <summary>
@@ -111,7 +111,7 @@ public static unsafe class SDL3Backend
         ArgumentNullException.ThrowIfNull(gamepads);
         fixed (nint* gamepadsPtr = gamepads)
         {
-            ImGuiSdl3.SetGamepadModeEx(mode, (nint)gamepadsPtr, gamepads.Length);
+            ImGuiSdl3.SetGamepadModeEx(mode, (Sdl3Sharp.Native.Gamepad.SDL_Gamepad**)gamepadsPtr, gamepads.Length);
         }
     }
 }

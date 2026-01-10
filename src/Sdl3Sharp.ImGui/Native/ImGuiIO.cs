@@ -373,6 +373,180 @@ public unsafe partial struct ImGuiIO
     public ImVec2 MouseDelta;
 
     /// <summary>
+    /// Parent UI context (needs to be set explicitly by parent).
+    /// </summary>
+    public ImGuiContext* Ctx;
+
+    /// <summary>
+    /// Main Input State
+    /// (this block used to be written by backend, since 1.87 it is best to NOT write to those directly, call the AddXXX functions above instead)
+    /// (reading from those variables is fair game, as they are extremely unlikely to be moving anywhere)
+    /// Mouse position, in pixels. Set to ImVec2(-FLT_MAX, -FLT_MAX) if mouse is unavailable (on another screen, etc.)
+    /// </summary>
+    public ImVec2 MousePos;
+
+    /// <summary>
+    /// Mouse buttons: 0=left, 1=right, 2=middle + extras (ImGuiMouseButton_COUNT == 5). Dear ImGui mostly uses left and right buttons. Other buttons allow us to track if the mouse is being used by your application + available to user as a convenience via IsMouse** API.
+    /// </summary>
+    public fixed bool MouseDown[5];
+
+    /// <summary>
+    /// Mouse wheel Vertical: 1 unit scrolls about 5 lines text. &gt;0 scrolls Up, &lt;0 scrolls Down. Hold Shift to turn vertical scroll into horizontal scroll.
+    /// </summary>
+    public float MouseWheel;
+
+    /// <summary>
+    /// Mouse wheel Horizontal. &gt;0 scrolls Left, &lt;0 scrolls Right. Most users don't have a mouse with a horizontal wheel, may not be filled by all backends.
+    /// </summary>
+    public float MouseWheelH;
+
+    /// <summary>
+    /// Mouse actual input peripheral (Mouse/TouchScreen/Pen).
+    /// </summary>
+    public ImGuiMouseSource MouseSource;
+
+    /// <summary>
+    /// Keyboard modifier down: Ctrl (non-macOS), Cmd (macOS)
+    /// </summary>
+    public bool KeyCtrl;
+
+    /// <summary>
+    /// Keyboard modifier down: Shift
+    /// </summary>
+    public bool KeyShift;
+
+    /// <summary>
+    /// Keyboard modifier down: Alt
+    /// </summary>
+    public bool KeyAlt;
+
+    /// <summary>
+    /// Keyboard modifier down: Windows/Super (non-macOS), Ctrl (macOS)
+    /// </summary>
+    public bool KeySuper;
+
+    /// <summary>
+    /// Other state maintained from data above + IO function calls
+    /// Key mods flags (any of ImGuiMod_Ctrl/ImGuiMod_Shift/ImGuiMod_Alt/ImGuiMod_Super flags, same as io.KeyCtrl/KeyShift/KeyAlt/KeySuper but merged into flags). Read-only, updated by NewFrame()
+    /// </summary>
+    public ImGuiKeyChord KeyMods;
+
+    /// <summary>
+    /// Key state for all known keys. MUST use 'key - ImGuiKey_NamedKey_BEGIN' as index. Use IsKeyXXX() functions to access this.
+    /// </summary>
+    public fixed byte KeysData[1240];
+
+    /// <summary>
+    /// Alternative to WantCaptureMouse: (WantCaptureMouse == true &amp;&amp; WantCaptureMouseUnlessPopupClose == false) when a click over void is expected to close a popup.
+    /// </summary>
+    public bool WantCaptureMouseUnlessPopupClose;
+
+    /// <summary>
+    /// Previous mouse position (note that MouseDelta is not necessary == MousePos-MousePosPrev, in case either position is invalid)
+    /// </summary>
+    public ImVec2 MousePosPrev;
+
+    /// <summary>
+    /// Position at time of clicking
+    /// </summary>
+    public fixed byte MouseClickedPos[40];
+
+    /// <summary>
+    /// Time of last click (used to figure out double-click)
+    /// </summary>
+    public fixed double MouseClickedTime[5];
+
+    /// <summary>
+    /// Mouse button went from !Down to Down (same as MouseClickedCount[x] != 0)
+    /// </summary>
+    public fixed bool MouseClicked[5];
+
+    /// <summary>
+    /// Has mouse button been double-clicked? (same as MouseClickedCount[x] == 2)
+    /// </summary>
+    public fixed bool MouseDoubleClicked[5];
+
+    /// <summary>
+    /// == 0 (not clicked), == 1 (same as MouseClicked[]), == 2 (double-clicked), == 3 (triple-clicked) etc. when going from !Down to Down
+    /// </summary>
+    public fixed ushort MouseClickedCount[5];
+
+    /// <summary>
+    /// Count successive number of clicks. Stays valid after mouse release. Reset after another click is done.
+    /// </summary>
+    public fixed ushort MouseClickedLastCount[5];
+
+    /// <summary>
+    /// Mouse button went from Down to !Down
+    /// </summary>
+    public fixed bool MouseReleased[5];
+
+    /// <summary>
+    /// Time of last released (rarely used! but useful to handle delayed single-click when trying to disambiguate them from double-click).
+    /// </summary>
+    public fixed double MouseReleasedTime[5];
+
+    /// <summary>
+    /// Track if button was clicked inside a dear imgui window or over void blocked by a popup. We don't request mouse capture from the application if click started outside ImGui bounds.
+    /// </summary>
+    public fixed bool MouseDownOwned[5];
+
+    /// <summary>
+    /// Track if button was clicked inside a dear imgui window.
+    /// </summary>
+    public fixed bool MouseDownOwnedUnlessPopupClose[5];
+
+    /// <summary>
+    /// On a non-Mac system, holding Shift requests WheelY to perform the equivalent of a WheelX event. On a Mac system this is already enforced by the system.
+    /// </summary>
+    public bool MouseWheelRequestAxisSwap;
+
+    /// <summary>
+    /// (OSX) Set to true when the current click was a Ctrl+Click that spawned a simulated right click
+    /// </summary>
+    public bool MouseCtrlLeftAsRightClick;
+
+    /// <summary>
+    /// Duration the mouse button has been down (0.0f == just clicked)
+    /// </summary>
+    public fixed float MouseDownDuration[5];
+
+    /// <summary>
+    /// Previous time the mouse button has been down
+    /// </summary>
+    public fixed float MouseDownDurationPrev[5];
+
+    /// <summary>
+    /// Squared maximum distance of how much mouse has traveled from the clicking point (used for moving thresholds)
+    /// </summary>
+    public fixed float MouseDragMaxDistanceSqr[5];
+
+    /// <summary>
+    /// Touch/Pen pressure (0.0f to 1.0f, should be &gt;0.0f only when MouseDown[0] == true). Helper storage currently unused by Dear ImGui.
+    /// </summary>
+    public float PenPressure;
+
+    /// <summary>
+    /// Only modify via AddFocusEvent()
+    /// </summary>
+    public bool AppFocusLost;
+
+    /// <summary>
+    /// Only modify via SetAppAcceptingEvents()
+    /// </summary>
+    public bool AppAcceptingEvents;
+
+    /// <summary>
+    /// For AddInputCharacterUTF16()
+    /// </summary>
+    public ushort InputQueueSurrogate;
+
+    /// <summary>
+    /// Queue of _characters_ input (obtained by platform backend). Fill using AddInputCharacter() helper.
+    /// </summary>
+    public ImVector_ImWchar InputQueueCharacters;
+
+    /// <summary>
     /// Input Functions
     /// Queue a new key down/up event. Key should be "translated" (as in, generally ImGuiKey_A matches the key end-user would use to emit an 'A' character)
     /// </summary>

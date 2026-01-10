@@ -60,6 +60,12 @@ internal static unsafe partial class ImGui
     public static partial ImGuiIO* ImGui_GetIO();
 
     /// <summary>
+    /// access the ImGuiPlatformIO structure (mostly hooks/functions to connect to platform/renderer and OS Clipboard, IME etc.)
+    /// </summary>
+    [LibraryImport(Common.ImGuiNative)]
+    public static partial ImGuiPlatformIO* ImGui_GetPlatformIO();
+
+    /// <summary>
     /// access the Style structure (colors, sizes). Always use PushStyleColor(), PushStyleVar() to modify style mid-frame!
     /// </summary>
     [LibraryImport(Common.ImGuiNative)]
@@ -3189,7 +3195,7 @@ internal static unsafe partial class ImGui
     public static partial void ImGui_SetAllocatorFunctions(delegate* unmanaged[Cdecl]<nuint, void*, void*> alloc_func, delegate* unmanaged[Cdecl]<void*, void*, void> free_func, void* user_data);
 
     [LibraryImport(Common.ImGuiNative)]
-    public static partial void ImGui_GetAllocatorFunctions(delegate* unmanaged[Cdecl]<nuint, void*, void*> p_alloc_func, delegate* unmanaged[Cdecl]<void*, void*, void> p_free_func, nint p_user_data);
+    public static partial void ImGui_GetAllocatorFunctions(delegate* unmanaged[Cdecl]<nuint, void*, void*> p_alloc_func, delegate* unmanaged[Cdecl]<void*, void*, void> p_free_func, void** p_user_data);
 
     [LibraryImport(Common.ImGuiNative)]
     public static partial void* ImGui_MemAlloc(nuint size);

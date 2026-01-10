@@ -99,6 +99,11 @@ public unsafe partial struct ImTextureData
     /// </summary>
     public bool UseColors;
 
+    /// <summary>
+    /// rw   -   // [Internal] Queued to set ImTextureStatus_WantDestroy next frame. May still be used in the current frame.
+    /// </summary>
+    public bool WantDestroyNextFrame;
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImTextureData_Create")]
     public static partial void Create(ImTextureData* self, ImTextureFormat format, int w, int h);
 

@@ -5,9 +5,20 @@ namespace Sdl3Sharp.ImGui.Generator;
 /// </summary>
 public static class StructGenerator
 {
+    /// <summary>
+    /// Known sizes of user-defined structs (in bytes).
+    /// These are structs that may be used as fixed array elements.
+    /// </summary>
+    private static readonly Dictionary<string, int> KnownStructSizes = new()
+    {
+        ["ImVec2"] = 8,         // 2 floats (x, y)
+        ["ImVec4"] = 16,        // 4 floats (x, y, z, w)
+        ["ImGuiKeyData"] = 8,   // float AnalogValue + float DownDuration
+    };
+
     private static bool IsEmittableField(FieldInfo field)
     {
-        return !Conditional.IsObsolete(field.Conditionals) && !field.IsInternal && !field.IsAnonymous;
+        return !Conditional.IsObsolete(field.Conditionals) && !field.IsAnonymous;
     }
 
     public static string GenerateValueStruct(TypeMapper typeMapper, StructInfo structInfo, string namespaceName, List<FunctionInfo>? methods, bool value)
@@ -294,11 +305,23 @@ public static class StructGenerator
                         // Fixed buffer for primitive types
                         writer.AppendLine($"public fixed {elementType} {fieldName}[{evaluatedBounds}];");
                         break;
-                    case "ImVec4":
-                        writer.AppendLine($"public fixed byte {fieldName}[{EvaluateBoundsExpression(bounds)} * {sizeof(float)} * 4];");
-                        break;
                     default:
-                        throw new InvalidOperationException();
+                        // Check if it's a user-defined struct with known size
+                        if (KnownStructSizes.TryGetValue(elementType, out var structSize))
+                        {
+                            // Calculate total byte size: struct size * array count
+                            var arrayCount = int.Parse(evaluatedBounds);
+                            var totalBytes = structSize * arrayCount;
+
+                            // Generate a fixed byte array to hold the struct data
+                            writer.AppendLine($"public fixed byte {fieldName}[{totalBytes}];");
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"Unknown element type for fixed array: {elementType}");
+                        }
+
+                        break;
                 }
             }
             else
@@ -370,6 +393,7 @@ public static class StructGenerator
             ["IM_UNICODE_CODEPOINT_MAX"] = 0x10FFFF,
             ["IM_DRAWLIST_TEX_LINES_WIDTH_MAX"] = 63,
             ["ImGuiCol_COUNT"] = 60,
+            ["ImGuiKey_NamedKey_COUNT"] = 155,
         };
 
         // Try to replace macros and evaluate the expression

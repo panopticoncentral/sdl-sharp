@@ -62,6 +62,11 @@ public unsafe partial struct ImDrawCmd
     public int UserCallbackDataSize;
 
     /// <summary>
+    /// 4 // [Internal] Offset of callback user data when using storage, otherwise -1.
+    /// </summary>
+    public int UserCallbackDataOffset;
+
+    /// <summary>
     /// Since 1.83: returns ImTextureID associated with this draw call. Warning: DO NOT assume this is always same as 'TextureId' (we will change this function for an upcoming feature)
     /// Since 1.92: removed ImDrawCmd::TextureId field, the getter function must be used!
     /// == (TexRef._TexData ? TexRef._TexData-&gt;TexID : TexRef._TexID)

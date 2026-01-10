@@ -28,6 +28,37 @@ public unsafe partial struct ImGuiPayload
     /// </summary>
     public int DataSize;
 
+    /// <summary>
+    /// [Internal]
+    /// Source item id
+    /// </summary>
+    public ImGuiID SourceId;
+
+    /// <summary>
+    /// Source parent id (if available)
+    /// </summary>
+    public ImGuiID SourceParentId;
+
+    /// <summary>
+    /// Data timestamp
+    /// </summary>
+    public int DataFrameCount;
+
+    /// <summary>
+    /// Data type tag (short user-supplied string, 32 characters max)
+    /// </summary>
+    public fixed byte DataType[33];
+
+    /// <summary>
+    /// Set when AcceptDragDropPayload() was called and mouse has been hovering the target item (nb: handle overlapping drag targets)
+    /// </summary>
+    public bool Preview;
+
+    /// <summary>
+    /// Set when AcceptDragDropPayload() was called and mouse button is released over the target item.
+    /// </summary>
+    public bool Delivery;
+
     [LibraryImport(Common.ImGuiNative, EntryPoint = "ImGuiPayload_Clear")]
     public static partial void Clear(ImGuiPayload* self);
 

@@ -100,4 +100,9 @@ public partial struct ImFontGlyph
     /// Texture coordinates for the current value of ImFontAtlas-&gt;TexRef. Cached equivalent of calling GetCustomRect() with PackId.
     /// </summary>
     public float V1;
+
+    /// <summary>
+    /// [Internal] ImFontAtlasRectId value (FIXME: Cold data, could be moved elsewhere?)
+    /// </summary>
+    public int PackId;
 }

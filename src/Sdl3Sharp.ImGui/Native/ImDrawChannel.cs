@@ -9,15 +9,15 @@ using System.Runtime.InteropServices;
 
 namespace Sdl3Sharp.ImGui.Native;
 
+// This type is only referenced
+
 /// <summary>
-/// Instantiation of ImVector&lt;ImDrawList*&gt;
+/// [Internal] For use by ImDrawListSplitter
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct ImVector_ImDrawListPtr
+public partial struct ImDrawChannel
 {
-    public int Size;
+    public ImVector_ImDrawCmd CmdBuffer;
 
-    public int Capacity;
-
-    public ImDrawList** Data;
+    public ImVector_ImDrawIdx IdxBuffer;
 }

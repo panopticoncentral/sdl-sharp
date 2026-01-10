@@ -42,7 +42,7 @@ internal static unsafe partial class ImGuiSdl3
     public static partial void SetGamepadMode(ImGui_ImplSDL3_GamepadMode mode);
 
     [LibraryImport(Common.ImGuiNative, EntryPoint = "cImGui_ImplSDL3_SetGamepadModeEx")]
-    public static partial void SetGamepadModeEx(ImGui_ImplSDL3_GamepadMode mode, nint manual_gamepads_array, int manual_gamepads_count);
+    public static partial void SetGamepadModeEx(ImGui_ImplSDL3_GamepadMode mode, SDL_Gamepad** manual_gamepads_array, int manual_gamepads_count);
 
     #endregion
 
