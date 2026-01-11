@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Sdl3Sharp.ImGui.Native;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Sdl3Sharp.ImGui.Native.ImGui;
 
 namespace Sdl3Sharp.ImGui;
@@ -618,16 +620,104 @@ public unsafe static class Widgets
     /// <param name="label">The label for the combo box.</param>
     /// <param name="currentItem">Reference to the current selected item index.</param>
     /// <param name="itemsSeparatedByZeros">Items separated by \0, ending with \0\0. e.g. "One\0Two\0Three\0"</param>
-    /// <param name="popupMaxHeightInItems">Maximum height in items. Use -1 for default.</param>
+    /// <param name="flags">Flags for the combo box.</param>
     /// <returns>True if the selection changed.</returns>
-    public static bool Combo(ReadOnlySpan<byte> label, ref int currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, int popupMaxHeightInItems = -1)
+    public static bool Combo(ReadOnlySpan<byte> label, ref int currentItem, ReadOnlySpan<byte> itemsSeparatedByZeros, ComboFlags flags = ComboFlags.None)
     {
-        fixed (byte* labelPtr = label)
-        fixed (byte* itemsPtr = itemsSeparatedByZeros)
-        fixed (int* currentItemPtr = &currentItem)
+        var itemCount = 0;
+        for (var i = 0; i < itemsSeparatedByZeros.Length; i++)
         {
-            return ImGui_ComboEx(labelPtr, currentItemPtr, itemsPtr, popupMaxHeightInItems);
+            if (itemsSeparatedByZeros[i] == 0)
+            {
+                itemCount++;
+            }
         }
+
+        var itemsSeparatedByZerosArray = itemsSeparatedByZeros.ToArray();
+
+        return Combo(label, ref currentItem, (itemsSeparatedByZerosArray, index) =>
+        {
+            ReadOnlySpan<byte> itemsSeparatedByZeros = itemsSeparatedByZerosArray.AsSpan();
+
+            var start = 0;
+            for (var i = 0; i < index; i++)
+            {
+                var nextNull = itemsSeparatedByZeros[start..].IndexOf((byte)0);
+                if (nextNull < 0)
+                {
+                    return [];
+                }
+
+                start += nextNull + 1;
+            }
+
+            var end = itemsSeparatedByZeros[start..].IndexOf((byte)0);
+            return end < 0 ? [] : itemsSeparatedByZeros[start .. (start + end)];
+        }, itemsSeparatedByZerosArray, itemCount, flags);
+    }
+
+    /// <summary>
+    /// Creates a combo box with an array of items.
+    /// </summary>
+    /// <param name="label">The label for the combo box.</param>
+    /// <param name="currentItem">Reference to the current selected item index.</param>
+    /// <param name="items">Collection of null-terminated UTF-8 byte arrays representing each item.</param>
+    /// <param name="flags">Flags for the combo box.</param>
+    /// <returns>True if the selection changed.</returns>
+    public static bool Combo(ReadOnlySpan<byte> label, ref int currentItem, IReadOnlyList<byte[]> items, ComboFlags flags = ComboFlags.None)
+    {
+        return Combo(label, ref currentItem, (items, index) => index < 0 || index >= items.Count ? [] : new ReadOnlySpan<byte>(items[index]), items, items.Count, flags);
+    }
+
+    /// <summary>
+    /// Creates a combo box with a managed callback function to retrieve items.
+    /// </summary>
+    /// <param name="label">The label for the combo box.</param>
+    /// <param name="currentItem">Reference to the current selected item index.</param>
+    /// <param name="getter">Callback function that returns UTF-8 bytes for a given index.</param>
+    /// <param name="itemsCount">The total number of items in the combo box.</param>
+    /// <param name="flags">Flags for the combo box.</param>
+    /// <returns>True if the selection changed.</returns>
+    public static bool Combo<T>(ReadOnlySpan<byte> label, ref int currentItem, Func<T, int, ReadOnlySpan<byte>> getter, T userData, int itemsCount, ComboFlags flags = ComboFlags.None)
+    {
+        var valueChanged = false;
+        ReadOnlySpan<byte> preview_value = [];
+        if (currentItem >= 0 && currentItem < itemsCount)
+        {
+            preview_value = getter(userData, currentItem);
+        }
+
+        if (!BeginCombo(label, preview_value, flags))
+        {
+            return false;
+        }
+
+        for (var i = 0; i < itemsCount; i++)
+        {
+            ReadOnlySpan<byte> itemText = getter(userData, i);
+            if (itemText.IsEmpty)
+            {
+                itemText = "*Unknown item*"u8;
+            }
+
+            Id.Push(i);
+            var itemSelected = i == currentItem;
+            if (Selectable(itemText, itemSelected) && currentItem != i)
+            {
+                valueChanged = true;
+                currentItem = i;
+            }
+
+            if (itemSelected)
+            {
+                SetItemDefaultFocus();
+            }
+
+            Id.Pop();
+        }
+
+        EndCombo();
+        return valueChanged;
     }
 
     /// <summary>

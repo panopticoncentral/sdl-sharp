@@ -22,30 +22,35 @@ namespace Sdl3Sharp.ImGui;
 /// </remarks>
 public unsafe struct TextFilter : IDisposable
 {
-    private ImGuiTextFilter* _native;
+    private ImGuiTextFilter _native;
+    private bool _isDisposed;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextFilter"/> struct with an optional default filter.
+    /// </summary>
+    public TextFilter()
+    {
+        _native = default;
+        _isDisposed = false;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TextFilter"/> struct with an optional default filter.
     /// </summary>
     /// <param name="defaultFilter">Optional initial filter string.</param>
-    public TextFilter(string? defaultFilter = null)
+    public TextFilter(ReadOnlySpan<byte> defaultFilter)
     {
-        // Allocate memory for the native struct using ImGui's allocator
-        _native = (ImGuiTextFilter*)ImGui_MemAlloc((nuint)sizeof(ImGuiTextFilter));
+        _native = default;
+        _isDisposed = false;
 
-        // Zero-initialize the struct
-        new Span<byte>(_native, sizeof(ImGuiTextFilter)).Clear();
-
-        // If a default filter was provided, copy it to InputBuf and build
-        if (!string.IsNullOrEmpty(defaultFilter))
+        fixed (byte* bytes = defaultFilter)
         {
-            var bytes = Encoding.UTF8.GetBytes(defaultFilter);
-            var copyLen = Math.Min(bytes.Length, 255); // Leave room for null terminator
-            fixed (byte* src = bytes)
+            // If a default filter was provided, copy it to InputBuf and build
+            var copyLen = Math.Min(defaultFilter.Length, 256);
+            fixed (ImGuiTextFilter* nativePtr = &_native)
             {
-                Buffer.MemoryCopy(src, _native->InputBuf, 256, copyLen);
+                Buffer.MemoryCopy(bytes, nativePtr->InputBuf, 256, copyLen);
             }
-            _native->InputBuf[copyLen] = 0; // Null terminator
 
             Build();
         }
@@ -64,30 +69,17 @@ public unsafe struct TextFilter : IDisposable
     {
         ThrowIfDisposed();
 
-        if (label.IsEmpty)
+        fixed (ImGuiTextFilter* nativePtr = &_native)
         {
-            return ImGuiTextFilter.Draw(_native, null, width);
-        }
+            if (label.IsEmpty)
+            {
+                return ImGuiTextFilter.Draw(nativePtr, null, width);
+            }
 
-        fixed (byte* labelPtr = label)
-        {
-            return ImGuiTextFilter.Draw(_native, labelPtr, width);
-        }
-    }
-
-    /// <summary>
-    /// Draws the filter input field with a string label.
-    /// </summary>
-    /// <param name="label">The label for the input field.</param>
-    /// <param name="width">The width of the input field (0 for auto).</param>
-    /// <returns>True if the filter was modified.</returns>
-    public bool Draw(string label, float width = 0.0f)
-    {
-        ThrowIfDisposed();
-
-        fixed (byte* labelPtr = Encoding.UTF8.GetBytes(label + '\0'))
-        {
-            return ImGuiTextFilter.Draw(_native, labelPtr, width);
+            fixed (byte* labelPtr = label)
+            {
+                return ImGuiTextFilter.Draw(nativePtr, labelPtr, width);
+            }
         }
     }
 
@@ -100,21 +92,24 @@ public unsafe struct TextFilter : IDisposable
     {
         ThrowIfDisposed();
 
-        if (text.IsEmpty)
+        fixed (ImGuiTextFilter* nativePtr = &_native)
         {
-            return ImGuiTextFilter.PassFilter(_native, null, null);
-        }
-
-        fixed (byte* textPtr = text)
-        {
-            // Find the null terminator or use the end of the span
-            byte* textEnd = textPtr + text.Length;
-            if (text[^1] == 0)
+            if (text.IsEmpty)
             {
-                textEnd--; // Don't include null terminator
+                return ImGuiTextFilter.PassFilter(nativePtr, null, null);
             }
 
-            return ImGuiTextFilter.PassFilter(_native, textPtr, textEnd);
+            fixed (byte* textPtr = text)
+            {
+                // Find the null terminator or use the end of the span
+                var textEnd = textPtr + text.Length;
+                if (text[^1] == 0)
+                {
+                    textEnd--; // Don't include null terminator
+                }
+
+                return ImGuiTextFilter.PassFilter(nativePtr, textPtr, textEnd);
+            }
         }
     }
 
@@ -127,15 +122,18 @@ public unsafe struct TextFilter : IDisposable
     {
         ThrowIfDisposed();
 
-        if (string.IsNullOrEmpty(text))
+        fixed (ImGuiTextFilter* nativePtr = &_native)
         {
-            return ImGuiTextFilter.PassFilter(_native, null, null);
-        }
+            if (string.IsNullOrEmpty(text))
+            {
+                return ImGuiTextFilter.PassFilter(nativePtr, null, null);
+            }
 
-        var bytes = Encoding.UTF8.GetBytes(text);
-        fixed (byte* textPtr = bytes)
-        {
-            return ImGuiTextFilter.PassFilter(_native, textPtr, textPtr + bytes.Length);
+            var bytes = text.ToUtf8();
+            fixed (byte* textPtr = bytes)
+            {
+                return ImGuiTextFilter.PassFilter(nativePtr, textPtr, textPtr + bytes.Length);
+            }
         }
     }
 
@@ -149,7 +147,11 @@ public unsafe struct TextFilter : IDisposable
     public void Build()
     {
         ThrowIfDisposed();
-        ImGuiTextFilter.Build(_native);
+
+        fixed (ImGuiTextFilter* nativePtr = &_native)
+        {
+            ImGuiTextFilter.Build(nativePtr);
+        }
     }
 
     /// <summary>
@@ -158,7 +160,11 @@ public unsafe struct TextFilter : IDisposable
     public void Clear()
     {
         ThrowIfDisposed();
-        ImGuiTextFilter.Clear(_native);
+
+        fixed (ImGuiTextFilter* nativePtr = &_native)
+        {
+            ImGuiTextFilter.Clear(nativePtr);
+        }
     }
 
     /// <summary>
@@ -169,7 +175,11 @@ public unsafe struct TextFilter : IDisposable
         get
         {
             ThrowIfDisposed();
-            return ImGuiTextFilter.IsActive(_native);
+
+            fixed (ImGuiTextFilter* nativePtr = &_native)
+            {
+                return ImGuiTextFilter.IsActive(nativePtr);
+            }
         }
     }
 
@@ -181,22 +191,29 @@ public unsafe struct TextFilter : IDisposable
         readonly get
         {
             ThrowIfDisposed();
-            return Encoding.UTF8.GetString(new ReadOnlySpan<byte>(_native->InputBuf, GetInputBufLength()));
+
+            fixed (ImGuiTextFilter* nativePtr = &_native)
+            {
+                return Encoding.UTF8.GetString(new ReadOnlySpan<byte>(nativePtr->InputBuf, GetInputBufLength()));
+            }
         }
         set
         {
             ThrowIfDisposed();
 
-            // Clear the buffer first
-            new Span<byte>(_native->InputBuf, 256).Clear();
-
-            if (!string.IsNullOrEmpty(value))
+            fixed (ImGuiTextFilter* nativePtr = &_native)
             {
-                var bytes = Encoding.UTF8.GetBytes(value);
-                var copyLen = Math.Min(bytes.Length, 255);
-                fixed (byte* src = bytes)
+                // Clear the buffer first
+                new Span<byte>(nativePtr->InputBuf, 256).Clear();
+
+                if (!string.IsNullOrEmpty(value))
                 {
-                    Buffer.MemoryCopy(src, _native->InputBuf, 256, copyLen);
+                    var bytes = value.ToUtf8();
+                    var copyLen = Math.Min(bytes.Length, 255);
+                    fixed (byte* src = bytes)
+                    {
+                        Buffer.MemoryCopy(src, nativePtr->InputBuf, 256, copyLen);
+                    }
                 }
             }
 
@@ -209,35 +226,41 @@ public unsafe struct TextFilter : IDisposable
     /// </summary>
     public void Dispose()
     {
-        if (_native != null)
+        if (!_isDisposed)
         {
-            // Clear the filters vector if it has data
-            if (_native->Filters.Data != null)
+            fixed (ImGuiTextFilter* nativePtr = &_native)
             {
-                ImGui_MemFree(_native->Filters.Data);
+                // Clear the filters vector if it has data
+                if (nativePtr->Filters.Data != null)
+                {
+                    ImGui_MemFree(nativePtr->Filters.Data);
+                    nativePtr->Filters.Data = null;
+                }
             }
 
-            ImGui_MemFree(_native);
-            _native = null;
+            _isDisposed = true;
         }
     }
 
     private readonly int GetInputBufLength()
     {
-        for (var i = 0; i < 256; i++)
+        fixed (ImGuiTextFilter* nativePtr = &_native)
         {
-            if (_native->InputBuf[i] == 0)
+            for (var i = 0; i < 256; i++)
             {
-                return i;
+                if (nativePtr->InputBuf[i] == 0)
+                {
+                    return i;
+                }
             }
-        }
 
-        return 256;
+            return 256;
+        }
     }
 
     private readonly void ThrowIfDisposed()
     {
-        if (_native == null)
+        if (_isDisposed)
         {
             throw new ObjectDisposedException(nameof(TextFilter));
         }

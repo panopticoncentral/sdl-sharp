@@ -77,8 +77,9 @@ public static unsafe class ImGuiDemoWindow
             "MMMM"u8.ToArray(),
             "OOOOOOO"u8.ToArray()];
     private static int _comboItemCurrent;
+    private static TextFilter _comboTextFilter;
     private static int _comboItemCurrent2;
-    private static int _comboItemCurrent3;
+    private static int _comboItemCurrent3 = -1;
     private static int _comboItemCurrent4;
     private static ComboFlags _comboFlags = ComboFlags.None;
 
@@ -1189,17 +1190,17 @@ We don't have a getter to avoid encouraging you to persistently save values that
         }
 
         // Override default popup height
-        if (Widgets.CheckboxFlags("ImGuiComboFlags_HeightSmall"u8, ref _comboFlags, ComboFlags.HeightSmall))
+        if (Widgets.CheckboxFlags("ComboFlags.HeightSmall"u8, ref _comboFlags, ComboFlags.HeightSmall))
         {
             _comboFlags &= ~(ComboFlags.HeightMask & ~ComboFlags.HeightSmall);
         }
 
-        if (Widgets.CheckboxFlags("ImGuiComboFlags_HeightRegular"u8, ref _comboFlags, ComboFlags.HeightRegular))
+        if (Widgets.CheckboxFlags("ComboFlags.HeightRegular"u8, ref _comboFlags, ComboFlags.HeightRegular))
         {
             _comboFlags &= ~(ComboFlags.HeightMask & ~ComboFlags.HeightRegular);
         }
 
-        if (Widgets.CheckboxFlags("ImGuiComboFlags_HeightLargest"u8, ref _comboFlags, ComboFlags.HeightLargest))
+        if (Widgets.CheckboxFlags("ComboFlags.HeightLargest"u8, ref _comboFlags, ComboFlags.HeightLargest))
         {
             _comboFlags &= ~(ComboFlags.HeightMask & ~ComboFlags.HeightLargest);
         }
@@ -1229,41 +1230,47 @@ We don't have a getter to avoid encouraging you to persistently save values that
             Widgets.EndCombo();
         }
 
-        //// Show case embedding a filter using a simple trick: displaying the filter inside combo contents.
-        //// See https://github.com/ocornut/imgui/issues/718 for advanced/esoteric alternatives.
-        //if (Widgets.BeginCombo("combo 2 (w/ filter)"u8, comboPreviewValue, _comboFlags))
-        //{
-        //    static ImGuiTextFilter filter;
-        //    if (Window.IsAppearing)
-        //    {
-        //        Widgets.SetKeyboardFocusHere();
-        //        filter.Clear();
-        //    }
-        //    Context.SetNextItemShortcut(Key.ModCtrl | Key.F);
-        //    filter.Draw("##Filter", -float.MinValue);
+        // Show case embedding a filter using a simple trick: displaying the filter inside combo contents.
+        // See https://github.com/ocornut/imgui/issues/718 for advanced/esoteric alternatives.
+        if (Widgets.BeginCombo("combo 2 (w/ filter)"u8, comboPreviewValue, _comboFlags))
+        {
+            if (Window.IsAppearing)
+            {
+                Widgets.SetKeyboardFocusHere();
+                _comboTextFilter.Clear();
+            }
 
-        //    for (var n = 0; n < _comboItems.Length; n++)
-        //    {
-        //        var is_selected = _comboItemCurrent == n;
-        //        if (filter.PassFilter(items[n]))
-        //        {
-        //            if (Widgets.Selectable(_comboItems[n], is_selected))
-        //            {
-        //                _comboItemCurrent = n;
-        //            }
-        //        }
-        //    }
-        //    Widgets.EndCombo();
-        //}
+            Context.SetNextItemShortcut(Key.ModCtrl | Key.F);
+            _ = _comboTextFilter.Draw("##Filter"u8, -float.Epsilon);
+
+            for (var n = 0; n < _comboItems.Length; n++)
+            {
+                var is_selected = _comboItemCurrent == n;
+                if (_comboTextFilter.PassFilter(_comboItems[n]))
+                {
+                    if (Widgets.Selectable(_comboItems[n], is_selected))
+                    {
+                        _comboItemCurrent = n;
+                    }
+                }
+            }
+
+            Widgets.EndCombo();
+        }
+
+        Widgets.Spacing();
+        Widgets.SeparatorText("One-liner variants"u8);
+        HelpMarker(@"The Combo() function is not greatly useful apart from cases were you want to embed all options in a single strings.
+Flags above don't apply to this section."u8);
 
         // Combo with null-separated items string
-        _ = Widgets.Combo("combo 2 (one-liner)"u8, ref _comboItemCurrent2, "aaaa\0bbbb\0cccc\0dddd\0eeee\0"u8);
+        _ = Widgets.Combo("combo 3 (one-liner)"u8, ref _comboItemCurrent2, "aaaa\0bbbb\0cccc\0dddd\0eeee\0"u8);
 
         // Combo with items
-        _ = Widgets.Combo("combo 3 (array)"u8, ref _comboItemCurrent3, "aaaa\0bbbb\0cccc\0dddd\0eeee\0"u8);
+        _ = Widgets.Combo("combo 4 (array)"u8, ref _comboItemCurrent3, _comboItems);
 
-        // Combo with items height
-        _ = Widgets.Combo("combo 4 (with height)"u8, ref _comboItemCurrent4, "aaaa\0bbbb\0cccc\0dddd\0eeee\0ffff\0gggg\0hhhh\0iiii\0jjjj\0kkkk\0lllll\0mmmm\0"u8, 4);
+        // Combo with accessor function
+        _ = Widgets.Combo("combo 5 (with height)"u8, ref _comboItemCurrent4, (items, item) => items[item], _comboItems, _comboItems.Length);
 
         Widgets.TreePop();
     }
