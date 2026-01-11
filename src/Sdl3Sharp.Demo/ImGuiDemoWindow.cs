@@ -238,13 +238,6 @@ public static unsafe class ImGuiDemoWindow
     private static PlotType _plotFuncType;
     private static int _plotDisplayCount = 70;
 
-    // Public Properties
-
-    /// <summary>
-    /// Gets or sets whether to disable all widget sections.
-    /// </summary>
-    public static bool DisableSections { get; set; }
-
     // Shared Data
 
     /// <summary>
@@ -1360,6 +1353,17 @@ You can override the clamping limits by using Ctrl+Click to input a value."u8);
         Widgets.TreePop();
     }
 
+    private static void DemoWindowWidgetsDisableBlocks()
+    {
+        if (Widgets.TreeNode("Disable Blocks"u8))
+        {
+            _ = Widgets.Checkbox("Disable entire section above"u8, ref _demoData.DisableSections);
+            Widgets.SameLine();
+            HelpMarker("Demonstrate using BeginDisabled()/EndDisabled() across other sections."u8);
+            Widgets.TreePop();
+        }
+    }
+
     private static void ShowUserGuide()
     {
         IO io = Context.IO;
@@ -1512,7 +1516,7 @@ You can override the clamping limits by using Ctrl+Click to input a value."u8);
             return;
         }
 
-        var disableAll = DisableSections;
+        var disableAll = _demoData.DisableSections;
         if (disableAll)
         {
             Widgets.BeginDisabled();
@@ -1530,7 +1534,7 @@ You can override the clamping limits by using Ctrl+Click to input a value."u8);
             Widgets.EndDisabled();
         }
 
-        ShowDisableBlocks();
+        DemoWindowWidgetsDisableBlocks();
 
         if (disableAll)
         {
@@ -1565,22 +1569,6 @@ You can override the clamping limits by using Ctrl+Click to input a value."u8);
     // Helper Methods
 
     // Private Section Methods
-
-    private static void ShowDisableBlocks()
-    {
-        if (Widgets.TreeNode("Disable block"u8))
-        {
-            var disableSections = DisableSections;
-            if (Widgets.Checkbox("Disable entire section above"u8, ref disableSections))
-            {
-                DisableSections = disableSections;
-            }
-
-            Widgets.SameLine();
-            HelpMarker("Demonstrate using BeginDisabled()/EndDisabled() across this section."u8);
-            Widgets.TreePop();
-        }
-    }
 
     private static void ShowDragAndDrop()
     {
