@@ -498,7 +498,7 @@ public unsafe readonly struct Context
     /// <returns>True if the mouse button is down.</returns>
     public static bool IsMouseDown(MouseButton button)
     {
-        return ImGui_IsMouseDown((Native.ImGuiMouseButton)button);
+        return ImGui_IsMouseDown((ImGuiMouseButton)button);
     }
 
     /// <summary>
@@ -508,7 +508,7 @@ public unsafe readonly struct Context
     /// <returns>True if the mouse button was clicked.</returns>
     public static bool IsMouseClicked(MouseButton button)
     {
-        return ImGui_IsMouseClicked((Native.ImGuiMouseButton)button);
+        return ImGui_IsMouseClicked((ImGuiMouseButton)button);
     }
 
     /// <summary>
@@ -519,7 +519,7 @@ public unsafe readonly struct Context
     /// <returns>True if the mouse button was clicked.</returns>
     public static bool IsMouseClicked(MouseButton button, bool repeat)
     {
-        return ImGui_IsMouseClickedEx((Native.ImGuiMouseButton)button, repeat);
+        return ImGui_IsMouseClickedEx((ImGuiMouseButton)button, repeat);
     }
 
     /// <summary>
@@ -529,7 +529,7 @@ public unsafe readonly struct Context
     /// <returns>True if the mouse button was released.</returns>
     public static bool IsMouseReleased(MouseButton button)
     {
-        return ImGui_IsMouseReleased((Native.ImGuiMouseButton)button);
+        return ImGui_IsMouseReleased((ImGuiMouseButton)button);
     }
 
     /// <summary>
@@ -539,7 +539,7 @@ public unsafe readonly struct Context
     /// <returns>True if the mouse button was double-clicked.</returns>
     public static bool IsMouseDoubleClicked(MouseButton button)
     {
-        return ImGui_IsMouseDoubleClicked((Native.ImGuiMouseButton)button);
+        return ImGui_IsMouseDoubleClicked((ImGuiMouseButton)button);
     }
 
     /// <summary>
@@ -549,7 +549,7 @@ public unsafe readonly struct Context
     /// <returns>The click count.</returns>
     public static int GetMouseClickedCount(MouseButton button)
     {
-        return ImGui_GetMouseClickedCount((Native.ImGuiMouseButton)button);
+        return ImGui_GetMouseClickedCount((ImGuiMouseButton)button);
     }
 
     /// <summary>
@@ -601,7 +601,7 @@ public unsafe readonly struct Context
     /// <returns>True if dragging.</returns>
     public static bool IsMouseDragging(MouseButton button, float lockThreshold = -1.0f)
     {
-        return ImGui_IsMouseDragging((Native.ImGuiMouseButton)button, lockThreshold);
+        return ImGui_IsMouseDragging((ImGuiMouseButton)button, lockThreshold);
     }
 
     /// <summary>
@@ -612,7 +612,7 @@ public unsafe readonly struct Context
     /// <returns>The drag delta.</returns>
     public static Vec2 GetMouseDragDelta(MouseButton button = MouseButton.Left, float lockThreshold = -1.0f)
     {
-        return new(ImGui_GetMouseDragDelta((Native.ImGuiMouseButton)button, lockThreshold));
+        return new(ImGui_GetMouseDragDelta((ImGuiMouseButton)button, lockThreshold));
     }
 
     /// <summary>
@@ -627,7 +627,7 @@ public unsafe readonly struct Context
         }
         else
         {
-            ImGui_ResetMouseDragDeltaEx((Native.ImGuiMouseButton)button);
+            ImGui_ResetMouseDragDeltaEx((ImGuiMouseButton)button);
         }
     }
 
@@ -646,7 +646,7 @@ public unsafe readonly struct Context
     /// <param name="cursorType">The cursor to set.</param>
     public static void SetMouseCursor(MouseCursor cursorType)
     {
-        ImGui_SetMouseCursor((Native.ImGuiMouseCursor)cursorType);
+        ImGui_SetMouseCursor((ImGuiMouseCursor)cursorType);
     }
 
     /// <summary>

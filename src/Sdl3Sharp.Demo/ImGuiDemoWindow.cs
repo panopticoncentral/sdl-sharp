@@ -95,22 +95,23 @@ public static unsafe class ImGuiDemoWindow
     private static ColorEditFlags _colorColorPickerFlags = ColorEditFlags.AlphaBar;
     private static int _colorPickerMode = 0;
     private static int _colorDisplayMode = 0;
-    private static float[] _colorColorHsv = [0.23f, 1.0f, 1.0f, 1.0f];
+    private readonly static float[] _colorColorHsv = [0.23f, 1.0f, 1.0f, 1.0f];
 
     // State Fields - Data Types Section
 
-    private static sbyte _dataS8 = 1;
-    private static byte _dataU8 = 1;
-    private static short _dataS16 = 1;
-    private static ushort _dataU16 = 1;
-    private static int _dataS32 = 1;
-    private static uint _dataU32 = 1;
-    private static long _dataS64 = 1;
-    private static ulong _dataU64 = 1;
+    private static bool _dataDragClamp;
+    private static sbyte _dataS8 = 127;
+    private static byte _dataU8 = 255;
+    private static short _dataS16 = 32767;
+    private static ushort _dataU16 = 65535;
+    private static int _dataS32 = -1;
+    private static uint _dataU32 = 0xFFFFFFFF;
+    private static long _dataS64 = -1;
+    private static ulong _dataU64 = 0xFFFFFFFFFFFFFFFF;
     private static float _dataF32 = 0.123f;
     private static double _dataF64 = 90000.01234567890123456789;
-    private static int _dataDragClamp;
-    private static int _dataInputsStep = 1;
+    private static bool _dataInputsStep = true;
+    private static InputTextFlags _dataFlags = InputTextFlags.None;
 
     // State Fields - Disable Blocks Section
 
@@ -1275,6 +1276,90 @@ Flags above don't apply to this section."u8);
         Widgets.TreePop();
     }
 
+    private static void DemoWindowWidgetsDataTypes()
+    {
+        if (!Widgets.TreeNode("Data Types"u8))
+        {
+            return;
+        }
+
+        Widgets.SeparatorText("Drags"u8);
+
+        _ = Widgets.Checkbox("Clamp integers to 0..50"u8, ref _dataDragClamp);
+        Widgets.SameLine(); 
+        HelpMarker(@"As with every widget in dear imgui, we never modify values unless there is a user interaction.
+You can override the clamping limits by using Ctrl+Click to input a value."u8);
+
+        _ = Widgets.Drag("drag s8"u8, ref _dataS8, 0.2f, _dataDragClamp ? (sbyte)0 : sbyte.MinValue, _dataDragClamp ? (sbyte)50 : sbyte.MaxValue);
+        _ = Widgets.Drag("drag u8"u8, ref _dataU8, 0.2f, _dataDragClamp ? (byte)0 : byte.MinValue, _dataDragClamp ? (byte)50 : byte.MaxValue, "%u ms"u8);
+        _ = Widgets.Drag("drag s16"u8, ref _dataS16, 0.2f, _dataDragClamp ? (short)0 : short.MinValue, _dataDragClamp ? (short)50 : short.MaxValue);
+        _ = Widgets.Drag("drag u16"u8, ref _dataU16, 0.2f, _dataDragClamp ? (ushort)0 : ushort.MinValue, _dataDragClamp ? (ushort)50 : ushort.MaxValue, "%u ms"u8);
+        _ = Widgets.Drag("drag s32"u8, ref _dataS32, 0.2f, _dataDragClamp ? 0 : int.MinValue, _dataDragClamp ? 50 : int.MaxValue);
+        _ = Widgets.Drag("drag s32 hex"u8, ref _dataS32, 0.2f, _dataDragClamp ? 0 : int.MinValue, _dataDragClamp ? 50 : int.MaxValue, "0x%08X"u8);
+        _ = Widgets.Drag("drag u32"u8, ref _dataU32, 0.2f, _dataDragClamp ? 0 : uint.MinValue, _dataDragClamp ? 50 : uint.MaxValue, "%u"u8);
+        _ = Widgets.Drag("drag s64"u8, ref _dataS64, 0.2f, _dataDragClamp ? 0 : long.MinValue, _dataDragClamp ? 50 : long.MaxValue);
+        _ = Widgets.Drag("drag u64"u8, ref _dataU64, 0.2f, _dataDragClamp ? 0 : ulong.MinValue, _dataDragClamp ? 50 : ulong.MaxValue);
+        _ = Widgets.Drag("drag float"u8, ref _dataF32, 0.005f, 0.0f, 1.0f, "%f"u8);
+        _ = Widgets.Drag("drag float log"u8, ref _dataF32, 0.005f, 0.0f, 10.0f, "%f"u8, SliderFlags.Logarithmic);
+        _ = Widgets.Drag("drag double"u8, ref _dataF64, 0.0005f, 0.0d, double.MaxValue, "%.10f grams"u8);
+        _ = Widgets.Drag("drag double log"u8, ref _dataF64, 0.0005f, 0.0d, 10.0d, "0 < %.10f < 1"u8, SliderFlags.Logarithmic);
+
+        Widgets.SeparatorText("Sliders"u8);
+
+        _ = Widgets.Slider("slider s8 full"u8, ref _dataS8, sbyte.MinValue, sbyte.MaxValue, "%d"u8);
+        _ = Widgets.Slider("slider u8 full"u8, ref _dataU8, byte.MinValue, byte.MaxValue, "%u"u8);
+        _ = Widgets.Slider("slider s16 full"u8, ref _dataS16, short.MinValue, short.MaxValue, "%d"u8);
+        _ = Widgets.Slider("slider u16 full"u8, ref _dataU16, ushort.MinValue, ushort.MaxValue, "%u"u8);
+        _ = Widgets.Slider("slider s32 low"u8, ref _dataS32, 0, 50, "%d"u8);
+        _ = Widgets.Slider("slider s32 high"u8, ref _dataS32, (int.MaxValue / 2) - 100, int.MaxValue / 2, "%d"u8);
+        _ = Widgets.Slider("slider s32 full"u8, ref _dataS32, int.MinValue / 2, int.MaxValue / 2, "%d"u8);
+        _ = Widgets.Slider("slider s32 hex"u8, ref _dataS32, 0, 50, "0x%04X"u8);
+        _ = Widgets.Slider("slider u32 low"u8, ref _dataU32, 0, 50, "%u"u8);
+        _ = Widgets.Slider("slider u32 high"u8, ref _dataU32, (uint.MaxValue / 2) - 100, uint.MaxValue / 2, "%u"u8);
+        _ = Widgets.Slider("slider u32 full"u8, ref _dataU32, uint.MinValue / 2, uint.MaxValue / 2, "%u"u8);
+        _ = Widgets.Slider("slider s64 low"u8, ref _dataS64, 0, 50, "%lld"u8);
+        _ = Widgets.Slider("slider s64 high"u8, ref _dataS64, (long.MaxValue / 2) - 100, long.MaxValue / 2, "%lld"u8);
+        _ = Widgets.Slider("slider s64 full"u8, ref _dataS64, long.MinValue / 2, long.MaxValue / 2, "%lld"u8);
+        _ = Widgets.Slider("slider u64 low"u8, ref _dataU64, 0, 50, "%llu ms"u8);
+        _ = Widgets.Slider("slider u64 high"u8, ref _dataU64, (ulong.MaxValue / 2) - 100, ulong.MaxValue / 2, "%llu ms"u8);
+        _ = Widgets.Slider("slider u64 full"u8, ref _dataU64, ulong.MinValue / 2, ulong.MaxValue / 2, "%llu ms"u8);
+        _ = Widgets.Slider("slider float low"u8, ref _dataF32, 0.0f, 1.0f);
+        _ = Widgets.Slider("slider float low log"u8, ref _dataF32, 0.0f, 1.0f, "%.10f"u8, SliderFlags.Logarithmic);
+        _ = Widgets.Slider("slider float high"u8, ref _dataF32, -10000000000.0f, +10000000000.0f, "%e"u8);
+        _ = Widgets.Slider("slider double low"u8, ref _dataF64, 0.0d, 1.0d, "%.10f grams"u8);
+        _ = Widgets.Slider("slider double low log"u8, ref _dataF64, 0.0d, 1.0d, "%.10f"u8, SliderFlags.Logarithmic);
+        _ = Widgets.Slider("slider double high"u8, ref _dataF64, -1000000000000000.0, +1000000000000000.0, "%e grams"u8);
+
+        Widgets.SeparatorText("Sliders (reverse)"u8);
+
+        _ = Widgets.Slider("slider s8 reverse"u8, ref _dataS8, sbyte.MaxValue, sbyte.MinValue, "%d"u8);
+        _ = Widgets.Slider("slider u8 reverse"u8, ref _dataU8, byte.MaxValue, byte.MinValue, "%u"u8);
+        _ = Widgets.Slider("slider s32 reverse"u8, ref _dataS32, 50, 0, "%d"u8);
+        _ = Widgets.Slider("slider u32 reverse"u8, ref _dataU32, 50, 0, "%u"u8);
+        _ = Widgets.Slider("slider s64 reverse"u8, ref _dataS64, 50, 0, "%lld"u8);
+        _ = Widgets.Slider("slider u64 reverse"u8, ref _dataU64, 50, 0, "%llu ms"u8);
+
+        Widgets.SeparatorText("Inputs"u8);
+        _ = Widgets.Checkbox("Show step buttons"u8, ref _dataInputsStep);
+        _ = Widgets.CheckboxFlags("InputTextFlags.ReadOnly"u8, ref _dataFlags, InputTextFlags.ReadOnly);
+        _ = Widgets.CheckboxFlags("InputTextFlags.ParseEmptyRefVal"u8, ref _dataFlags, InputTextFlags.ParseEmptyRefVal);
+        _ = Widgets.CheckboxFlags("InputTextFlags.DisplayEmptyRefVal"u8, ref _dataFlags, InputTextFlags.DisplayEmptyRefVal);
+        _ = Widgets.Input("input s8"u8, ref _dataS8, _dataInputsStep ? (sbyte)1 : (sbyte)0, 0, "%d"u8, _dataFlags);
+        _ = Widgets.Input("input u8"u8, ref _dataU8, _dataInputsStep ? (byte)1 : (byte)0, 0, "%u"u8, _dataFlags);
+        _ = Widgets.Input("input s16"u8, ref _dataS16, _dataInputsStep ? (short)1 : (short)0, 0, "%d"u8, _dataFlags);
+        _ = Widgets.Input("input u16"u8, ref _dataU16, _dataInputsStep ? (ushort)1 : (ushort)0, 0, "%u"u8, _dataFlags);
+        _ = Widgets.Input("input s32"u8, ref _dataS32, _dataInputsStep ? 1 : 0, 0, "%d"u8, _dataFlags);
+        _ = Widgets.Input("input s32 hex"u8, ref _dataS32, _dataInputsStep ? 1 : 0, 0, "%04X"u8, _dataFlags | InputTextFlags.CharsHexadecimal);
+        _ = Widgets.Input("input u32"u8, ref _dataU32, _dataInputsStep ? 1u : 0u, 0, "%u"u8, _dataFlags);
+        _ = Widgets.Input("input u32 hex"u8, ref _dataU32, _dataInputsStep ? 1u : 0u, 0, "%08X"u8, _dataFlags | InputTextFlags.CharsHexadecimal);
+        _ = Widgets.Input("input s64"u8, ref _dataS64, _dataInputsStep ? 1L : 0L, 0, "%lld"u8, _dataFlags);
+        _ = Widgets.Input("input u64"u8, ref _dataU64, _dataInputsStep ? 1UL : 0UL, 0, "%llu"u8, _dataFlags);
+        _ = Widgets.Input("input float"u8, ref _dataF32, _dataInputsStep ? 1f : 0f, 0, default, _dataFlags);
+        _ = Widgets.Input("input double"u8, ref _dataF64, _dataInputsStep ? 1.0 : 0.0, 0, default, _dataFlags);
+
+        Widgets.TreePop();
+    }
+
     private static void ShowUserGuide()
     {
         IO io = Context.IO;
@@ -1438,7 +1523,7 @@ Flags above don't apply to this section."u8);
         DemoWindowWidgetsCollapsingHeaders();
         DemoWindowWidgetsComboBoxes();
         DemoWindowWidgetsColorAndPickers();
-        ShowDataTypes();
+        DemoWindowWidgetsDataTypes();
 
         if (disableAll)
         {
@@ -1480,91 +1565,6 @@ Flags above don't apply to this section."u8);
     // Helper Methods
 
     // Private Section Methods
-
-    private static void ShowDataTypes()
-    {
-        if (Widgets.TreeNode("Data Types"u8))
-        {
-            Widgets.SeparatorText("Drags"u8);
-
-            _ = Widgets.Drag("drag s8"u8, ref _dataS8, 1, sbyte.MinValue, sbyte.MaxValue, "%d"u8);
-            Widgets.SameLine();
-            HelpMarker("Full 8-bit signed data type.\nMin = -128, Max = 127"u8);
-            _ = Widgets.Drag("drag u8"u8, ref _dataU8, 1, byte.MinValue, byte.MaxValue, "%u"u8);
-            _ = Widgets.Drag("drag s16"u8, ref _dataS16, 1, short.MinValue, short.MaxValue, "%d"u8);
-            _ = Widgets.Drag("drag u16"u8, ref _dataU16, 1, ushort.MinValue, ushort.MaxValue, "%u"u8);
-            _ = Widgets.Drag("drag s32"u8, ref _dataS32, 1, int.MinValue, int.MaxValue, "%d"u8);
-            Widgets.SameLine();
-            HelpMarker("Full 32-bit signed data type.\nMin = -2147483648, Max = 2147483647"u8);
-            _ = Widgets.Drag("drag s32 hex"u8, ref _dataS32, 1, int.MinValue, int.MaxValue, "0x%08X"u8);
-            _ = Widgets.Drag("drag u32"u8, ref _dataU32, 1, uint.MinValue, uint.MaxValue, "%u"u8);
-            _ = Widgets.Drag("drag s64"u8, ref _dataS64, 1, long.MinValue, long.MaxValue, "%lld"u8);
-            _ = Widgets.Drag("drag u64"u8, ref _dataU64, 1, ulong.MinValue, ulong.MaxValue, "%llu"u8);
-            _ = Widgets.Drag("drag float"u8, ref _dataF32, 0.005f, 0.0f, 1.0f, "%f"u8);
-            Widgets.SameLine();
-            HelpMarker("By default, a slider/drag clamps its value if you drag past min/max.\nHold Shift and drag to go beyond the clamped range."u8);
-            _ = Widgets.Drag("drag float log"u8, ref _dataF32, 0.005f, 0.0f, 10.0f, "%f"u8, SliderFlags.Logarithmic);
-            // Note: double drag not available, using float version
-            var dataF32Temp = (float)_dataF64;
-            if (Widgets.Drag("drag double"u8, ref dataF32Temp, 0.0005f, 0.0f, float.MaxValue, "%.10f grams"u8))
-            {
-                _dataF64 = dataF32Temp;
-            }
-
-            Widgets.SeparatorText("Sliders"u8);
-
-            _ = Widgets.Slider("slider s8 full"u8, ref _dataS8, sbyte.MinValue, sbyte.MaxValue, "%d"u8);
-            _ = Widgets.Slider("slider u8 full"u8, ref _dataU8, byte.MinValue, byte.MaxValue, "%u"u8);
-            _ = Widgets.Slider("slider s16 full"u8, ref _dataS16, short.MinValue, short.MaxValue, "%d"u8);
-            _ = Widgets.Slider("slider u16 full"u8, ref _dataU16, ushort.MinValue, ushort.MaxValue, "%u"u8);
-            _ = Widgets.Slider("slider s32 low"u8, ref _dataS32, -1000000, 1000000, "%d"u8);
-            _ = Widgets.Slider("slider s32 high"u8, ref _dataS32, int.MinValue / 2, int.MaxValue / 2, "%d"u8);
-            _ = Widgets.Slider("slider s32 full"u8, ref _dataS32, int.MinValue, int.MaxValue, "%d"u8);
-            Widgets.SameLine();
-            HelpMarker("For very large ranges, use SliderFlags.Logarithmic or equivalent."u8);
-            _ = Widgets.Slider("slider s32 hex"u8, ref _dataS32, -99, 99, "0x%04X"u8);
-            _ = Widgets.Slider("slider u32 low"u8, ref _dataU32, 0, 1000000, "%u"u8);
-            _ = Widgets.Slider("slider u32 full"u8, ref _dataU32, uint.MinValue, uint.MaxValue / 2, "%u"u8);
-            _ = Widgets.Slider("slider s64 low"u8, ref _dataS64, -1000000, 1000000, "%lld"u8);
-            _ = Widgets.Slider("slider s64 high"u8, ref _dataS64, long.MinValue / 2, long.MaxValue / 2, "%lld"u8);
-            _ = Widgets.Slider("slider u64 low"u8, ref _dataU64, 0, 1000000, "%llu"u8);
-            _ = Widgets.Slider("slider u64 high"u8, ref _dataU64, ulong.MinValue, ulong.MaxValue / 2, "%llu"u8);
-            _ = Widgets.Slider("slider float low"u8, ref _dataF32, 0.0f, 1.0f, "%.3f"u8);
-            _ = Widgets.Slider("slider float low log"u8, ref _dataF32, 0.0f, 10.0f, "%.3f"u8, SliderFlags.Logarithmic);
-            _ = Widgets.Slider("slider float high"u8, ref _dataF32, -1e6f, 1e6f, "%e"u8);
-            // Note: double slider not available, using float version
-            var dataF32ForSlider = (float)_dataF64;
-            if (Widgets.Slider("slider double low"u8, ref dataF32ForSlider, 0.0f, 1.0f, "%.10f"u8))
-            {
-                _dataF64 = dataF32ForSlider;
-            }
-
-            Widgets.SeparatorText("Inputs"u8);
-
-            var showStepButtons = _dataInputsStep != 0;
-            if (Widgets.Checkbox("Show step buttons"u8, ref showStepButtons))
-            {
-                _dataInputsStep = showStepButtons ? 1 : 0;
-            }
-
-            var step = _dataInputsStep != 0 ? 1 : 0;
-            var stepFast = _dataInputsStep != 0 ? 100 : 0;
-            _ = Widgets.Input("input s8"u8, ref _dataS8, (sbyte)step, (sbyte)(stepFast == 0 ? 0 : 10));
-            _ = Widgets.Input("input u8"u8, ref _dataU8, (byte)step, (byte)(stepFast == 0 ? 0 : 10));
-            _ = Widgets.Input("input s16"u8, ref _dataS16, (short)step, (short)stepFast);
-            _ = Widgets.Input("input u16"u8, ref _dataU16, (ushort)step, (ushort)stepFast);
-            _ = Widgets.Input("input s32"u8, ref _dataS32, step, stepFast);
-            _ = Widgets.Input("input s32 hex"u8, ref _dataS32, step, stepFast, InputTextFlags.CharsHexadecimal);
-            _ = Widgets.Input("input u32"u8, ref _dataU32, (uint)step, (uint)stepFast);
-            _ = Widgets.Input("input u32 hex"u8, ref _dataU32, (uint)step, (uint)stepFast, default, InputTextFlags.CharsHexadecimal);
-            _ = Widgets.Input("input s64"u8, ref _dataS64, step, stepFast);
-            _ = Widgets.Input("input u64"u8, ref _dataU64, (ulong)step, (ulong)stepFast);
-            _ = Widgets.Input("input float"u8, ref _dataF32, 0.01f, 1.0f);
-            _ = Widgets.Input("input double"u8, ref _dataF64, 0.01, 1.0, "%.8f"u8);
-
-            Widgets.TreePop();
-        }
-    }
 
     private static void ShowDisableBlocks()
     {

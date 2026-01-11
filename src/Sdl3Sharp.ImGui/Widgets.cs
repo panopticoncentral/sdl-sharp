@@ -29,7 +29,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = id)
         {
-            return ImGui_BeginChild(ptr, size.Value, (Native.ImGuiChildFlags)childFlags, (Native.ImGuiWindowFlags)windowFlags);
+            return ImGui_BeginChild(ptr, size.Value, (ImGuiChildFlags)childFlags, (ImGuiWindowFlags)windowFlags);
         }
     }
 
@@ -53,7 +53,7 @@ public unsafe static class Widgets
     /// </remarks>
     public static bool BeginChild(Id id, Vec2 size = default, ChildFlags childFlags = ChildFlags.None, WindowFlags windowFlags = WindowFlags.None)
     {
-        return ImGui_BeginChildID(id.Value, size.Value, (Native.ImGuiChildFlags)childFlags, (Native.ImGuiWindowFlags)windowFlags);
+        return ImGui_BeginChildID(id.Value, size.Value, (ImGuiChildFlags)childFlags, (ImGuiWindowFlags)windowFlags);
     }
 
     /// <summary>
@@ -312,7 +312,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_InvisibleButton(ptr, size.Value, (Native.ImGuiButtonFlags)flags);
+            return ImGui_InvisibleButton(ptr, size.Value, (ImGuiButtonFlags)flags);
         }
     }
 
@@ -326,7 +326,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_ArrowButton(ptr, (Native.ImGuiDir)dir);
+            return ImGui_ArrowButton(ptr, (ImGuiDir)dir);
         }
     }
 
@@ -602,7 +602,7 @@ public unsafe static class Widgets
         fixed (byte* labelPtr = label)
         fixed (byte* previewPtr = previewValue)
         {
-            return ImGui_BeginCombo(labelPtr, previewPtr, (Native.ImGuiComboFlags)flags);
+            return ImGui_BeginCombo(labelPtr, previewPtr, (ImGuiComboFlags)flags);
         }
     }
 
@@ -731,13 +731,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref int v, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref int v, float vSpeed, int vMin = int.MinValue, int vMax = int.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (int* vPtr = &v)
         {
-            return ImGui_DragIntEx(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragIntEx(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -752,13 +752,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref float v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref float v, float vSpeed, float vMin = float.MinValue, float vMax = float.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (float* vPtr = &v)
         {
-            return ImGui_DragFloatEx(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragFloatEx(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -773,13 +773,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref sbyte v, float vSpeed, sbyte vMin = 0, sbyte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref sbyte v, float vSpeed, sbyte vMin = sbyte.MinValue, sbyte vMax = sbyte.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (sbyte* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S8, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, ImGuiDataType.S8, vPtr, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -794,13 +794,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref byte v, float vSpeed, byte vMin = 0, byte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref byte v, float vSpeed, byte vMin = byte.MinValue, byte vMax = byte.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (byte* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U8, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, ImGuiDataType.U8, vPtr, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -815,13 +815,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref short v, float vSpeed, short vMin = 0, short vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref short v, float vSpeed, short vMin = short.MinValue, short vMax = short.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (short* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S16, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, ImGuiDataType.S16, vPtr, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -836,13 +836,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref ushort v, float vSpeed, ushort vMin = 0, ushort vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref ushort v, float vSpeed, ushort vMin = ushort.MinValue, ushort vMax = ushort.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (ushort* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U16, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, ImGuiDataType.U16, vPtr, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -857,13 +857,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref uint v, float vSpeed, uint vMin = 0, uint vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref uint v, float vSpeed, uint vMin = uint.MinValue, uint vMax = uint.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (uint* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U32, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, ImGuiDataType.U32, vPtr, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -878,13 +878,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%lld").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref long v, float vSpeed, long vMin = 0, long vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref long v, float vSpeed, long vMin = long.MinValue, long vMax = long.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (long* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.S64, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, ImGuiDataType.S64, vPtr, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -899,13 +899,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%llu").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref ulong v, float vSpeed, ulong vMin = 0, ulong vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref ulong v, float vSpeed, ulong vMin = ulong.MinValue, ulong vMax = ulong.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (ulong* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.U64, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, ImGuiDataType.U64, vPtr, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -920,13 +920,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, ref double v, float vSpeed, double vMin = 0.0, double vMax = 0.0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, ref double v, float vSpeed, double vMin = double.MinValue, double vMax = double.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (double* vPtr = &v)
         {
-            return ImGui_DragScalarEx(labelPtr, Native.ImGuiDataType.Double, vPtr, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarEx(labelPtr, ImGuiDataType.Double, vPtr, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -941,7 +941,7 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<int> v, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<int> v, float vSpeed, int vMin = int.MinValue, int vMax = int.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -949,10 +949,10 @@ public unsafe static class Widgets
         {
             return v.Length switch
             {
-                2 => ImGui_DragInt2Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                3 => ImGui_DragInt3Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                4 => ImGui_DragInt4Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                _ => ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S32, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                2 => ImGui_DragInt2Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                3 => ImGui_DragInt3Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                4 => ImGui_DragInt4Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                _ => ImGui_DragScalarNEx(labelPtr, ImGuiDataType.S32, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags),
             };
         }
     }
@@ -968,7 +968,7 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.3f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<float> v, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<float> v, float vSpeed, float vMin = float.MinValue, float vMax = float.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -976,10 +976,10 @@ public unsafe static class Widgets
         {
             return v.Length switch
             {
-                2 => ImGui_DragFloat2Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                3 => ImGui_DragFloat3Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                4 => ImGui_DragFloat4Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                _ => ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.Float, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                2 => ImGui_DragFloat2Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                3 => ImGui_DragFloat3Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                4 => ImGui_DragFloat4Ex(labelPtr, vPtr, vSpeed, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                _ => ImGui_DragScalarNEx(labelPtr, ImGuiDataType.Float, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags),
             };
         }
     }
@@ -995,13 +995,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<sbyte> v, float vSpeed, sbyte vMin = 0, sbyte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<sbyte> v, float vSpeed, sbyte vMin = sbyte.MinValue, sbyte vMax = sbyte.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (sbyte* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S8, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, ImGuiDataType.S8, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1016,13 +1016,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<byte> v, float vSpeed, byte vMin = 0, byte vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<byte> v, float vSpeed, byte vMin = byte.MinValue, byte vMax = byte.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (byte* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U8, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, ImGuiDataType.U8, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1037,13 +1037,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%d").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<short> v, float vSpeed, short vMin = 0, short vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<short> v, float vSpeed, short vMin = short.MinValue, short vMax = short.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (short* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S16, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, ImGuiDataType.S16, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1058,13 +1058,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<ushort> v, float vSpeed, ushort vMin = 0, ushort vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<ushort> v, float vSpeed, ushort vMin = ushort.MinValue, ushort vMax = ushort.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (ushort* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U16, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, ImGuiDataType.U16, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1079,13 +1079,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%u").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<uint> v, float vSpeed, uint vMin = 0, uint vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<uint> v, float vSpeed, uint vMin = uint.MinValue, uint vMax = uint.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (uint* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U32, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, ImGuiDataType.U32, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1100,13 +1100,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%lld").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<long> v, float vSpeed, long vMin = 0, long vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<long> v, float vSpeed, long vMin = long.MinValue, long vMax = long.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (long* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.S64, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, ImGuiDataType.S64, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1121,13 +1121,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%llu").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<ulong> v, float vSpeed, ulong vMin = 0, ulong vMax = 0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<ulong> v, float vSpeed, ulong vMin = ulong.MinValue, ulong vMax = ulong.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (ulong* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.U64, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, ImGuiDataType.U64, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1142,13 +1142,13 @@ public unsafe static class Widgets
     /// <param name="format">Printf format string for display (e.g., "%.6f").</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if any value changed.</returns>
-    public static bool Drag(ReadOnlySpan<byte> label, Span<double> v, float vSpeed, double vMin = 0.0, double vMax = 0.0, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
+    public static bool Drag(ReadOnlySpan<byte> label, Span<double> v, float vSpeed, double vMin = double.MinValue, double vMax = double.MaxValue, ReadOnlySpan<byte> format = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
         fixed (double* vPtr = v)
         {
-            return ImGui_DragScalarNEx(labelPtr, Native.ImGuiDataType.Double, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragScalarNEx(labelPtr, ImGuiDataType.Double, vPtr, v.Length, vSpeed, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1165,7 +1165,7 @@ public unsafe static class Widgets
     /// <param name="formatMax">Printf format string for the max value. If null, uses format.</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if either value changed.</returns>
-    public static bool DragRange(ReadOnlySpan<byte> label, ref float vCurrentMin, ref float vCurrentMax, float vSpeed, float vMin = 0.0f, float vMax = 0.0f, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
+    public static bool DragRange(ReadOnlySpan<byte> label, ref float vCurrentMin, ref float vCurrentMax, float vSpeed, float vMin = float.MinValue, float vMax = float.MaxValue, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -1173,7 +1173,7 @@ public unsafe static class Widgets
         fixed (float* vCurrentMinPtr = &vCurrentMin)
         fixed (float* vCurrentMaxPtr = &vCurrentMax)
         {
-            return ImGui_DragFloatRange2Ex(labelPtr, vCurrentMinPtr, vCurrentMaxPtr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragFloatRange2Ex(labelPtr, vCurrentMinPtr, vCurrentMaxPtr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1190,7 +1190,7 @@ public unsafe static class Widgets
     /// <param name="formatMax">Printf format string for the max value. If null, uses format.</param>
     /// <param name="flags">Slider behavior flags.</param>
     /// <returns>True if either value changed.</returns>
-    public static bool DragRange(ReadOnlySpan<byte> label, ref int vCurrentMin, ref int vCurrentMax, float vSpeed, int vMin = 0, int vMax = 0, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
+    public static bool DragRange(ReadOnlySpan<byte> label, ref int vCurrentMin, ref int vCurrentMax, float vSpeed, int vMin = int.MinValue, int vMax = int.MaxValue, ReadOnlySpan<byte> format = default, ReadOnlySpan<byte> formatMax = default, SliderFlags flags = SliderFlags.None)
     {
         fixed (byte* labelPtr = label)
         fixed (byte* formatPtr = format)
@@ -1198,7 +1198,7 @@ public unsafe static class Widgets
         fixed (int* vCurrentMinPtr = &vCurrentMin)
         fixed (int* vCurrentMaxPtr = &vCurrentMax)
         {
-            return ImGui_DragIntRange2Ex(labelPtr, vCurrentMinPtr, vCurrentMaxPtr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_DragIntRange2Ex(labelPtr, vCurrentMinPtr, vCurrentMaxPtr, vSpeed, vMin, vMax, formatPtr, formatMaxPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1218,7 +1218,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (int* vPtr = &v)
         {
-            return ImGui_SliderIntEx(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderIntEx(labelPtr, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1238,7 +1238,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (float* vPtr = &v)
         {
-            return ImGui_SliderFloatEx(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderFloatEx(labelPtr, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1258,7 +1258,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (sbyte* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S8, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, ImGuiDataType.S8, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1278,7 +1278,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (byte* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U8, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, ImGuiDataType.U8, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1298,7 +1298,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (short* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S16, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, ImGuiDataType.S16, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1318,7 +1318,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ushort* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U16, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, ImGuiDataType.U16, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1338,7 +1338,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (uint* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U32, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, ImGuiDataType.U32, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1358,7 +1358,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (long* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.S64, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, ImGuiDataType.S64, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1378,7 +1378,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ulong* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.U64, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, ImGuiDataType.U64, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1398,7 +1398,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (double* vPtr = &v)
         {
-            return ImGui_SliderScalarEx(labelPtr, Native.ImGuiDataType.Double, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarEx(labelPtr, ImGuiDataType.Double, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1420,10 +1420,10 @@ public unsafe static class Widgets
         {
             return v.Length switch
             {
-                2 => ImGui_SliderInt2Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                3 => ImGui_SliderInt3Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                4 => ImGui_SliderInt4Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                _ => ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S32, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                2 => ImGui_SliderInt2Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                3 => ImGui_SliderInt3Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                4 => ImGui_SliderInt4Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                _ => ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.S32, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags),
             };
         }
     }
@@ -1446,10 +1446,10 @@ public unsafe static class Widgets
         {
             return v.Length switch
             {
-                2 => ImGui_SliderFloat2Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                3 => ImGui_SliderFloat3Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                4 => ImGui_SliderFloat4Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
-                _ => ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.Float, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags),
+                2 => ImGui_SliderFloat2Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                3 => ImGui_SliderFloat3Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                4 => ImGui_SliderFloat4Ex(labelPtr, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags),
+                _ => ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.Float, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags),
             };
         }
     }
@@ -1470,7 +1470,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (sbyte* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S8, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.S8, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1490,7 +1490,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (byte* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U8, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.U8, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1510,7 +1510,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (short* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S16, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.S16, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1530,7 +1530,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ushort* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U16, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.U16, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1550,7 +1550,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (uint* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U32, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.U32, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1570,7 +1570,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (long* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.S64, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.S64, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1590,7 +1590,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ulong* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.U64, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.U64, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1610,7 +1610,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (double* vPtr = v)
         {
-            return ImGui_SliderScalarNEx(labelPtr, Native.ImGuiDataType.Double, vPtr, v.Length, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderScalarNEx(labelPtr, ImGuiDataType.Double, vPtr, v.Length, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1630,7 +1630,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (float* vRadPtr = &vRad)
         {
-            return ImGui_SliderAngleEx(labelPtr, vRadPtr, vDegreesMin, vDegreesMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_SliderAngleEx(labelPtr, vRadPtr, vDegreesMin, vDegreesMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1651,7 +1651,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (int* vPtr = &v)
         {
-            return ImGui_VSliderIntEx(labelPtr, size.Value, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderIntEx(labelPtr, size.Value, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1672,7 +1672,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (float* vPtr = &v)
         {
-            return ImGui_VSliderFloatEx(labelPtr, size.Value, vPtr, vMin, vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderFloatEx(labelPtr, size.Value, vPtr, vMin, vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1693,7 +1693,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (sbyte* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S8, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, ImGuiDataType.S8, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1714,7 +1714,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (byte* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U8, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, ImGuiDataType.U8, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1735,7 +1735,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (short* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S16, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, ImGuiDataType.S16, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1756,7 +1756,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ushort* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U16, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, ImGuiDataType.U16, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1777,7 +1777,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (uint* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U32, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, ImGuiDataType.U32, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1798,7 +1798,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (long* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.S64, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, ImGuiDataType.S64, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1819,7 +1819,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ulong* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.U64, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, ImGuiDataType.U64, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1840,7 +1840,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (double* vPtr = &v)
         {
-            return ImGui_VSliderScalarEx(labelPtr, size.Value, Native.ImGuiDataType.Double, vPtr, &vMin, &vMax, formatPtr, (Native.ImGuiSliderFlags)flags);
+            return ImGui_VSliderScalarEx(labelPtr, size.Value, ImGuiDataType.Double, vPtr, &vMin, &vMax, formatPtr, (ImGuiSliderFlags)flags);
         }
     }
 
@@ -1853,12 +1853,13 @@ public unsafe static class Widgets
     /// <param name="stepFast">Fast step value when holding Ctrl.</param>
     /// <param name="flags">Input text behavior flags.</param>
     /// <returns>True if the value changed.</returns>
-    public static bool Input(ReadOnlySpan<byte> label, ref int v, int step = 0, int stepFast = 0, InputTextFlags flags = InputTextFlags.None)
+    public static bool Input(ReadOnlySpan<byte> label, ref int v, int step = 0, int stepFast = 0, ReadOnlySpan<byte> format = default, InputTextFlags flags = InputTextFlags.None)
     {
         fixed (byte* labelPtr = label)
+        fixed (byte* formatPtr = format)
         fixed (int* vPtr = &v)
         {
-            return ImGui_InputIntEx(labelPtr, vPtr, step, stepFast, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, ImGuiDataType.S32, vPtr, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1878,7 +1879,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (float* vPtr = &v)
         {
-            return ImGui_InputFloatEx(labelPtr, vPtr, step, stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputFloatEx(labelPtr, vPtr, step, stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1898,7 +1899,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (double* vPtr = &v)
         {
-            return ImGui_InputDoubleEx(labelPtr, vPtr, step, stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputDoubleEx(labelPtr, vPtr, step, stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1918,7 +1919,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (sbyte* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S8, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, ImGuiDataType.S8, vPtr, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1938,7 +1939,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (byte* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U8, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, ImGuiDataType.U8, vPtr, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1958,7 +1959,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (short* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S16, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, ImGuiDataType.S16, vPtr, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1978,7 +1979,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ushort* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U16, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, ImGuiDataType.U16, vPtr, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -1998,7 +1999,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (uint* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U32, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, ImGuiDataType.U32, vPtr, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2018,7 +2019,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (long* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.S64, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, ImGuiDataType.S64, vPtr, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2038,7 +2039,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ulong* vPtr = &v)
         {
-            return ImGui_InputScalarEx(labelPtr, Native.ImGuiDataType.U64, vPtr, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarEx(labelPtr, ImGuiDataType.U64, vPtr, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2058,10 +2059,10 @@ public unsafe static class Widgets
         {
             return v.Length switch
             {
-                2 => ImGui_InputInt2(labelPtr, vPtr, (Native.ImGuiInputTextFlags)flags),
-                3 => ImGui_InputInt3(labelPtr, vPtr, (Native.ImGuiInputTextFlags)flags),
-                4 => ImGui_InputInt4(labelPtr, vPtr, (Native.ImGuiInputTextFlags)flags),
-                _ => ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S32, vPtr, v.Length, &step, &stepFast, null, (Native.ImGuiInputTextFlags)flags),
+                2 => ImGui_InputInt2(labelPtr, vPtr, (ImGuiInputTextFlags)flags),
+                3 => ImGui_InputInt3(labelPtr, vPtr, (ImGuiInputTextFlags)flags),
+                4 => ImGui_InputInt4(labelPtr, vPtr, (ImGuiInputTextFlags)flags),
+                _ => ImGui_InputScalarNEx(labelPtr, ImGuiDataType.S32, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, null, (ImGuiInputTextFlags)flags),
             };
         }
     }
@@ -2084,10 +2085,10 @@ public unsafe static class Widgets
         {
             return v.Length switch
             {
-                2 => ImGui_InputFloat2Ex(labelPtr, vPtr, formatPtr, (Native.ImGuiInputTextFlags)flags),
-                3 => ImGui_InputFloat3Ex(labelPtr, vPtr, formatPtr, (Native.ImGuiInputTextFlags)flags),
-                4 => ImGui_InputFloat4Ex(labelPtr, vPtr, formatPtr, (Native.ImGuiInputTextFlags)flags),
-                _ => ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.Float, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags),
+                2 => ImGui_InputFloat2Ex(labelPtr, vPtr, formatPtr, (ImGuiInputTextFlags)flags),
+                3 => ImGui_InputFloat3Ex(labelPtr, vPtr, formatPtr, (ImGuiInputTextFlags)flags),
+                4 => ImGui_InputFloat4Ex(labelPtr, vPtr, formatPtr, (ImGuiInputTextFlags)flags),
+                _ => ImGui_InputScalarNEx(labelPtr, ImGuiDataType.Float, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags),
             };
         }
     }
@@ -2108,7 +2109,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (sbyte* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S8, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, ImGuiDataType.S8, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2128,7 +2129,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (byte* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U8, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, ImGuiDataType.U8, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2148,7 +2149,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (short* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S16, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, ImGuiDataType.S16, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2168,7 +2169,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ushort* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U16, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, ImGuiDataType.U16, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2188,7 +2189,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (uint* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U32, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, ImGuiDataType.U32, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2208,7 +2209,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (long* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.S64, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, ImGuiDataType.S64, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2228,7 +2229,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (ulong* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.U64, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, ImGuiDataType.U64, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2248,7 +2249,7 @@ public unsafe static class Widgets
         fixed (byte* formatPtr = format)
         fixed (double* vPtr = v)
         {
-            return ImGui_InputScalarNEx(labelPtr, Native.ImGuiDataType.Double, vPtr, v.Length, &step, &stepFast, formatPtr, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputScalarNEx(labelPtr, ImGuiDataType.Double, vPtr, v.Length, step == 0 ? null : &step, stepFast == 0 ? null : &stepFast, formatPtr, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2264,7 +2265,7 @@ public unsafe static class Widgets
         fixed (byte* labelPtr = label)
         fixed (byte* bufPtr = buf)
         {
-            return ImGui_InputText(labelPtr, bufPtr, (nuint)buf.Length, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputText(labelPtr, bufPtr, (nuint)buf.Length, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2281,7 +2282,7 @@ public unsafe static class Widgets
         fixed (byte* labelPtr = label)
         fixed (byte* bufPtr = buf)
         {
-            return ImGui_InputTextMultilineEx(labelPtr, bufPtr, (nuint)buf.Length, size.Value, (Native.ImGuiInputTextFlags)flags, null, null);
+            return ImGui_InputTextMultilineEx(labelPtr, bufPtr, (nuint)buf.Length, size.Value, (ImGuiInputTextFlags)flags, null, null);
         }
     }
 
@@ -2299,7 +2300,7 @@ public unsafe static class Widgets
         fixed (byte* hintPtr = hint)
         fixed (byte* bufPtr = buf)
         {
-            return ImGui_InputTextWithHint(labelPtr, hintPtr, bufPtr, (nuint)buf.Length, (Native.ImGuiInputTextFlags)flags);
+            return ImGui_InputTextWithHint(labelPtr, hintPtr, bufPtr, (nuint)buf.Length, (ImGuiInputTextFlags)flags);
         }
     }
 
@@ -2318,9 +2319,9 @@ public unsafe static class Widgets
     public static bool ColorEdit(ReadOnlySpan<byte> label, ref Color col, ColorEditFlags flags = ColorEditFlags.None)
     {
         fixed (byte* labelPtr = label)
-        fixed (Native.ImVec4* colPtr = &col.Value)
+        fixed (ImVec4* colPtr = &col.Value)
         {
-            return ImGui_ColorEdit4(labelPtr, (float*)colPtr, (Native.ImGuiColorEditFlags)flags);
+            return ImGui_ColorEdit4(labelPtr, (float*)colPtr, (ImGuiColorEditFlags)flags);
         }
     }
 
@@ -2341,7 +2342,7 @@ public unsafe static class Widgets
         fixed (byte* labelPtr = label)
         fixed (ColorRGB* colPtr = &col)
         {
-            return ImGui_ColorEdit3(labelPtr, (float*)colPtr, (Native.ImGuiColorEditFlags)flags);
+            return ImGui_ColorEdit3(labelPtr, (float*)colPtr, (ImGuiColorEditFlags)flags);
         }
     }
 
@@ -2364,8 +2365,8 @@ public unsafe static class Widgets
         {
             return col.Length switch
             {
-                3 => ImGui_ColorEdit3(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags),
-                4 => ImGui_ColorEdit4(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags),
+                3 => ImGui_ColorEdit3(labelPtr, colPtr, (ImGuiColorEditFlags)flags),
+                4 => ImGui_ColorEdit4(labelPtr, colPtr, (ImGuiColorEditFlags)flags),
                 _ => throw new ArgumentException("Color array must have 3 (RGB) or 4 (RGBA) elements.", nameof(col))
             };
         }
@@ -2388,9 +2389,9 @@ public unsafe static class Widgets
     {
         Color refColorValue = refCol ?? new Color(0, 0, 0, 0);
         fixed (byte* labelPtr = label)
-        fixed (Native.ImVec4* colPtr = &col.Value)
+        fixed (ImVec4* colPtr = &col.Value)
         {
-            return ImGui_ColorPicker4(labelPtr, (float*)colPtr, (Native.ImGuiColorEditFlags)flags, refCol == null ? null : (float*)&refColorValue);
+            return ImGui_ColorPicker4(labelPtr, (float*)colPtr, (ImGuiColorEditFlags)flags, refCol == null ? null : (float*)&refColorValue);
         }
     }
 
@@ -2411,7 +2412,7 @@ public unsafe static class Widgets
         fixed (byte* labelPtr = label)
         fixed (ColorRGB* colPtr = &col)
         {
-            return ImGui_ColorPicker3(labelPtr, (float*)colPtr, (Native.ImGuiColorEditFlags)flags);
+            return ImGui_ColorPicker3(labelPtr, (float*)colPtr, (ImGuiColorEditFlags)flags);
         }
     }
 
@@ -2435,8 +2436,8 @@ public unsafe static class Widgets
         {
             return col.Length switch
             {
-                3 => ImGui_ColorPicker3(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags),
-                4 => ImGui_ColorPicker4(labelPtr, colPtr, (Native.ImGuiColorEditFlags)flags, refColPtr),
+                3 => ImGui_ColorPicker3(labelPtr, colPtr, (ImGuiColorEditFlags)flags),
+                4 => ImGui_ColorPicker4(labelPtr, colPtr, (ImGuiColorEditFlags)flags, refColPtr),
                 _ => throw new ArgumentException("Color array must have 3 (RGB) or 4 (RGBA) elements.", nameof(col))
             };
         }
@@ -2454,7 +2455,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = descId)
         {
-            return ImGui_ColorButton(ptr, color.Value, (Native.ImGuiColorEditFlags)flags);
+            return ImGui_ColorButton(ptr, color.Value, (ImGuiColorEditFlags)flags);
         }
     }
 
@@ -2470,7 +2471,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = descId)
         {
-            return ImGui_ColorButtonEx(ptr, color.Value, (Native.ImGuiColorEditFlags)flags, size.Value);
+            return ImGui_ColorButtonEx(ptr, color.Value, (ImGuiColorEditFlags)flags, size.Value);
         }
     }
 
@@ -2485,7 +2486,7 @@ public unsafe static class Widgets
     /// </remarks>
     public static void SetColorEditOptions(ColorEditFlags flags)
     {
-        ImGui_SetColorEditOptions((Native.ImGuiColorEditFlags)flags);
+        ImGui_SetColorEditOptions((ImGuiColorEditFlags)flags);
     }
 
     /// <summary>
@@ -2511,7 +2512,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_TreeNodeEx(ptr, (Native.ImGuiTreeNodeFlags)flags);
+            return ImGui_TreeNodeEx(ptr, (ImGuiTreeNodeFlags)flags);
         }
     }
 
@@ -2574,7 +2575,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_CollapsingHeader(ptr, (Native.ImGuiTreeNodeFlags)flags);
+            return ImGui_CollapsingHeader(ptr, (ImGuiTreeNodeFlags)flags);
         }
     }
 
@@ -2590,7 +2591,7 @@ public unsafe static class Widgets
         fixed (byte* ptr = label)
         fixed (bool* pVisiblePtr = &pVisible)
         {
-            return ImGui_CollapsingHeaderBoolPtr(ptr, pVisiblePtr, (Native.ImGuiTreeNodeFlags)flags);
+            return ImGui_CollapsingHeaderBoolPtr(ptr, pVisiblePtr, (ImGuiTreeNodeFlags)flags);
         }
     }
 
@@ -2601,7 +2602,7 @@ public unsafe static class Widgets
     /// <param name="cond">Condition for applying the state.</param>
     public static void SetNextItemOpen(bool isOpen, Condition cond = Condition.None)
     {
-        ImGui_SetNextItemOpen(isOpen, (Native.ImGuiCond)cond);
+        ImGui_SetNextItemOpen(isOpen, (ImGuiCond)cond);
     }
 
     /// <summary>
@@ -2625,7 +2626,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_SelectableEx(ptr, selected, (Native.ImGuiSelectableFlags)flags, size.Value);
+            return ImGui_SelectableEx(ptr, selected, (ImGuiSelectableFlags)flags, size.Value);
         }
     }
 
@@ -2642,7 +2643,7 @@ public unsafe static class Widgets
         fixed (byte* ptr = label)
         fixed (bool* pSelectedPtr = &pSelected)
         {
-            return ImGui_SelectableBoolPtrEx(ptr, pSelectedPtr, (Native.ImGuiSelectableFlags)flags, size.Value);
+            return ImGui_SelectableBoolPtrEx(ptr, pSelectedPtr, (ImGuiSelectableFlags)flags, size.Value);
         }
     }
 
@@ -2901,7 +2902,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_BeginTable(ptr, columns, (Native.ImGuiTableFlags)flags);
+            return ImGui_BeginTable(ptr, columns, (ImGuiTableFlags)flags);
         }
     }
 
@@ -2918,7 +2919,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_BeginTableEx(ptr, columns, (Native.ImGuiTableFlags)flags, outerSize.Value, innerWidth);
+            return ImGui_BeginTableEx(ptr, columns, (ImGuiTableFlags)flags, outerSize.Value, innerWidth);
         }
     }
 
@@ -2945,7 +2946,7 @@ public unsafe static class Widgets
     /// <param name="minRowHeight">Minimum row height.</param>
     public static void TableNextRow(TableRowFlags rowFlags, float minRowHeight = 0.0f)
     {
-        ImGui_TableNextRowEx((Native.ImGuiTableRowFlags)rowFlags, minRowHeight);
+        ImGui_TableNextRowEx((ImGuiTableRowFlags)rowFlags, minRowHeight);
     }
 
     /// <summary>
@@ -2976,7 +2977,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = label)
         {
-            ImGui_TableSetupColumn(ptr, (Native.ImGuiTableColumnFlags)flags);
+            ImGui_TableSetupColumn(ptr, (ImGuiTableColumnFlags)flags);
         }
     }
 
@@ -2991,7 +2992,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = label)
         {
-            ImGui_TableSetupColumnEx(ptr, (Native.ImGuiTableColumnFlags)flags, initWidthOrWeight, userId.Value);
+            ImGui_TableSetupColumnEx(ptr, (ImGuiTableColumnFlags)flags, initWidthOrWeight, userId.Value);
         }
     }
 
@@ -3102,7 +3103,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = strId)
         {
-            return ImGui_BeginTabBar(ptr, (Native.ImGuiTabBarFlags)flags);
+            return ImGui_BeginTabBar(ptr, (ImGuiTabBarFlags)flags);
         }
     }
 
@@ -3123,7 +3124,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_BeginTabItem(ptr, null, Native.ImGuiTabItemFlags.None);
+            return ImGui_BeginTabItem(ptr, null, ImGuiTabItemFlags.None);
         }
     }
 
@@ -3139,7 +3140,7 @@ public unsafe static class Widgets
         fixed (byte* ptr = label)
         {
             var localOpen = pOpen;
-            var result = ImGui_BeginTabItem(ptr, &localOpen, (Native.ImGuiTabItemFlags)flags);
+            var result = ImGui_BeginTabItem(ptr, &localOpen, (ImGuiTabItemFlags)flags);
             pOpen = localOpen;
             return result;
         }
@@ -3163,7 +3164,7 @@ public unsafe static class Widgets
     {
         fixed (byte* ptr = label)
         {
-            return ImGui_TabItemButton(ptr, (Native.ImGuiTabItemFlags)flags);
+            return ImGui_TabItemButton(ptr, (ImGuiTabItemFlags)flags);
         }
     }
 
@@ -3186,7 +3187,7 @@ public unsafe static class Widgets
     /// <returns>True if drag source is active; call SetDragDropPayload() + EndDragDropSource().</returns>
     public static bool BeginDragDropSource(DragDropFlags flags = DragDropFlags.None)
     {
-        return ImGui_BeginDragDropSource((Native.ImGuiDragDropFlags)flags);
+        return ImGui_BeginDragDropSource((ImGuiDragDropFlags)flags);
     }
 
     /// <summary>
@@ -3205,7 +3206,7 @@ public unsafe static class Widgets
         fixed (byte* typePtr = type)
         fixed (T* dataPtr = &data)
         {
-            return ImGui_SetDragDropPayload(typePtr, dataPtr, (nuint)sizeof(T), (Native.ImGuiCond)cond);
+            return ImGui_SetDragDropPayload(typePtr, dataPtr, (nuint)sizeof(T), (ImGuiCond)cond);
         }
     }
 
@@ -3221,7 +3222,7 @@ public unsafe static class Widgets
         fixed (byte* typePtr = type)
         fixed (byte* dataPtr = data)
         {
-            return ImGui_SetDragDropPayload(typePtr, dataPtr, (nuint)data.Length, (Native.ImGuiCond)cond);
+            return ImGui_SetDragDropPayload(typePtr, dataPtr, (nuint)data.Length, (ImGuiCond)cond);
         }
     }
 
@@ -3258,7 +3259,7 @@ public unsafe static class Widgets
     {
         fixed (byte* typePtr = type)
         {
-            return new Payload(ImGui_AcceptDragDropPayload(typePtr, (Native.ImGuiDragDropFlags)flags));
+            return new Payload(ImGui_AcceptDragDropPayload(typePtr, (ImGuiDragDropFlags)flags));
         }
     }
 
@@ -3371,7 +3372,7 @@ public unsafe static class Widgets
     /// <returns>True if the item is hovered.</returns>
     public static bool IsItemHovered(HoveredFlags flags = HoveredFlags.None)
     {
-        return ImGui_IsItemHovered((Native.ImGuiHoveredFlags)flags);
+        return ImGui_IsItemHovered((ImGuiHoveredFlags)flags);
     }
 
     /// <summary>
@@ -3408,7 +3409,7 @@ public unsafe static class Widgets
     /// <returns>True if the item was clicked.</returns>
     public static bool IsItemClicked(MouseButton mouseButton)
     {
-        return ImGui_IsItemClickedEx((Native.ImGuiMouseButton)mouseButton);
+        return ImGui_IsItemClickedEx((ImGuiMouseButton)mouseButton);
     }
 
     /// <summary>

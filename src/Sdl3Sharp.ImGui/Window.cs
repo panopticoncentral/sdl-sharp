@@ -501,7 +501,7 @@ public static unsafe class Window
     {
         fixed (byte* ptr = name)
         {
-            return ImGui_BeginPopupModal(ptr, null, Native.ImGuiWindowFlags.None);
+            return ImGui_BeginPopupModal(ptr, null, ImGuiWindowFlags.None);
         }
     }
 
