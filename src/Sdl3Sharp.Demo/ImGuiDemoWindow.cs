@@ -1,6 +1,7 @@
 using Sdl3Sharp.ImGui;
 using Sdl3Sharp.ImGui.Native;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Sdl3Sharp.Demo;
 
@@ -119,9 +120,21 @@ public static unsafe class ImGuiDemoWindow
 
     // State Fields - Drag and Drop Section
 
-    private static readonly int[] _dragDropMode1Col1 = [1, 0, 2];
-    private static readonly int[] _dragDropMode1Col2 = [3, 4, 5];
-    private static int _dragDropMode;
+    private static ColorRGB _dragDropCol1 = (1.0f, 0.0f, 0.2f);
+    private static Color _dragDropCol2 = (0.4f, 0.7f, 0.0f, 0.5f);
+    private static Mode _dragDropMode;
+    private static readonly byte[][] _dragDropNames =
+    [
+        "Bobby"u8.ToArray(), "Beatrice"u8.ToArray(), "Betty"u8.ToArray(),
+        "Brianna"u8.ToArray(), "Barry"u8.ToArray(), "Bernard"u8.ToArray(),
+        "Bibi"u8.ToArray(), "Blaine"u8.ToArray(), "Bryn"u8.ToArray()
+    ];
+    private static readonly byte[][] _dragDropItemNames =
+    [
+        "Item One"u8.ToArray(), "Item Two"u8.ToArray(), "Item Three"u8.ToArray(),
+        "Item Four"u8.ToArray(), "Item Five"u8.ToArray()
+    ];
+    private static Color _dragDropCol4 = (1.0f, 0.0f, 0.2f, 1.0f);
 
     // State Fields - Drags and Sliders Section
 
@@ -1364,6 +1377,174 @@ You can override the clamping limits by using Ctrl+Click to input a value."u8);
         }
     }
 
+    private static void DemoWindowWidgetsDragAndDrop()
+    {
+        if (Widgets.TreeNode("Drag and Drop"u8))
+        {
+            if (Widgets.TreeNode("Drag and drop in standard widgets"u8))
+            {
+                // ColorEdit widgets automatically act as drag source and drag target.
+                // They are using standardized payload strings IMGUI_PAYLOAD_TYPE_COLOR_3F and IMGUI_PAYLOAD_TYPE_COLOR_4F
+                // to allow your own widgets to use colors in their drag and drop interaction.
+                // Also see 'Demo->Widgets->Color/Picker Widgets->Palette' demo.
+                HelpMarker("You can drag from the color squares."u8);
+                _ = Widgets.ColorEdit("color 1"u8, ref _dragDropCol1);
+                _ = Widgets.ColorEdit("color 2"u8, ref _dragDropCol2);
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Drag and drop to copy/swap items"u8))
+            {
+                if (Widgets.RadioButton("Copy"u8, _dragDropMode == Mode.Copy))
+                {
+                    _dragDropMode = Mode.Copy;
+                }
+
+                Widgets.SameLine();
+                if (Widgets.RadioButton("Move"u8, _dragDropMode == Mode.Move))
+                {
+                    _dragDropMode = Mode.Move;
+                }
+
+                Widgets.SameLine();
+                if (Widgets.RadioButton("Swap"u8, _dragDropMode == Mode.Swap))
+                {
+                    _dragDropMode = Mode.Swap;
+                }
+
+                for (var n = 0; n < _dragDropNames.Length; n++)
+                {
+                    Id.Push(n);
+                    if ((n % 3) != 0)
+                    {
+                        Widgets.SameLine();
+                    }
+
+                    _ = Widgets.Button(_dragDropNames[n], (60, 60));
+
+                    // Our buttons are both drag sources and drag targets here!
+                    if (Widgets.BeginDragDropSource(DragDropFlags.None))
+                    {
+                        // Set payload to carry the index of our item (could be anything)
+                        _ = Widgets.SetDragDropPayload("DND_DEMO_CELL"u8, ref n);
+
+                        // Display preview (could be anything, e.g. when dragging an image we could decide to display
+                        // the filename and a small preview of the image, etc.)
+                        if (_dragDropMode == Mode.Copy)
+                        {
+                            Widgets.Text($"Copy {Encoding.UTF8.GetString(_dragDropNames[n])}".ToUtf8());
+                        }
+
+                        if (_dragDropMode == Mode.Move)
+                        {
+                            Widgets.Text($"Move {Encoding.UTF8.GetString(_dragDropNames[n])}".ToUtf8());
+                        }
+
+                        if (_dragDropMode == Mode.Swap)
+                        {
+                            Widgets.Text($"Swap {Encoding.UTF8.GetString(_dragDropNames[n])}".ToUtf8());
+                        }
+
+                        Widgets.EndDragDropSource();
+                    }
+
+                    if (Widgets.BeginDragDropTarget())
+                    {
+                        Payload payload = Widgets.AcceptDragDropPayload("DND_DEMO_CELL"u8);
+                        if (payload.IsValid)
+                        {
+                            var payloadN = payload.GetData<int>();
+                            if (_dragDropMode == Mode.Copy)
+                            {
+                                _dragDropNames[n] = _dragDropNames[payloadN];
+                            }
+
+                            if (_dragDropMode == Mode.Move)
+                            {
+                                _dragDropNames[n] = _dragDropNames[payloadN];
+                                _dragDropNames[payloadN] = ""u8.ToArray();
+                            }
+
+                            if (_dragDropMode == Mode.Swap)
+                            {
+                                (_dragDropNames[n], _dragDropNames[payloadN]) = (_dragDropNames[payloadN], _dragDropNames[n]);
+                            }
+                        }
+
+                        Widgets.EndDragDropTarget();
+                    }
+
+                    Id.Pop();
+                }
+
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Drag to reorder items (simple)"u8))
+            {
+                // FIXME: there is temporary (usually single-frame) ID Conflict during reordering as a same item may be submitting twice.
+                // This code was always slightly faulty but in a way which was not easily noticeable.
+                // Until we fix this, enable ImGuiItemFlags_AllowDuplicateId to disable detecting the issue.
+                Style.PushItemFlag(ItemFlags.AllowDuplicateId, true);
+
+                // Simple reordering
+                HelpMarker(@"We don't use the drag and drop api at all here! 
+Instead we query when the item is held but not hovered, and order items accordingly."u8);
+
+                for (var n = 0; n < _dragDropItemNames.Length; n++)
+                {
+                    var item = _dragDropItemNames[n];
+                    _ = Widgets.Selectable(item, false);
+
+                    if (Widgets.IsItemActive() && !Widgets.IsItemHovered())
+                    {
+                        var nNext = n + (Context.GetMouseDragDelta(MouseButton.Left).Y < 0.0f ? -1 : 1);
+                        if (nNext >= 0 && nNext < _dragDropItemNames.Length)
+                        {
+                            _dragDropItemNames[n] = _dragDropItemNames[nNext];
+                            _dragDropItemNames[nNext] = item;
+                            Context.ResetMouseDragDelta(MouseButton.Left);
+                        }
+                    }
+                }
+
+                Style.PopItemFlag();
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Tooltip at target location"u8))
+            {
+                for (int n = 0; n < 2; n++)
+                {
+                    // Drop targets
+                    _ = Widgets.Button(n != 0 ? "drop here##1"u8 : "drop here##0"u8);
+                    if (Widgets.BeginDragDropTarget())
+                    {
+                        DragDropFlags dropTargetFlags = DragDropFlags.AcceptBeforeDelivery | DragDropFlags.AcceptNoPreviewTooltip;
+                        Payload payload = Widgets.AcceptDragDropPayload(Payload.TypeColor4F, dropTargetFlags);
+                        if (payload.IsValid)
+                        {
+                            Context.SetMouseCursor(MouseCursor.NotAllowed);
+                            Widgets.SetTooltip("Cannot drop here!"u8);
+                        }
+
+                        Widgets.EndDragDropTarget();
+                    }
+
+                    // Drop source
+                    if (n == 0)
+                    {
+                        _ = Widgets.ColorButton("drag me"u8, _dragDropCol4);
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
     private static void ShowUserGuide()
     {
         IO io = Context.IO;
@@ -1541,7 +1722,7 @@ You can override the clamping limits by using Ctrl+Click to input a value."u8);
             Widgets.BeginDisabled();
         }
 
-        ShowDragAndDrop();
+        DemoWindowWidgetsDragAndDrop();
         ShowDragsAndSliders();
         ShowFonts();
         ShowImages();
@@ -1569,25 +1750,6 @@ You can override the clamping limits by using Ctrl+Click to input a value."u8);
     // Helper Methods
 
     // Private Section Methods
-
-    private static void ShowDragAndDrop()
-    {
-        if (Widgets.TreeNode("Drag and Drop"u8))
-        {
-            // Drag and drop section - simplified for now
-            Widgets.BulletText("Drag and drop in standard widgets"u8);
-            Widgets.Indent();
-
-            ColorRGB col1 = (1.0f, 0.0f, 0.2f);
-            Color col2 = (0.4f, 0.7f, 0.0f, 0.5f);
-            _ = Widgets.ColorEdit("color 1"u8, ref col1);
-            _ = Widgets.ColorEdit("color 2"u8, ref col2);
-
-            Widgets.Unindent();
-
-            Widgets.TreePop();
-        }
-    }
 
     private static void ShowDragsAndSliders()
     {
@@ -2662,5 +2824,12 @@ You can override the clamping limits by using Ctrl+Click to input a value."u8);
         Air,
         Water,
         Max
+    }
+
+    private enum Mode
+    {
+        Copy,
+        Move,
+        Swap
     }
 }
