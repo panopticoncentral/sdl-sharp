@@ -1,6 +1,7 @@
 using Sdl3Sharp.ImGui;
 using Sdl3Sharp.ImGui.Native;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Sdl3Sharp.Demo;
@@ -146,6 +147,22 @@ public static unsafe class ImGuiDemoWindow
 
     private static int _imagesPressedCount = 0;
 
+    // State Fields - List Boxes Section
+
+    private static int _listBoxItemSelectedIdx = 0;
+    private static bool _listBoxItemHighlight = false;
+
+    // State Fields - Plotting Section
+
+    private static bool _plottingAnimate = true;
+    private static readonly float[] _plottingArr = [0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f];
+    private static readonly float[] _plottingValues = new float[90];
+    private static int _plottingValuesOffset;
+    private static double _plottingRefreshTime;
+    private static float _plottingPhase;
+    private static int _plottingFuncType;
+    private static int _plottingDisplayCount = 70;
+
     // State Fields - Progress Bars Section
 
     private static float _progressProgress;
@@ -231,8 +248,6 @@ public static unsafe class ImGuiDemoWindow
 
     // State Fields - List Boxes Section
 
-    private static int _listBoxItemCurrent;
-
     // State Fields - Images Section
 
     private static bool _imageUseTextColor;
@@ -242,17 +257,15 @@ public static unsafe class ImGuiDemoWindow
 
     private static readonly float[] _multiVec4f = [0.10f, 0.20f, 0.30f, 0.44f];
     private static readonly int[] _multiVec4i = [1, 5, 100, 255];
+    private static float _multiRangeBegin = 10f;
+    private static float _multiRangeEnd = 90f;
+    private static int _multiRangeBeginI = 100;
+    private static int _multiRangeEndI = 1000;
 
-    // State Fields - Plotting Section
+    // State Fields - Tooltip Plot Arrays
 
-    private static bool _plotAnimate = true;
     private static readonly float[] _plotArrSin = new float[120];
     private static readonly float[] _plotArrCos = new float[120];
-    private static int _plotValuesOffset;
-    private static double _plotRefreshTime;
-    private static float _plotPhase;
-    private static PlotType _plotFuncType;
-    private static int _plotDisplayCount = 70;
 
     // Shared Data
 
@@ -1611,94 +1624,304 @@ Instead we query when the item is held but not hovered, and order items accordin
 
     private static void DemoWindowWidgetsImages()
     {
-        if (Widgets.TreeNode("Images"u8))
+        if (!Widgets.TreeNode("Images"u8))
         {
-            IO io = Context.IO;
-            Widgets.TextWrapped(@"Below we are displaying the font texture (which is the only texture we have access to in this demo). 
+            return;
+        }
+
+        IO io = Context.IO;
+        Widgets.TextWrapped(@"Below we are displaying the font texture (which is the only texture we have access to in this demo). 
 Use the 'ImTextureID' type as storage to pass pointers or identifier to your own texture data. 
 Hover the texture for a zoomed view!"u8);
 
-            // Below we are displaying the font texture because it is the only texture we have access to inside the demo!
-            // Read description about ImTextureID/ImTextureRef and FAQ for details about texture identifiers.
-            // If you use one of the default imgui_impl_XXXX.cpp rendering backend, they all have comments at the top
-            // of their respective source file to specify what they are using as texture identifier, for example:
-            // - The imgui_impl_dx11.cpp renderer expect a 'ID3D11ShaderResourceView*' pointer.
-            // - The imgui_impl_opengl3.cpp renderer expect a GLuint OpenGL texture identifier, etc.
-            // So with the DirectX11 backend, you call ImGui::Image() with a 'ID3D11ShaderResourceView*' cast to ImTextureID.
-            // - If you decided that ImTextureID = MyEngineTexture*, then you can pass your MyEngineTexture* pointers
-            //   to ImGui::Image(), and gather width/height through your own functions, etc.
-            // - You can use ShowMetricsWindow() to inspect the draw data that are being passed to your renderer,
-            //   it will help you debug issues if you are confused about it.
-            // - Consider using the lower-level ImDrawList::AddImage() API, via ImGui::GetWindowDrawList()->AddImage().
-            // - Read https://github.com/ocornut/imgui/blob/master/docs/FAQ.md
-            // - Read https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+        // Below we are displaying the font texture because it is the only texture we have access to inside the demo!
+        // Read description about ImTextureID/ImTextureRef and FAQ for details about texture identifiers.
+        // If you use one of the default imgui_impl_XXXX.cpp rendering backend, they all have comments at the top
+        // of their respective source file to specify what they are using as texture identifier, for example:
+        // - The imgui_impl_dx11.cpp renderer expect a 'ID3D11ShaderResourceView*' pointer.
+        // - The imgui_impl_opengl3.cpp renderer expect a GLuint OpenGL texture identifier, etc.
+        // So with the DirectX11 backend, you call ImGui::Image() with a 'ID3D11ShaderResourceView*' cast to ImTextureID.
+        // - If you decided that ImTextureID = MyEngineTexture*, then you can pass your MyEngineTexture* pointers
+        //   to ImGui::Image(), and gather width/height through your own functions, etc.
+        // - You can use ShowMetricsWindow() to inspect the draw data that are being passed to your renderer,
+        //   it will help you debug issues if you are confused about it.
+        // - Consider using the lower-level ImDrawList::AddImage() API, via ImGui::GetWindowDrawList()->AddImage().
+        // - Read https://github.com/ocornut/imgui/blob/master/docs/FAQ.md
+        // - Read https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
 
-            // Grab the current texture identifier used by the font atlas.
-            TextureRef my_tex_id = io.Fonts.TexRef;
+        // Grab the current texture identifier used by the font atlas.
+        TextureRef my_tex_id = io.Fonts.TexRef;
 
-            // Regular user code should never have to care about TexData-> fields, but since we want to display the entire texture here, we pull Width/Height from it.
-            float my_tex_w = io.Fonts.TexData.Width;
-            float my_tex_h = io.Fonts.TexData.Height;
+        // Regular user code should never have to care about TexData-> fields, but since we want to display the entire texture here, we pull Width/Height from it.
+        float my_tex_w = io.Fonts.TexData.Width;
+        float my_tex_h = io.Fonts.TexData.Height;
 
+        {
+            Widgets.Text($"{my_tex_w:F0}x{my_tex_h:F0}".ToUtf8());
+            Point pos = Window.CursorScreenPosition;
+            Vec2 uv_min = (0.0f, 0.0f); // Top-left
+            Vec2 uv_max = (1.0f, 1.0f); // Lower-right
+            Style.PushStyleVar(StyleVariable.ImageBorderSize, Math.Max(1.0f, Context.Style.ImageBorderSize));
+            Widgets.ImageWithBg(my_tex_id, (my_tex_w, my_tex_h), uv_min, uv_max, (0.0f, 0.0f, 0.0f, 1.0f));
+            if (Widgets.BeginItemTooltip())
             {
-                Widgets.Text($"{my_tex_w:F0}x{my_tex_h:F0}".ToUtf8());
-                Point pos = Window.CursorScreenPosition;
-                Vec2 uv_min = (0.0f, 0.0f); // Top-left
-                Vec2 uv_max = (1.0f, 1.0f); // Lower-right
-                Style.PushStyleVar(StyleVariable.ImageBorderSize, Math.Max(1.0f, Context.Style.ImageBorderSize));
-                Widgets.ImageWithBg(my_tex_id, (my_tex_w, my_tex_h), uv_min, uv_max, (0.0f, 0.0f, 0.0f, 1.0f));
-                if (Widgets.BeginItemTooltip())
+                var region_sz = 32.0f;
+                var region_x = Context.GetMousePos().X - pos.X - (region_sz * 0.5f);
+                var region_y = Context.GetMousePos().Y - pos.Y - (region_sz * 0.5f);
+                var zoom = 4.0f;
+                if (region_x < 0.0f)
                 {
-                    var region_sz = 32.0f;
-                    var region_x = Context.GetMousePos().X - pos.X - (region_sz * 0.5f);
-                    var region_y = Context.GetMousePos().Y - pos.Y - (region_sz * 0.5f);
-                    var zoom = 4.0f;
-                    if (region_x < 0.0f) { region_x = 0.0f; }
-                    else if (region_x > my_tex_w - region_sz) { region_x = my_tex_w - region_sz; }
-                    if (region_y < 0.0f) { region_y = 0.0f; }
-                    else if (region_y > my_tex_h - region_sz) { region_y = my_tex_h - region_sz; }
-                    Widgets.Text($"Min: ({region_x:F2}, {region_y:F2})".ToUtf8());
-                    Widgets.Text($"Max: ({region_x + region_sz:F2}, {region_y + region_sz:F2})".ToUtf8());
-                    Vec2 uv0 = (region_x / my_tex_w, region_y / my_tex_h);
-                    Vec2 uv1 = ((region_x + region_sz) / my_tex_w, (region_y + region_sz) / my_tex_h);
-                    Widgets.ImageWithBg(my_tex_id, (region_sz * zoom, region_sz * zoom), uv0, uv1, (0.0f, 0.0f, 0.0f, 1.0f));
-                    Widgets.EndTooltip();
+                    region_x = 0.0f;
                 }
+                else if (region_x > my_tex_w - region_sz)
+                {
+                    region_x = my_tex_w - region_sz;
+                }
+
+                if (region_y < 0.0f)
+                {
+                    region_y = 0.0f;
+                }
+                else if (region_y > my_tex_h - region_sz)
+                {
+                    region_y = my_tex_h - region_sz;
+                }
+
+                Widgets.Text($"Min: ({region_x:F2}, {region_y:F2})".ToUtf8());
+                Widgets.Text($"Max: ({region_x + region_sz:F2}, {region_y + region_sz:F2})".ToUtf8());
+                Vec2 uv0 = (region_x / my_tex_w, region_y / my_tex_h);
+                Vec2 uv1 = ((region_x + region_sz) / my_tex_w, (region_y + region_sz) / my_tex_h);
+                Widgets.ImageWithBg(my_tex_id, (region_sz * zoom, region_sz * zoom), uv0, uv1, (0.0f, 0.0f, 0.0f, 1.0f));
+                Widgets.EndTooltip();
+            }
+
+            Style.PopStyleVar();
+        }
+
+        Widgets.TextWrapped("And now some textured buttons.."u8);
+        for (var i = 0; i < 8; i++)
+        {
+            // UV coordinates are often (0.0f, 0.0f) and (1.0f, 1.0f) to display an entire textures.
+            // Here are trying to display only a 32x32 pixels area of the texture, hence the UV computation.
+            // Read about UV coordinates here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+            Id.Push(i);
+            if (i > 0)
+            {
+                Style.PushStyleVar(StyleVariable.FramePadding, (i - 1.0f, i - 1.0f));
+            }
+
+            Size size = (32.0f, 32.0f);                         // Size of the image we want to make visible
+            Vec2 uv0 = (0.0f, 0.0f);                            // UV coordinates for lower-left
+            Vec2 uv1 = (32.0f / my_tex_w, 32.0f / my_tex_h);    // UV coordinates for (32,32) in our texture
+            Color bg_col = (0.0f, 0.0f, 0.0f, 1.0f);             // Black background
+            Color tint_col = (1.0f, 1.0f, 1.0f, 1.0f);           // No tint
+            if (Widgets.ImageButton(""u8, my_tex_id, size, uv0, uv1, bg_col, tint_col))
+            {
+                _imagesPressedCount += 1;
+            }
+
+            if (i > 0)
+            {
                 Style.PopStyleVar();
             }
 
-            Widgets.TextWrapped("And now some textured buttons.."u8);
-            for (var i = 0; i < 8; i++)
+            Id.Pop();
+            Widgets.SameLine();
+        }
+
+        Widgets.NewLine();
+        Widgets.Text($"Pressed {_imagesPressedCount} times.".ToUtf8());
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsListBoxes()
+    {
+        if (!Widgets.TreeNode("List Boxes"u8))
+        {
+            return;
+        }
+
+        // BeginListBox() is essentially a thin wrapper to using BeginChild()/EndChild()
+        // using the ImGuiChildFlags_FrameStyle flag for stylistic changes + displaying a label.
+        // You may be tempted to simply use BeginChild() directly. However note that BeginChild() requires EndChild()
+        // to always be called (inconsistent with BeginListBox()/EndListBox()).
+
+        // Using the generic BeginListBox() API, you have full control over how to display the combo contents.
+        // (your selection data could be an index, a pointer to the object, an id for the object, a flag intrusively
+        // stored in the object itself, etc.)
+
+        var itemHighlightedIdx = -1; // Here we store our highlighted data as an index.
+        _ = Widgets.Checkbox("Highlight hovered item in second listbox"u8, ref _listBoxItemHighlight);
+
+        if (Widgets.BeginListBox("listbox 1"u8))
+        {
+            for (var n = 0; n < _comboItems.Length; n++)
             {
-                // UV coordinates are often (0.0f, 0.0f) and (1.0f, 1.0f) to display an entire textures.
-                // Here are trying to display only a 32x32 pixels area of the texture, hence the UV computation.
-                // Read about UV coordinates here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
-                Id.Push(i);
-                if (i > 0)
-                    Style.PushStyleVar(StyleVariable.FramePadding, (i - 1.0f, i - 1.0f));
-                Size size = (32.0f, 32.0f);                         // Size of the image we want to make visible
-                Vec2 uv0 = (0.0f, 0.0f);                            // UV coordinates for lower-left
-                Vec2 uv1 = (32.0f / my_tex_w, 32.0f / my_tex_h);    // UV coordinates for (32,32) in our texture
-                Color bg_col = (0.0f, 0.0f, 0.0f, 1.0f);             // Black background
-                Color tint_col = (1.0f, 1.0f, 1.0f, 1.0f);           // No tint
-                if (Widgets.ImageButton(""u8, my_tex_id, size, uv0, uv1, bg_col, tint_col))
+                var isSelected = _listBoxItemSelectedIdx == n;
+                if (Widgets.Selectable(_comboItems[n], isSelected))
                 {
-                    _imagesPressedCount += 1;
+                    _listBoxItemSelectedIdx = n;
                 }
 
-                if (i > 0)
+                if (_listBoxItemHighlight && Widgets.IsItemHovered())
                 {
-                    Style.PopStyleVar();
+                    itemHighlightedIdx = n;
                 }
 
-                Id.Pop();
-                Widgets.SameLine();
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (isSelected)
+                {
+                    Widgets.SetItemDefaultFocus();
+                }
             }
 
-            Widgets.NewLine();
-            Widgets.Text($"Pressed {_imagesPressedCount} times.".ToUtf8());
-            Widgets.TreePop();
+            Widgets.EndListBox();
         }
+
+        Widgets.SameLine();
+        HelpMarker("Here we are sharing selection state between both boxes."u8);
+
+        // Custom size: use all width, 5 items tall
+        Widgets.Text("Full-width:"u8);
+        if (Widgets.BeginListBox("##listbox 2"u8, (-float.Epsilon, 5 * Font.GetTextLineHeightWithSpacing())))
+        {
+            for (var n = 0; n < _comboItems.Length; n++)
+            {
+                var isSelected = _listBoxItemSelectedIdx == n;
+                SelectableFlags flags = itemHighlightedIdx == n ? SelectableFlags.Highlight : SelectableFlags.None;
+                if (Widgets.Selectable(_comboItems[n], isSelected, flags))
+                {
+                    _listBoxItemSelectedIdx = n;
+                }
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (isSelected)
+                {
+                    Widgets.SetItemDefaultFocus();
+                }
+            }
+
+            Widgets.EndListBox();
+        }
+
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsMultiComponents()
+    {
+        if (!Widgets.TreeNode("Multi-component Widgets"u8))
+        {
+            return;
+        }
+
+        Widgets.SeparatorText("2-wide"u8);
+        _ = Widgets.Input("input float2"u8, _multiVec4f.AsSpan(0, 2));
+        _ = Widgets.Drag("drag float2"u8, _multiVec4f.AsSpan(0, 2), 0.01f, 0.0f, 1.0f);
+        _ = Widgets.Slider("slider float2"u8, _multiVec4f.AsSpan(0, 2), 0.0f, 1.0f);
+        _ = Widgets.Input("input int2"u8, _multiVec4i.AsSpan(0, 2));
+        _ = Widgets.Drag("drag int2"u8, _multiVec4i.AsSpan(0, 2), 1, 0, 255);
+        _ = Widgets.Slider("slider int2"u8, _multiVec4i.AsSpan(0, 2), 0, 255);
+
+        Widgets.SeparatorText("3-wide"u8);
+        _ = Widgets.Input("input float3"u8, _multiVec4f.AsSpan(0, 3));
+        _ = Widgets.Drag("drag float3"u8, _multiVec4f.AsSpan(0, 3), 0.01f, 0.0f, 1.0f);
+        _ = Widgets.Slider("slider float3"u8, _multiVec4f.AsSpan(0, 3), 0.0f, 1.0f);
+        _ = Widgets.Input("input int3"u8, _multiVec4i.AsSpan(0, 3));
+        _ = Widgets.Drag("drag int3"u8, _multiVec4i.AsSpan(0, 3), 1, 0, 255);
+        _ = Widgets.Slider("slider int3"u8, _multiVec4i.AsSpan(0, 3), 0, 255);
+
+        Widgets.SeparatorText("4-wide"u8);
+        _ = Widgets.Input("input float4"u8, _multiVec4f);
+        _ = Widgets.Drag("drag float4"u8, _multiVec4f, 0.01f, 0.0f, 1.0f);
+        _ = Widgets.Slider("slider float4"u8, _multiVec4f, 0.0f, 1.0f);
+        _ = Widgets.Input("input int4"u8, _multiVec4i);
+        _ = Widgets.Drag("drag int4"u8, _multiVec4i, 1, 0, 255);
+        _ = Widgets.Slider("slider int4"u8, _multiVec4i, 0, 255);
+
+        Widgets.SeparatorText("Ranges"u8);
+        _ = Widgets.DragRange("range float"u8, ref _multiRangeBegin, ref _multiRangeEnd, 0.25f, 0.0f, 100.0f, "Min: %.1f %%"u8, "Max: %.1f %%"u8, SliderFlags.AlwaysClamp);
+        _ = Widgets.DragRange("range int"u8, ref _multiRangeBeginI, ref _multiRangeEndI, 5, 0, 1000, "Min: %d units"u8, "Max: %d units"u8);
+        _ = Widgets.DragRange("range int (no bounds)"u8, ref _multiRangeBeginI, ref _multiRangeEndI, 5, 0, 0, "Min: %d units"u8, "Max: %d units"u8);
+
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsPlotting()
+    {
+        // Plot/Graph widgets are not very good.
+        // Consider using a third-party library such as ImPlot: https://github.com/epezent/implot
+        // (see others https://github.com/ocornut/imgui/wiki/Useful-Extensions)
+        if (!Widgets.TreeNode("Plotting"u8))
+        {
+            return;
+        }
+
+        Widgets.Text("Need better plotting and graphing? Consider using ImPlot:"u8);
+        _ = Widgets.TextLinkOpenURL("https://github.com/epezent/implot"u8);
+        Widgets.Separator();
+
+        _ = Widgets.Checkbox("Animate"u8, ref _plottingAnimate);
+
+        // Plot as lines and plot as histogram
+        Widgets.PlotLines("Frame Times"u8, _plottingArr, 0, default);
+        Widgets.PlotHistogram("Histogram"u8, _plottingArr, 0, default, 0.0f, 1.0f, (0, 80.0f));
+
+        // Fill an array of contiguous float values to plot
+        // Tip: If your float aren't contiguous but part of a structure, you can pass a pointer to your first float
+        // and the sizeof() of your structure in the "stride" parameter.
+        if (!_plottingAnimate || _plottingRefreshTime == 0.0)
+        {
+            _plottingRefreshTime = Context.GetTime();
+        }
+
+        while (_plottingRefreshTime < Context.GetTime()) // Create data at fixed 60 Hz rate for the demo
+        {
+            _plottingValues[_plottingValuesOffset] = MathF.Cos(_plottingPhase);
+            _plottingValuesOffset = (_plottingValuesOffset + 1) % _plottingValues.Length;
+            _plottingPhase += 0.10f * _plottingValuesOffset;
+            _plottingRefreshTime += 1.0f / 60.0f;
+        }
+
+        // Plots can display overlay texts
+        // (in this example, we will display an average value)
+        {
+            var average = 0.0f;
+            for (var n = 0; n < _plottingValues.Length; n++)
+            {
+                average += _plottingValues[n];
+            }
+
+            average /= _plottingValues.Length;
+            var overlay = $"avg {average:F6}".ToUtf8();
+            Widgets.PlotLines("Lines"u8, _plottingValues, _plottingValuesOffset, overlay, -1.0f, 1.0f, (0, 80.0f));
+        }
+
+        // Use functions to generate output
+        // FIXME: This is actually VERY awkward because current plot API only pass in indices.
+        // We probably want an API passing floats and user provide sample rate/count.
+        Widgets.SeparatorText("Functions"u8);
+        Style.SetNextItemWidth(Font.GetSize() * 8);
+        _ = Widgets.Combo("func"u8, ref _plottingFuncType, "Sin\0Saw\0"u8);
+        Widgets.SameLine();
+        _ = Widgets.Slider("Sample count"u8, ref _plottingDisplayCount, 1, 400);
+
+        delegate* unmanaged[Cdecl]<void*, int, float> func = _plottingFuncType == 0 ? &SinFunc : &SawFunc;
+        Widgets.PlotLines("Lines##2"u8, func, null, _plottingDisplayCount, 0, default, -1.0f, 1.0f, (0, 80));
+        Widgets.PlotHistogram("Histogram##2"u8, func, null, _plottingDisplayCount, 0, default, -1.0f, 1.0f, (0, 80));
+
+        Widgets.TreePop();
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static float SinFunc(void* data, int i)
+    {
+        return MathF.Sin(i * 0.1f);
+    }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+    private static float SawFunc(void* data, int i)
+    {
+        return (i & 1) != 0 ? 1.0f : -1.0f;
     }
 
     private static void ShowUserGuide()
@@ -1835,12 +2058,6 @@ Hover the texture for a zoomed view!"u8);
 
     // Nested Types
 
-    private enum PlotType
-    {
-        Sin,
-        Saw
-    }
-
     // Public Methods
 
     /// <summary>
@@ -1882,9 +2099,9 @@ Hover the texture for a zoomed view!"u8);
         DemoWindowWidgetsDragsAndSliders();
         DemoWindowWidgetsFonts();
         DemoWindowWidgetsImages();
-        ShowListBoxes();
-        ShowMultiComponents();
-        ShowPlotting();
+        DemoWindowWidgetsListBoxes();
+        DemoWindowWidgetsMultiComponents();
+        DemoWindowWidgetsPlotting();
         ShowProgressBars();
         ShowQueryingStatuses();
         ShowSelectables();
@@ -1906,132 +2123,6 @@ Hover the texture for a zoomed view!"u8);
     // Helper Methods
 
     // Private Section Methods
-
-    private static void ShowListBoxes()
-    {
-        if (Widgets.TreeNode("List boxes"u8))
-        {
-            // Using the simpler BeginListBox/EndListBox API
-            string[] items = ["Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pineapple", "Strawberry", "Watermelon"];
-
-            if (Widgets.BeginListBox("listbox 1"u8))
-            {
-                for (var i = 0; i < items.Length; i++)
-                {
-                    var isSelected = _listBoxItemCurrent == i;
-                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes(items[i]), isSelected))
-                    {
-                        _listBoxItemCurrent = i;
-                    }
-
-                    if (isSelected)
-                    {
-                        Widgets.SetItemDefaultFocus();
-                    }
-                }
-
-                Widgets.EndListBox();
-            }
-
-            Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"Selected: {items[_listBoxItemCurrent]}"));
-
-            // Custom sized list box
-            Widgets.Text("Full-width:"u8);
-            if (Widgets.BeginListBox("##listbox 2"u8, new Vec2(-float.Epsilon, 5 * Font.GetTextLineHeightWithSpacing())))
-            {
-                for (var i = 0; i < items.Length; i++)
-                {
-                    var isSelected = _listBoxItemCurrent == i;
-                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes(items[i]), isSelected))
-                    {
-                        _listBoxItemCurrent = i;
-                    }
-
-                    if (isSelected)
-                    {
-                        Widgets.SetItemDefaultFocus();
-                    }
-                }
-
-                Widgets.EndListBox();
-            }
-
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowMultiComponents()
-    {
-        if (Widgets.TreeNode("Multi-component Widgets"u8))
-        {
-            _ = Widgets.Input("input float4"u8, _multiVec4f);
-            _ = Widgets.Drag("drag float4"u8, _multiVec4f, 0.01f, 0.0f, 1.0f);
-            _ = Widgets.Slider("slider float4"u8, _multiVec4f, 0.0f, 1.0f);
-            _ = Widgets.Input("input int4"u8, _multiVec4i);
-            _ = Widgets.Drag("drag int4"u8, _multiVec4i, 1, 0, 255);
-            _ = Widgets.Slider("slider int4"u8, _multiVec4i, 0, 255);
-            Widgets.Spacing();
-
-            _ = Widgets.Input("input float3"u8, _multiVec4f.AsSpan(0, 3));
-            _ = Widgets.Drag("drag float3"u8, _multiVec4f.AsSpan(0, 3), 0.01f, 0.0f, 1.0f);
-            _ = Widgets.Slider("slider float3"u8, _multiVec4f.AsSpan(0, 3), 0.0f, 1.0f);
-
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowPlotting()
-    {
-        if (Widgets.TreeNode("Plotting"u8))
-        {
-            _ = Widgets.Checkbox("Animate"u8, ref _plotAnimate);
-
-            // Plot lines - using sin array
-            Widgets.PlotLines("Frame Times"u8, _plotArrSin, 0, "avg 0.0"u8);
-
-            // Fill the array with animated data
-            if (_plotAnimate)
-            {
-                var time = Context.GetTime();
-                if (_plotRefreshTime == 0.0)
-                {
-                    _plotRefreshTime = time;
-                }
-
-                while (_plotRefreshTime < time)
-                {
-                    _plotArrSin[_plotValuesOffset] = MathF.Cos(_plotPhase);
-                    _plotValuesOffset = (_plotValuesOffset + 1) % _plotArrSin.Length;
-                    _plotPhase += 0.10f * _plotValuesOffset;
-                    _plotRefreshTime += 1.0 / 60.0;
-                }
-            }
-
-            // Plot histogram
-            Widgets.PlotHistogram("Histogram"u8, _plotArrCos, 0, default, -1.0f, 1.0f, new Vec2(0, 80.0f));
-
-            Widgets.Separator();
-
-            // Plot type selection
-            _ = Widgets.RadioButton("Sin"u8, ref Unsafe.As<PlotType, int>(ref _plotFuncType), 0);
-            Widgets.SameLine();
-            _ = Widgets.RadioButton("Saw"u8, ref Unsafe.As<PlotType, int>(ref _plotFuncType), 1);
-
-            _ = Widgets.Slider("Sample count"u8, ref _plotDisplayCount, 1, 400);
-
-            // Generate data based on plot type
-            var data = new float[_plotDisplayCount];
-            for (var i = 0; i < _plotDisplayCount; i++)
-            {
-                data[i] = _plotFuncType == PlotType.Sin ? MathF.Sin(i * 0.1f) : (i & 1) == 1 ? 1.0f : -1.0f;
-            }
-
-            Widgets.PlotLines("Lines"u8, data, 0, default, -1.0f, 1.0f, new Vec2(0, 80));
-            Widgets.PlotHistogram("Histogram"u8, data, 0, default, -1.0f, 1.0f, new Vec2(0, 80));
-
-            Widgets.TreePop();
-        }
-    }
 
     private static void ShowProgressBars()
     {

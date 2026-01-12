@@ -2812,6 +2812,48 @@ public unsafe static class Widgets
     }
 
     /// <summary>
+    /// Plots a line graph using a callback function to generate values.
+    /// </summary>
+    /// <param name="label">The label for the plot.</param>
+    /// <param name="valuesGetter">A function pointer that returns a value for each index.</param>
+    /// <param name="data">User data passed to the getter function.</param>
+    /// <param name="valuesCount">The number of values to plot.</param>
+    /// <param name="valuesOffset">Index offset into the values.</param>
+    /// <param name="overlayText">Text to overlay on the graph.</param>
+    /// <param name="scaleMin">The minimum scale value (float.MaxValue for auto).</param>
+    /// <param name="scaleMax">The maximum scale value (float.MaxValue for auto).</param>
+    /// <param name="graphSize">The size of the graph (0,0 for default).</param>
+    public static void PlotLines(ReadOnlySpan<byte> label, delegate* unmanaged[Cdecl]<void*, int, float> valuesGetter, void* data, int valuesCount, int valuesOffset = 0, ReadOnlySpan<byte> overlayText = default, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, Vec2 graphSize = default)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* overlayPtr = overlayText)
+        {
+            ImGui_PlotLinesCallbackEx(labelPtr, valuesGetter, data, valuesCount, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.Value);
+        }
+    }
+
+    /// <summary>
+    /// Plots a histogram using a callback function to generate values.
+    /// </summary>
+    /// <param name="label">The label for the plot.</param>
+    /// <param name="valuesGetter">A function pointer that returns a value for each index.</param>
+    /// <param name="data">User data passed to the getter function.</param>
+    /// <param name="valuesCount">The number of values to plot.</param>
+    /// <param name="valuesOffset">Index offset into the values.</param>
+    /// <param name="overlayText">Text to overlay on the graph.</param>
+    /// <param name="scaleMin">The minimum scale value (float.MaxValue for auto).</param>
+    /// <param name="scaleMax">The maximum scale value (float.MaxValue for auto).</param>
+    /// <param name="graphSize">The size of the graph (0,0 for default).</param>
+    public static void PlotHistogram(ReadOnlySpan<byte> label, delegate* unmanaged[Cdecl]<void*, int, float> valuesGetter, void* data, int valuesCount, int valuesOffset = 0, ReadOnlySpan<byte> overlayText = default, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, Vec2 graphSize = default)
+    {
+        fixed (byte* labelPtr = label)
+        fixed (byte* overlayPtr = overlayText)
+        {
+            ImGui_PlotHistogramCallbackEx(labelPtr, valuesGetter, data, valuesCount, valuesOffset, overlayPtr, scaleMin, scaleMax, graphSize.Value);
+        }
+    }
+
+    /// <summary>
     /// Begins appending to a menu bar of the current window.
     /// </summary>
     /// <returns>True if the menu bar is visible. Only call <see cref="EndMenuBar"/> if this returns true.</returns>
