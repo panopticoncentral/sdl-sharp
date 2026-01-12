@@ -520,6 +520,17 @@ public unsafe static class Widgets
     /// <param name="texRef">The texture reference.</param>
     /// <param name="imageSize">The size of the image to display.</param>
     /// <param name="uv0">The UV coordinate of the top-left corner.</param>
+    public static void Image(TextureRef texRef, Size imageSize, Vec2 uv0)
+    {
+        ImGui_ImageEx(texRef.Native, imageSize.Value, uv0.Value, new() { X = 1, Y = 1 });
+    }
+
+    /// <summary>
+    /// Displays an image with explicit UV coordinates.
+    /// </summary>
+    /// <param name="texRef">The texture reference.</param>
+    /// <param name="imageSize">The size of the image to display.</param>
+    /// <param name="uv0">The UV coordinate of the top-left corner.</param>
     /// <param name="uv1">The UV coordinate of the bottom-right corner.</param>
     public static void Image(TextureRef texRef, Size imageSize, Vec2 uv0, Vec2 uv1)
     {
@@ -534,6 +545,42 @@ public unsafe static class Widgets
     public static void ImageWithBg(TextureRef texRef, Size imageSize)
     {
         ImGui_ImageWithBg(texRef.Native, imageSize.Value);
+    }
+
+    /// <summary>
+    /// Displays an image with background and tint color support, with explicit UV coordinates and colors.
+    /// </summary>
+    /// <param name="texRef">The texture reference.</param>
+    /// <param name="imageSize">The size of the image to display.</param>
+    /// <param name="uv0">The UV coordinate of the top-left corner.</param>
+    public static void ImageWithBg(TextureRef texRef, Size imageSize, Vec2 uv0)
+    {
+        ImGui_ImageWithBgEx(texRef.Native, imageSize.Value, uv0.Value, new() { X = 1, Y = 1 }, new() { X = 0, Y = 0, Z = 0, W = 0 }, new() { X = 1, Y = 1, Z = 1, W = 1 });
+    }
+
+    /// <summary>
+    /// Displays an image with background and tint color support, with explicit UV coordinates and colors.
+    /// </summary>
+    /// <param name="texRef">The texture reference.</param>
+    /// <param name="imageSize">The size of the image to display.</param>
+    /// <param name="uv0">The UV coordinate of the top-left corner.</param>
+    /// <param name="uv1">The UV coordinate of the bottom-right corner.</param>
+    public static void ImageWithBg(TextureRef texRef, Size imageSize, Vec2 uv0, Vec2 uv1)
+    {
+        ImGui_ImageWithBgEx(texRef.Native, imageSize.Value, uv0.Value, uv1.Value, new() { X = 0, Y = 0, Z = 0, W = 0 }, new() { X = 1, Y = 1, Z = 1, W = 1 });
+    }
+
+    /// <summary>
+    /// Displays an image with background and tint color support, with explicit UV coordinates and colors.
+    /// </summary>
+    /// <param name="texRef">The texture reference.</param>
+    /// <param name="imageSize">The size of the image to display.</param>
+    /// <param name="uv0">The UV coordinate of the top-left corner.</param>
+    /// <param name="uv1">The UV coordinate of the bottom-right corner.</param>
+    /// <param name="bgCol">The background color.</param>
+    public static void ImageWithBg(TextureRef texRef, Size imageSize, Vec2 uv0, Vec2 uv1, Color bgCol)
+    {
+        ImGui_ImageWithBgEx(texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.Value, new() { X = 1, Y = 1, Z = 1, W = 1 });
     }
 
     /// <summary>
@@ -565,6 +612,60 @@ public unsafe static class Widgets
         fixed (byte* ptr = strId)
         {
             return ImGui_ImageButton(ptr, texRef.Native, imageSize.Value);
+        }
+    }
+
+    /// <summary>
+    /// Creates an image button with explicit UV coordinates and colors.
+    /// </summary>
+    /// <param name="strId">The string ID for the button.</param>
+    /// <param name="texRef">The texture reference.</param>
+    /// <param name="imageSize">The size of the image.</param>
+    /// <param name="uv0">The UV coordinate of the top-left corner.</param>
+    /// <param name="uv1">The UV coordinate of the bottom-right corner.</param>
+    /// <param name="bgCol">The background color.</param>
+    /// <returns>True when clicked.</returns>
+    public static bool ImageButton(ReadOnlySpan<byte> strId, TextureRef texRef, Size imageSize, Vec2 uv0)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_ImageButtonEx(ptr, texRef.Native, imageSize.Value, uv0.Value, new() { X = 1, Y = 1 }, new() { X = 0, Y = 0, Z = 0, W = 0 }, new() { X = 1, Y = 1, Z = 1, W = 1 });
+        }
+    }
+
+    /// <summary>
+    /// Creates an image button with explicit UV coordinates and colors.
+    /// </summary>
+    /// <param name="strId">The string ID for the button.</param>
+    /// <param name="texRef">The texture reference.</param>
+    /// <param name="imageSize">The size of the image.</param>
+    /// <param name="uv0">The UV coordinate of the top-left corner.</param>
+    /// <param name="uv1">The UV coordinate of the bottom-right corner.</param>
+    /// <param name="bgCol">The background color.</param>
+    /// <returns>True when clicked.</returns>
+    public static bool ImageButton(ReadOnlySpan<byte> strId, TextureRef texRef, Size imageSize, Vec2 uv0, Vec2 uv1)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_ImageButtonEx(ptr, texRef.Native, imageSize.Value, uv0.Value, uv1.Value, new() { X = 0, Y = 0, Z = 0, W = 0 }, new() { X = 1, Y = 1, Z = 1, W = 1 });
+        }
+    }
+
+    /// <summary>
+    /// Creates an image button with explicit UV coordinates and colors.
+    /// </summary>
+    /// <param name="strId">The string ID for the button.</param>
+    /// <param name="texRef">The texture reference.</param>
+    /// <param name="imageSize">The size of the image.</param>
+    /// <param name="uv0">The UV coordinate of the top-left corner.</param>
+    /// <param name="uv1">The UV coordinate of the bottom-right corner.</param>
+    /// <param name="bgCol">The background color.</param>
+    /// <returns>True when clicked.</returns>
+    public static bool ImageButton(ReadOnlySpan<byte> strId, TextureRef texRef, Size imageSize, Vec2 uv0, Vec2 uv1, Color bgCol)
+    {
+        fixed (byte* ptr = strId)
+        {
+            return ImGui_ImageButtonEx(ptr, texRef.Native, imageSize.Value, uv0.Value, uv1.Value, bgCol.Value, new() { X = 1, Y = 1, Z = 1, W = 1 });
         }
     }
 

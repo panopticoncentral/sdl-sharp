@@ -62,7 +62,7 @@ public static unsafe class ImGuiDemoWindow
 
     // State Fields - Combo Boxes Section
 
-    private static byte[][] _comboItems = [
+    private readonly static byte[][] _comboItems = [
             "AAAA"u8.ToArray(),
             "BBBB"u8.ToArray(),
             "CCCC"u8.ToArray(),
@@ -134,14 +134,17 @@ public static unsafe class ImGuiDemoWindow
         "Item One"u8.ToArray(), "Item Two"u8.ToArray(), "Item Three"u8.ToArray(),
         "Item Four"u8.ToArray(), "Item Five"u8.ToArray()
     ];
-    private static Color _dragDropCol4 = (1.0f, 0.0f, 0.2f, 1.0f);
+    private readonly static Color _dragDropCol4 = (1.0f, 0.0f, 0.2f, 1.0f);
 
     // State Fields - Drags and Sliders Section
 
-    private static float _dragsClampingValue1 = 0.5f;
-    private static float _dragsClampingValue2 = 0.5f;
-    private static float _dragsClampingValue3 = 0.5f;
-    private static SliderFlags _dragsClampsFlags = SliderFlags.None;
+    private static SliderFlags _dragsAndSlidersFlags = SliderFlags.None;
+    private static float _dragsAndSlidersDragF = 0.5f;
+    private static int _dragsAndSlidersDragI = 50;
+    private static float _dragsAndSlidersSliderF = 0.5f;
+    private static int _dragsAndSlidersSliderI = 50;
+
+    private static int _imagesPressedCount = 0;
 
     // State Fields - Progress Bars Section
 
@@ -1514,7 +1517,7 @@ Instead we query when the item is held but not hovered, and order items accordin
 
             if (Widgets.TreeNode("Tooltip at target location"u8))
             {
-                for (int n = 0; n < 2; n++)
+                for (var n = 0; n < 2; n++)
                 {
                     // Drop targets
                     _ = Widgets.Button(n != 0 ? "drop here##1"u8 : "drop here##0"u8);
@@ -1541,6 +1544,159 @@ Instead we query when the item is held but not hovered, and order items accordin
                 Widgets.TreePop();
             }
 
+            Widgets.TreePop();
+        }
+    }
+
+    private static void DemoWindowWidgetsDragsAndSliders()
+    {
+        if (!Widgets.TreeNode("Drag/Slider Flags"u8))
+        {
+            return;
+        }
+
+        // Demonstrate using advanced flags for DragXXX and SliderXXX functions. Note that the flags are the same!
+        _ = Widgets.CheckboxFlags("SliderFlags.AlwaysClamp"u8, ref _dragsAndSlidersFlags, SliderFlags.AlwaysClamp);
+        _ = Widgets.CheckboxFlags("SliderFlags.ClampOnInput"u8, ref _dragsAndSlidersFlags, SliderFlags.ClampOnInput);
+        Widgets.SameLine();
+        HelpMarker("Clamp value to min/max bounds when input manually with Ctrl+Click. By default Ctrl+Click allows going out of bounds."u8);
+        _ = Widgets.CheckboxFlags("SliderFlags.ClampZeroRange"u8, ref _dragsAndSlidersFlags, SliderFlags.ClampZeroRange);
+        Widgets.SameLine();
+        HelpMarker("Clamp even if min==max==0.0f. Otherwise DragXXX functions don't clamp."u8);
+        _ = Widgets.CheckboxFlags("SliderFlags.Logarithmic"u8, ref _dragsAndSlidersFlags, SliderFlags.Logarithmic);
+        Widgets.SameLine();
+        HelpMarker("Enable logarithmic editing (more precision for small values)."u8);
+        _ = Widgets.CheckboxFlags("SliderFlags.NoRoundToFormat"u8, ref _dragsAndSlidersFlags, SliderFlags.NoRoundToFormat);
+        Widgets.SameLine();
+        HelpMarker("Disable rounding underlying value to match precision of the format string (e.g. %.3f values are rounded to those 3 digits)."u8);
+        _ = Widgets.CheckboxFlags("SliderFlags.NoInput"u8, ref _dragsAndSlidersFlags, SliderFlags.NoInput);
+        Widgets.SameLine();
+        HelpMarker("Disable Ctrl+Click or Enter key allowing to input text directly into the widget."u8);
+        _ = Widgets.CheckboxFlags("SliderFlags.NoSpeedTweaks"u8, ref _dragsAndSlidersFlags, SliderFlags.NoSpeedTweaks);
+        Widgets.SameLine();
+        HelpMarker("Disable keyboard modifiers altering tweak speed. Useful if you want to alter tweak speed yourself based on your own logic."u8);
+        _ = Widgets.CheckboxFlags("SliderFlags.WrapAround"u8, ref _dragsAndSlidersFlags, SliderFlags.WrapAround);
+        Widgets.SameLine();
+        HelpMarker("Enable wrapping around from max to min and from min to max (only supported by DragXXX() functions)"u8);
+
+        // Drags
+        Widgets.Text($"Underlying float value: {_dragsAndSlidersDragF}".ToUtf8());
+        _ = Widgets.Drag("DragFloat (0 -> 1)"u8, ref _dragsAndSlidersDragF, 0.005f, 0.0f, 1.0f, "%.3f"u8, _dragsAndSlidersFlags);
+        _ = Widgets.Drag("DragFloat (0 -> +inf)"u8, ref _dragsAndSlidersDragF, 0.005f, 0.0f, float.MaxValue, "%.3f"u8, _dragsAndSlidersFlags);
+        _ = Widgets.Drag("DragFloat (-inf -> 1)"u8, ref _dragsAndSlidersDragF, 0.005f, -float.MaxValue, 1.0f, "%.3f"u8, _dragsAndSlidersFlags);
+        _ = Widgets.Drag("DragFloat (-inf -> +inf)"u8, ref _dragsAndSlidersDragF, 0.005f, -float.MaxValue, float.MaxValue, "%.3f"u8, _dragsAndSlidersFlags);
+        _ = Widgets.Drag("DragInt (0 -> 100)"u8, ref _dragsAndSlidersDragI, 0.5f, 0, 100, "%d"u8, _dragsAndSlidersFlags);
+
+        // Sliders
+        SliderFlags flagsForSliders = _dragsAndSlidersFlags & ~SliderFlags.WrapAround;
+        Widgets.Text($"Underlying float value: {_dragsAndSlidersSliderF}".ToUtf8());
+        _ = Widgets.Slider("SliderFloat (0 -> 1)"u8, ref _dragsAndSlidersSliderF, 0.0f, 1.0f, "%.3f"u8, flagsForSliders);
+        _ = Widgets.Slider("SliderInt (0 -> 100)"u8, ref _dragsAndSlidersSliderI, 0, 100, "%d"u8, flagsForSliders);
+
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsFonts()
+    {
+        if (!Widgets.TreeNode("Fonts"u8))
+        {
+            return;
+        }
+
+        // Can't show font atlas as this API is not public.
+        //FontAtlas atlas = Context.IO.Fonts;
+        //Context.ShowFontAtlas(atlas);
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsImages()
+    {
+        if (Widgets.TreeNode("Images"u8))
+        {
+            IO io = Context.IO;
+            Widgets.TextWrapped(@"Below we are displaying the font texture (which is the only texture we have access to in this demo). 
+Use the 'ImTextureID' type as storage to pass pointers or identifier to your own texture data. 
+Hover the texture for a zoomed view!"u8);
+
+            // Below we are displaying the font texture because it is the only texture we have access to inside the demo!
+            // Read description about ImTextureID/ImTextureRef and FAQ for details about texture identifiers.
+            // If you use one of the default imgui_impl_XXXX.cpp rendering backend, they all have comments at the top
+            // of their respective source file to specify what they are using as texture identifier, for example:
+            // - The imgui_impl_dx11.cpp renderer expect a 'ID3D11ShaderResourceView*' pointer.
+            // - The imgui_impl_opengl3.cpp renderer expect a GLuint OpenGL texture identifier, etc.
+            // So with the DirectX11 backend, you call ImGui::Image() with a 'ID3D11ShaderResourceView*' cast to ImTextureID.
+            // - If you decided that ImTextureID = MyEngineTexture*, then you can pass your MyEngineTexture* pointers
+            //   to ImGui::Image(), and gather width/height through your own functions, etc.
+            // - You can use ShowMetricsWindow() to inspect the draw data that are being passed to your renderer,
+            //   it will help you debug issues if you are confused about it.
+            // - Consider using the lower-level ImDrawList::AddImage() API, via ImGui::GetWindowDrawList()->AddImage().
+            // - Read https://github.com/ocornut/imgui/blob/master/docs/FAQ.md
+            // - Read https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+
+            // Grab the current texture identifier used by the font atlas.
+            TextureRef my_tex_id = io.Fonts.TexRef;
+
+            // Regular user code should never have to care about TexData-> fields, but since we want to display the entire texture here, we pull Width/Height from it.
+            float my_tex_w = io.Fonts.TexData.Width;
+            float my_tex_h = io.Fonts.TexData.Height;
+
+            {
+                Widgets.Text($"{my_tex_w:F0}x{my_tex_h:F0}".ToUtf8());
+                Point pos = Window.CursorScreenPosition;
+                Vec2 uv_min = (0.0f, 0.0f); // Top-left
+                Vec2 uv_max = (1.0f, 1.0f); // Lower-right
+                Style.PushStyleVar(StyleVariable.ImageBorderSize, Math.Max(1.0f, Context.Style.ImageBorderSize));
+                Widgets.ImageWithBg(my_tex_id, (my_tex_w, my_tex_h), uv_min, uv_max, (0.0f, 0.0f, 0.0f, 1.0f));
+                if (Widgets.BeginItemTooltip())
+                {
+                    var region_sz = 32.0f;
+                    var region_x = Context.GetMousePos().X - pos.X - (region_sz * 0.5f);
+                    var region_y = Context.GetMousePos().Y - pos.Y - (region_sz * 0.5f);
+                    var zoom = 4.0f;
+                    if (region_x < 0.0f) { region_x = 0.0f; }
+                    else if (region_x > my_tex_w - region_sz) { region_x = my_tex_w - region_sz; }
+                    if (region_y < 0.0f) { region_y = 0.0f; }
+                    else if (region_y > my_tex_h - region_sz) { region_y = my_tex_h - region_sz; }
+                    Widgets.Text($"Min: ({region_x:F2}, {region_y:F2})".ToUtf8());
+                    Widgets.Text($"Max: ({region_x + region_sz:F2}, {region_y + region_sz:F2})".ToUtf8());
+                    Vec2 uv0 = (region_x / my_tex_w, region_y / my_tex_h);
+                    Vec2 uv1 = ((region_x + region_sz) / my_tex_w, (region_y + region_sz) / my_tex_h);
+                    Widgets.ImageWithBg(my_tex_id, (region_sz * zoom, region_sz * zoom), uv0, uv1, (0.0f, 0.0f, 0.0f, 1.0f));
+                    Widgets.EndTooltip();
+                }
+                Style.PopStyleVar();
+            }
+
+            Widgets.TextWrapped("And now some textured buttons.."u8);
+            for (var i = 0; i < 8; i++)
+            {
+                // UV coordinates are often (0.0f, 0.0f) and (1.0f, 1.0f) to display an entire textures.
+                // Here are trying to display only a 32x32 pixels area of the texture, hence the UV computation.
+                // Read about UV coordinates here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
+                Id.Push(i);
+                if (i > 0)
+                    Style.PushStyleVar(StyleVariable.FramePadding, (i - 1.0f, i - 1.0f));
+                Size size = (32.0f, 32.0f);                         // Size of the image we want to make visible
+                Vec2 uv0 = (0.0f, 0.0f);                            // UV coordinates for lower-left
+                Vec2 uv1 = (32.0f / my_tex_w, 32.0f / my_tex_h);    // UV coordinates for (32,32) in our texture
+                Color bg_col = (0.0f, 0.0f, 0.0f, 1.0f);             // Black background
+                Color tint_col = (1.0f, 1.0f, 1.0f, 1.0f);           // No tint
+                if (Widgets.ImageButton(""u8, my_tex_id, size, uv0, uv1, bg_col, tint_col))
+                {
+                    _imagesPressedCount += 1;
+                }
+
+                if (i > 0)
+                {
+                    Style.PopStyleVar();
+                }
+
+                Id.Pop();
+                Widgets.SameLine();
+            }
+
+            Widgets.NewLine();
+            Widgets.Text($"Pressed {_imagesPressedCount} times.".ToUtf8());
             Widgets.TreePop();
         }
     }
@@ -1723,9 +1879,9 @@ Instead we query when the item is held but not hovered, and order items accordin
         }
 
         DemoWindowWidgetsDragAndDrop();
-        ShowDragsAndSliders();
-        ShowFonts();
-        ShowImages();
+        DemoWindowWidgetsDragsAndSliders();
+        DemoWindowWidgetsFonts();
+        DemoWindowWidgetsImages();
         ShowListBoxes();
         ShowMultiComponents();
         ShowPlotting();
@@ -1750,57 +1906,6 @@ Instead we query when the item is held but not hovered, and order items accordin
     // Helper Methods
 
     // Private Section Methods
-
-    private static void ShowDragsAndSliders()
-    {
-        if (Widgets.TreeNode("Drag/Slider Flags"u8))
-        {
-            // Clamping flags
-            _ = Widgets.CheckboxFlags("SliderFlags.AlwaysClamp"u8, ref _dragsClampsFlags, SliderFlags.AlwaysClamp);
-            Widgets.SameLine();
-            HelpMarker("Always clamp value to min/max bounds (if any) when input manually with Ctrl+Click. By default Ctrl+Click allows going out of bounds."u8);
-            _ = Widgets.CheckboxFlags("SliderFlags.Logarithmic"u8, ref _dragsClampsFlags, SliderFlags.Logarithmic);
-            Widgets.SameLine();
-            HelpMarker("Enable logarithmic editing (more precision for small values)."u8);
-            _ = Widgets.CheckboxFlags("SliderFlags.NoRoundToFormat"u8, ref _dragsClampsFlags, SliderFlags.NoRoundToFormat);
-            Widgets.SameLine();
-            HelpMarker("Disable rounding underlying value to match precision of the display format string (e.g. %.3f values are rounded to those 3 digits)."u8);
-            _ = Widgets.CheckboxFlags("SliderFlags.NoInput"u8, ref _dragsClampsFlags, SliderFlags.NoInput);
-            Widgets.SameLine();
-            HelpMarker("Disable Ctrl+Click or Enter key allowing to input text directly into the widget."u8);
-            _ = Widgets.CheckboxFlags("SliderFlags.WrapAround"u8, ref _dragsClampsFlags, SliderFlags.WrapAround);
-            Widgets.SameLine();
-            HelpMarker("Enable wrapping around from max to min and from min to max (only supported by DragXXX() functions)."u8);
-
-            // Drags
-            _ = Widgets.Drag("DragFloat (0 -> 1)"u8, ref _dragsClampingValue1, 0.005f, 0.0f, 1.0f, "%.3f"u8, _dragsClampsFlags);
-            _ = Widgets.Drag("DragFloat (0 -> +inf)"u8, ref _dragsClampingValue2, 0.005f, 0.0f, float.MaxValue, "%.3f"u8, _dragsClampsFlags);
-            _ = Widgets.Drag("DragFloat (-inf -> 1)"u8, ref _dragsClampingValue3, 0.005f, float.MinValue, 1.0f, "%.3f"u8, _dragsClampsFlags);
-
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowFonts()
-    {
-        if (Widgets.TreeNode("Fonts"u8))
-        {
-            Widgets.Text("This section is for font showcasing."u8);
-            Widgets.Text("Font size is controlled via the IO object."u8);
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowImages()
-    {
-        if (Widgets.TreeNode("Images"u8))
-        {
-            _ = Widgets.Checkbox("Use text color for Tint"u8, ref _imageUseTextColor);
-            Widgets.Text("Image loading/display functionality would be demonstrated here."u8);
-            Widgets.Text("This requires texture handling which varies by backend."u8);
-            Widgets.TreePop();
-        }
-    }
 
     private static void ShowListBoxes()
     {
