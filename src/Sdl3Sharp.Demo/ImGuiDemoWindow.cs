@@ -3,6 +3,7 @@ using Sdl3Sharp.ImGui.Native;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Unicode;
 
 namespace Sdl3Sharp.Demo;
 
@@ -171,14 +172,15 @@ public static unsafe class ImGuiDemoWindow
 
     // State Fields - Querying Statuses Section
 
-    private static int _queryingItemType = 1;
+    private static int _queryingItemType = 4;
+    private static bool _queryingItemDisabled;
     private static bool _queryingB;
     private static float _queryingF = 1.0f;
-    private static float[] _queryingFArray = [1.0f, 0.5f, 0.0f];
+    private static float[] _queryingFArray = [1.0f, 0.5f, 0.0f, 1.0f];
     private static Color _queryingCol4f = (1.0f, 0.5f, 0.0f, 1.0f);
     private static readonly byte[] _queryingStr = new byte[16];
     private static int _queryingCurrent1 = 1;
-    private static int _queryingCurrent2;
+    private static int _queryingCurrent2 = 1;
     private static bool _queryingEmbedAllInsideAChildWindow;
     private static bool _queryingTestWindow;
 
@@ -188,9 +190,12 @@ public static unsafe class ImGuiDemoWindow
     private static readonly bool[] _selectablesSelected = new bool[5];
     private static int _selectablesSelectedSingleOnly = -1;
     private static readonly bool[] _selectablesSelectedSameLineFirst = new bool[3];
-    private static readonly bool[] _selectablesSelectedSameLineSecond = new bool[3];
+    private static readonly bool[] _selectablesSelectedSameLineSecond = new bool[10];
     private static readonly bool[] _selectablesSelectedSameLineThird = new bool[3];
-    private static readonly bool[] _selectablesGrid = new bool[16];
+    private static readonly bool[] _selectablesGrid = [ true, false, false, false,
+                                                        false, true, false, false,
+                                                        false, false, true, false,
+                                                        false, false, false, true];
     private static readonly bool[] _selectablesAlignment = [true, false, true, false, true, false, true, false, true];
 
     // State Fields - Tabs Section
@@ -201,6 +206,8 @@ public static unsafe class ImGuiDemoWindow
     private static readonly bool[] _tabsOpened = [true, true, true, true];
     private static int _tabsNextTabId;
     private static readonly List<int> _tabsActiveTabs = [];
+    private static bool _tabsShowLeadingButton = true;
+    private static bool _tabsShowTrailingButton = true;
 
     // State Fields - Text Section
 
@@ -1924,6 +1931,706 @@ Hover the texture for a zoomed view!"u8);
         return (i & 1) != 0 ? 1.0f : -1.0f;
     }
 
+    private static void DemoWindowWidgetsProgressBars()
+    {
+        if (!Widgets.TreeNode("Progress Bars"u8))
+        {
+            return;
+        }
+
+        // Animate a simple progress bar
+        _progressProgress += _progressProgressDir * 0.4f * Context.IO.DeltaTime;
+        if (_progressProgress >= +1.1f)
+        {
+            _progressProgress = +1.1f;
+            _progressProgressDir *= -1.0f;
+        }
+
+        if (_progressProgress <= -0.1f)
+        {
+            _progressProgress = -0.1f;
+            _progressProgressDir *= -1.0f;
+        }
+
+        // Typically we would use ImVec2(-1.0f,0.0f) or ImVec2(-FLT_MIN,0.0f) to use all available width,
+        // or ImVec2(width,0.0f) for a specified width. ImVec2(0.0f,0.0f) uses ItemWidth.
+        Widgets.ProgressBar(_progressProgress, new Size(0.0f, 0.0f));
+        Widgets.SameLine(0.0f, Context.Style.ItemInnerSpacing.X);
+        Widgets.Text("Progress Bar"u8);
+
+        var progressSaturated = Math.Clamp(_progressProgress, 0.0f, 1.0f);
+        Span<byte> buf = stackalloc byte[32];
+        _ = Utf8.TryWrite(buf, $"{(int)(progressSaturated * 1753)}/1753", out var written);
+        Widgets.ProgressBar(_progressProgress, new Size(0.0f, 0.0f), buf[..written]);
+
+        // Pass an animated negative value, e.g. -1.0f * (float)ImGui.GetTime() is the recommended value.
+        // Adjust the factor if you want to adjust the animation speed.
+        Widgets.ProgressBar(-1.0f * (float)Context.GetTime(), new Size(0.0f, 0.0f), "Searching.."u8);
+        Widgets.SameLine(0.0f, Context.Style.ItemInnerSpacing.X);
+        Widgets.Text("Indeterminate"u8);
+
+        Widgets.TreePop();
+    }
+
+    private static void DemoWindowWidgetsQueryingStatuses()
+    {
+        if (Widgets.TreeNode("Querying Item Status (Edited/Active/Hovered etc.)"u8))
+        {
+            // Select an item type
+            var itemNames = "Text\0Button\0Button (w/ repeat)\0Checkbox\0SliderFloat\0InputText\0InputTextMultiline\0InputFloat\0InputFloat3\0ColorEdit4\0Selectable\0MenuItem\0TreeNode\0TreeNode (w/ double-click)\0Combo\0ListBox\0"u8;
+            _ = Widgets.Combo("Item Type"u8, ref _queryingItemType, itemNames);
+            Widgets.SameLine();
+            HelpMarker("Testing how various types of items are interacting with the IsItemXXX functions. Note that the bool return value of most ImGui function is generally equivalent to calling ImGui::IsItemHovered()."u8);
+            _ = Widgets.Checkbox("Item Disabled"u8, ref _queryingItemDisabled);
+
+            // Submit selected items so we can query their status in the code following it.
+            var ret = false;
+            if (_queryingItemDisabled)
+            {
+                Widgets.BeginDisabled(true);
+            }
+
+            if (_queryingItemType == 0)
+            {
+                Widgets.Text("ITEM: Text"u8);                                                              // Testing text items with no identifier/interaction
+            }
+
+            if (_queryingItemType == 1)
+            {
+                ret = Widgets.Button("ITEM: Button"u8);                                                    // Testing button
+            }
+
+            if (_queryingItemType == 2)
+            {
+                Style.PushItemFlag(ItemFlags.ButtonRepeat, true);
+                ret = Widgets.Button("ITEM: Button"u8);
+                Style.PopItemFlag();                                                                       // Testing button (with repeater)
+            }
+
+            if (_queryingItemType == 3)
+            {
+                ret = Widgets.Checkbox("ITEM: Checkbox"u8, ref _queryingB);                                // Testing checkbox
+            }
+
+            if (_queryingItemType == 4)
+            {
+                ret = Widgets.Slider("ITEM: SliderFloat"u8, ref _queryingFArray[0], 0.0f, 1.0f);           // Testing basic item
+            }
+
+            if (_queryingItemType == 5)
+            {
+                ret = Widgets.InputText("ITEM: InputText"u8, _queryingStr);                                // Testing input text (which handles tabbing)
+            }
+
+            if (_queryingItemType == 6)
+            {
+                ret = Widgets.InputTextMultiline("ITEM: InputTextMultiline"u8, _queryingStr);              // Testing input text (which uses a child window)
+            }
+
+            if (_queryingItemType == 7)
+            {
+                ret = Widgets.Input("ITEM: InputFloat"u8, ref _queryingFArray[0], 1.0f);                   // Testing +/- buttons on scalar input
+            }
+
+            if (_queryingItemType == 8)
+            {
+                ret = Widgets.Input("ITEM: InputFloat3"u8, _queryingFArray.AsSpan(0, 3));                  // Testing multi-component items (IsItemXXX flags are reported merged)
+            }
+
+            if (_queryingItemType == 9)
+            {
+                ret = Widgets.ColorEdit("ITEM: ColorEdit4"u8, ref _queryingCol4f);                         // Testing multi-component items (IsItemXXX flags are reported merged)
+            }
+
+            if (_queryingItemType == 10)
+            {
+                ret = Widgets.Selectable("ITEM: Selectable"u8, false);                                     // Testing selectable item
+            }
+
+            if (_queryingItemType == 11)
+            {
+                ret = Widgets.MenuItem("ITEM: MenuItem"u8);                                                // Testing menu item (they use ImGuiButtonFlags_PressedOnRelease button policy)
+            }
+
+            if (_queryingItemType == 12)
+            {
+                ret = Widgets.TreeNode("ITEM: TreeNode"u8);
+                if (ret)
+                {
+                    Widgets.TreePop();                                                                     // Testing tree node
+                }
+            }
+
+            if (_queryingItemType == 13)
+            {
+                ret = Widgets.TreeNode("ITEM: TreeNode w/ ImGuiTreeNodeFlags_OpenOnDoubleClick"u8, TreeNodeFlags.OpenOnDoubleClick | TreeNodeFlags.NoTreePushOnOpen); // Testing tree node with ImGuiButtonFlags_PressedOnDoubleClick button policy.
+            }
+
+            if (_queryingItemType == 14)
+            {
+                ret = Widgets.Combo("ITEM: Combo"u8, ref _queryingCurrent1, "Apple\0Banana\0Cherry\0Kiwi\0"u8);
+            }
+
+            if (_queryingItemType == 15)
+            {
+                // ListBox using BeginListBox/EndListBox
+                var listBoxItems = "Apple\0Banana\0Cherry\0Kiwi\0"u8;
+                if (Widgets.BeginListBox("ITEM: ListBox"u8, new Vec2(0, 4 * Font.GetFrameHeightWithSpacing())))
+                {
+                    var itemIndex = 0;
+                    var start = 0;
+                    for (var i = 0; i <= listBoxItems.Length; i++)
+                    {
+                        if (i == listBoxItems.Length || listBoxItems[i] == 0)
+                        {
+                            if (i > start)
+                            {
+                                ReadOnlySpan<byte> itemText = listBoxItems[start..i];
+                                var isSelected = _queryingCurrent2 == itemIndex;
+                                if (Widgets.Selectable(itemText, isSelected))
+                                {
+                                    _queryingCurrent2 = itemIndex;
+                                    ret = true;
+                                }
+                            }
+
+                            start = i + 1;
+                            itemIndex++;
+                        }
+                    }
+
+                    Widgets.EndListBox();
+                }
+            }
+
+            var hoveredDelayNone = Widgets.IsItemHovered();
+            var hoveredDelayStationary = Widgets.IsItemHovered(HoveredFlags.Stationary);
+            var hoveredDelayShort = Widgets.IsItemHovered(HoveredFlags.DelayShort);
+            var hoveredDelayNormal = Widgets.IsItemHovered(HoveredFlags.DelayNormal);
+            var hoveredDelayTooltip = Widgets.IsItemHovered(HoveredFlags.ForTooltip); // = Normal + Stationary
+
+            // Display the values of IsItemHovered() and other common item state functions.
+            // Note that the ImGuiHoveredFlags_XXX flags can be combined.
+            // Because BulletText is an item itself and that would affect the output of IsItemXXX functions,
+            // we query every state in a single call to avoid storing them and to simplify the code.
+            Rect itemRect = Widgets.GetItemRect();
+            Size itemRectSize = Widgets.GetItemRectSize();
+            Widgets.BulletText($"""
+                Return value = {(ret ? 1 : 0)}
+                IsItemFocused() = {(Widgets.IsItemFocused() ? 1 : 0)}
+                IsItemHovered() = {(Widgets.IsItemHovered() ? 1 : 0)}
+                IsItemHovered(_AllowWhenBlockedByPopup) = {(Widgets.IsItemHovered(HoveredFlags.AllowWhenBlockedByPopup) ? 1 : 0)}
+                IsItemHovered(_AllowWhenBlockedByActiveItem) = {(Widgets.IsItemHovered(HoveredFlags.AllowWhenBlockedByActiveItem) ? 1 : 0)}
+                IsItemHovered(_AllowWhenOverlappedByItem) = {(Widgets.IsItemHovered(HoveredFlags.AllowWhenOverlappedByItem) ? 1 : 0)}
+                IsItemHovered(_AllowWhenOverlappedByWindow) = {(Widgets.IsItemHovered(HoveredFlags.AllowWhenOverlappedByWindow) ? 1 : 0)}
+                IsItemHovered(_AllowWhenDisabled) = {(Widgets.IsItemHovered(HoveredFlags.AllowWhenDisabled) ? 1 : 0)}
+                IsItemHovered(_RectOnly) = {(Widgets.IsItemHovered(HoveredFlags.RectOnly) ? 1 : 0)}
+                IsItemActive() = {(Widgets.IsItemActive() ? 1 : 0)}
+                IsItemEdited() = {(Widgets.IsItemEdited() ? 1 : 0)}
+                IsItemActivated() = {(Widgets.IsItemActivated() ? 1 : 0)}
+                IsItemDeactivated() = {(Widgets.IsItemDeactivated() ? 1 : 0)}
+                IsItemDeactivatedAfterEdit() = {(Widgets.IsItemDeactivatedAfterEdit() ? 1 : 0)}
+                IsItemVisible() = {(Widgets.IsItemVisible() ? 1 : 0)}
+                IsItemClicked() = {(Widgets.IsItemClicked() ? 1 : 0)}
+                IsItemToggledOpen() = {(Widgets.IsItemToggledOpen() ? 1 : 0)}
+                GetItemRectMin() = ({itemRect.UpperLeft.X:F1}, {itemRect.UpperLeft.Y:F1})
+                GetItemRectMax() = ({itemRect.LowerRight.X:F1}, {itemRect.LowerRight.Y:F1})
+                GetItemRectSize() = ({itemRectSize.Width:F1}, {itemRectSize.Height:F1})
+                """.ToUtf8());
+            Widgets.BulletText($"""
+                with Hovering Delay or Stationary test:
+                IsItemHovered() = {(hoveredDelayNone ? 1 : 0)}
+                IsItemHovered(_Stationary) = {(hoveredDelayStationary ? 1 : 0)}
+                IsItemHovered(_DelayShort) = {(hoveredDelayShort ? 1 : 0)}
+                IsItemHovered(_DelayNormal) = {(hoveredDelayNormal ? 1 : 0)}
+                IsItemHovered(_Tooltip) = {(hoveredDelayTooltip ? 1 : 0)}
+                """.ToUtf8());
+
+            if (_queryingItemDisabled)
+            {
+                Widgets.EndDisabled();
+            }
+
+            var buf = new byte[1];
+            _ = Widgets.InputText("unused"u8, buf, InputTextFlags.ReadOnly);
+            Widgets.SameLine();
+            HelpMarker("This widget is only here to be able to tab-out of the widgets above and see e.g. Deactivated() status."u8);
+
+            Widgets.TreePop();
+        }
+
+        if (Widgets.TreeNode("Querying Window Status (Focused/Hovered etc.)"u8))
+        {
+            _ = Widgets.Checkbox("Embed everything inside a child window for testing _RootWindow flag."u8, ref _queryingEmbedAllInsideAChildWindow);
+            if (_queryingEmbedAllInsideAChildWindow)
+            {
+                _ = Widgets.BeginChild("outer_child"u8, new Vec2(0, Font.GetSize() * 20.0f), ChildFlags.Borders);
+            }
+
+            // Testing IsWindowFocused() function with its various flags.
+            Widgets.BulletText($"""
+                IsWindowFocused() = {(Window.IsFocused() ? 1 : 0)}
+                IsWindowFocused(_ChildWindows) = {(Window.IsFocused(FocusedFlags.ChildWindows) ? 1 : 0)}
+                IsWindowFocused(_ChildWindows|_NoPopupHierarchy) = {(Window.IsFocused(FocusedFlags.ChildWindows | FocusedFlags.NoPopupHierarchy) ? 1 : 0)}
+                IsWindowFocused(_ChildWindows|_RootWindow) = {(Window.IsFocused(FocusedFlags.ChildWindows | FocusedFlags.RootWindow) ? 1 : 0)}
+                IsWindowFocused(_ChildWindows|_RootWindow|_NoPopupHierarchy) = {(Window.IsFocused(FocusedFlags.ChildWindows | FocusedFlags.RootWindow | FocusedFlags.NoPopupHierarchy) ? 1 : 0)}
+                IsWindowFocused(_RootWindow) = {(Window.IsFocused(FocusedFlags.RootWindow) ? 1 : 0)}
+                IsWindowFocused(_RootWindow|_NoPopupHierarchy) = {(Window.IsFocused(FocusedFlags.RootWindow | FocusedFlags.NoPopupHierarchy) ? 1 : 0)}
+                IsWindowFocused(_AnyWindow) = {(Window.IsFocused(FocusedFlags.AnyWindow) ? 1 : 0)}
+                """.ToUtf8());
+
+            // Testing IsWindowHovered() function with its various flags.
+            Widgets.BulletText($"""
+                IsWindowHovered() = {(Window.IsHovered() ? 1 : 0)}
+                IsWindowHovered(_AllowWhenBlockedByPopup) = {(Window.IsHovered(HoveredFlags.AllowWhenBlockedByPopup) ? 1 : 0)}
+                IsWindowHovered(_AllowWhenBlockedByActiveItem) = {(Window.IsHovered(HoveredFlags.AllowWhenBlockedByActiveItem) ? 1 : 0)}
+                IsWindowHovered(_ChildWindows) = {(Window.IsHovered(HoveredFlags.ChildWindows) ? 1 : 0)}
+                IsWindowHovered(_ChildWindows|_NoPopupHierarchy) = {(Window.IsHovered(HoveredFlags.ChildWindows | HoveredFlags.NoPopupHierarchy) ? 1 : 0)}
+                IsWindowHovered(_ChildWindows|_RootWindow) = {(Window.IsHovered(HoveredFlags.ChildWindows | HoveredFlags.RootWindow) ? 1 : 0)}
+                IsWindowHovered(_ChildWindows|_RootWindow|_NoPopupHierarchy) = {(Window.IsHovered(HoveredFlags.ChildWindows | HoveredFlags.RootWindow | HoveredFlags.NoPopupHierarchy) ? 1 : 0)}
+                IsWindowHovered(_RootWindow) = {(Window.IsHovered(HoveredFlags.RootWindow) ? 1 : 0)}
+                IsWindowHovered(_RootWindow|_NoPopupHierarchy) = {(Window.IsHovered(HoveredFlags.RootWindow | HoveredFlags.NoPopupHierarchy) ? 1 : 0)}
+                IsWindowHovered(_ChildWindows|_AllowWhenBlockedByPopup) = {(Window.IsHovered(HoveredFlags.ChildWindows | HoveredFlags.AllowWhenBlockedByPopup) ? 1 : 0)}
+                IsWindowHovered(_AnyWindow) = {(Window.IsHovered(HoveredFlags.AnyWindow) ? 1 : 0)}
+                IsWindowHovered(_Stationary) = {(Window.IsHovered(HoveredFlags.Stationary) ? 1 : 0)}
+                """.ToUtf8());
+
+            _ = Widgets.BeginChild("child"u8, new Vec2(0, 50), ChildFlags.Borders);
+            Widgets.Text("This is another child window for testing the _ChildWindows flag."u8);
+            Widgets.EndChild();
+            if (_queryingEmbedAllInsideAChildWindow)
+            {
+                Widgets.EndChild();
+            }
+
+            // Calling IsItemHovered() after begin returns the hovered status of the title bar.
+            // This is useful in particular if you want to create a context menu associated to the title bar of a window.
+            _ = Widgets.Checkbox("Hovered/Active tests after Begin() for title bar testing"u8, ref _queryingTestWindow);
+            if (_queryingTestWindow)
+            {
+                _ = Window.Begin("Title bar Hovered/Active tests"u8, ref _queryingTestWindow);
+                if (Window.BeginPopupContextItem()) // <-- This is using IsItemHovered()
+                {
+                    if (Widgets.MenuItem("Close"u8))
+                    {
+                        _queryingTestWindow = false;
+                    }
+
+                    Window.EndPopup();
+                }
+
+                Widgets.Text($"""
+                    IsItemHovered() after begin = {(Widgets.IsItemHovered() ? 1 : 0)} (== is title bar hovered)
+                    IsItemActive() after begin = {(Widgets.IsItemActive() ? 1 : 0)} (== is window being clicked/moved)
+                    """.ToUtf8());
+                Window.End();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void DemoWindowWidgetsSelectables()
+    {
+        if (Widgets.TreeNode("Selectables"u8))
+        {
+            // Selectable() has 2 overloads:
+            // - The one taking "bool selected" as a read-only selection information.
+            //   When Selectable() has been clicked it returns true and you can alter selection state accordingly.
+            // - The one taking "ref bool pSelected" as a read-write selection information (convenient in some cases)
+            // The earlier is more flexible, as in real application your selection may be stored in many different ways
+            // and not necessarily inside a bool value (e.g. in flags within objects, as an external list, etc).
+            if (Widgets.TreeNode("Basic"u8))
+            {
+                _ = Widgets.Selectable("1. I am selectable"u8, ref _selectablesBasic[0]);
+                _ = Widgets.Selectable("2. I am selectable"u8, ref _selectablesBasic[1]);
+                _ = Widgets.Selectable("3. I am selectable"u8, ref _selectablesBasic[2]);
+                if (Widgets.Selectable("4. I am double clickable"u8, _selectablesBasic[3], SelectableFlags.AllowDoubleClick))
+                {
+                    if (Context.IsMouseDoubleClicked(MouseButton.Left))
+                    {
+                        _selectablesBasic[3] = !_selectablesBasic[3];
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Rendering more items on the same line"u8))
+            {
+                // (1) Using SetNextItemAllowOverlap()
+                // (2) Using the Selectable() override that takes "ref bool pSelected" parameter, the bool value is toggled automatically.
+                Widgets.SetNextItemAllowOverlap();
+                _ = Widgets.Selectable("main.c"u8, ref _selectablesSelectedSameLineFirst[0]);
+                Widgets.SameLine();
+                _ = Widgets.SmallButton("Link 1"u8);
+                Widgets.SetNextItemAllowOverlap();
+                _ = Widgets.Selectable("Hello.cpp"u8, ref _selectablesSelectedSameLineFirst[1]);
+                Widgets.SameLine();
+                _ = Widgets.SmallButton("Link 2"u8);
+                Widgets.SetNextItemAllowOverlap();
+                _ = Widgets.Selectable("Hello.h"u8, ref _selectablesSelectedSameLineFirst[2]);
+                Widgets.SameLine();
+                _ = Widgets.SmallButton("Link 3"u8);
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("In Tables"u8))
+            {
+                if (Widgets.BeginTable("split1"u8, 3, TableFlags.Resizable | TableFlags.NoSavedSettings | TableFlags.Borders))
+                {
+                    for (var i = 0; i < 10; i++)
+                    {
+                        ReadOnlySpan<byte> label = $"Item {i}".ToUtf8();
+                        _ = Widgets.TableNextColumn();
+                        _ = Widgets.Selectable(label, ref _selectablesSelectedSameLineSecond[i]);
+                    }
+
+                    Widgets.EndTable();
+                }
+
+                Widgets.Spacing();
+                if (Widgets.BeginTable("split2"u8, 3, TableFlags.Resizable | TableFlags.NoSavedSettings | TableFlags.Borders))
+                {
+                    for (var i = 0; i < 10; i++)
+                    {
+                        ReadOnlySpan<byte> label = $"Item {i}".ToUtf8();
+                        Widgets.TableNextRow();
+                        _ = Widgets.TableNextColumn();
+                        _ = Widgets.Selectable(label, ref _selectablesSelectedSameLineSecond[i], SelectableFlags.SpanAllColumns);
+                        _ = Widgets.TableNextColumn();
+                        Widgets.Text("Some other contents"u8);
+                        _ = Widgets.TableNextColumn();
+                        Widgets.Text("123456"u8);
+                    }
+
+                    Widgets.EndTable();
+                }
+
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Grid"u8))
+            {
+                // Add in a bit of silly fun...
+                var time = (float)Context.GetTime();
+                var winningState = !_selectablesGrid.Contains(false); // If all cells are selected...
+                if (winningState)
+                {
+                    Style.PushStyleVar(StyleVariable.SelectableTextAlign, new Vec2(0.5f + (0.5f * MathF.Cos(time * 2.0f)), 0.5f + (0.5f * MathF.Sin(time * 3.0f))));
+                }
+
+                for (var y = 0; y < 4; y++)
+                {
+                    for (var x = 0; x < 4; x++)
+                    {
+                        if (x > 0)
+                        {
+                            Widgets.SameLine();
+                        }
+
+                        Id.Push((y * 4) + x);
+                        if (Widgets.Selectable("Sailor"u8, _selectablesGrid[(y * 4) + x], SelectableFlags.None, (50, 50)))
+                        {
+                            // Toggle clicked cell + toggle neighbors
+                            _selectablesGrid[(y * 4) + x] = !_selectablesGrid[(y * 4) + x];
+                            if (x > 0)
+                            {
+                                _selectablesGrid[(y * 4) + x - 1] = !_selectablesGrid[(y * 4) + x - 1];
+                            }
+
+                            if (x < 3)
+                            {
+                                _selectablesGrid[(y * 4) + x + 1] = !_selectablesGrid[(y * 4) + x + 1];
+                            }
+
+                            if (y > 0)
+                            {
+                                _selectablesGrid[((y - 1) * 4) + x] = !_selectablesGrid[((y - 1) * 4) + x];
+                            }
+
+                            if (y < 3)
+                            {
+                                _selectablesGrid[((y + 1) * 4) + x] = !_selectablesGrid[((y + 1) * 4) + x];
+                            }
+                        }
+
+                        Id.Pop();
+                    }
+                }
+
+                if (winningState)
+                {
+                    Style.PopStyleVar();
+                }
+
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Alignment"u8))
+            {
+                HelpMarker(
+                    "By default, Selectables uses style.SelectableTextAlign but it can be overridden on a per-item "u8 +
+                    "basis using PushStyleVar(). You'll probably want to always keep your default situation to "u8 +
+                    "left-align otherwise it becomes difficult to layout multiple items on a same line"u8);
+                for (var y = 0; y < 3; y++)
+                {
+                    for (var x = 0; x < 3; x++)
+                    {
+                        Vec2 alignment = new(x / 2.0f, y / 2.0f);
+                        ReadOnlySpan<byte> name = $"({alignment.X:F1},{alignment.Y:F1})".ToUtf8();
+                        if (x > 0)
+                        {
+                            Widgets.SameLine();
+                        }
+
+                        Style.PushStyleVar(StyleVariable.SelectableTextAlign, alignment);
+                        _ = Widgets.Selectable(name, ref _selectablesAlignment[(3 * y) + x], SelectableFlags.None, (80, 80));
+                        Style.PopStyleVar();
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void DemoWindowWidgetsSelectionAndMultiSelect()
+    {
+        if (Widgets.TreeNode("Selection State & Multi-Select"u8))
+        {
+            HelpMarker("Selections can be built using Selectable(), TreeNode() or other widgets. Selection state is owned by application code/data."u8);
+
+            Widgets.BulletText("Wiki page:"u8);
+            Widgets.SameLine();
+            Widgets.TextLinkOpenURL("imgui/wiki/Multi-Select"u8, "https://github.com/ocornut/imgui/wiki/Multi-Select"u8);
+
+            // Without any fancy API: manage single-selection yourself.
+            if (Widgets.TreeNode("Single-Select"u8))
+            {
+                for (var n = 0; n < 5; n++)
+                {
+                    ReadOnlySpan<byte> buf = $"Object {n}".ToUtf8();
+                    if (Widgets.Selectable(buf, _selectablesSelectedSingleOnly == n))
+                    {
+                        _selectablesSelectedSingleOnly = n;
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            // Demonstrate implementation a most-basic form of multi-selection manually
+            // This doesn't support the Shift modifier which requires BeginMultiSelect()!
+            if (Widgets.TreeNode("Multi-Select (manual/simplified, without BeginMultiSelect)"u8))
+            {
+                HelpMarker("Hold Ctrl and Click to select multiple items."u8);
+                for (var n = 0; n < 5; n++)
+                {
+                    ReadOnlySpan<byte> buf = $"Object {n}".ToUtf8();
+                    if (Widgets.Selectable(buf, _selectablesSelected[n]))
+                    {
+                        if (!Context.IsKeyDown(Key.ModCtrl)) // Clear selection when Ctrl is not held
+                        {
+                            Array.Clear(_selectablesSelected);
+                        }
+
+                        _selectablesSelected[n] = !_selectablesSelected[n]; // Toggle current item
+                    }
+                }
+
+                Widgets.TreePop();
+            }
+
+            // Note: The more advanced BeginMultiSelect/EndMultiSelect APIs are not yet wrapped in the C# bindings.
+            // The full demos for Multi-Select with clipper, deletion, dual list box, tables, checkboxes,
+            // multiple scopes, trees, and advanced features require the BeginMultiSelect API to be wrapped.
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void DemoWindowWidgetsTabs()
+    {
+        if (Widgets.TreeNode("Tabs"u8))
+        {
+            if (Widgets.TreeNode("Basic"u8))
+            {
+                TabBarFlags tabBarFlags = TabBarFlags.None;
+                if (Widgets.BeginTabBar("MyTabBar"u8, tabBarFlags))
+                {
+                    if (Widgets.BeginTabItem("Avocado"u8))
+                    {
+                        Widgets.Text("This is the Avocado tab!\nblah blah blah blah blah"u8);
+                        Widgets.EndTabItem();
+                    }
+
+                    if (Widgets.BeginTabItem("Broccoli"u8))
+                    {
+                        Widgets.Text("This is the Broccoli tab!\nblah blah blah blah blah"u8);
+                        Widgets.EndTabItem();
+                    }
+
+                    if (Widgets.BeginTabItem("Cucumber"u8))
+                    {
+                        Widgets.Text("This is the Cucumber tab!\nblah blah blah blah blah"u8);
+                        Widgets.EndTabItem();
+                    }
+
+                    Widgets.EndTabBar();
+                }
+
+                Widgets.Separator();
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("Advanced & Close Button"u8))
+            {
+                // Expose a couple of the available flags. In most cases you may just call BeginTabBar() with no flags (0).
+                _ = Widgets.CheckboxFlags("TabBarFlags_Reorderable"u8, ref _tabsFlags, TabBarFlags.Reorderable);
+                _ = Widgets.CheckboxFlags("TabBarFlags_AutoSelectNewTabs"u8, ref _tabsFlags, TabBarFlags.AutoSelectNewTabs);
+                _ = Widgets.CheckboxFlags("TabBarFlags_TabListPopupButton"u8, ref _tabsFlags, TabBarFlags.TabListPopupButton);
+                _ = Widgets.CheckboxFlags("TabBarFlags_NoCloseWithMiddleMouseButton"u8, ref _tabsFlags, TabBarFlags.NoCloseWithMiddleMouseButton);
+                _ = Widgets.CheckboxFlags("TabBarFlags_DrawSelectedOverline"u8, ref _tabsFlags, TabBarFlags.DrawSelectedOverline);
+
+                // Fitting policy flags
+                if (Widgets.CheckboxFlags("TabBarFlags_FittingPolicyMixed (default)"u8, ref _tabsFlags, TabBarFlags.FittingPolicyMixed))
+                {
+                    _tabsFlags &= ~(TabBarFlags.FittingPolicyShrink | TabBarFlags.FittingPolicyScroll);
+                    _tabsFlags |= TabBarFlags.FittingPolicyMixed;
+                }
+
+                if (Widgets.CheckboxFlags("TabBarFlags_FittingPolicyShrink"u8, ref _tabsFlags, TabBarFlags.FittingPolicyShrink))
+                {
+                    _tabsFlags &= ~(TabBarFlags.FittingPolicyMixed | TabBarFlags.FittingPolicyScroll);
+                    _tabsFlags |= TabBarFlags.FittingPolicyShrink;
+                }
+
+                if (Widgets.CheckboxFlags("TabBarFlags_FittingPolicyScroll"u8, ref _tabsFlags, TabBarFlags.FittingPolicyScroll))
+                {
+                    _tabsFlags &= ~(TabBarFlags.FittingPolicyMixed | TabBarFlags.FittingPolicyShrink);
+                    _tabsFlags |= TabBarFlags.FittingPolicyScroll;
+                }
+
+                // Tab Bar
+                Font.AlignTextToFramePadding();
+                Widgets.Text("Opened:"u8);
+                byte[][] names = ["Artichoke"u8.ToArray(), "Beetroot"u8.ToArray(), "Celery"u8.ToArray(), "Daikon"u8.ToArray()];
+                for (var n = 0; n < names.Length; n++)
+                {
+                    Widgets.SameLine();
+                    _ = Widgets.Checkbox(names[n], ref _tabsOpened[n]);
+                }
+
+                // Passing a ref bool to BeginTabItem() is similar to passing one to Begin():
+                // the underlying bool will be set to false when the tab is closed.
+                if (Widgets.BeginTabBar("MyTabBar"u8, _tabsFlags))
+                {
+                    for (var n = 0; n < names.Length; n++)
+                    {
+                        if (_tabsOpened[n] && Widgets.BeginTabItem(names[n], ref _tabsOpened[n], TabItemFlags.None))
+                        {
+                            Widgets.Text($"This is the {Encoding.UTF8.GetString(names[n])} tab!".ToUtf8());
+                            if ((n & 1) != 0)
+                            {
+                                Widgets.Text("I am an odd tab."u8);
+                            }
+
+                            Widgets.EndTabItem();
+                        }
+                    }
+
+                    Widgets.EndTabBar();
+                }
+
+                Widgets.Separator();
+                Widgets.TreePop();
+            }
+
+            if (Widgets.TreeNode("TabItemButton & Leading/Trailing flags"u8))
+            {
+                // Initialize with some default tabs if empty
+                if (_tabsActiveTabs.Count == 0 || _tabsNextTabId == 0)
+                {
+                    _tabsActiveTabs.Clear();
+                    for (var i = 0; i < 3; i++)
+                    {
+                        _tabsActiveTabs.Add(_tabsNextTabId++);
+                    }
+                }
+
+                // TabItemButton() and Leading/Trailing flags are distinct features which we will demo together.
+                // (It is possible to submit regular tabs with Leading/Trailing flags, or TabItemButton tabs without Leading/Trailing flags...
+                // but they tend to make more sense together)
+                _ = Widgets.Checkbox("Show Leading TabItemButton()"u8, ref _tabsShowLeadingButton);
+                _ = Widgets.Checkbox("Show Trailing TabItemButton()"u8, ref _tabsShowTrailingButton);
+
+                // Expose some other flags which are useful to showcase how they interact with Leading/Trailing tabs
+                TabBarFlags tabBarFlags = TabBarFlags.AutoSelectNewTabs | TabBarFlags.Reorderable | TabBarFlags.FittingPolicyShrink;
+
+                if (Widgets.BeginTabBar("MyTabBar"u8, tabBarFlags))
+                {
+                    // Demo a Leading TabItemButton(): click the "?" button to open a menu
+                    if (_tabsShowLeadingButton)
+                    {
+                        if (Widgets.TabItemButton("?"u8, TabItemFlags.Leading | TabItemFlags.NoTooltip))
+                        {
+                            Window.OpenPopup("MyHelpMenu"u8);
+                        }
+                    }
+
+                    if (Window.BeginPopup("MyHelpMenu"u8))
+                    {
+                        _ = Widgets.Selectable("Hello!"u8, false);
+                        Window.EndPopup();
+                    }
+
+                    // Demo Trailing Tabs: click the "+" button to add a new tab.
+                    // (In your app you may want to use a font icon instead of the "+")
+                    // We submit it before the regular tabs, but thanks to the ImGuiTabItemFlags_Trailing flag it will always appear at the end.
+                    if (_tabsShowTrailingButton)
+                    {
+                        if (Widgets.TabItemButton("+"u8, TabItemFlags.Trailing | TabItemFlags.NoTooltip))
+                        {
+                            _tabsActiveTabs.Add(_tabsNextTabId++); // Add new tab
+                        }
+                    }
+
+                    // Submit our regular tabs
+                    var n = 0;
+                    while (n < _tabsActiveTabs.Count)
+                    {
+                        var open = true;
+                        ReadOnlySpan<byte> name = $"{_tabsActiveTabs[n]:D4}".ToUtf8();
+                        if (Widgets.BeginTabItem(name, ref open, TabItemFlags.None))
+                        {
+                            Widgets.Text($"This is the {_tabsActiveTabs[n]:D4} tab!".ToUtf8());
+                            Widgets.EndTabItem();
+                        }
+
+                        if (!open)
+                        {
+                            _tabsActiveTabs.RemoveAt(n);
+                        }
+                        else
+                        {
+                            n++;
+                        }
+                    }
+
+                    Widgets.EndTabBar();
+                }
+
+                Widgets.Separator();
+                Widgets.TreePop();
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
     private static void ShowUserGuide()
     {
         IO io = Context.IO;
@@ -2102,11 +2809,11 @@ Hover the texture for a zoomed view!"u8);
         DemoWindowWidgetsListBoxes();
         DemoWindowWidgetsMultiComponents();
         DemoWindowWidgetsPlotting();
-        ShowProgressBars();
-        ShowQueryingStatuses();
-        ShowSelectables();
-        ShowSelectionAndMultiSelect();
-        ShowTabs();
+        DemoWindowWidgetsProgressBars();
+        DemoWindowWidgetsQueryingStatuses();
+        DemoWindowWidgetsSelectables();
+        DemoWindowWidgetsSelectionAndMultiSelect();
+        DemoWindowWidgetsTabs();
         ShowText();
         ShowTextFilter();
         ShowTextInput();
@@ -2123,514 +2830,6 @@ Hover the texture for a zoomed view!"u8);
     // Helper Methods
 
     // Private Section Methods
-
-    private static void ShowProgressBars()
-    {
-        if (Widgets.TreeNode("Progress Bars"u8))
-        {
-            // Animate a simple progress bar
-            if (_progressAnimate)
-            {
-                _progressProgress += _progressProgressDir * 0.4f * Context.IO.DeltaTime;
-                if (_progressProgress >= +1.1f)
-                {
-                    _progressProgress = +1.1f;
-                    _progressProgressDir *= -1.0f;
-                }
-
-                if (_progressProgress <= -0.1f)
-                {
-                    _progressProgress = -0.1f;
-                    _progressProgressDir *= -1.0f;
-                }
-            }
-
-            // Default progress bar
-            Widgets.ProgressBar(_progressProgress, default, default);
-            Widgets.SameLine(0.0f, Context.Style.ItemInnerSpacing.X);
-            Widgets.Text("Progress Bar"u8);
-
-            var progressSaturated = Math.Clamp(_progressProgress, 0.0f, 1.0f);
-            Span<byte> buf = stackalloc byte[32];
-            var len = System.Text.Encoding.UTF8.GetBytes($"{(int)(progressSaturated * 1753)}/1753", buf);
-            Widgets.ProgressBar(_progressProgress, new Size(0.0f, 0.0f), buf[..len]);
-
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowQueryingStatuses()
-    {
-        if (Widgets.TreeNode("Querying Item Status (Edited/Active/Hovered etc.)"u8))
-        {
-            // Select an item type
-            _ = Widgets.Combo("Item Type"u8, ref _queryingItemType, "Text\0Button\0Button (w/ repeat)\0Checkbox\0SliderFloat\0InputText\0InputTextMultiline\0InputFloat\0InputFloat3\0ColorEdit4\0Selectable\0MenuItem\0TreeNode\0TreeNode (w/ double-click)\0Combo\0ListBox\0"u8);
-            Widgets.SameLine();
-            HelpMarker("Testing how various types of items are interacting with the IsItemXXX functions. Note that the bool return value of most ImGui function is generally equivalent to calling ImGui::IsItemClicked()."u8);
-
-            // Submit selected item type
-            var itemDisabled = false;
-            var ret = false;
-            Id.Push(_queryingItemType);
-            if (_queryingItemType == 0)
-            {
-                Widgets.Text("ITEM: Text"u8);
-                ret = true;
-            }
-            else if (_queryingItemType == 1)
-            {
-                ret = Widgets.Button("ITEM: Button"u8);
-            }
-            else if (_queryingItemType == 2)
-            {
-                Style.PushItemFlag(ItemFlags.ButtonRepeat, true);
-                ret = Widgets.Button("ITEM: Button"u8);
-                Style.PopItemFlag();
-            }
-            else if (_queryingItemType == 3)
-            {
-                ret = Widgets.Checkbox("ITEM: Checkbox"u8, ref _queryingB);
-            }
-            else if (_queryingItemType == 4)
-            {
-                ret = Widgets.Slider("ITEM: SliderFloat"u8, ref _queryingF, 0.0f, 1.0f);
-            }
-            else if (_queryingItemType == 5)
-            {
-                ret = Widgets.InputText("ITEM: InputText"u8, _queryingStr);
-            }
-            else if (_queryingItemType == 6)
-            {
-                ret = Widgets.InputTextMultiline("ITEM: InputTextMultiline"u8, _queryingStr, new Size(200, 100));
-            }
-            else if (_queryingItemType == 7)
-            {
-                ret = Widgets.Input("ITEM: InputFloat"u8, ref _queryingF, 1.0f);
-            }
-            else if (_queryingItemType == 8)
-            {
-                ret = Widgets.Input("ITEM: InputFloat3"u8, _queryingFArray);
-            }
-            else if (_queryingItemType == 9)
-            {
-                ret = Widgets.ColorEdit("ITEM: ColorEdit4"u8, ref _queryingCol4f);
-            }
-            else if (_queryingItemType == 10)
-            {
-                ret = Widgets.Selectable("ITEM: Selectable"u8, false);
-            }
-            else if (_queryingItemType == 11)
-            {
-                ret = Widgets.MenuItem("ITEM: MenuItem"u8);
-            }
-            else if (_queryingItemType == 12)
-            {
-                ret = Widgets.TreeNode("ITEM: TreeNode"u8);
-                if (ret)
-                {
-                    Widgets.TreePop();
-                }
-            }
-            else if (_queryingItemType == 13)
-            {
-                ret = Widgets.TreeNode("ITEM: TreeNode w/ TreeNodeFlags.OpenOnDoubleClick"u8, TreeNodeFlags.OpenOnDoubleClick | TreeNodeFlags.NoTreePushOnOpen);
-            }
-            else if (_queryingItemType == 14)
-            {
-                ret = Widgets.BeginCombo("ITEM: Combo"u8, "preview"u8);
-                if (ret)
-                {
-                    Widgets.EndCombo();
-                }
-            }
-            else if (_queryingItemType == 15)
-            {
-                _ = Widgets.BeginListBox("ITEM: ListBox"u8);
-                Widgets.EndListBox();
-                ret = true;
-            }
-
-            Id.Pop();
-
-            if (itemDisabled)
-            {
-                Widgets.EndDisabled();
-            }
-
-            // Display item status
-            var hoveredDelayNone = Widgets.IsItemHovered();
-            var hoveredDelayShort = Widgets.IsItemHovered(HoveredFlags.DelayShort);
-            var hoveredDelayNormal = Widgets.IsItemHovered(HoveredFlags.DelayNormal);
-            var hoveredNoNav = Widgets.IsItemHovered(HoveredFlags.NoNavOverride);
-
-            Widgets.Text(System.Text.Encoding.UTF8.GetBytes(
-                $"Return value = {ret}\n" +
-                $"IsItemFocused() = {Widgets.IsItemFocused()}\n" +
-                $"IsItemHovered() = {Widgets.IsItemHovered()}\n" +
-                $"IsItemHovered(_AllowWhenBlockedByPopup) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenBlockedByPopup)}\n" +
-                $"IsItemHovered(_AllowWhenBlockedByActiveItem) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenBlockedByActiveItem)}\n" +
-                $"IsItemHovered(_AllowWhenOverlappedByItem) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenOverlappedByItem)}\n" +
-                $"IsItemHovered(_AllowWhenOverlappedByWindow) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenOverlappedByWindow)}\n" +
-                $"IsItemHovered(_AllowWhenDisabled) = {Widgets.IsItemHovered(HoveredFlags.AllowWhenDisabled)}\n" +
-                $"IsItemHovered(_RectOnly) = {Widgets.IsItemHovered(HoveredFlags.RectOnly)}\n" +
-                $"IsItemActive() = {Widgets.IsItemActive()}\n" +
-                $"IsItemEdited() = {Widgets.IsItemEdited()}\n" +
-                $"IsItemActivated() = {Widgets.IsItemActivated()}\n" +
-                $"IsItemDeactivated() = {Widgets.IsItemDeactivated()}\n" +
-                $"IsItemDeactivatedAfterEdit() = {Widgets.IsItemDeactivatedAfterEdit()}\n" +
-                $"IsItemVisible() = {Widgets.IsItemVisible()}\n" +
-                $"IsItemClicked() = {Widgets.IsItemClicked()}\n" +
-                $"IsItemToggledOpen() = {Widgets.IsItemToggledOpen()}\n" +
-                $"GetItemRectSize() = ({Widgets.GetItemRectSize().Width:F1}, {Widgets.GetItemRectSize().Height:F1})"
-            ));
-
-            Widgets.Text(System.Text.Encoding.UTF8.GetBytes(
-                $"w/ Hovering Delay: None = {hoveredDelayNone}, Short = {hoveredDelayShort}, Normal = {hoveredDelayNormal}"
-            ));
-
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowSelectables()
-    {
-        if (Widgets.TreeNode("Selectables"u8))
-        {
-            // Basic
-            if (Widgets.TreeNode("Basic"u8))
-            {
-                _ = Widgets.Selectable("1. I am selectable"u8, ref _selectablesBasic[0]);
-                _ = Widgets.Selectable("2. I am selectable"u8, ref _selectablesBasic[1]);
-                Widgets.Text("(I am not selectable)"u8);
-                _ = Widgets.Selectable("4. I am selectable"u8, ref _selectablesBasic[3]);
-                if (Widgets.Selectable("5. I am double clickable"u8, _selectablesBasic[4], SelectableFlags.AllowDoubleClick))
-                {
-                    if (Context.IsMouseDoubleClicked(MouseButton.Left))
-                    {
-                        _selectablesBasic[4] = !_selectablesBasic[4];
-                    }
-                }
-
-                Widgets.TreePop();
-            }
-
-            // Selection state - single selection
-            if (Widgets.TreeNode("Selection State: Single Selection"u8))
-            {
-                for (var i = 0; i < 5; i++)
-                {
-                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Object {i}"), _selectablesSelectedSingleOnly == i))
-                    {
-                        _selectablesSelectedSingleOnly = i;
-                    }
-                }
-
-                Widgets.TreePop();
-            }
-
-            // Selection state - multiple selection
-            if (Widgets.TreeNode("Selection State: Multiple Selection"u8))
-            {
-                HelpMarker("Hold Ctrl and click to select multiple items."u8);
-                for (var i = 0; i < 5; i++)
-                {
-                    if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Object {i}"), _selectablesSelected[i]))
-                    {
-                        if (!Context.IsKeyDown(Key.LeftCtrl) && !Context.IsKeyDown(Key.RightCtrl))
-                        {
-                            Array.Clear(_selectablesSelected);
-                        }
-
-                        _selectablesSelected[i] ^= true;
-                    }
-                }
-
-                Widgets.TreePop();
-            }
-
-            // Rendering more items on the same line
-            if (Widgets.TreeNode("Rendering more items on the same line"u8))
-            {
-                _ = Widgets.Selectable("main.c"u8, ref _selectablesSelectedSameLineFirst[0]);
-                Widgets.SameLine(300);
-                Widgets.Text(" 2,345 bytes"u8);
-                _ = Widgets.Selectable("Hello.cpp"u8, ref _selectablesSelectedSameLineFirst[1]);
-                Widgets.SameLine(300);
-                Widgets.Text("12,345 bytes"u8);
-                _ = Widgets.Selectable("Hello.h"u8, ref _selectablesSelectedSameLineFirst[2]);
-                Widgets.SameLine(300);
-                Widgets.Text(" 2,345 bytes"u8);
-                Widgets.TreePop();
-            }
-
-            // In columns
-            if (Widgets.TreeNode("In columns"u8))
-            {
-                if (Widgets.BeginTable("split1"u8, 3, TableFlags.Resizable | TableFlags.NoSavedSettings | TableFlags.Borders))
-                {
-                    for (var i = 0; i < 10; i++)
-                    {
-                        _ = Widgets.TableNextColumn();
-                        _ = Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Item {i}"), ref _selectablesSelectedSameLineSecond[i % 3]);
-                    }
-
-                    Widgets.EndTable();
-                }
-
-                Widgets.Separator();
-
-                if (Widgets.BeginTable("split2"u8, 3, TableFlags.Resizable | TableFlags.NoSavedSettings | TableFlags.Borders))
-                {
-                    for (var i = 0; i < 10; i++)
-                    {
-                        Widgets.TableNextRow();
-                        _ = Widgets.TableNextColumn();
-                        _ = Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Item {i}"), ref _selectablesSelectedSameLineThird[i % 3], SelectableFlags.SpanAllColumns);
-                        _ = Widgets.TableNextColumn();
-                        Widgets.Text("Some text"u8);
-                        _ = Widgets.TableNextColumn();
-                        Widgets.Text("123456"u8);
-                    }
-
-                    Widgets.EndTable();
-                }
-
-                Widgets.TreePop();
-            }
-
-            // Grid
-            if (Widgets.TreeNode("Grid"u8))
-            {
-                var winningState = 0.0f;
-                for (var i = 0; i < 16; i++)
-                {
-                    winningState += _selectablesGrid[i] ? 1.0f : 0.0f;
-                }
-
-                Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"Squares clicked: {(int)winningState}/16"));
-
-                var spacing = Context.Style.ItemInnerSpacing.X;
-                Style.PushStyleVar(StyleVariable.ItemSpacing, new Vec2(spacing, spacing));
-                for (var i = 0; i < 16; i++)
-                {
-                    Id.Push(i);
-                    if (Widgets.Selectable("##square"u8, _selectablesGrid[i], SelectableFlags.None, new Size(50, 50)))
-                    {
-                        _selectablesGrid[i] = !_selectablesGrid[i];
-
-                        // Toggle neighbors
-                        var x = i % 4;
-                        var y = i / 4;
-                        if (x > 0)
-                        {
-                            _selectablesGrid[i - 1] ^= true;
-                        }
-
-                        if (x < 3)
-                        {
-                            _selectablesGrid[i + 1] ^= true;
-                        }
-
-                        if (y > 0)
-                        {
-                            _selectablesGrid[i - 4] ^= true;
-                        }
-
-                        if (y < 3)
-                        {
-                            _selectablesGrid[i + 4] ^= true;
-                        }
-                    }
-
-                    if ((i % 4) < 3)
-                    {
-                        Widgets.SameLine();
-                    }
-
-                    Id.Pop();
-                }
-
-                Style.PopStyleVar();
-                Widgets.TreePop();
-            }
-
-            // Alignment
-            if (Widgets.TreeNode("Alignment"u8))
-            {
-                HelpMarker("By default, Selectables uses style.SelectableTextAlign but it can be overridden on a per-item basis using PushStyleVar(). You'll probably want to always keep your default situation to left-align otherwise it becomes difficult to layout multiple items on a same line"u8);
-                for (var y = 0; y < 3; y++)
-                {
-                    for (var x = 0; x < 3; x++)
-                    {
-                        var alignment = new Vec2(x / 2.0f, y / 2.0f);
-                        var index = (y * 3) + x;
-                        Id.Push(index);
-                        if (Widgets.Selectable("Yo"u8, _selectablesAlignment[index], SelectableFlags.None, new Size(80, 80)))
-                        {
-                            _selectablesAlignment[index] = !_selectablesAlignment[index];
-                        }
-
-                        if (x < 2)
-                        {
-                            Widgets.SameLine();
-                        }
-
-                        Id.Pop();
-                    }
-                }
-
-                Widgets.TreePop();
-            }
-
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowSelectionAndMultiSelect()
-    {
-        if (Widgets.TreeNode("Selection (Adv), Multi-Select"u8))
-        {
-            // Note: BeginMultiSelect and EndMultiSelect are complex APIs not yet available in the bindings
-            Widgets.Text("Multi-Select functionality requires BeginMultiSelect/EndMultiSelect APIs."u8);
-            Widgets.Text("This section demonstrates the concept."u8);
-            Widgets.Spacing();
-
-            HelpMarker("This section would demonstrate advanced selection patterns.\nFor now showing a simple example using manual multi-select."u8);
-
-            // Simple manual multi-select example
-            for (var i = 0; i < 10; i++)
-            {
-                var selected = (_treeSelectionMask & (1 << i)) != 0;
-                if (Widgets.Selectable(System.Text.Encoding.UTF8.GetBytes($"Object {i}"), selected))
-                {
-                    if (!Context.IsKeyDown(Key.LeftCtrl) && !Context.IsKeyDown(Key.RightCtrl))
-                    {
-                        _treeSelectionMask = 0;
-                    }
-
-                    _treeSelectionMask ^= 1 << i;
-                }
-            }
-
-            Widgets.TreePop();
-        }
-    }
-
-    private static void ShowTabs()
-    {
-        if (Widgets.TreeNode("Tabs"u8))
-        {
-            if (Widgets.TreeNode("Basic"u8))
-            {
-                if (Widgets.BeginTabBar("MyTabBar"u8, TabBarFlags.None))
-                {
-                    if (Widgets.BeginTabItem("Avocado"u8))
-                    {
-                        Widgets.Text("This is the Avocado tab!\nblah blah blah blah blah"u8);
-                        Widgets.EndTabItem();
-                    }
-
-                    if (Widgets.BeginTabItem("Broccoli"u8))
-                    {
-                        Widgets.Text("This is the Broccoli tab!\nblah blah blah blah blah"u8);
-                        Widgets.EndTabItem();
-                    }
-
-                    if (Widgets.BeginTabItem("Cucumber"u8))
-                    {
-                        Widgets.Text("This is the Cucumber tab!\nblah blah blah blah blah"u8);
-                        Widgets.EndTabItem();
-                    }
-
-                    Widgets.EndTabBar();
-                }
-
-                Widgets.Separator();
-                Widgets.TreePop();
-            }
-
-            if (Widgets.TreeNode("Advanced & Close Button"u8))
-            {
-                // Flags setup
-                _ = Widgets.CheckboxFlags("TabBarFlags.Reorderable"u8, ref _tabsFlags, TabBarFlags.Reorderable);
-                _ = Widgets.CheckboxFlags("TabBarFlags.AutoSelectNewTabs"u8, ref _tabsFlags, TabBarFlags.AutoSelectNewTabs);
-                _ = Widgets.CheckboxFlags("TabBarFlags.TabListPopupButton"u8, ref _tabsFlags, TabBarFlags.TabListPopupButton);
-                _ = Widgets.CheckboxFlags("TabBarFlags.NoCloseWithMiddleMouseButton"u8, ref _tabsFlags, TabBarFlags.NoCloseWithMiddleMouseButton);
-
-                if (Widgets.CheckboxFlags("TabBarFlags.FittingPolicyShrink"u8, ref _tabsFlags, TabBarFlags.FittingPolicyShrink))
-                {
-                    _tabsFlags &= ~TabBarFlags.FittingPolicyScroll;
-                }
-
-                if (Widgets.CheckboxFlags("TabBarFlags.FittingPolicyScroll"u8, ref _tabsFlags, TabBarFlags.FittingPolicyScroll))
-                {
-                    _tabsFlags &= ~TabBarFlags.FittingPolicyShrink;
-                }
-
-                // Tab bar with close buttons
-                string[] names = ["Artichoke", "Beetroot", "Celery", "Daikon"];
-
-                if (Widgets.BeginTabBar("MyTabBar"u8, _tabsFlags))
-                {
-                    for (var i = 0; i < _tabsOpened.Length; i++)
-                    {
-                        if (_tabsOpened[i] && Widgets.BeginTabItem(System.Text.Encoding.UTF8.GetBytes(names[i]), ref _tabsOpened[i], TabItemFlags.None))
-                        {
-                            Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"This is the {names[i]} tab!"));
-                            if (Widgets.Button("Delete Me"u8))
-                            {
-                                _tabsOpened[i] = false;
-                            }
-
-                            Widgets.EndTabItem();
-                        }
-                    }
-
-                    Widgets.EndTabBar();
-                }
-
-                Widgets.Separator();
-                Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"Opened: {_tabsOpened[0]}, {_tabsOpened[1]}, {_tabsOpened[2]}, {_tabsOpened[3]}"));
-
-                Widgets.TreePop();
-            }
-
-            if (Widgets.TreeNode("TabItemButton & Leading/Trailing flags"u8))
-            {
-                if (Widgets.BeginTabBar("MyTabBar"u8, TabBarFlags.Reorderable | TabBarFlags.TabListPopupButton | TabBarFlags.FittingPolicyShrink))
-                {
-                    // Leading buttons
-                    if (Widgets.TabItemButton("+"u8, TabItemFlags.Leading | TabItemFlags.NoTooltip))
-                    {
-                        _tabsActiveTabs.Add(_tabsNextTabId++);
-                    }
-
-                    // Active tabs
-                    for (var i = 0; i < _tabsActiveTabs.Count; i++)
-                    {
-                        var open = true;
-                        if (Widgets.BeginTabItem(System.Text.Encoding.UTF8.GetBytes($"{_tabsActiveTabs[i]:D4}"), ref open, TabItemFlags.None))
-                        {
-                            Widgets.Text(System.Text.Encoding.UTF8.GetBytes($"This is the {_tabsActiveTabs[i]:D4} tab!"));
-                            Widgets.EndTabItem();
-                        }
-
-                        if (!open)
-                        {
-                            _tabsActiveTabs.RemoveAt(i);
-                            i--;
-                        }
-                    }
-
-                    Widgets.EndTabBar();
-                }
-
-                Widgets.TreePop();
-            }
-
-            Widgets.TreePop();
-        }
-    }
 
     private static void ShowText()
     {
