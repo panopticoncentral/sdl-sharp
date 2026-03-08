@@ -27,7 +27,7 @@ public unsafe partial struct ImGuiSelectionExternalStorage
     /// <summary>
     /// e.g. AdapterSetItemSelected = [](ImGuiSelectionExternalStorage* self, int idx, bool selected) { ((MyItems**)self-&gt;UserData)[idx]-&gt;Selected = selected; }
     /// </summary>
-    public delegate* unmanaged[Cdecl]<ImGuiSelectionExternalStorage*, int, bool, void> AdapterSetItemSelected;
+    public delegate* unmanaged[Cdecl]<ImGuiSelectionExternalStorage*, int, byte, void> AdapterSetItemSelected;
 
     /// <summary>
     /// Apply selection requests by using AdapterSetItemSelected() calls

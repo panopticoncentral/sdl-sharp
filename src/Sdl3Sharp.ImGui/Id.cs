@@ -101,4 +101,12 @@ public unsafe readonly record struct Id
     {
         return new Id(ImGui_GetIDInt(intId));
     }
+
+    /// <summary>
+    /// The underlying uint value of the Id.
+    /// </summary>
+    public uint ToUint()
+    {
+        return Value;
+    }
 }

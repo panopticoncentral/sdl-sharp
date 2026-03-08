@@ -3691,4 +3691,89 @@ public unsafe static class Widgets
             return new(ImGui_CalcTextSizeEx(ptr, null, hideTextAfterDoubleHash, wrapWidth));
         }
     }
+
+    // Multi-Select API
+
+    /// <summary>
+    /// Begins a multi-selection scope. Returns a MultiSelectIO structure for reading/writing selection requests.
+    /// </summary>
+    /// <param name="flags">Multi-select behavior flags.</param>
+    /// <returns>A MultiSelectIO structure containing selection requests.</returns>
+    /// <remarks>
+    /// <para>
+    /// This enables standard multi-selection/range-selection idioms (Ctrl+Mouse/Keyboard, Shift+Mouse/Keyboard, etc.)
+    /// in a way that also allows a clipper to be used.
+    /// </para>
+    /// <para>
+    /// Must be followed by a call to <see cref="EndMultiSelect"/> to close the scope.
+    /// </para>
+    /// </remarks>
+    public static MultiSelectIO BeginMultiSelect(MultiSelectFlags flags)
+    {
+        return new(ImGui_BeginMultiSelect((ImGuiMultiSelectFlags)flags));
+    }
+
+    /// <summary>
+    /// Begins a multi-selection scope with item count information.
+    /// </summary>
+    /// <param name="flags">Multi-select behavior flags.</param>
+    /// <param name="selectionSize">The current selection size (-1 if unknown/costly to compute).</param>
+    /// <param name="itemsCount">The total number of items (-1 if unknown/costly to compute).</param>
+    /// <returns>A MultiSelectIO structure containing selection requests.</returns>
+    /// <remarks>
+    /// <para>
+    /// Providing selectionSize and itemsCount enables additional features like Ctrl+A to select all.
+    /// </para>
+    /// <para>
+    /// Must be followed by a call to <see cref="EndMultiSelect"/> to close the scope.
+    /// </para>
+    /// </remarks>
+    public static MultiSelectIO BeginMultiSelect(MultiSelectFlags flags, int selectionSize, int itemsCount)
+    {
+        return new(ImGui_BeginMultiSelectEx((ImGuiMultiSelectFlags)flags, selectionSize, itemsCount));
+    }
+
+    /// <summary>
+    /// Ends a multi-selection scope started with <see cref="BeginMultiSelect(MultiSelectFlags)"/>.
+    /// </summary>
+    /// <returns>A MultiSelectIO structure containing final selection requests to apply.</returns>
+    /// <remarks>
+    /// The returned MultiSelectIO may contain additional requests that weren't available at BeginMultiSelect time.
+    /// Process both BeginMultiSelect and EndMultiSelect requests for complete multi-selection handling.
+    /// </remarks>
+    public static MultiSelectIO EndMultiSelect()
+    {
+        return new(ImGui_EndMultiSelect());
+    }
+
+    /// <summary>
+    /// Sets the selection user data for the next item (typically the item index).
+    /// </summary>
+    /// <param name="selectionUserData">The selection user data (typically an item index).</param>
+    /// <remarks>
+    /// <para>
+    /// Call this before each Selectable(), TreeNode(), or other multi-select compatible widget.
+    /// </para>
+    /// <para>
+    /// The value is stored and returned in ImGuiMultiSelectIO for use by your selection logic.
+    /// Most users will pass an item index, but you can also pass a pointer or other identifier.
+    /// </para>
+    /// </remarks>
+    public static void SetNextItemSelectionUserData(long selectionUserData)
+    {
+        ImGui_SetNextItemSelectionUserData(selectionUserData);
+    }
+
+    /// <summary>
+    /// Checks if the last item's selection state was toggled.
+    /// </summary>
+    /// <returns>True if the item's selection state was toggled.</returns>
+    /// <remarks>
+    /// Useful if you need the per-item information before reaching EndMultiSelect().
+    /// Only returns toggle event in order to handle clipping correctly.
+    /// </remarks>
+    public static bool IsItemToggledSelection()
+    {
+        return ImGui_IsItemToggledSelection();
+    }
 }

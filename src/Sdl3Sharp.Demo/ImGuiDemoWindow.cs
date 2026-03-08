@@ -1,5 +1,6 @@
 using Sdl3Sharp.ImGui;
 using Sdl3Sharp.ImGui.Native;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -10,6 +11,17 @@ namespace Sdl3Sharp.Demo;
 public static unsafe class ImGuiDemoWindow
 {
     private static ImGuiDemoWindowData _demoData;
+
+    /// <summary>
+    /// Example names used throughout demos (vegetable names).
+    /// </summary>
+    private static readonly string[] ExampleNames =
+    [
+        "Artichoke", "Arugula", "Asparagus", "Avocado", "Bamboo Shoots", "Bean Sprouts", "Beans",
+        "Beet", "Belgian Endive", "Bell Pepper", "Bitter Gourd", "Bok Choy", "Broccoli", "Brussels Sprouts",
+        "Burdock Root", "Cabbage", "Calabash", "Capers", "Carrot", "Cassava", "Cauliflower", "Celery",
+        "Celery Root", "Chard", "Chayote", "Chinese Broccoli", "Corn", "Cucumber"
+    ];
 
     // Demonstrate the various window flags. Typically you would just use the default!
     private static bool _noTitlebar = false;
@@ -198,6 +210,41 @@ public static unsafe class ImGuiDemoWindow
                                                         false, false, false, true];
     private static readonly bool[] _selectablesAlignment = [true, false, true, false, true, false, true, false, true];
 
+    // State Fields - Multi-Select Section
+
+    private static readonly SelectionBasicStorage _multiSelectSelection = new();
+    private static readonly SelectionBasicStorage _multiSelectSelectionClipper = new();
+    private static readonly SelectionBasicStorage _multiSelectSelectionTable = new();
+    private static readonly List<Id> _multiSelectWithDeletionList = [];
+    private static readonly SelectionBasicStorage _multiSelectWithDeletionSelection = new(idx => _multiSelectWithDeletionList[idx]);
+    private static int _multiSelectWithDeletionNextId;
+    private static readonly bool[] _multiSelectCheckboxItems = new bool[20];
+    private static MultiSelectFlags _multiSelectCheckboxFlags = MultiSelectFlags.NoAutoSelect | MultiSelectFlags.NoAutoClear | MultiSelectFlags.ClearOnEscape;
+    private static readonly SelectionBasicStorage[] _multiSelectScopesSelections = [new(), new(), new()];
+    private static MultiSelectFlags _multiSelectScopesFlags = MultiSelectFlags.ScopeRect | MultiSelectFlags.ClearOnEscape;
+
+    // State Fields - Multi-Select (dual list box) Section
+
+    private static readonly ExampleDualListBox _dualListBox = new();
+
+    // State Fields - Multi-Select (trees) Section
+
+    private static ExampleTreeNode? _demoTree;
+    private static readonly SelectionBasicStorage _treeSelection = new();
+
+    // State Fields - Multi-Select (advanced) Section
+
+    private static bool _advancedUseClipper = true;
+    private static bool _advancedUseDeletion = true;
+    private static bool _advancedUseDragDrop = true;
+    private static bool _advancedShowInTable;
+    private static bool _advancedShowColorButton = true;
+    private static MultiSelectFlags _advancedFlags = MultiSelectFlags.ClearOnEscape | MultiSelectFlags.BoxSelect1d;
+    private static int _advancedWidgetType; // 0 = Selectable, 1 = TreeNode
+    private static readonly List<uint> _advancedItems = [];
+    private static uint _advancedItemsNextId;
+    private static readonly SelectionBasicStorage _advancedSelection = new();
+
     // State Fields - Tabs Section
 
     private static TabBarFlags _tabsFlags = TabBarFlags.Reorderable;
@@ -275,17 +322,6 @@ public static unsafe class ImGuiDemoWindow
     private static readonly float[] _plotArrCos = new float[120];
 
     // Shared Data
-
-    /// <summary>
-    /// Example names used throughout demos (vegetable names).
-    /// </summary>
-    private static readonly string[] ExampleNames =
-    [
-        "Artichoke", "Arugula", "Asparagus", "Avocado", "Bamboo Shoots", "Bean Sprouts", "Beans",
-        "Beet", "Belgian Endive", "Bell Pepper", "Bitter Gourd", "Bok Choy", "Broccoli", "Brussels Sprouts",
-        "Burdock Root", "Cabbage", "Calabash", "Capers", "Carrot", "Cassava", "Cauliflower", "Celery",
-        "Celery Root", "Chard", "Chayote", "Chinese Broccoli", "Corn", "Cucumber"
-    ];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ImGuiDemoWindow"/> class.
@@ -2397,58 +2433,681 @@ Hover the texture for a zoomed view!"u8);
         }
     }
 
+    // Find which item should be Focused after deletion.
+    // Call _before_ item submission. Return an index in the before-deletion item list, your item loop should call SetKeyboardFocusHere() on it.
+    // The subsequent ApplyDeletionPostLoop() code will use it to apply Selection.
+    // - We cannot provide this logic in core Dear ImGui because we don't have access to selection data.
+    // - We don't actually manipulate the ImVector<> here, only in ApplyDeletionPostLoop(), but using similar API for consistency and flexibility.
+    // - Important: Deletion only works if the underlying ImGuiID for your items are stable: aka not depend on their index, but on e.g. item id/ptr.
+    // FIXME-MULTISELECT: Doesn't take account of the possibility focus target will be moved during deletion. Need refocus or scroll offset.
+    private static int ApplyDeletionPreLoop(MultiSelectIO ms_io)
+    {
+        if (_multiSelectWithDeletionSelection.Size == 0)
+        {
+            return -1;
+        }
+
+        // If focused item is not selected...
+        var focused_idx = (int)ms_io.NavIdItem;  // Index of currently focused item
+        if (ms_io.NavIdSelected == false)  // This is merely a shortcut, == Contains(adapter->IndexToStorage(items, focused_idx))
+        {
+            ms_io.RangeSrcReset = true;    // Request to recover RangeSrc from NavId next frame. Would be ok to reset even when NavIdSelected==true, but it would take an extra frame to recover RangeSrc when deleting a selected item.
+            return focused_idx;             // Request to focus same item after deletion.
+        }
+
+        // If focused item is selected: land on first unselected item after focused item.
+        for (var idx = focused_idx + 1; idx < _multiSelectWithDeletionList.Count; idx++)
+        {
+            if (!_multiSelectWithDeletionSelection.Contains(_multiSelectWithDeletionList[idx]))
+            {
+                return idx;
+            }
+        }
+
+        // If focused item is selected: otherwise return last unselected item before focused item.
+        for (var idx = Math.Min(focused_idx, _multiSelectWithDeletionList.Count) - 1; idx >= 0; idx--)
+        {
+            if (!_multiSelectWithDeletionSelection.Contains(_multiSelectWithDeletionList[idx]))
+            {
+                return idx;
+            }
+        }
+
+        return -1;
+    }
+
+    // Rewrite item list (delete items) + update selection.
+    // - Call after EndMultiSelect()
+    // - We cannot provide this logic in core Dear ImGui because we don't have access to your items, nor to selection data.
+    private static void ApplyDeletionPostLoop(MultiSelectIO ms_io, ref int item_curr_idx_to_focus)
+    {
+        // Rewrite item list (delete items) + convert old selection index (before deletion) to new selection index (after selection).
+        // If NavId was not part of selection, we will stay on same item.
+        List<Id> new_items = new(_multiSelectWithDeletionList.Count - _multiSelectWithDeletionSelection.Size);
+        var item_next_idx_to_select = -1;
+        for (var idx = 0; idx < _multiSelectWithDeletionList.Count; idx++)
+        {
+            if (!_multiSelectWithDeletionSelection.Contains(idx))
+            {
+                new_items.Add(_multiSelectWithDeletionList[idx]);
+            }
+
+            if (_multiSelectWithDeletionNextId == idx)
+            {
+                item_next_idx_to_select = new_items.Count - 1;
+            }
+        }
+
+        _multiSelectWithDeletionList = new_items;
+
+        // Update selection
+        _multiSelectWithDeletionSelection.Clear();
+        if (item_next_idx_to_select != -1 && ms_io.NavIdSelected)
+        {
+            _multiSelectWithDeletionSelection.SetItemSelected(item_curr_idx_to_focus, true);
+        }
+    }
+
     private static void DemoWindowWidgetsSelectionAndMultiSelect()
     {
-        if (Widgets.TreeNode("Selection State & Multi-Select"u8))
+        if (!Widgets.TreeNode("Selection State & Multi-Select"u8))
         {
-            HelpMarker("Selections can be built using Selectable(), TreeNode() or other widgets. Selection state is owned by application code/data."u8);
+            return;
+        }
 
-            Widgets.BulletText("Wiki page:"u8);
-            Widgets.SameLine();
-            Widgets.TextLinkOpenURL("imgui/wiki/Multi-Select"u8, "https://github.com/ocornut/imgui/wiki/Multi-Select"u8);
+        HelpMarker("Selections can be built using Selectable(), TreeNode() or other widgets. Selection state is owned by application code/data."u8);
 
-            // Without any fancy API: manage single-selection yourself.
-            if (Widgets.TreeNode("Single-Select"u8))
+        Widgets.BulletText("Wiki page:"u8);
+        Widgets.SameLine();
+        _ = Widgets.TextLinkOpenURL("imgui/wiki/Multi-Select"u8, "https://github.com/ocornut/imgui/wiki/Multi-Select"u8);
+
+        // Without any fancy API: manage single-selection yourself.
+        if (Widgets.TreeNode("Single-Select"u8))
+        {
+            for (var n = 0; n < 5; n++)
             {
-                for (var n = 0; n < 5; n++)
+                if (Widgets.Selectable($"Object {n}".ToUtf8(), _selectablesSelectedSingleOnly == n))
                 {
-                    ReadOnlySpan<byte> buf = $"Object {n}".ToUtf8();
-                    if (Widgets.Selectable(buf, _selectablesSelectedSingleOnly == n))
-                    {
-                        _selectablesSelectedSingleOnly = n;
-                    }
+                    _selectablesSelectedSingleOnly = n;
                 }
-
-                Widgets.TreePop();
             }
-
-            // Demonstrate implementation a most-basic form of multi-selection manually
-            // This doesn't support the Shift modifier which requires BeginMultiSelect()!
-            if (Widgets.TreeNode("Multi-Select (manual/simplified, without BeginMultiSelect)"u8))
-            {
-                HelpMarker("Hold Ctrl and Click to select multiple items."u8);
-                for (var n = 0; n < 5; n++)
-                {
-                    ReadOnlySpan<byte> buf = $"Object {n}".ToUtf8();
-                    if (Widgets.Selectable(buf, _selectablesSelected[n]))
-                    {
-                        if (!Context.IsKeyDown(Key.ModCtrl)) // Clear selection when Ctrl is not held
-                        {
-                            Array.Clear(_selectablesSelected);
-                        }
-
-                        _selectablesSelected[n] = !_selectablesSelected[n]; // Toggle current item
-                    }
-                }
-
-                Widgets.TreePop();
-            }
-
-            // Note: The more advanced BeginMultiSelect/EndMultiSelect APIs are not yet wrapped in the C# bindings.
-            // The full demos for Multi-Select with clipper, deletion, dual list box, tables, checkboxes,
-            // multiple scopes, trees, and advanced features require the BeginMultiSelect API to be wrapped.
 
             Widgets.TreePop();
+        }
+
+        // Demonstrate implementation a most-basic form of multi-selection manually
+        // This doesn't support the Shift modifier which requires BeginMultiSelect()!
+        if (Widgets.TreeNode("Multi-Select (manual/simplified, without BeginMultiSelect)"u8))
+        {
+            HelpMarker("Hold Ctrl and Click to select multiple items."u8);
+            for (var n = 0; n < 5; n++)
+            {
+                if (Widgets.Selectable($"Object {n}".ToUtf8(), _selectablesSelected[n]))
+                {
+                    if (!Context.IsKeyDown(Key.ModCtrl)) // Clear selection when Ctrl is not held
+                    {
+                        Array.Clear(_selectablesSelected);
+                    }
+
+                    _selectablesSelected[n] = !_selectablesSelected[n]; // Toggle current item
+                }
+            }
+
+            Widgets.TreePop();
+        }
+
+        // Demonstrate handling proper multi-selection using the BeginMultiSelect/EndMultiSelect API.
+        // Shift+Click w/ Ctrl and other standard features are supported.
+        if (Widgets.TreeNode("Multi-Select"u8))
+        {
+            Widgets.Text("Supported features:"u8);
+            Widgets.BulletText("Keyboard navigation (arrows, page up/down, home/end, space)."u8);
+            Widgets.BulletText("Ctrl modifier to preserve and toggle selection."u8);
+            Widgets.BulletText("Shift modifier for range selection."u8);
+            Widgets.BulletText("Ctrl+A to select all."u8);
+            Widgets.BulletText("Escape to clear selection."u8);
+            Widgets.BulletText("Click and drag to box-select."u8);
+            Widgets.Text("Tip: Use 'Demo->Tools->Debug Log->Selection' to see selection requests as they happen."u8);
+
+            const int ItemsCount = 50;
+            Widgets.Text($"Selection: {_multiSelectSelection.Size}/{ItemsCount}".ToUtf8());
+
+            // The BeginChild() has no purpose for selection logic, other that offering a scrolling region.
+            if (Widgets.BeginChild("##Basket"u8, (-float.Epsilon, Font.GetSize() * 20), ChildFlags.FrameStyle | ChildFlags.ResizeY))
+            {
+                MultiSelectFlags flags = MultiSelectFlags.ClearOnEscape | MultiSelectFlags.BoxSelect1d;
+                MultiSelectIO msIo = Widgets.BeginMultiSelect(flags, _multiSelectSelection.Size, ItemsCount);
+                _multiSelectSelection.ApplyRequests(msIo);
+
+                for (var n = 0; n < ItemsCount; n++)
+                {
+                    var itemIsSelected = _multiSelectSelection.Contains(n);
+                    Widgets.SetNextItemSelectionUserData(n);
+                    _ = Widgets.Selectable($"Object {n:D5}: {ExampleNames[n % ExampleNames.Length]}".ToUtf8(), itemIsSelected);
+                }
+
+                msIo = Widgets.EndMultiSelect();
+                _multiSelectSelection.ApplyRequests(msIo);
+            }
+
+            Widgets.EndChild();
+            Widgets.TreePop();
+        }
+
+        // Demonstrate using the clipper with BeginMultiSelect()/EndMultiSelect()
+        if (Widgets.TreeNode("Multi-Select (with clipper)"u8))
+        {
+            Widgets.Text("Added features:"u8);
+            Widgets.BulletText("Using ListClipper for efficient rendering of large lists."u8);
+
+            const int ItemsCount = 10000;
+            Widgets.Text($"Selection: {_multiSelectSelectionClipper.Size}/{ItemsCount}".ToUtf8());
+            if (Widgets.BeginChild("##Basket"u8, (-float.Epsilon, Font.GetSize() * 20), ChildFlags.FrameStyle | ChildFlags.ResizeY))
+            {
+                MultiSelectFlags flags = MultiSelectFlags.ClearOnEscape | MultiSelectFlags.BoxSelect1d;
+                MultiSelectIO msIo = Widgets.BeginMultiSelect(flags, _multiSelectSelectionClipper.Size, ItemsCount);
+                _multiSelectSelectionClipper.ApplyRequests(msIo);
+
+                var clipper = new ListClipper();
+                clipper.Begin(ItemsCount);
+                if (msIo.RangeSrcItem != -1)
+                {
+                    clipper.IncludeItemByIndex((int)msIo.RangeSrcItem); // Ensure RangeSrc item is not clipped.
+                }
+
+                while (clipper.Step())
+                {
+                    for (var n = clipper.DisplayStart; n < clipper.DisplayEnd; n++)
+                    {
+                        var itemIsSelected = _multiSelectSelectionClipper.Contains(n);
+                        Widgets.SetNextItemSelectionUserData(n);
+                        _ = Widgets.Selectable($"Object {n:D5}: {ExampleNames[n % ExampleNames.Length]}".ToUtf8(), itemIsSelected);
+                    }
+                }
+
+                clipper.Dispose();
+
+                msIo = Widgets.EndMultiSelect();
+                _multiSelectSelectionClipper.ApplyRequests(msIo);
+            }
+
+            Widgets.EndChild();
+            Widgets.TreePop();
+        }
+
+        // Demonstrate dynamic item list + deletion support using the BeginMultiSelect/EndMultiSelect API.
+        // In order to support Deletion without any glitches you need to:
+        // - (1) If items are submitted in their own scrolling area, submit contents size SetNextWindowContentSize() ahead of time to prevent one-frame readjustment of scrolling.
+        // - (2) Items needs to have persistent ID Stack identifier = ID needs to not depends on their index. PushID(index) = KO. PushID(item_id) = OK. This is in order to focus items reliably after a selection.
+        // - (3) BeginXXXX process
+        // - (4) Focus process
+        // - (5) EndXXXX process
+        if (Widgets.TreeNode("Multi-Select (with deletion)"u8))
+        {
+            // Storing items data separately from selection data.
+            // (you may decide to store selection data inside your item (aka intrusive storage) if you don't need multiple views over same items)
+            // Use a custom selection.Adapter: store item identifier in Selection (instead of index)
+
+            Widgets.Text("Added features:"u8);
+            Widgets.BulletText("Dynamic list with Delete key support."u8);
+            Widgets.Text($"Selection size: {_multiSelectWithDeletionSelection.Size}/{_multiSelectWithDeletionList.Count}".ToUtf8());
+
+            // Initialize default list with 50 items + button to add/remove items.
+            if (_multiSelectWithDeletionNextId == 0)
+            {
+                for (var n = 0; n < 50; n++)
+                {
+                    _multiSelectWithDeletionList.Add(Id.Get(_multiSelectWithDeletionNextId++));
+                }
+            }
+
+            if (Widgets.SmallButton("Add 20 items"u8)) 
+            { 
+                for (var n = 0; n < 20; n++) 
+                { 
+                    _multiSelectWithDeletionList.Add(Id.Get(_multiSelectWithDeletionNextId++));
+                } 
+            }
+            
+            Widgets.SameLine();
+            if (Widgets.SmallButton("Remove 20 items"u8)) 
+            { 
+                for (var n = Math.Min(20, _multiSelectWithDeletionList.Count); n > 0; n--) 
+                {
+                    _multiSelectWithDeletionSelection.SetItemSelected(_multiSelectWithDeletionList[^1], false); 
+                    _multiSelectWithDeletionList.RemoveAt(_multiSelectWithDeletionList.Count - 1); 
+                } 
+            }
+
+            // (1) Extra to support deletion: Submit scrolling range to avoid glitches on deletion
+            var items_height = Font.GetTextLineHeightWithSpacing();
+            Window.SetNextWindowContentSize((0.0f, _multiSelectWithDeletionList.Count * items_height));
+
+            if (Widgets.BeginChild("##Basket"u8, (-float.Epsilon, Font.GetSize() * 20), ChildFlags.FrameStyle | ChildFlags.ResizeY))
+            {
+                MultiSelectFlags flags = MultiSelectFlags.ClearOnEscape | MultiSelectFlags.BoxSelect1d;
+                MultiSelectIO ms_io = Widgets.BeginMultiSelect(flags, _multiSelectWithDeletionSelection.Size, _multiSelectWithDeletionList.Count);
+                _multiSelectWithDeletionSelection.ApplyRequests(ms_io);
+
+                var want_delete = Context.Shortcut(Key.Delete, InputFlags.Repeat) && (_multiSelectWithDeletionSelection.Size > 0);
+                var item_curr_idx_to_focus = want_delete ? ApplyDeletionPreLoop(ms_io) : -1;
+
+                for (var n = 0; n < _multiSelectWithDeletionList.Count; n++)
+                {
+                    Id item_id = _multiSelectWithDeletionList[n];
+
+                    var item_is_selected = _multiSelectWithDeletionSelection.Contains(item_id);
+                    Widgets.SetNextItemSelectionUserData(n);
+                    _ = Widgets.Selectable($"Object {item_id.ToUint():D5}: {ExampleNames[item_id.ToUint() % ExampleNames.Length]}".ToUtf8(), item_is_selected);
+                    if (item_curr_idx_to_focus == n)
+                    {
+                        Widgets.SetKeyboardFocusHere(-1);
+                    }
+                }
+
+                // Apply multi-select requests
+                ms_io = Widgets.EndMultiSelect();
+                _multiSelectWithDeletionSelection.ApplyRequests(ms_io);
+                if (want_delete)
+                {
+                    ApplyDeletionPostLoop(ms_io, ref item_curr_idx_to_focus);
+                }
+            }
+
+            Widgets.EndChild();
+            Widgets.TreePop();
+        }
+
+        // Demonstrate dual list box pattern (two list boxes with items moving between them)
+        if (Widgets.TreeNode("Multi-Select (dual list box)"u8))
+        {
+            _dualListBox.Show();
+            Widgets.TreePop();
+        }
+
+        // Demonstrate multi-select in a table
+        if (Widgets.TreeNode("Multi-Select (in a table)"u8))
+        {
+            const int ItemsCount = 10000;
+            Widgets.Text($"Selection: {_multiSelectSelectionTable.Size}/{ItemsCount}".ToUtf8());
+            if (Widgets.BeginTable("##Basket"u8, 2, TableFlags.ScrollY | TableFlags.RowBg | TableFlags.BordersOuter))
+            {
+                Widgets.TableSetupColumn("Object"u8);
+                Widgets.TableSetupColumn("Action"u8);
+                Widgets.TableSetupScrollFreeze(0, 1);
+                Widgets.TableHeadersRow();
+
+                MultiSelectFlags flags = MultiSelectFlags.ClearOnEscape | MultiSelectFlags.BoxSelect1d;
+                MultiSelectIO msIo = Widgets.BeginMultiSelect(flags, _multiSelectSelectionTable.Size, ItemsCount);
+                _multiSelectSelectionTable.ApplyRequests(msIo);
+
+                var clipper = new ListClipper();
+                clipper.Begin(ItemsCount);
+                if (msIo.RangeSrcItem != -1)
+                {
+                    clipper.IncludeItemByIndex((int)msIo.RangeSrcItem);
+                }
+
+                while (clipper.Step())
+                {
+                    for (var n = clipper.DisplayStart; n < clipper.DisplayEnd; n++)
+                    {
+                        Widgets.TableNextRow();
+                        _ = Widgets.TableNextColumn();
+                        ReadOnlySpan<byte> label = $"Object {n:D5}: {ExampleNames[n % ExampleNames.Length]}".ToUtf8();
+                        var itemIsSelected = _multiSelectSelectionTable.Contains(n);
+                        Widgets.SetNextItemSelectionUserData(n);
+                        _ = Widgets.Selectable(label, itemIsSelected, SelectableFlags.SpanAllColumns | SelectableFlags.AllowOverlap);
+                        _ = Widgets.TableNextColumn();
+                        _ = Widgets.SmallButton("hello"u8);
+                    }
+                }
+
+                clipper.Dispose();
+
+                msIo = Widgets.EndMultiSelect();
+                _multiSelectSelectionTable.ApplyRequests(msIo);
+                Widgets.EndTable();
+            }
+
+            Widgets.TreePop();
+        }
+
+        // Demonstrate multi-select with checkboxes
+        if (Widgets.TreeNode("Multi-Select (checkboxes)"u8))
+        {
+            Widgets.Text("In a list of checkboxes (not selectable):"u8);
+            Widgets.BulletText("Using _NoAutoSelect + _NoAutoClear flags."u8);
+            Widgets.BulletText("Shift+Click to check multiple boxes."u8);
+            Widgets.BulletText("Shift+Keyboard to copy current value to other boxes."u8);
+
+            _ = Widgets.CheckboxFlags("MultiSelectFlags_NoAutoSelect"u8, ref _multiSelectCheckboxFlags, MultiSelectFlags.NoAutoSelect);
+            _ = Widgets.CheckboxFlags("MultiSelectFlags_NoAutoClear"u8, ref _multiSelectCheckboxFlags, MultiSelectFlags.NoAutoClear);
+            _ = Widgets.CheckboxFlags("MultiSelectFlags_BoxSelect2d"u8, ref _multiSelectCheckboxFlags, MultiSelectFlags.BoxSelect2d);
+
+            if (Widgets.BeginChild("##Basket"u8, (-float.Epsilon, Font.GetSize() * 20), ChildFlags.Borders | ChildFlags.ResizeY))
+            {
+                MultiSelectIO msIo = Widgets.BeginMultiSelect(_multiSelectCheckboxFlags, -1, _multiSelectCheckboxItems.Length);
+                using var storageWrapper = new SelectionExternalStorage((idx, selected) => _multiSelectCheckboxItems[idx] = selected);
+                storageWrapper.ApplyRequests(msIo);
+
+                for (var n = 0; n < _multiSelectCheckboxItems.Length; n++)
+                {
+                    ReadOnlySpan<byte> label = $"Item {n}".ToUtf8();
+                    Widgets.SetNextItemSelectionUserData(n);
+                    _ = Widgets.Checkbox(label, ref _multiSelectCheckboxItems[n]);
+                }
+
+                msIo = Widgets.EndMultiSelect();
+                storageWrapper.ApplyRequests(msIo);
+            }
+
+            Widgets.EndChild();
+            Widgets.TreePop();
+        }
+
+        // Demonstrate individual selection scopes in same window
+        if (Widgets.TreeNode("Multi-Select (multiple scopes)"u8))
+        {
+            const int ScopesCount = 3;
+            const int ItemsCount = 8;
+
+            // Use ImGuiMultiSelectFlags_ScopeRect to not affect other selections in same window.
+            if (Widgets.CheckboxFlags("MultiSelectFlags_ScopeWindow"u8, ref _multiSelectScopesFlags, MultiSelectFlags.ScopeWindow))
+            {
+                if ((_multiSelectScopesFlags & MultiSelectFlags.ScopeWindow) != 0)
+                {
+                    _multiSelectScopesFlags &= ~MultiSelectFlags.ScopeRect;
+                }
+            }
+
+            if (Widgets.CheckboxFlags("MultiSelectFlags_ScopeRect"u8, ref _multiSelectScopesFlags, MultiSelectFlags.ScopeRect))
+            {
+                if ((_multiSelectScopesFlags & MultiSelectFlags.ScopeRect) != 0)
+                {
+                    _multiSelectScopesFlags &= ~MultiSelectFlags.ScopeWindow;
+                }
+            }
+
+            _ = Widgets.CheckboxFlags("MultiSelectFlags_ClearOnClickVoid"u8, ref _multiSelectScopesFlags, MultiSelectFlags.ClearOnClickVoid);
+            _ = Widgets.CheckboxFlags("MultiSelectFlags_BoxSelect1d"u8, ref _multiSelectScopesFlags, MultiSelectFlags.BoxSelect1d);
+
+            for (var selectionScopeN = 0; selectionScopeN < ScopesCount; selectionScopeN++)
+            {
+                Id.Push(selectionScopeN);
+                SelectionBasicStorage selection = _multiSelectScopesSelections[selectionScopeN];
+                MultiSelectIO msIo = Widgets.BeginMultiSelect(_multiSelectScopesFlags, selection.Size, ItemsCount);
+                selection.ApplyRequests(msIo);
+
+                Widgets.SeparatorText("Selection scope"u8);
+                Widgets.Text($"Selection size: {selection.Size}/{ItemsCount}".ToUtf8());
+
+                for (var n = 0; n < ItemsCount; n++)
+                {
+                    ReadOnlySpan<byte> label = $"Object {n:D5}: {ExampleNames[n % ExampleNames.Length]}".ToUtf8();
+                    var itemIsSelected = selection.Contains(n);
+                    Widgets.SetNextItemSelectionUserData(n);
+                    _ = Widgets.Selectable(label, itemIsSelected);
+                }
+
+                // Apply multi-select requests
+                msIo = Widgets.EndMultiSelect();
+                selection.ApplyRequests(msIo);
+                Id.Pop();
+            }
+
+            Widgets.TreePop();
+        }
+
+        // Demonstrate tree with multi-selection support
+        if (Widgets.TreeNode("Multi-Select (trees)"u8))
+        {
+            HelpMarker("This is a simplified demonstration of multi-selection in a tree. It shows the concept of using a selection storage class to manage selected items in tree structures, but does not implement the full scope options from the imgui_demo.cpp version."u8);
+
+            _demoTree ??= ExampleTreeNode.CreateDemoTree();
+
+            Widgets.Text($"Selection: {_treeSelection.Size}".ToUtf8());
+            if (Widgets.BeginChild("##Tree"u8, (-float.Epsilon, Font.GetSize() * 20), ChildFlags.FrameStyle | ChildFlags.ResizeY))
+            {
+                MultiSelectFlags flags = MultiSelectFlags.ClearOnEscape | MultiSelectFlags.BoxSelect2d;
+                MultiSelectIO msIo = Widgets.BeginMultiSelect(flags, _treeSelection.Size, -1);
+                _treeSelection.ApplyRequests(msIo);
+
+                // Render tree nodes
+                RenderTreeMultiSelectNode(_demoTree, _treeSelection);
+
+                msIo = Widgets.EndMultiSelect();
+                _treeSelection.ApplyRequests(msIo);
+            }
+
+            Widgets.EndChild();
+            Widgets.TreePop();
+        }
+
+        // Advanced demonstration of BeginMultiSelect()
+        if (Widgets.TreeNode("Multi-Select (advanced)"u8))
+        {
+            // Options
+            if (Widgets.TreeNode("Options"u8))
+            {
+                if (Widgets.RadioButton("Selectables"u8, _advancedWidgetType == 0))
+                {
+                    _advancedWidgetType = 0;
+                }
+
+                Widgets.SameLine();
+                if (Widgets.RadioButton("Tree nodes"u8, _advancedWidgetType == 1))
+                {
+                    _advancedWidgetType = 1;
+                }
+
+                _ = Widgets.Checkbox("Enable clipper"u8, ref _advancedUseClipper);
+                _ = Widgets.Checkbox("Enable deletion"u8, ref _advancedUseDeletion);
+                _ = Widgets.Checkbox("Enable drag & drop"u8, ref _advancedUseDragDrop);
+                _ = Widgets.Checkbox("Show in a table"u8, ref _advancedShowInTable);
+                _ = Widgets.Checkbox("Show color button"u8, ref _advancedShowColorButton);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_SingleSelect"u8, ref _advancedFlags, MultiSelectFlags.SingleSelect);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_NoSelectAll"u8, ref _advancedFlags, MultiSelectFlags.NoSelectAll);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_NoRangeSelect"u8, ref _advancedFlags, MultiSelectFlags.NoRangeSelect);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_NoAutoSelect"u8, ref _advancedFlags, MultiSelectFlags.NoAutoSelect);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_NoAutoClear"u8, ref _advancedFlags, MultiSelectFlags.NoAutoClear);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_NoAutoClearOnReselect"u8, ref _advancedFlags, MultiSelectFlags.NoAutoClearOnReselect);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_BoxSelect1d"u8, ref _advancedFlags, MultiSelectFlags.BoxSelect1d);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_BoxSelect2d"u8, ref _advancedFlags, MultiSelectFlags.BoxSelect2d);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_BoxSelectNoScroll"u8, ref _advancedFlags, MultiSelectFlags.BoxSelectNoScroll);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_ClearOnEscape"u8, ref _advancedFlags, MultiSelectFlags.ClearOnEscape);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_ClearOnClickVoid"u8, ref _advancedFlags, MultiSelectFlags.ClearOnClickVoid);
+
+                if (Widgets.CheckboxFlags("MultiSelectFlags_ScopeWindow"u8, ref _advancedFlags, MultiSelectFlags.ScopeWindow))
+                {
+                    if ((_advancedFlags & MultiSelectFlags.ScopeWindow) != 0)
+                    {
+                        _advancedFlags &= ~MultiSelectFlags.ScopeRect;
+                    }
+                }
+
+                if (Widgets.CheckboxFlags("MultiSelectFlags_ScopeRect"u8, ref _advancedFlags, MultiSelectFlags.ScopeRect))
+                {
+                    if ((_advancedFlags & MultiSelectFlags.ScopeRect) != 0)
+                    {
+                        _advancedFlags &= ~MultiSelectFlags.ScopeWindow;
+                    }
+                }
+
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_SelectOnClick"u8, ref _advancedFlags, MultiSelectFlags.SelectOnClick);
+                _ = Widgets.CheckboxFlags("MultiSelectFlags_SelectOnClickRelease"u8, ref _advancedFlags, MultiSelectFlags.SelectOnClickRelease);
+                Widgets.TreePop();
+            }
+
+            // Initialize default list with 1000 items
+            if (_advancedItemsNextId == 0)
+            {
+                for (uint n = 0; n < 1000; n++)
+                {
+                    _advancedItems.Add(_advancedItemsNextId++);
+                }
+            }
+
+            Widgets.Text($"Selection: {_advancedSelection.Size}/{_advancedItems.Count}".ToUtf8());
+
+            // Buttons for adding/removing items
+            if (Widgets.SmallButton("Add 20 items"u8))
+            {
+                for (var n = 0; n < 20; n++)
+                {
+                    _advancedItems.Add(_advancedItemsNextId++);
+                }
+            }
+
+            Widgets.SameLine();
+            if (Widgets.SmallButton("Remove 20 items"u8))
+            {
+                for (var n = Math.Min(20, _advancedItems.Count); n > 0; n--)
+                {
+                    _advancedSelection.SetItemSelected(_advancedItems.Count - 1, false);
+                    _advancedItems.RemoveAt(_advancedItems.Count - 1);
+                }
+            }
+
+            // Submit scrolling range to avoid glitches on deletion
+            var itemsHeight = Font.GetTextLineHeightWithSpacing();
+            Window.SetNextWindowContentSize(new Size(0.0f, _advancedItems.Count * itemsHeight));
+
+            if (Widgets.BeginChild("##Basket"u8, (-float.Epsilon, Font.GetSize() * 20), ChildFlags.FrameStyle | ChildFlags.ResizeY))
+            {
+                MultiSelectIO msIo = Widgets.BeginMultiSelect(_advancedFlags, _advancedSelection.Size, _advancedItems.Count);
+                _advancedSelection.ApplyRequests(msIo);
+
+                // Handle deletion
+                var wantDelete = _advancedUseDeletion && Context.Shortcut(Key.Delete, InputFlags.Repeat) && _advancedSelection.Size > 0;
+
+                if (_advancedUseClipper)
+                {
+                    var clipper = new ListClipper();
+                    clipper.Begin(_advancedItems.Count);
+                    if (msIo.RangeSrcItem != -1)
+                    {
+                        clipper.IncludeItemByIndex((int)msIo.RangeSrcItem);
+                    }
+
+                    while (clipper.Step())
+                    {
+                        for (var n = clipper.DisplayStart; n < clipper.DisplayEnd; n++)
+                        {
+                            RenderAdvancedMultiSelectItem(n, _advancedWidgetType);
+                        }
+                    }
+
+                    clipper.Dispose();
+                }
+                else
+                {
+                    for (var n = 0; n < _advancedItems.Count; n++)
+                    {
+                        RenderAdvancedMultiSelectItem(n, _advancedWidgetType);
+                    }
+                }
+
+                msIo = Widgets.EndMultiSelect();
+                _advancedSelection.ApplyRequests(msIo);
+
+                // Handle deletion post-loop
+                if (wantDelete)
+                {
+                    for (var i = _advancedItems.Count - 1; i >= 0; i--)
+                    {
+                        if (_advancedSelection.Contains(i))
+                        {
+                            _advancedSelection.SetItemSelected(i, false);
+                            _advancedItems.RemoveAt(i);
+                        }
+                    }
+                }
+            }
+
+            Widgets.EndChild();
+            Widgets.TreePop();
+        }
+
+        // Note: The "Multi-Select (tiled assets browser)" demo from imgui_demo.cpp is a more
+        // advanced standalone example that demonstrates a 2D grid-based asset browser with
+        // icons, zoom, and complex layout. It can be implemented as a separate demo window
+        // if needed.
+
+        Widgets.TreePop();
+    }
+
+    private static void RenderTreeMultiSelectNode(ExampleTreeNode node, SelectionBasicStorage selection)
+    {
+        // For the root node, render children directly
+        if (node.Parent == null)
+        {
+            foreach (ExampleTreeNode child in node.Children)
+            {
+                RenderTreeMultiSelectNode(child, selection);
+            }
+
+            return;
+        }
+
+        // Render this node
+        var isSelected = selection.Contains(node.UID);
+        TreeNodeFlags nodeFlags = TreeNodeFlags.SpanAvailWidth | TreeNodeFlags.OpenOnArrow | TreeNodeFlags.OpenOnDoubleClick;
+        if (node.Children.Count == 0)
+        {
+            nodeFlags |= TreeNodeFlags.Leaf | TreeNodeFlags.NoTreePushOnOpen;
+        }
+
+        if (isSelected)
+        {
+            nodeFlags |= TreeNodeFlags.Selected;
+        }
+
+        Widgets.SetNextItemSelectionUserData(node.UID);
+        var isOpen = Widgets.TreeNode(node.Name.ToUtf8(), nodeFlags);
+
+        // Render children if open
+        if (isOpen && node.Children.Count > 0)
+        {
+            foreach (ExampleTreeNode child in node.Children)
+            {
+                RenderTreeMultiSelectNode(child, selection);
+            }
+
+            Widgets.TreePop();
+        }
+    }
+
+    private static void RenderAdvancedMultiSelectItem(int n, int widgetType)
+    {
+        var itemId = _advancedItems[n];
+        ReadOnlySpan<byte> label = $"Object {itemId:D5}: {ExampleNames[(int)(itemId % (uint)ExampleNames.Length)]}".ToUtf8();
+        var itemIsSelected = _advancedSelection.Contains(n);
+
+        Widgets.SetNextItemSelectionUserData(n);
+
+        if (widgetType == 0) // Selectable
+        {
+            _ = Widgets.Selectable(label, itemIsSelected);
+        }
+        else // TreeNode
+        {
+            TreeNodeFlags nodeFlags = TreeNodeFlags.SpanAvailWidth | TreeNodeFlags.OpenOnArrow | TreeNodeFlags.OpenOnDoubleClick | TreeNodeFlags.Leaf;
+            if (itemIsSelected)
+            {
+                nodeFlags |= TreeNodeFlags.Selected;
+            }
+
+            _ = Widgets.TreeNode(label, nodeFlags);
+            Widgets.TreePop();
+        }
+
+        // Drag and drop source
+        if (_advancedUseDragDrop && Widgets.BeginDragDropSource())
+        {
+            _ = Widgets.SetDragDropPayload("MULTI_SELECT_ITEM"u8, []);
+            Widgets.Text($"Dragging {_advancedSelection.Size} item(s)".ToUtf8());
+            Widgets.EndDragDropSource();
         }
     }
 
@@ -3226,5 +3885,227 @@ Hover the texture for a zoomed view!"u8);
         Copy,
         Move,
         Swap
+    }
+
+    // Helper class for Dual List Box demo
+    private sealed class ExampleDualListBox
+    {
+        public readonly List<int>[] Items = [[], []];
+        public readonly SelectionBasicStorage[] Selections = [new(), new()];
+
+        public ExampleDualListBox()
+        {
+            // Initialize with all items in left list
+            for (var i = 0; i < ExampleNames.Length; i++)
+            {
+                Items[0].Add(i);
+            }
+        }
+
+        public void MoveAll(int src, int dst)
+        {
+            foreach (var itemId in Items[src])
+            {
+                Items[dst].Add(itemId);
+            }
+
+            Items[src].Clear();
+            SortItems(dst);
+            // Swap selections and clear source
+            (Selections[src], Selections[dst]) = (Selections[dst], Selections[src]);
+            Selections[src].Clear();
+        }
+
+        public void MoveSelected(int src, int dst)
+        {
+            for (var srcN = Items[src].Count - 1; srcN >= 0; srcN--)
+            {
+                var itemId = Items[src][srcN];
+                if (!Selections[src].Contains(srcN))
+                {
+                    continue;
+                }
+
+                Items[src].RemoveAt(srcN);
+                Items[dst].Add(itemId);
+            }
+
+            SortItems(dst);
+            // Swap selections and clear source
+            (Selections[src], Selections[dst]) = (Selections[dst], Selections[src]);
+            Selections[src].Clear();
+        }
+
+        public void SortItems(int n)
+        {
+            Items[n].Sort();
+        }
+
+        public void Show()
+        {
+            if (Widgets.BeginTable("split"u8, 3, TableFlags.None))
+            {
+                Widgets.TableSetupColumn(""u8, TableColumnFlags.WidthStretch);
+                Widgets.TableSetupColumn(""u8, TableColumnFlags.WidthFixed);
+                Widgets.TableSetupColumn(""u8, TableColumnFlags.WidthStretch);
+                Widgets.TableNextRow();
+
+                var requestMoveSelected = -1;
+                var requestMoveAll = -1;
+                var childHeight0 = 0.0f;
+
+                for (var side = 0; side < 2; side++)
+                {
+                    List<int> items = Items[side];
+                    SelectionBasicStorage selection = Selections[side];
+
+                    _ = Widgets.TableSetColumnIndex(side == 0 ? 0 : 2);
+                    Widgets.Text(side == 0 ? $"Available ({items.Count})".ToUtf8() : $"Basket ({items.Count})".ToUtf8());
+
+                    // Submit scrolling range to avoid glitches on moving/deletion
+                    var itemsHeight = Font.GetTextLineHeightWithSpacing();
+                    Window.SetNextWindowContentSize(new Size(0.0f, items.Count * itemsHeight));
+
+                    bool childVisible;
+                    if (side == 0)
+                    {
+                        // Left child is resizable
+                        Window.SetNextWindowSizeConstraints((0.0f, Font.GetFrameHeightWithSpacing() * 4), (float.MaxValue, float.MaxValue));
+                        childVisible = Widgets.BeginChild("0"u8, (-float.Epsilon, Font.GetSize() * 20), ChildFlags.FrameStyle | ChildFlags.ResizeY);
+                        childHeight0 = Window.Size.Height;
+                    }
+                    else
+                    {
+                        // Right child use same height as left one
+                        childVisible = Widgets.BeginChild("1"u8, (-float.Epsilon, childHeight0), ChildFlags.FrameStyle);
+                    }
+
+                    if (childVisible)
+                    {
+                        MultiSelectFlags flags = MultiSelectFlags.None;
+                        MultiSelectIO msIo = Widgets.BeginMultiSelect(flags, selection.Size, items.Count);
+                        selection.ApplyRequests(msIo);
+
+                        for (var itemN = 0; itemN < items.Count; itemN++)
+                        {
+                            var itemId = items[itemN];
+                            var itemIsSelected = selection.Contains(itemN);
+                            Widgets.SetNextItemSelectionUserData(itemN);
+                            _ = Widgets.Selectable(ExampleNames[itemId].ToUtf8(), itemIsSelected, SelectableFlags.AllowDoubleClick);
+                            if (Widgets.IsItemFocused())
+                            {
+                                if (Context.IsKeyPressed(Key.Enter) || Context.IsKeyPressed(Key.KeypadEnter))
+                                {
+                                    requestMoveSelected = side;
+                                }
+
+                                if (Context.IsMouseDoubleClicked(MouseButton.Left))
+                                {
+                                    requestMoveSelected = side;
+                                }
+                            }
+                        }
+
+                        msIo = Widgets.EndMultiSelect();
+                        selection.ApplyRequests(msIo);
+                    }
+
+                    Widgets.EndChild();
+                }
+
+                // Buttons column
+                _ = Widgets.TableSetColumnIndex(1);
+                Widgets.NewLine();
+                Size buttonSz = new(Font.GetFrameHeight(), Font.GetFrameHeight());
+
+                if (Widgets.Button(">>"u8, buttonSz))
+                {
+                    requestMoveAll = 0;
+                }
+
+                if (Widgets.Button(">"u8, buttonSz))
+                {
+                    requestMoveSelected = 0;
+                }
+
+                if (Widgets.Button("<"u8, buttonSz))
+                {
+                    requestMoveSelected = 1;
+                }
+
+                if (Widgets.Button("<<"u8, buttonSz))
+                {
+                    requestMoveAll = 1;
+                }
+
+                // Process requests
+                if (requestMoveAll != -1)
+                {
+                    MoveAll(requestMoveAll, requestMoveAll ^ 1);
+                }
+
+                if (requestMoveSelected != -1)
+                {
+                    MoveSelected(requestMoveSelected, requestMoveSelected ^ 1);
+                }
+
+                Widgets.EndTable();
+            }
+        }
+    }
+
+    // Helper class for Tree demo
+    private sealed class ExampleTreeNode
+    {
+        public string Name { get; set; } = "";
+        public int UID { get; set; }
+        public ExampleTreeNode? Parent { get; set; }
+        public List<ExampleTreeNode> Children { get; } = [];
+        public int IndexInParent { get; set; }
+
+        // Leaf Data
+        public bool HasData { get; set; }
+
+        public static ExampleTreeNode CreateDemoTree()
+        {
+            string[] rootNames = ["Apple", "Banana", "Cherry", "Kiwi", "Mango", "Orange", "Pear", "Pineapple", "Strawberry", "Watermelon"];
+            var uid = 0;
+            var root = CreateNode("<ROOT>", ++uid, null);
+            const int rootItemsMultiplier = 2;
+
+            for (var idxL0 = 0; idxL0 < rootNames.Length * rootItemsMultiplier; idxL0++)
+            {
+                var name = $"{rootNames[idxL0 / rootItemsMultiplier]} {idxL0 % rootItemsMultiplier}";
+                var nodeL1 = CreateNode(name, ++uid, root);
+                var numberOfChildren = name.Length;
+
+                for (var idxL1 = 0; idxL1 < numberOfChildren; idxL1++)
+                {
+                    var nodeL2 = CreateNode($"Child {idxL1}", ++uid, nodeL1);
+                    nodeL2.HasData = true;
+
+                    if (idxL1 == 0)
+                    {
+                        var nodeL3 = CreateNode("Sub-child 0", ++uid, nodeL2);
+                        nodeL3.HasData = true;
+                    }
+                }
+            }
+
+            return root;
+        }
+
+        private static ExampleTreeNode CreateNode(string name, int uid, ExampleTreeNode? parent)
+        {
+            var node = new ExampleTreeNode
+            {
+                Name = name,
+                UID = uid,
+                Parent = parent,
+                IndexInParent = parent?.Children.Count ?? 0
+            };
+            parent?.Children.Add(node);
+            return node;
+        }
     }
 }
