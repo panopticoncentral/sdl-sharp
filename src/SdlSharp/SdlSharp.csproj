@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -13,14 +13,14 @@
     <Authors>Paul Vick</Authors>
     <Company>Paul Vick</Company>
     <Description>A C# binding for the Simple DirectMedia Layer library (http://www.libsdl.org).</Description>
-    <Copyright>Copyright 2019</Copyright>
+    <Copyright>Copyright 2019-2026</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/panopticoncentral/sdk-sharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SdlSharp.Redist" Version="$(SdlRedistVersion)" />
+    <PackageReference Include="SdlSharp.Redist" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
