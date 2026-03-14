@@ -113,21 +113,22 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 - `Input/Pen.cs` — pen/stylus input
 - `Input/Sensor.cs` — accelerometer/gyroscope
 
-### Phase 4: Audio
+### Phase 4: Audio ✅
 
-#### Native files to create
+#### Native layer (`src/SdlSharp/Native/`)
 
-- **`Native/Audio.cs`** — wraps `SDL_audio.h`
-  - Opaque type: `SDL_AudioStream`
-  - Typed IDs: `SDL_AudioDeviceID`
-  - Enums: `SDL_AudioFormat`
-  - Structs: `SDL_AudioSpec`
-  - Functions: ~50+ covering devices, streams, format conversion, etc.
+| File | Wraps | Contents |
+|------|-------|----------|
+| `Audio.cs` | `SDL_audio.h` | `SDL_AudioFormat` enum, `SDL_AudioDeviceID` typed ID, `SDL_AudioSpec` struct, `SDL_AudioStream` opaque, device defaults, driver enumeration, device open/close/pause/resume/gain, stream create/destroy/bind/unbind, stream data put/get/available/queued/flush/clear, stream format/frequency ratio/gain, stream device pause/resume, WAV loading, format name query |
 
-#### High-level wrappers to create
+#### High-level wrappers (`src/SdlSharp/Audio/`)
 
-- **`Audio/AudioDevice.cs`** — device enumeration and management
-- **`Audio/AudioStream.cs`** — sealed, IDisposable, stream-centric audio API
+| File | Purpose |
+|------|---------|
+| `AudioFormat.cs` | Public `AudioFormat` enum wrapping `SDL_AudioFormat` |
+| `AudioSpec.cs` | `readonly record struct AudioSpec(AudioFormat Format, int Channels, int Frequency)` |
+| `AudioDevice.cs` | `sealed unsafe class AudioDevice : IDisposable` — open/close playback/recording devices, enumerate devices/drivers, pause/resume, gain control, bind streams |
+| `AudioStream.cs` | `sealed unsafe class AudioStream : IDisposable` — create streams with format conversion, simplified `OpenDevice` for common case, put/get data via `Span<byte>`, frequency ratio, gain, flush/clear, device pause/resume |
 
 ### Phase 5: GPU + Advanced
 

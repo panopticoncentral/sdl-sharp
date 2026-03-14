@@ -6,6 +6,8 @@
     <Project Path="Samples/Renderer/Renderer.csproj" />
     <Project Path="Samples/InputDemo/InputDemo.csproj" />
     <Project Path="Samples/Paint/Paint.csproj" />
+    <Project Path="Samples/AudioInfo/AudioInfo.csproj" />
+    <Project Path="Samples/ToneGenerator/ToneGenerator.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
