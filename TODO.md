@@ -28,93 +28,90 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 | `PropertyType.cs` | Public `PropertyType` enum wrapping `SDL_PropertyType`, members expressed as `(int)Native.SDL_PropertyType.Invalid` etc. |
 | `Application.cs` | Init/quit lifecycle, `SetMetadata`/`GetMetadataProperty`, `IsMainThread`, `WasInit`, `InitSubSystem`, `QuitSubSystem` — uses `InitFlags` (not native type) |
 
+### Phase 2: Video + Rendering ✅
+
+#### Native layer (`src/SdlSharp/Native/`)
+
+| File | Wraps | Contents |
+|------|-------|----------|
+| `Rect.cs` | `SDL_rect.h` | `SDL_Point`, `SDL_FPoint`, `SDL_Rect`, `SDL_FRect` structs, rect utility functions |
+| `Pixels.cs` | `SDL_pixels.h` | `SDL_PixelFormat`, `SDL_ColorType`, `SDL_ColorRange`, `SDL_Colorspace` enums, `SDL_Color`, `SDL_FColor`, `SDL_Palette` structs, pixel format functions |
+| `BlendMode.cs` | `SDL_blendmode.h` | `SDL_BlendMode`, `SDL_BlendOperation`, `SDL_BlendFactor` enums, `SDL_ComposeCustomBlendMode` |
+| `Surface.cs` | `SDL_surface.h` | `SDL_Surface` struct, surface creation/destruction, BMP load/save, blit, fill |
+| `Video.cs` | `SDL_video.h` | `SDL_Window` opaque, `SDL_WindowID`/`SDL_DisplayID` typed IDs, `SDL_WindowFlags`, `SDL_DisplayMode`, window/display management functions |
+| `Render.cs` | `SDL_render.h` | `SDL_Renderer`/`SDL_Texture` opaque, `SDL_Vertex`, `SDL_TextureAccess`, renderer creation, drawing primitives, viewport, clipping |
+
+#### High-level wrappers (`src/SdlSharp/Graphics/`)
+
+| File | Purpose |
+|------|---------|
+| `Color.cs` | `readonly record struct Color(byte R, byte G, byte B, byte A)` |
+| `FColor.cs` | `readonly record struct FColor(float R, float G, float B, float A)` |
+| `Point.cs` | `readonly record struct Point(int X, int Y)` |
+| `FPoint.cs` | `readonly record struct FPoint(float X, float Y)` |
+| `Rectangle.cs` | `readonly record struct Rectangle(int X, int Y, int W, int H)` |
+| `FRectangle.cs` | `readonly record struct FRectangle(float X, float Y, float W, float H)` |
+| `Size.cs` | `readonly record struct Size(int W, int H)` |
+| `Display.cs` | Display info wrapper |
+| `DisplayMode.cs` | Display mode record struct |
+| `Window.cs` | `sealed unsafe class Window : IDisposable`, wraps `SDL_Window*` |
+| `Surface.cs` | `sealed unsafe class Surface : IDisposable`, wraps `SDL_Surface*` |
+| `Renderer.cs` | `sealed unsafe class Renderer : IDisposable`, wraps `SDL_Renderer*`, drawing methods |
+| `Texture.cs` | `sealed unsafe class Texture : IDisposable`, wraps `SDL_Texture*` |
+| `Vertex.cs` | Vertex record struct |
+| `PixelFormat.cs` | Pixel format enum |
+| `BlendMode.cs` | Blend mode wrapper with static presets |
+| `WindowFlags.cs` | Public `WindowFlags` enum |
+| `FlashOperation.cs` | Flash operation enum |
+| `ScaleMode.cs` | Scale mode enum |
+| `FlipMode.cs` | Flip mode enum |
+| `LogicalPresentation.cs` | Logical presentation enum |
+| `TextureAccess.cs` | Texture access enum |
+| `TextureAddressMode.cs` | Texture address mode enum |
+| `Colorspace.cs` | Colorspace enum |
+| `Palette.cs` | Palette wrapper |
+| `PixelFormatDetails.cs` | Pixel format details wrapper |
+
 ## What's Next
 
-### Phase 2: Video + Rendering
+### Phase 3: Events + Input ✅
 
-This is the next phase to implement. Source headers are at `../SDL/include/SDL3/`.
+#### Native layer (`src/SdlSharp/Native/`) ✅
 
-#### Native files to create
+| File | Wraps | Contents |
+|------|-------|----------|
+| `Events.cs` | `SDL_events.h` | `SDL_EventType` enum, `SDL_Event` union (`[StructLayout(LayoutKind.Explicit)]`), all event structs (`SDL_CommonEvent`, `SDL_KeyboardEvent`, `SDL_MouseMotionEvent`, `SDL_MouseButtonEvent`, `SDL_MouseWheelEvent`, `SDL_JoyAxisEvent`, `SDL_GamepadAxisEvent`, etc.), `SDL_PowerState` enum, `SDL_PollEvent`, `SDL_WaitEvent`, `SDL_WaitEventTimeout`, `SDL_PushEvent`, `SDL_RegisterEvents`, `SDL_HasEvent`, `SDL_FlushEvent`, `SDL_SetEventEnabled`, `SDL_EventEnabled` |
+| `Scancode.cs` | `SDL_scancode.h` | `SDL_Scancode` enum (all ~200 values) |
+| `Keycode.cs` | `SDL_keycode.h` | `SDL_Keycode` enum (all values), `SDL_Keymod` flags enum |
+| `Keyboard.cs` | `SDL_keyboard.h` | `SDL_HasKeyboard`, `SDL_GetKeyboards`, `SDL_GetKeyboardState`, `SDL_GetModState`, `SDL_SetModState`, `SDL_GetKeyFromScancode`, `SDL_GetScancodeFromKey`, scancode/key name functions, text input start/stop/active/clear |
+| `Mouse.cs` | `SDL_mouse.h` | `SDL_Cursor` opaque, `SDL_SystemCursor`/`SDL_MouseWheelDirection` enums, mouse state queries, warp, relative mode, capture, cursor create/destroy/show/hide, button constants |
+| `Joystick.cs` | `SDL_joystick.h` | `SDL_Joystick` opaque, `SDL_JoystickID` typed ID, `SDL_JoystickType`/`SDL_JoystickConnectionState` enums, hat constants, open/close, axis/hat/button queries |
+| `Gamepad.cs` | `SDL_gamepad.h` | `SDL_Gamepad` opaque, `SDL_GamepadType`/`SDL_GamepadButton`/`SDL_GamepadButtonLabel`/`SDL_GamepadAxis` enums, open/close, axis/button queries, button labels, connection state |
+| `Touch.cs` | `SDL_touch.h` | `SDL_TouchDeviceType` enum, `SDL_Finger` struct, device enumeration, finger queries |
+| `Pen.cs` | `SDL_pen.h` | `SDL_PenAxis`/`SDL_PenDeviceType` enums, pen input flag constants, `SDL_GetPenDeviceType` |
+| `Sensor.cs` | `SDL_sensor.h` | `SDL_Sensor` opaque, `SDL_SensorType` enum, sensor enumeration, open/close, data queries |
 
-- **`Native/Rect.cs`** — wraps `SDL_rect.h`
-  - Structs: `SDL_Point`, `SDL_FPoint`, `SDL_Rect`, `SDL_FRect`
-  - Functions: `SDL_RectEmpty`, `SDL_RectsEqual`, `SDL_HasRectIntersection`, `SDL_GetRectIntersection`, `SDL_GetRectUnion`, etc.
+#### High-level wrappers (`src/SdlSharp/Input/`)
 
-- **`Native/Pixels.cs`** — wraps `SDL_pixels.h`
-  - Enums: `SDL_PixelFormat`, `SDL_ColorType`, `SDL_ColorRange`, `SDL_ColorPrimaries`, `SDL_TransferCharacteristics`, `SDL_MatrixCoefficients`, `SDL_Colorspace`
-  - Structs: `SDL_Color`, `SDL_FColor`, `SDL_Palette`
-  - Functions: `SDL_GetPixelFormatName`, `SDL_MapRGB`, `SDL_MapRGBA`, etc.
+| File | Purpose |
+|------|---------|
+| `Scancode.cs` | Public `Scancode` enum (physical key codes), wrapping `SDL_Scancode` |
+| `Keycode.cs` | Public `Keycode` enum (virtual key codes) + `KeyModifiers` flags, wrapping `SDL_Keycode`/`SDL_Keymod` |
+| `MouseButton.cs` | Public `MouseButton` enum |
+| `EventArgs.cs` | `readonly record struct` event args: `KeyEventArgs`, `TextInputEventArgs`, `MouseMotionEventArgs`, `MouseButtonEventArgs`, `MouseWheelEventArgs`, `WindowEventArgs`, `QuitEventArgs` |
+| `Keyboard.cs` | Static class: key state queries, mod state, scancode/key names |
+| `Mouse.cs` | Static class: mouse state, warp, cursor show/hide, capture |
 
-- **`Native/BlendMode.cs`** — wraps `SDL_blendmode.h`
-  - Enums: `SDL_BlendMode`, `SDL_BlendOperation`, `SDL_BlendFactor`
-  - Functions: `SDL_ComposeCustomBlendMode`
+**Event dispatch** added to `Application.cs`:
+- Static C# events: `Quit`, `KeyDown`, `KeyUp`, `TextInput`, `MouseMotion`, `MouseButtonDown`, `MouseButtonUp`, `MouseWheel`, `Window`
+- `DispatchEvents()` method: polls all pending events via `SDL_PollEvent`, dispatches to handlers, returns `true` on quit
 
-- **`Native/Surface.cs`** — wraps `SDL_surface.h`
-  - Opaque type: `SDL_Surface` (note: not fully opaque in SDL3, has public fields)
-  - Functions: `SDL_CreateSurface`, `SDL_DestroySurface`, `SDL_LoadBMP`, `SDL_SaveBMP`, `SDL_BlitSurface`, `SDL_FillSurfaceRect`, etc.
-
-- **`Native/Video.cs`** — wraps `SDL_video.h`
-  - Opaque type: `SDL_Window`
-  - Typed IDs: `SDL_WindowID` (uint), `SDL_DisplayID` (uint)
-  - Enums: `SDL_WindowFlags` (Uint64!), `SDL_FlashOperation`, `SDL_GLattr`, `SDL_GLprofile`, `SDL_GLcontextFlag`
-  - Structs: `SDL_DisplayMode`
-  - Functions: ~80+ covering window creation/destruction, positioning, sizing, fullscreen, display management, GL context, etc.
-  - Property constants: `SDL_PROP_WINDOW_*`, `SDL_PROP_DISPLAY_*`
-
-- **`Native/Render.cs`** — wraps `SDL_render.h`
-  - Opaque types: `SDL_Renderer`, `SDL_Texture`
-  - Structs: `SDL_Vertex`
-  - Enums: `SDL_TextureAccess`, `SDL_RendererLogicalPresentation`
-  - Functions: ~50+ covering renderer creation, texture management, drawing primitives, viewport, clipping, etc.
-  - Property constants: `SDL_PROP_RENDERER_*`, `SDL_PROP_TEXTURE_*`
-
-#### High-level wrappers to create
-
-- **`Graphics/Color.cs`** — `readonly record struct Color(byte R, byte G, byte B, byte A)`
-- **`Graphics/Point.cs`** — `readonly record struct Point(int X, int Y)`
-- **`Graphics/FPoint.cs`** — `readonly record struct FPoint(float X, float Y)`
-- **`Graphics/Rectangle.cs`** — `readonly record struct Rectangle(int X, int Y, int W, int H)`
-- **`Graphics/FRectangle.cs`** — `readonly record struct FRectangle(float X, float Y, float W, float H)`
-- **`Graphics/Size.cs`** — `readonly record struct Size(int W, int H)`
-- **`Graphics/Display.cs`** — display info wrapper
-- **`Graphics/Window.cs`** — sealed, IDisposable, wraps `SDL_Window*`, owns/borrows, properties (Title, Position, Size, Fullscreen, etc.)
-- **`Graphics/Surface.cs`** — sealed, IDisposable, wraps `SDL_Surface*`
-- **`Graphics/Renderer.cs`** — sealed, IDisposable, wraps `SDL_Renderer*`, drawing methods
-- **`Graphics/Texture.cs`** — sealed, IDisposable, wraps `SDL_Texture*`
-- **`Graphics/PixelFormat.cs`** — enum/helpers for pixel format management
-- **`Graphics/BlendMode.cs`** — blend mode wrapper with static presets
-
-### Phase 3: Events + Input
-
-#### Native files to create
-
-- **`Native/Events.cs`** — wraps `SDL_events.h`
-  - `SDL_EventType` enum (large — hundreds of values)
-  - `SDL_Event` union struct (`[StructLayout(LayoutKind.Explicit)]`)
-  - Individual event structs: `SDL_CommonEvent`, `SDL_WindowEvent`, `SDL_KeyboardEvent`, `SDL_MouseMotionEvent`, `SDL_MouseButtonEvent`, `SDL_MouseWheelEvent`, `SDL_JoyAxisEvent`, `SDL_GamepadAxisEvent`, etc.
-  - Functions: `SDL_PollEvent`, `SDL_WaitEvent`, `SDL_WaitEventTimeout`, `SDL_PushEvent`, `SDL_RegisterEvents`, `SDL_SetEventFilter`, `SDL_AddEventWatch`, etc.
-
-- **`Native/Keyboard.cs`** — wraps `SDL_keyboard.h`
-- **`Native/Keycode.cs`** — wraps `SDL_keycode.h` (large enum)
-- **`Native/Scancode.cs`** — wraps `SDL_scancode.h` (large enum)
-- **`Native/Mouse.cs`** — wraps `SDL_mouse.h`
-- **`Native/Joystick.cs`** — wraps `SDL_joystick.h`
-- **`Native/Gamepad.cs`** — wraps `SDL_gamepad.h`
-- **`Native/Touch.cs`** — wraps `SDL_touch.h`
-- **`Native/Pen.cs`** — wraps `SDL_pen.h`
-- **`Native/Sensor.cs`** — wraps `SDL_sensor.h`
-
-#### High-level wrappers to create
-
-- Add event dispatch to `Application.cs` — `DispatchEvents()` with `SDL_PollEvent` loop and switch on event type
-- Event args as `readonly record struct` per event category
-- **`Input/Keyboard.cs`** — static class, static events for key up/down, key state queries
-- **`Input/Mouse.cs`** — static class, static events, cursor management
-- **`Input/Gamepad.cs`** — sealed class wrapping `SDL_Gamepad*`
-- **`Input/Joystick.cs`** — sealed class wrapping `SDL_Joystick*`
-- **`Input/TouchDevice.cs`** — touch input
-- **`Input/Pen.cs`** — pen/stylus input
-- **`Input/Sensor.cs`** — accelerometer/gyroscope
+**Deferred high-level wrappers** (native layer ready, wrap later as needed):
+- `Input/Gamepad.cs` — sealed class wrapping `SDL_Gamepad*`
+- `Input/Joystick.cs` — sealed class wrapping `SDL_Joystick*`
+- `Input/TouchDevice.cs` — touch input
+- `Input/Pen.cs` — pen/stylus input
+- `Input/Sensor.cs` — accelerometer/gyroscope
 
 ### Phase 4: Audio
 

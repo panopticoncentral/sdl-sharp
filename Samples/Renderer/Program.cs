@@ -1,5 +1,6 @@
 using SdlSharp;
 using SdlSharp.Graphics;
+using SdlSharp.Input;
 
 using var app = new Application(InitFlags.Video);
 
@@ -7,9 +8,19 @@ var (window, renderer) = Renderer.CreateWindowAndRenderer("SdlSharp Renderer Sam
 using (window)
 using (renderer)
 {
-    for (var i = 0; i < 300; i++)
+    var running = true;
+    var frame = 0;
+
+    Application.Quit += _ => running = false;
+    Application.KeyDown += e =>
     {
-        Application.PumpEvents();
+        if (e.Key == Keycode.Escape)
+            running = false;
+    };
+
+    while (running)
+    {
+        Application.DispatchEvents();
 
         renderer.DrawColor = new Color(40, 40, 60);
         renderer.Clear();
@@ -28,7 +39,7 @@ using (renderer)
 
         // Draw debug text
         renderer.DrawColor = Color.White;
-        renderer.DrawDebugText(10, 10, $"Frame {i}");
+        renderer.DrawDebugText(10, 10, $"Frame {frame++} — Press ESC to quit");
 
         renderer.Present();
         Thread.Sleep(16);

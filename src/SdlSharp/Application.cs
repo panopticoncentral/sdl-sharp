@@ -1,7 +1,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using SdlSharp.Input;
 using static SdlSharp.Native.Common;
+using static SdlSharp.Native.Events;
 using static SdlSharp.Native.Init;
 
 namespace SdlSharp;
@@ -106,6 +108,107 @@ public sealed unsafe class Application : IDisposable
     /// Must be called on the main thread.
     /// </summary>
     public static void PumpEvents() => Native.Events.SDL_PumpEvents();
+
+    /// <summary>Raised when the user requests a quit (e.g. closes the last window).</summary>
+    public static event Action<QuitEventArgs>? Quit;
+
+    /// <summary>Raised when a key is pressed.</summary>
+    public static event Action<KeyEventArgs>? KeyDown;
+
+    /// <summary>Raised when a key is released.</summary>
+    public static event Action<KeyEventArgs>? KeyUp;
+
+    /// <summary>Raised when text is entered via the keyboard.</summary>
+    public static event Action<TextInputEventArgs>? TextInput;
+
+    /// <summary>Raised when the mouse moves.</summary>
+    public static event Action<MouseMotionEventArgs>? MouseMotion;
+
+    /// <summary>Raised when a mouse button is pressed.</summary>
+    public static event Action<MouseButtonEventArgs>? MouseButtonDown;
+
+    /// <summary>Raised when a mouse button is released.</summary>
+    public static event Action<MouseButtonEventArgs>? MouseButtonUp;
+
+    /// <summary>Raised when the mouse wheel is scrolled.</summary>
+    public static event Action<MouseWheelEventArgs>? MouseWheel;
+
+    /// <summary>Raised for window events (shown, hidden, moved, resized, etc.).</summary>
+    public static event Action<WindowEventArgs>? Window;
+
+    /// <summary>
+    /// Polls all pending events and dispatches them to the appropriate event handlers.
+    /// Must be called on the main thread. Returns true if a quit event was received.
+    /// </summary>
+    /// <returns>True if a quit event was received.</returns>
+    public static bool DispatchEvents()
+    {
+        Native.SDL_Event e;
+        var gotQuit = false;
+
+        while (SDL_PollEvent(&e))
+        {
+            switch ((Native.SDL_EventType)e.type)
+            {
+                case Native.SDL_EventType.SDL_EVENT_QUIT:
+                    gotQuit = true;
+                    Quit?.Invoke(new QuitEventArgs());
+                    break;
+
+                case Native.SDL_EventType.SDL_EVENT_KEY_DOWN:
+                case Native.SDL_EventType.SDL_EVENT_KEY_UP:
+                    var keyHandler = e.type == (uint)Native.SDL_EventType.SDL_EVENT_KEY_DOWN ? KeyDown : KeyUp;
+                    keyHandler?.Invoke(new KeyEventArgs(
+                        e.key.windowID.Value,
+                        (Scancode)e.key.scancode,
+                        (Keycode)e.key.key,
+                        (KeyModifiers)e.key.mod,
+                        e.key.down != 0,
+                        e.key.repeat != 0));
+                    break;
+
+                case Native.SDL_EventType.SDL_EVENT_TEXT_INPUT:
+                    TextInput?.Invoke(new TextInputEventArgs(
+                        e.text.windowID.Value,
+                        Marshal.PtrToStringUTF8((nint)e.text.text)));
+                    break;
+
+                case Native.SDL_EventType.SDL_EVENT_MOUSE_MOTION:
+                    MouseMotion?.Invoke(new MouseMotionEventArgs(
+                        e.motion.windowID.Value,
+                        e.motion.x, e.motion.y,
+                        e.motion.xrel, e.motion.yrel,
+                        e.motion.state));
+                    break;
+
+                case Native.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
+                case Native.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
+                    var btnHandler = e.type == (uint)Native.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN ? MouseButtonDown : MouseButtonUp;
+                    btnHandler?.Invoke(new MouseButtonEventArgs(
+                        e.button.windowID.Value,
+                        (MouseButton)e.button.button,
+                        e.button.down != 0,
+                        e.button.clicks,
+                        e.button.x, e.button.y));
+                    break;
+
+                case Native.SDL_EventType.SDL_EVENT_MOUSE_WHEEL:
+                    MouseWheel?.Invoke(new MouseWheelEventArgs(
+                        e.wheel.windowID.Value,
+                        e.wheel.x, e.wheel.y,
+                        e.wheel.mouse_x, e.wheel.mouse_y));
+                    break;
+
+                case >= Native.SDL_EventType.SDL_EVENT_WINDOW_FIRST and <= Native.SDL_EventType.SDL_EVENT_WINDOW_LAST:
+                    Window?.Invoke(new WindowEventArgs(
+                        e.window.windowID.Value,
+                        e.window.data1, e.window.data2));
+                    break;
+            }
+        }
+
+        return gotQuit;
+    }
 
     /// <inheritdoc/>
     public void Dispose() => SDL_Quit();
