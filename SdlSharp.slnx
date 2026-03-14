@@ -1,6 +1,10 @@
 <Solution>
   <Project Path="src/SdlSharp/SdlSharp.csproj" />
-  <Project Path="Samples/Lifecycle/Lifecycle.csproj" />
+  <Folder Name="/src/" />
+  <Folder Name="/samples/">
+    <Project Path="Samples/Lifecycle/Lifecycle.csproj" />
+    <Project Path="samples/Renderer/Renderer.csproj" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
   </Folder>

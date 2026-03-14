@@ -101,6 +101,12 @@ public sealed unsafe class Application : IDisposable
     public static string? GetMetadataProperty(string name) =>
         Marshal.PtrToStringUTF8((nint)SDL_GetAppMetadataProperty(ToUtf8(name)));
 
+    /// <summary>
+    /// Pumps the event loop, gathering pending input events.
+    /// Must be called on the main thread.
+    /// </summary>
+    public static void PumpEvents() => Native.Events.SDL_PumpEvents();
+
     /// <inheritdoc/>
     public void Dispose() => SDL_Quit();
 }

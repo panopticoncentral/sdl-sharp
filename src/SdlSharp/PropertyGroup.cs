@@ -17,7 +17,7 @@ public sealed unsafe class PropertyGroup : IDisposable
     /// <summary>
     /// The underlying SDL properties ID.
     /// </summary>
-    private SDL_PropertiesID Id { get; set; }
+    internal SDL_PropertiesID Id { get; private set; }
 
     internal PropertyGroup(SDL_PropertiesID id, bool ownsHandle = true)
     {

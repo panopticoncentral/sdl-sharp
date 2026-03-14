@@ -1,11 +1,14 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
+// ReSharper disable InconsistentNaming
 
 namespace SdlSharp.Native;
 
 /// <summary>
 /// Common constants, types, and helpers shared across all native SDL3 bindings.
 /// </summary>
-public static unsafe class Common
+public static unsafe partial class Common
 {
     /// <summary>
     /// The native SDL3 library name.
@@ -86,4 +89,11 @@ public static unsafe class Common
 
         return id;
     }
+
+    /// <summary>
+    /// Free memory allocated by SDL.
+    /// </summary>
+    [LibraryImport(Sdl3, EntryPoint = "SDL_free")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void SDL_free(void* mem);
 }
