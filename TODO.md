@@ -130,37 +130,80 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 | `AudioDevice.cs` | `sealed unsafe class AudioDevice : IDisposable` — open/close playback/recording devices, enumerate devices/drivers, pause/resume, gain control, bind streams |
 | `AudioStream.cs` | `sealed unsafe class AudioStream : IDisposable` — create streams with format conversion, simplified `OpenDevice` for common case, put/get data via `Span<byte>`, frequency ratio, gain, flush/clear, device pause/resume |
 
-### Phase 5: GPU + Advanced
+### Phase 5a: Small Subsystems ✅
 
-- **`Native/Gpu.cs`** — wraps `SDL_gpu.h` (~100+ functions, the largest single header)
-- **`Graphics/Gpu/GpuDevice.cs`** — device creation and management
-- **`Graphics/Gpu/GpuCommandBuffer.cs`** — command recording
-- **`Graphics/Gpu/GpuRenderPass.cs`** — render pass management
-- **`Graphics/Gpu/GpuComputePass.cs`** — compute pass
-- **`Graphics/Gpu/GpuPipeline.cs`** — graphics/compute pipelines
-- **`Graphics/Gpu/GpuBuffer.cs`** — GPU buffer management
-- **`Graphics/Gpu/GpuTexture.cs`** — GPU texture management
-- **`Graphics/Gpu/GpuSampler.cs`** — sampler state
-- **`Graphics/Gpu/GpuShader.cs`** — shader loading
+#### Native layer (`src/SdlSharp/Native/`)
 
-Plus remaining subsystems:
-- `Native/Haptic.cs` + `Input/Haptic.cs` — force feedback
-- `Native/Camera.cs` + `Input/Camera.cs` — camera input
-- `Native/Timer.cs` + `Timer.cs` — timing utilities
-- `Native/Hints.cs` + `Hints.cs` — configuration hints
-- `Native/Log.cs` + `Log.cs` — logging
-- `Native/Clipboard.cs` + `Clipboard.cs` — clipboard access
-- `Native/Dialog.cs` — file/folder dialogs
-- `Native/MessageBox.cs` — simple message boxes
-- `Native/IOStream.cs` — I/O stream abstraction
-- `Native/Storage.cs` — storage/file API
-- `Native/FileSystem.cs` — filesystem utilities
-- `Native/Thread.cs` + `Native/Mutex.cs` + `Native/Atomic.cs` — threading (may not need high-level wrappers, C# has its own)
-- `Native/Process.cs` — process management
-- `Native/HidApi.cs` — HID device access
-- `Native/CpuInfo.cs` + `CpuInfo.cs` — CPU detection
-- `Native/Power.cs` — power state
-- `Native/Locale.cs` — locale/i18n
-- `Native/Time.cs` — time utilities
-- `Native/Misc.cs` — miscellaneous (SDL_OpenURL, etc.)
+| File | Wraps | Contents |
+|------|-------|----------|
+| `Misc.cs` | `SDL_misc.h` | `SDL_OpenURL` |
+| `Power.cs` | `SDL_power.h` | `SDL_GetPowerInfo` (enum is in `Events.cs`) |
+| `CpuInfo.cs` | `SDL_cpuinfo.h` | CPU core count, cache line size, SIMD feature detection (SSE/AVX/NEON/etc.), system RAM, page size |
+| `Locale.cs` | `SDL_locale.h` | `SDL_Locale` struct, `SDL_GetPreferredLocales` |
+| `Timer.cs` | `SDL_timer.h` | `SDL_GetTicks`, `SDL_GetTicksNS`, performance counter, `SDL_Delay`, `SDL_DelayNS`, `SDL_DelayPrecise` |
+| `Clipboard.cs` | `SDL_clipboard.h` | `SDL_SetClipboardText`, `SDL_GetClipboardText`, `SDL_HasClipboardText` |
+| `Log.cs` | `SDL_log.h` | `SDL_LogCategory`/`SDL_LogPriority` enums, priority get/set/reset, `SDL_SetLogOutputFunction` callback |
+| `Time.cs` | `SDL_time.h` | `SDL_DateFormat`/`SDL_TimeFormat` enums, `SDL_DateTime` struct, locale preferences, current time, date/time conversion |
+| `Hints.cs` | `SDL_hints.h` | `SDL_HintPriority` enum, hint set/get/reset functions |
+| `FileSystem.cs` | `SDL_filesystem.h` | `SDL_Folder` enum, `SDL_GetBasePath`, `SDL_GetPrefPath`, `SDL_GetUserFolder`, `SDL_CreateDirectory`, `SDL_GetCurrentDirectory` |
+| `MessageBox.cs` | `SDL_messagebox.h` | `SDL_MessageBoxFlags` enum, `SDL_ShowSimpleMessageBox` |
+| `Dialog.cs` | `SDL_dialog.h` | `SDL_DialogFileFilter` struct, `SDL_FileDialogType` enum, open/save/folder dialog functions |
+| `Camera.cs` | `SDL_camera.h` | `SDL_CameraID`, `SDL_Camera` opaque, `SDL_CameraSpec`, `SDL_CameraPosition`, device enumeration, open/close, frame acquire/release |
+| `Haptic.cs` | `SDL_haptic.h` | `SDL_HapticID`, `SDL_Haptic` opaque, device enumeration, open/close, simple rumble API |
+
+#### High-level wrappers
+
+| File | Purpose |
+|------|---------|
+| `PowerState.cs` | Public `PowerState` enum |
+| `PowerInfo.cs` | `readonly record struct PowerInfo` — state, battery seconds/percent |
+| `SystemInfo.cs` | Static class — CPU features, RAM, paths (`BasePath`, `GetPrefPath`, `GetUserFolder`, `GetCurrentDirectory`), `OpenUrl` |
+| `SystemFolder.cs` | Public `SystemFolder` enum |
+| `SdlTimer.cs` | Static class — ticks, performance counter, delay |
+| `Clipboard.cs` | Static class — text get/set, `HasText` |
+| `LogCategory.cs` | Public `LogCategory` enum |
+| `LogPriority.cs` | Public `LogPriority` enum |
+| `SdlLog.cs` | Static class — priority get/set, managed output callback via `[UnmanagedCallersOnly]` |
+| `SdlHints.cs` | Static class — hint set/get/reset |
+| `LocaleInfo.cs` | `readonly record struct LocaleInfo` — language, country, `GetPreferred()` |
+| `MessageBoxType.cs` | Public `MessageBoxType` enum |
+| `Graphics/MessageBox.cs` | Static class — `Show()` simple message box with optional parent window |
+
+**Deferred subsystems** (native API available in SDL but not wrapped — C# has better alternatives or they're too niche):
+- `SDL_iostream.h` — C# has `System.IO.Stream`
+- `SDL_storage.h` — C# has `System.IO`
+- `SDL_process.h` — C# has `System.Diagnostics.Process`
+- `SDL_hidapi.h` — niche, `wchar_t` complexity
+- `SDL_thread.h` / `SDL_mutex.h` / `SDL_atomic.h` — C# has `System.Threading`
+- SDL callback-based timers — C# has `System.Threading.Timer`
+- Full haptic effect system — complex struct unions, rumble API covers common case
+- Custom MIME clipboard — rarely needed
+- File dialog properties variant — specific dialog functions suffice
+
+### Phase 5b: GPU ✅
+
+#### Native layer (`src/SdlSharp/Native/`)
+
+| File | Wraps | Contents |
+|------|-------|----------|
+| `Gpu.cs` | `SDL_gpu.h` | 14 opaque types, 23 enums (incl. flag enums), 32 structs, 100+ functions: device creation/destruction, pipeline/shader/sampler creation, resource (texture/buffer/transfer buffer) creation/release, command buffer acquisition/submission, render pass (begin/end, bindpipeline/buffers/samplers, draw/draw indexed/indirect), compute pass (begin/end, bind/dispatch), copy pass (upload/download/copy), swapchain (claim/release window, acquire texture, present modes), fence synchronization, format queries, debug naming |
+
+#### High-level wrappers (`src/SdlSharp/Graphics/Gpu/`)
+
+| File | Purpose |
+|------|---------|
+| `GpuEnums.cs` | Public enums: `GpuShaderFormat`, `GpuPresentMode`, `GpuSwapchainComposition`, `GpuTextureFormat` (100+ formats), `GpuTextureType`, `GpuTextureUsage`, `GpuSampleCount`, `GpuPrimitiveType`, `GpuIndexElementSize`, `GpuBufferUsage` |
+| `GpuDevice.cs` | `sealed unsafe class GpuDevice : IDisposable` — create device, driver queries, resource/pipeline factory methods, swapchain management, format support queries |
+| `GpuCommandBuffer.cs` | `sealed unsafe class GpuCommandBuffer` — begin render/compute/copy passes, push uniforms, acquire swapchain texture, submit/cancel, debug labels |
+| `GpuRenderPass.cs` | `sealed unsafe class GpuRenderPass` — bind pipeline/buffers/samplers, set viewport/scissor/blend/stencil, draw/draw indexed/indirect |
+| `GpuComputePass.cs` | `sealed unsafe class GpuComputePass` — bind pipeline/storage, dispatch/dispatch indirect |
+| `GpuCopyPass.cs` | `sealed unsafe class GpuCopyPass` — upload/download/copy textures and buffers |
+| `GpuBuffer.cs` | `sealed unsafe class GpuBuffer : IDisposable` — GPU buffer with debug naming |
+| `GpuTexture.cs` | `sealed unsafe class GpuTexture : IDisposable` — GPU texture with debug naming |
+| `GpuTransferBuffer.cs` | `sealed unsafe class GpuTransferBuffer : IDisposable` — map/unmap for CPU access |
+| `GpuSampler.cs` | `sealed unsafe class GpuSampler : IDisposable` — sampler state |
+| `GpuShader.cs` | `sealed unsafe class GpuShader : IDisposable` — compiled shader |
+| `GpuGraphicsPipeline.cs` | `sealed unsafe class GpuGraphicsPipeline : IDisposable` — graphics pipeline |
+| `GpuComputePipeline.cs` | `sealed unsafe class GpuComputePipeline : IDisposable` — compute pipeline |
+| `GpuFence.cs` | `sealed unsafe class GpuFence : IDisposable` — fence with `IsSignaled` query |
 

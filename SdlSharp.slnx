@@ -8,6 +8,8 @@
     <Project Path="Samples/Paint/Paint.csproj" />
     <Project Path="Samples/AudioInfo/AudioInfo.csproj" />
     <Project Path="Samples/ToneGenerator/ToneGenerator.csproj" />
+    <Project Path="Samples/SystemInfo/SystemInfo.csproj" />
+    <Project Path="Samples/GpuInfo/GpuInfo.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
