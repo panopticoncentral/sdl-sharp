@@ -207,3 +207,76 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 | `GpuComputePipeline.cs` | `sealed unsafe class GpuComputePipeline : IDisposable` — compute pipeline |
 | `GpuFence.cs` | `sealed unsafe class GpuFence : IDisposable` — fence with `IsSignaled` query |
 
+### Phase 6: Dear ImGui Integration (in progress)
+
+Separate project `SdlSharp.ImGui` wrapping Dear ImGui v1.92.7 via a hand-written C wrapper.
+Native C/C++ build lives in sibling repo `../imgui-sharp-native/`.
+
+#### Done ✅
+
+- Native C wrapper (`imgui-sharp-native/`) — CMake build, `libimgui_sharp` shared library
+  - Core subset: context, windows, layout, text, buttons, checkboxes, sliders, drags, inputs, combos, trees, tables, tabs, menus, popups, tooltips, color editors, selectables, item utilities, style stack, fonts (minimal)
+  - SDL3 platform backend wrapper (init, shutdown, new frame, process event)
+  - SDL_GPU renderer backend wrapper (init, shutdown, new frame, prepare draw data, render draw data)
+- C# native bindings (`src/SdlSharp.ImGui/Native/`)
+  - `ImGui.cs` — P/Invoke for core functions
+  - `ImGuiBackend.cs` — P/Invoke for backend functions
+- C# high-level wrappers (`src/SdlSharp.ImGui/Gui/`)
+  - `GuiContext.cs` — IDisposable context
+  - `GuiBackend.cs` — Init/NewFrame/PrepareAndRender/Shutdown using SdlSharp types
+  - `Gui.cs` — Static class with idiomatic C# widget API
+- `Application.cs` — `RawEventFilter` event for raw SDL event processing
+- `Samples/ImGuiDemo/` — Working sample project
+
+#### TODO
+
+**Runtime library loading:**
+- [ ] Set up native library resolution for `imgui_sharp` (NativeLibrary.SetDllImportResolver, runtimeconfig, or redist NuGet package)
+- [ ] Cross-platform build of `libimgui_sharp` (macOS dylib, Windows DLL, Linux .so)
+- [ ] Consider an `SdlSharp.ImGui.Redist` NuGet package mirroring the SDL3 redist pattern
+
+**Expand C# high-level API coverage:**
+- [ ] Drag widgets (DragFloat, DragInt, etc.)
+- [ ] InputText with proper managed buffer handling
+- [ ] InputFloat/Int/Double wrappers
+- [ ] ColorEdit4, ColorPicker3/4, ColorButton
+- [ ] Image/ImageButton (with ImTextureRef from SDL_GPUTexture)
+- [ ] BeginChild/EndChild
+- [ ] BeginPopupModal, BeginPopupContextItem/Window
+- [ ] SelectablePtr (with ref bool)
+- [ ] RadioButtonInt
+- [ ] ListBox (BeginListBox/EndListBox)
+- [ ] TabItemButton, SetTabItemClosed
+- [ ] Window queries (IsWindowFocused, IsWindowHovered, GetWindowPos/Size, SetNextWindow*)
+- [ ] More item utilities (IsItemActive, IsItemEdited, GetItemRect*)
+- [ ] Style color push/pop
+- [ ] PushTextWrapPos/PopTextWrapPos
+- [ ] PushItemWidth/PopItemWidth
+
+**Expand native C wrapper:**
+- [ ] InputText with callback support (for resize, completion, history)
+- [ ] Drag and drop (BeginDragDropSource/Target, AcceptDragDropPayload, SetDragDropPayload)
+- [ ] Multi-select (BeginMultiSelect/EndMultiSelect)
+- [ ] ListClipper
+- [ ] DrawList API (custom drawing: lines, circles, rects, text)
+- [ ] Font loading (AddFontFromFileTTF, AddFontFromMemoryTTF)
+- [ ] IO accessors: display size, delta time, fonts pointer, more config flags
+- [ ] Style struct access (get/set individual style properties)
+- [ ] Columns (legacy but still used)
+- [ ] Plot widgets (PlotLines, PlotHistogram)
+- [ ] Table sort specs (TableGetSortSpecs)
+- [ ] Viewport API
+
+**Public enums (SdlSharp.Gui namespace):**
+- [ ] WindowFlags, ChildFlags, InputTextFlags, TreeNodeFlags, SelectableFlags
+- [ ] ComboFlags, TabBarFlags, TabItemFlags, TableFlags, TableColumnFlags
+- [ ] PopupFlags, HoveredFlags, FocusedFlags, SliderFlags, ColorEditFlags
+- [ ] ConfigFlags, Dir, Cond, Col, StyleVar, ButtonFlags
+- [ ] MouseButton, MouseCursor
+
+**Testing & samples:**
+- [ ] Run ImGuiDemo sample end-to-end with native library in place
+- [ ] Verify input forwarding (keyboard, mouse, scroll)
+- [ ] Verify window resize handling
+- [ ] Create a more complex sample (custom widgets, multiple windows)
+

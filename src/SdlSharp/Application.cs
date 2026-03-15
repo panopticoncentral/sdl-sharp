@@ -109,6 +109,17 @@ public sealed unsafe class Application : IDisposable
     /// </summary>
     public static void PumpEvents() => Native.Events.SDL_PumpEvents();
 
+    /// <summary>
+    /// Delegate for raw SDL event processing.
+    /// </summary>
+    public unsafe delegate void RawEventHandler(Native.SDL_Event* e);
+
+    /// <summary>
+    /// Raised for each raw SDL event before typed dispatch.
+    /// Used by ImGui backend to process events.
+    /// </summary>
+    public static event RawEventHandler? RawEventFilter;
+
     /// <summary>Raised when the user requests a quit (e.g. closes the last window).</summary>
     public static event Action<QuitEventArgs>? Quit;
 
@@ -148,6 +159,8 @@ public sealed unsafe class Application : IDisposable
 
         while (SDL_PollEvent(&e))
         {
+            RawEventFilter?.Invoke(&e);
+
             switch ((Native.SDL_EventType)e.type)
             {
                 case Native.SDL_EventType.SDL_EVENT_QUIT:

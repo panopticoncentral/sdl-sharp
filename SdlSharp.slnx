@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="src/SdlSharp/SdlSharp.csproj" />
+  <Project Path="src/SdlSharp.ImGui/SdlSharp.ImGui.csproj" />
   <Folder Name="/src/" />
   <Folder Name="/samples/">
     <Project Path="Samples/Lifecycle/Lifecycle.csproj" />
@@ -10,6 +11,7 @@
     <Project Path="Samples/ToneGenerator/ToneGenerator.csproj" />
     <Project Path="Samples/SystemInfo/SystemInfo.csproj" />
     <Project Path="Samples/GpuInfo/GpuInfo.csproj" />
+    <Project Path="Samples/ImGuiDemo/ImGuiDemo.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />

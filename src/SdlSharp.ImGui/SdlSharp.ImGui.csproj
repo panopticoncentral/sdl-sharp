@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -12,7 +12,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Paul Vick</Authors>
     <Company>Paul Vick</Company>
-    <Description>A C# binding for the Simple DirectMedia Layer library (http://www.libsdl.org).</Description>
+    <Description>Dear ImGui bindings for SdlSharp, using SDL3 GPU backend.</Description>
     <Copyright>Copyright 2019-2026</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/panopticoncentral/sdk-sharp</RepositoryUrl>
@@ -20,11 +20,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="SdlSharp.ImGui" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="SdlSharp.Redist" Version="1.0.0" />
+    <ProjectReference Include="../SdlSharp/SdlSharp.csproj" />
   </ItemGroup>
 
 </Project>
