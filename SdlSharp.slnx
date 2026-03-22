@@ -16,5 +16,6 @@
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
     <File Path="INVENTORY.md" />
+    <File Path="src/SdlSharp.ImGui/INVENTORY.md" />
   </Folder>
 </Solution>

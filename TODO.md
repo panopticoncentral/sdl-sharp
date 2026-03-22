@@ -1,6 +1,7 @@
 # SdlSharp SDL3 Wrapper — TODO
 
 Architecture rules and code patterns are in `CLAUDE.md`.
+Per-API tracking is in `INVENTORY.md` (SdlSharp) and `src/SdlSharp.ImGui/INVENTORY.md` (ImGui).
 
 ## What's Done
 
@@ -60,7 +61,9 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 | `Texture.cs` | `sealed unsafe class Texture : IDisposable`, wraps `SDL_Texture*` |
 | `Vertex.cs` | Vertex record struct |
 | `PixelFormat.cs` | Pixel format enum |
-| `BlendMode.cs` | Blend mode wrapper with static presets |
+| `BlendMode.cs` | Public `BlendMode` enum wrapping `SDL_BlendMode` |
+| `BlendFactor.cs` | Public `BlendFactor` enum wrapping `SDL_BlendFactor` |
+| `BlendOperation.cs` | Public `BlendOperation` enum wrapping `SDL_BlendOperation` |
 | `WindowFlags.cs` | Public `WindowFlags` enum |
 | `FlashOperation.cs` | Flash operation enum |
 | `ScaleMode.cs` | Scale mode enum |
@@ -150,6 +153,7 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 | `Dialog.cs` | `SDL_dialog.h` | `SDL_DialogFileFilter` struct, `SDL_FileDialogType` enum, open/save/folder dialog functions |
 | `Camera.cs` | `SDL_camera.h` | `SDL_CameraID`, `SDL_Camera` opaque, `SDL_CameraSpec`, `SDL_CameraPosition`, device enumeration, open/close, frame acquire/release |
 | `Haptic.cs` | `SDL_haptic.h` | `SDL_HapticID`, `SDL_Haptic` opaque, device enumeration, open/close, simple rumble API |
+| `Assert.cs` | `SDL_assert.h` | `SDL_AssertState` enum, `SDL_AssertData` struct, `SDL_SetAssertionHandler` (function pointer callback), `SDL_GetDefaultAssertionHandler`, `SDL_GetAssertionHandler`, `SDL_GetAssertionReport`, `SDL_ResetAssertionReport` |
 
 #### High-level wrappers
 
@@ -168,6 +172,9 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 | `LocaleInfo.cs` | `readonly record struct LocaleInfo` — language, country, `GetPreferred()` |
 | `MessageBoxType.cs` | Public `MessageBoxType` enum |
 | `Graphics/MessageBox.cs` | Static class — `Show()` simple message box with optional parent window |
+| `AssertState.cs` | Public `AssertState` enum wrapping `SDL_AssertState` |
+| `AssertionData.cs` | `readonly record struct AssertionData` — condition, filename, line, function, trigger count |
+| `SdlAssert.cs` | Static class — `SetAssertionHandler` (managed callback via `[UnmanagedCallersOnly]`/`GCHandle`), `GetAssertionReport`, `ResetAssertionReport` |
 
 **Deferred subsystems** (native API available in SDL but not wrapped — C# has better alternatives or they're too niche):
 - `SDL_iostream.h` — C# has `System.IO.Stream`
