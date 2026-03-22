@@ -224,9 +224,9 @@ public sealed unsafe class Renderer : IDisposable
         get
         {
             Check(SDL_GetRenderDrawBlendMode(Handle, out var mode));
-            return BlendMode.FromNative(mode);
+            return (BlendMode)(uint)mode;
         }
-        set => Check(SDL_SetRenderDrawBlendMode(Handle, value.ToNative()));
+        set => Check(SDL_SetRenderDrawBlendMode(Handle, (Native.SDL_BlendMode)(uint)value));
     }
 
     /// <summary>

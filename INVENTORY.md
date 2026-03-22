@@ -9,7 +9,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 
 ---
 
-## SDL_assert.h
+## SDL_assert.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -37,7 +37,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_GetAssertionReport | function | Assert.SDL_GetAssertionReport | SdlAssert.GetAssertionReport | |
 | SDL_ResetAssertionReport | function | Assert.SDL_ResetAssertionReport | SdlAssert.ResetAssertionReport | |
 
-## SDL_asyncio.h
+## SDL_asyncio.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -58,7 +58,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_SignalAsyncIOQueue | function | - | - | .NET has async/await |
 | SDL_LoadFileAsync | function | - | - | .NET has async/await |
 
-## SDL_atomic.h
+## SDL_atomic.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -161,22 +161,14 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_BindAudioStreams | function | - | - | Deferred: multi-stream bind |
 | SDL_UnbindAudioStreams | function | - | - | Deferred: multi-stream bind |
 
-## SDL_blendmode.h
+## SDL_blendmode.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
 | SDL_BlendMode | enum | BlendMode.SDL_BlendMode | BlendMode | |
-| SDL_BLENDMODE_NONE | enum value | BlendMode.SDL_BlendMode.SDL_BLENDMODE_NONE | BlendMode.None | |
-| SDL_BLENDMODE_BLEND | enum value | BlendMode.SDL_BlendMode.SDL_BLENDMODE_BLEND | BlendMode.Blend | |
-| SDL_BLENDMODE_BLEND_PREMULTIPLIED | enum value | BlendMode.SDL_BlendMode.SDL_BLENDMODE_BLEND_PREMULTIPLIED | BlendMode.BlendPremultiplied | |
-| SDL_BLENDMODE_ADD | enum value | BlendMode.SDL_BlendMode.SDL_BLENDMODE_ADD | BlendMode.Add | |
-| SDL_BLENDMODE_ADD_PREMULTIPLIED | enum value | BlendMode.SDL_BlendMode.SDL_BLENDMODE_ADD_PREMULTIPLIED | BlendMode.AddPremultiplied | |
-| SDL_BLENDMODE_MOD | enum value | BlendMode.SDL_BlendMode.SDL_BLENDMODE_MOD | BlendMode.Mod | |
-| SDL_BLENDMODE_MUL | enum value | BlendMode.SDL_BlendMode.SDL_BLENDMODE_MUL | BlendMode.Mul | |
-| SDL_BLENDMODE_INVALID | enum value | BlendMode.SDL_BlendMode.SDL_BLENDMODE_INVALID | - | Sentinel value, not useful in C# |
 | SDL_BlendOperation | enum | BlendMode.SDL_BlendOperation | BlendOperation | |
 | SDL_BlendFactor | enum | BlendMode.SDL_BlendFactor | BlendFactor | |
-| SDL_ComposeCustomBlendMode | function | BlendMode.SDL_ComposeCustomBlendMode | BlendMode.Compose | |
+| SDL_ComposeCustomBlendMode | function | BlendMode.SDL_ComposeCustomBlendMode | BlendModeExtensions.Compose | |
 
 ## SDL_camera.h
 

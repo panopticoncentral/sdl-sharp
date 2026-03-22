@@ -55,9 +55,9 @@ public sealed unsafe class Surface : IDisposable
         get
         {
             Check(SDL_GetSurfaceBlendMode(Handle, out var mode));
-            return BlendMode.FromNative(mode);
+            return (BlendMode)(uint)mode;
         }
-        set => Check(SDL_SetSurfaceBlendMode(Handle, value.ToNative()));
+        set => Check(SDL_SetSurfaceBlendMode(Handle, (Native.SDL_BlendMode)(uint)value));
     }
 
     /// <summary>

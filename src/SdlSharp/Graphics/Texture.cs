@@ -119,9 +119,9 @@ public sealed unsafe class Texture : IDisposable
         get
         {
             Check(SDL_GetTextureBlendMode(Handle, out var mode));
-            return BlendMode.FromNative(mode);
+            return (BlendMode)(uint)mode;
         }
-        set => Check(SDL_SetTextureBlendMode(Handle, value.ToNative()));
+        set => Check(SDL_SetTextureBlendMode(Handle, (Native.SDL_BlendMode)(uint)value));
     }
 
     /// <summary>
