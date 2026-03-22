@@ -75,13 +75,33 @@ Console.WriteLine($"elapsed: {SdlTimer.Ticks - before}ms");
 
 // --- Clipboard ---
 Console.WriteLine();
-Console.WriteLine("=== Clipboard ===");
+Console.WriteLine("=== Clipboard (text) ===");
 Console.WriteLine($"  Has text: {Clipboard.HasText}");
 var originalText = Clipboard.Text;
 Console.WriteLine($"  Current text: {(originalText?.Length > 50 ? originalText[..50] + "..." : originalText ?? "(empty)")}");
 Clipboard.Text = "Hello from SdlSharp!";
 Console.WriteLine($"  After set: {Clipboard.Text}");
 // Restore original
+Clipboard.Text = originalText;
+
+Console.WriteLine();
+Console.WriteLine("=== Clipboard (MIME data) ===");
+var testData = "SdlSharp clipboard data test"u8.ToArray();
+Clipboard.SetData(mimeType =>
+{
+    if (mimeType == "text/plain")
+        return testData;
+    return ReadOnlySpan<byte>.Empty;
+}, "text/plain");
+Console.WriteLine($"  Has text/plain: {Clipboard.HasData("text/plain")}");
+Console.WriteLine($"  Has image/png: {Clipboard.HasData("image/png")}");
+var mimeTypes = Clipboard.GetMimeTypes();
+Console.WriteLine($"  Available MIME types: [{string.Join(", ", mimeTypes)}]");
+var data = Clipboard.GetData("text/plain");
+Console.WriteLine($"  Got {data.Length} bytes: {System.Text.Encoding.UTF8.GetString(data)}");
+Clipboard.ClearData();
+Console.WriteLine($"  After clear, has text/plain: {Clipboard.HasData("text/plain")}");
+// Restore original text
 Clipboard.Text = originalText;
 
 // --- Hints ---

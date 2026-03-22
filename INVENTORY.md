@@ -204,13 +204,13 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_SetPrimarySelectionText | function | - | - | Deferred: X11 primary selection, platform-specific niche |
 | SDL_GetPrimarySelectionText | function | - | - | Deferred: X11 primary selection, platform-specific niche |
 | SDL_HasPrimarySelectionText | function | - | - | Deferred: X11 primary selection, platform-specific niche |
-| SDL_ClipboardDataCallback | callback | - | - | Deferred: custom MIME clipboard |
-| SDL_ClipboardCleanupCallback | callback | - | - | Deferred: custom MIME clipboard |
-| SDL_SetClipboardData | function | - | - | Deferred: custom MIME clipboard, complex callback interop |
-| SDL_ClearClipboardData | function | - | - | Deferred: custom MIME clipboard |
-| SDL_GetClipboardData | function | - | - | Deferred: custom MIME clipboard |
-| SDL_HasClipboardData | function | - | - | Deferred: custom MIME clipboard |
-| SDL_GetClipboardMimeTypes | function | - | - | Deferred: custom MIME clipboard |
+| SDL_ClipboardDataCallback | callback | Clipboard.SDL_ClipboardDataCallback | Clipboard.ClipboardDataProvider | |
+| SDL_ClipboardCleanupCallback | callback | Clipboard.SDL_ClipboardCleanupCallback | (internal) | |
+| SDL_SetClipboardData | function | Clipboard.SDL_SetClipboardData | Clipboard.SetData | |
+| SDL_ClearClipboardData | function | Clipboard.SDL_ClearClipboardData | Clipboard.ClearData | |
+| SDL_GetClipboardData | function | Clipboard.SDL_GetClipboardData | Clipboard.GetData | |
+| SDL_HasClipboardData | function | Clipboard.SDL_HasClipboardData | Clipboard.HasData | |
+| SDL_GetClipboardMimeTypes | function | Clipboard.SDL_GetClipboardMimeTypes | Clipboard.GetMimeTypes | |
 
 ## SDL_cpuinfo.h
 

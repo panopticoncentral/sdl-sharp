@@ -141,7 +141,7 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 | `CpuInfo.cs` | `SDL_cpuinfo.h` | CPU core count, cache line size, SIMD feature detection (SSE/AVX/NEON/etc.), system RAM, page size |
 | `Locale.cs` | `SDL_locale.h` | `SDL_Locale` struct, `SDL_GetPreferredLocales` |
 | `Timer.cs` | `SDL_timer.h` | `SDL_GetTicks`, `SDL_GetTicksNS`, performance counter, `SDL_Delay`, `SDL_DelayNS`, `SDL_DelayPrecise` |
-| `Clipboard.cs` | `SDL_clipboard.h` | `SDL_SetClipboardText`, `SDL_GetClipboardText`, `SDL_HasClipboardText` |
+| `Clipboard.cs` | `SDL_clipboard.h` | `SDL_SetClipboardText`, `SDL_GetClipboardText`, `SDL_HasClipboardText`, `SDL_ClipboardDataCallback`, `SDL_ClipboardCleanupCallback`, `SDL_SetClipboardData`, `SDL_ClearClipboardData`, `SDL_GetClipboardData`, `SDL_HasClipboardData`, `SDL_GetClipboardMimeTypes` |
 | `Log.cs` | `SDL_log.h` | `SDL_LogCategory`/`SDL_LogPriority` enums, priority get/set/reset, `SDL_SetLogOutputFunction` callback |
 | `Time.cs` | `SDL_time.h` | `SDL_DateFormat`/`SDL_TimeFormat` enums, `SDL_DateTime` struct, locale preferences, current time, date/time conversion |
 | `Hints.cs` | `SDL_hints.h` | `SDL_HintPriority` enum, hint set/get/reset functions |
@@ -160,7 +160,7 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 | `SystemInfo.cs` | Static class — CPU features, RAM, paths (`BasePath`, `GetPrefPath`, `GetUserFolder`, `GetCurrentDirectory`), `OpenUrl` |
 | `SystemFolder.cs` | Public `SystemFolder` enum |
 | `SdlTimer.cs` | Static class — ticks, performance counter, delay |
-| `Clipboard.cs` | Static class — text get/set, `HasText` |
+| `Clipboard.cs` | Static class — text get/set, `HasText`, MIME data get/set/has/clear, `GetMimeTypes`, `ClipboardDataProvider` callback |
 | `LogCategory.cs` | Public `LogCategory` enum |
 | `LogPriority.cs` | Public `LogPriority` enum |
 | `SdlLog.cs` | Static class — priority get/set, managed output callback via `[UnmanagedCallersOnly]` |
@@ -177,7 +177,7 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 - `SDL_thread.h` / `SDL_mutex.h` / `SDL_atomic.h` — C# has `System.Threading`
 - SDL callback-based timers — C# has `System.Threading.Timer`
 - Full haptic effect system — complex struct unions, rumble API covers common case
-- Custom MIME clipboard — rarely needed
+- Primary selection text (`SDL_SetPrimarySelectionText`, `SDL_GetPrimarySelectionText`, `SDL_HasPrimarySelectionText`) — X11/Wayland only, niche
 - File dialog properties variant — specific dialog functions suffice
 
 ### Phase 5b: GPU ✅
