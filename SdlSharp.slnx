@@ -12,6 +12,10 @@
     <Project Path="Samples/SystemInfo/SystemInfo.csproj" />
     <Project Path="Samples/GpuInfo/GpuInfo.csproj" />
     <Project Path="Samples/ImGuiDemo/ImGuiDemo.csproj" />
+    <Project Path="Samples/CameraDemo/CameraDemo.csproj" />
+    <Project Path="Samples/FileDialogDemo/FileDialogDemo.csproj" />
+    <Project Path="Samples/GamepadDemo/GamepadDemo.csproj" />
+    <Project Path="Samples/HapticDemo/HapticDemo.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
