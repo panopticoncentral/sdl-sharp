@@ -194,7 +194,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_ReleaseCameraFrame | function | Camera.SDL_ReleaseCameraFrame | - | Deferred managed wrapper |
 | SDL_CloseCamera | function | Camera.SDL_CloseCamera | - | Deferred managed wrapper |
 
-## SDL_clipboard.h
+## SDL_clipboard.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -212,7 +212,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_HasClipboardData | function | Clipboard.SDL_HasClipboardData | Clipboard.HasData | |
 | SDL_GetClipboardMimeTypes | function | Clipboard.SDL_GetClipboardMimeTypes | Clipboard.GetMimeTypes | |
 
-## SDL_cpuinfo.h
+## SDL_cpuinfo.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|

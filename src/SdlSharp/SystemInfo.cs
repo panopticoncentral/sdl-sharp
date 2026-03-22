@@ -30,31 +30,31 @@ public static unsafe class SystemInfo
     /// <summary>Whether the CPU has AltiVec features.</summary>
     public static bool HasAltiVec => SDL_HasAltiVec();
     /// <summary>Whether the CPU has MMX features.</summary>
-    public static bool HasMMX => SDL_HasMMX();
+    public static bool HasMmx => SDL_HasMMX();
     /// <summary>Whether the CPU has SSE features.</summary>
-    public static bool HasSSE => SDL_HasSSE();
+    public static bool HasSse => SDL_HasSSE();
     /// <summary>Whether the CPU has SSE2 features.</summary>
-    public static bool HasSSE2 => SDL_HasSSE2();
+    public static bool HasSse2 => SDL_HasSSE2();
     /// <summary>Whether the CPU has SSE3 features.</summary>
-    public static bool HasSSE3 => SDL_HasSSE3();
+    public static bool HasSse3 => SDL_HasSSE3();
     /// <summary>Whether the CPU has SSE4.1 features.</summary>
-    public static bool HasSSE41 => SDL_HasSSE41();
+    public static bool HasSse41 => SDL_HasSSE41();
     /// <summary>Whether the CPU has SSE4.2 features.</summary>
-    public static bool HasSSE42 => SDL_HasSSE42();
+    public static bool HasSse42 => SDL_HasSSE42();
     /// <summary>Whether the CPU has AVX features.</summary>
-    public static bool HasAVX => SDL_HasAVX();
+    public static bool HasAvx => SDL_HasAVX();
     /// <summary>Whether the CPU has AVX2 features.</summary>
-    public static bool HasAVX2 => SDL_HasAVX2();
+    public static bool HasAvx2 => SDL_HasAVX2();
     /// <summary>Whether the CPU has AVX-512F features.</summary>
-    public static bool HasAVX512F => SDL_HasAVX512F();
+    public static bool HasAvx512F => SDL_HasAVX512F();
     /// <summary>Whether the CPU has ARM SIMD features.</summary>
-    public static bool HasARMSIMD => SDL_HasARMSIMD();
+    public static bool HasArmsimd => SDL_HasARMSIMD();
     /// <summary>Whether the CPU has NEON features.</summary>
-    public static bool HasNEON => SDL_HasNEON();
+    public static bool HasNeon => SDL_HasNEON();
     /// <summary>Whether the CPU has LSX (Loongson SIMD Extension) features.</summary>
-    public static bool HasLSX => SDL_HasLSX();
+    public static bool HasLsx => SDL_HasLSX();
     /// <summary>Whether the CPU has LASX (Loongson Advanced SIMD Extension) features.</summary>
-    public static bool HasLASX => SDL_HasLASX();
+    public static bool HasLasx => SDL_HasLASX();
 
     /// <summary>
     /// Gets the directory where the application was run from.

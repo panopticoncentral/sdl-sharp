@@ -15,19 +15,19 @@ Console.WriteLine($"  Page size: {SystemInfo.SystemPageSize} bytes");
 Console.WriteLine($"  SIMD alignment: {SystemInfo.SimdAlignment} bytes");
 
 Console.WriteLine("  SIMD features:");
-if (SystemInfo.HasSSE) Console.WriteLine("    SSE");
-if (SystemInfo.HasSSE2) Console.WriteLine("    SSE2");
-if (SystemInfo.HasSSE3) Console.WriteLine("    SSE3");
-if (SystemInfo.HasSSE41) Console.WriteLine("    SSE4.1");
-if (SystemInfo.HasSSE42) Console.WriteLine("    SSE4.2");
-if (SystemInfo.HasAVX) Console.WriteLine("    AVX");
-if (SystemInfo.HasAVX2) Console.WriteLine("    AVX2");
-if (SystemInfo.HasAVX512F) Console.WriteLine("    AVX-512F");
+if (SystemInfo.HasSse) Console.WriteLine("    SSE");
+if (SystemInfo.HasSse2) Console.WriteLine("    SSE2");
+if (SystemInfo.HasSse3) Console.WriteLine("    SSE3");
+if (SystemInfo.HasSse41) Console.WriteLine("    SSE4.1");
+if (SystemInfo.HasSse42) Console.WriteLine("    SSE4.2");
+if (SystemInfo.HasAvx) Console.WriteLine("    AVX");
+if (SystemInfo.HasAvx2) Console.WriteLine("    AVX2");
+if (SystemInfo.HasAvx512F) Console.WriteLine("    AVX-512F");
 if (SystemInfo.HasAltiVec) Console.WriteLine("    AltiVec");
-if (SystemInfo.HasARMSIMD) Console.WriteLine("    ARM SIMD");
-if (SystemInfo.HasNEON) Console.WriteLine("    NEON");
-if (SystemInfo.HasLSX) Console.WriteLine("    LSX");
-if (SystemInfo.HasLASX) Console.WriteLine("    LASX");
+if (SystemInfo.HasArmsimd) Console.WriteLine("    ARM SIMD");
+if (SystemInfo.HasNeon) Console.WriteLine("    NEON");
+if (SystemInfo.HasLsx) Console.WriteLine("    LSX");
+if (SystemInfo.HasLasx) Console.WriteLine("    LASX");
 
 // --- Power ---
 Console.WriteLine();
