@@ -15,5 +15,6 @@
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
+    <File Path="INVENTORY.md" />
   </Folder>
 </Solution>
