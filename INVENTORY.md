@@ -138,8 +138,8 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_PauseAudioStreamDevice | function | Audio.SDL_PauseAudioStreamDevice | AudioStream.PauseDevice | |
 | SDL_ResumeAudioStreamDevice | function | Audio.SDL_ResumeAudioStreamDevice | AudioStream.ResumeDevice | |
 | SDL_AudioStreamDevicePaused | function | Audio.SDL_AudioStreamDevicePaused | AudioStream.IsDevicePaused | |
-| SDL_LoadWAV | function | Audio.SDL_LoadWAV | - | Deferred managed wrapper |
-| SDL_GetAudioFormatName | function | Audio.SDL_GetAudioFormatName | - | Deferred managed wrapper |
+| SDL_LoadWAV | function | Audio.SDL_LoadWAV | WavData.Load | |
+| SDL_GetAudioFormatName | function | Audio.SDL_GetAudioFormatName | AudioFormatInfo.GetName | |
 | SDL_LoadWAV_IO | function | - | - | Deferred: needs SDL_IOStream |
 | SDL_SetAudioPostmixCallback | function | - | - | Deferred: advanced callback interop |
 | SDL_PutAudioStreamDataNoCopy | function | - | - | Deferred: advanced zero-copy |
@@ -170,29 +170,29 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_BlendFactor | enum | BlendMode.SDL_BlendFactor | BlendFactor | |
 | SDL_ComposeCustomBlendMode | function | BlendMode.SDL_ComposeCustomBlendMode | BlendModeExtensions.Compose | |
 
-## SDL_camera.h
+## SDL_camera.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_CameraID | typedef | Camera.SDL_CameraID | - | Deferred managed wrapper |
-| SDL_Camera | opaque | Camera.SDL_Camera | - | Deferred managed wrapper |
-| SDL_CameraSpec | struct | Camera.SDL_CameraSpec | - | Deferred managed wrapper |
-| SDL_CameraPosition | enum | Camera.SDL_CameraPosition | - | Deferred managed wrapper |
-| SDL_GetNumCameraDrivers | function | Camera.SDL_GetNumCameraDrivers | - | Deferred managed wrapper |
-| SDL_GetCameraDriver | function | Camera.SDL_GetCameraDriver | - | Deferred managed wrapper |
-| SDL_GetCurrentCameraDriver | function | Camera.SDL_GetCurrentCameraDriver | - | Deferred managed wrapper |
-| SDL_GetCameras | function | Camera.SDL_GetCameras | - | Deferred managed wrapper |
-| SDL_GetCameraSupportedFormats | function | Camera.SDL_GetCameraSupportedFormats | - | Deferred managed wrapper |
-| SDL_GetCameraName | function | Camera.SDL_GetCameraName | - | Deferred managed wrapper |
-| SDL_GetCameraPosition | function | Camera.SDL_GetCameraPosition | - | Deferred managed wrapper |
-| SDL_OpenCamera | function | Camera.SDL_OpenCamera | - | Deferred managed wrapper |
-| SDL_GetCameraPermissionState | function | Camera.SDL_GetCameraPermissionState | - | Deferred managed wrapper |
-| SDL_GetCameraID | function | Camera.SDL_GetCameraID | - | Deferred managed wrapper |
-| SDL_GetCameraProperties | function | Camera.SDL_GetCameraProperties | - | Deferred managed wrapper |
-| SDL_GetCameraFormat | function | Camera.SDL_GetCameraFormat | - | Deferred managed wrapper |
-| SDL_AcquireCameraFrame | function | Camera.SDL_AcquireCameraFrame | - | Deferred managed wrapper |
-| SDL_ReleaseCameraFrame | function | Camera.SDL_ReleaseCameraFrame | - | Deferred managed wrapper |
-| SDL_CloseCamera | function | Camera.SDL_CloseCamera | - | Deferred managed wrapper |
+| SDL_CameraID | typedef | Camera.SDL_CameraID | - | Internal ID type |
+| SDL_Camera | opaque | Camera.SDL_Camera | Camera | |
+| SDL_CameraSpec | struct | Camera.SDL_CameraSpec | CameraSpec | |
+| SDL_CameraPosition | enum | Camera.SDL_CameraPosition | CameraPosition | |
+| SDL_GetNumCameraDrivers | function | Camera.SDL_GetNumCameraDrivers | Camera.GetDrivers | |
+| SDL_GetCameraDriver | function | Camera.SDL_GetCameraDriver | Camera.GetDrivers | |
+| SDL_GetCurrentCameraDriver | function | Camera.SDL_GetCurrentCameraDriver | Camera.GetCurrentDriver | |
+| SDL_GetCameras | function | Camera.SDL_GetCameras | Camera.GetDevices | |
+| SDL_GetCameraSupportedFormats | function | Camera.SDL_GetCameraSupportedFormats | Camera.GetSupportedFormats | |
+| SDL_GetCameraName | function | Camera.SDL_GetCameraName | Camera.GetName | |
+| SDL_GetCameraPosition | function | Camera.SDL_GetCameraPosition | Camera.GetPosition | |
+| SDL_OpenCamera | function | Camera.SDL_OpenCamera | Camera.Open | |
+| SDL_GetCameraPermissionState | function | Camera.SDL_GetCameraPermissionState | Camera.PermissionState | |
+| SDL_GetCameraID | function | Camera.SDL_GetCameraID | - | Used internally |
+| SDL_GetCameraProperties | function | Camera.SDL_GetCameraProperties | Camera.Properties | |
+| SDL_GetCameraFormat | function | Camera.SDL_GetCameraFormat | Camera.Format | |
+| SDL_AcquireCameraFrame | function | Camera.SDL_AcquireCameraFrame | Camera.AcquireFrame | |
+| SDL_ReleaseCameraFrame | function | Camera.SDL_ReleaseCameraFrame | Camera.ReleaseFrame | |
+| SDL_CloseCamera | function | Camera.SDL_CloseCamera | Camera.Dispose | |
 
 ## SDL_clipboard.h ✅
 
@@ -236,17 +236,17 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_GetSIMDAlignment | function | CpuInfo.SDL_GetSIMDAlignment | SystemInfo.SimdAlignment | |
 | SDL_GetSystemPageSize | function | CpuInfo.SDL_GetSystemPageSize | SystemInfo.SystemPageSize | |
 
-## SDL_dialog.h
+## SDL_dialog.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_DialogFileFilter | struct | Dialog.SDL_DialogFileFilter | - | Deferred managed wrapper |
-| SDL_FileDialogType | enum | Dialog.SDL_FileDialogType | - | Deferred managed wrapper |
-| SDL_ShowOpenFileDialog | function | Dialog.SDL_ShowOpenFileDialog | - | Deferred managed wrapper |
-| SDL_ShowSaveFileDialog | function | Dialog.SDL_ShowSaveFileDialog | - | Deferred managed wrapper |
-| SDL_ShowOpenFolderDialog | function | Dialog.SDL_ShowOpenFolderDialog | - | Deferred managed wrapper |
+| SDL_DialogFileFilter | struct | Dialog.SDL_DialogFileFilter | DialogFileFilter | |
+| SDL_FileDialogType | enum | Dialog.SDL_FileDialogType | FileDialogType | |
+| SDL_ShowOpenFileDialog | function | Dialog.SDL_ShowOpenFileDialog | FileDialog.OpenFile / FileDialog.OpenFileAsync | |
+| SDL_ShowSaveFileDialog | function | Dialog.SDL_ShowSaveFileDialog | FileDialog.SaveFile / FileDialog.SaveFileAsync | |
+| SDL_ShowOpenFolderDialog | function | Dialog.SDL_ShowOpenFolderDialog | FileDialog.OpenFolder / FileDialog.OpenFolderAsync | |
 | SDL_ShowFileDialogWithProperties | function | - | - | Deferred: property-based variant, rarely needed |
-| SDL_DialogFileCallback | callback | - | - | Deferred managed wrapper |
+| SDL_DialogFileCallback | callback | - | - | Used internally by FileDialog |
 
 ## SDL_error.h
 
@@ -341,30 +341,30 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_RenamePath | function | - | - | Deferred: .NET has File.Move |
 | SDL_CopyFile | function | - | - | Deferred: .NET has File.Copy |
 
-## SDL_gamepad.h
+## SDL_gamepad.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_Gamepad | struct | Gamepad.SDL_Gamepad | - | Deferred managed wrapper |
-| SDL_GamepadType | enum | Gamepad.SDL_GamepadType | - | Deferred managed wrapper |
-| SDL_GamepadButton | enum | Gamepad.SDL_GamepadButton | - | Deferred managed wrapper |
-| SDL_GamepadButtonLabel | enum | Gamepad.SDL_GamepadButtonLabel | - | Deferred managed wrapper |
-| SDL_GamepadAxis | enum | Gamepad.SDL_GamepadAxis | - | Deferred managed wrapper |
-| SDL_GetGamepads | function | Gamepad.SDL_GetGamepads | - | Deferred managed wrapper |
-| SDL_IsGamepad | function | Gamepad.SDL_IsGamepad | - | Deferred managed wrapper |
-| SDL_GetGamepadNameForID | function | Gamepad.SDL_GetGamepadNameForID | - | Deferred managed wrapper |
-| SDL_GetGamepadTypeForID | function | Gamepad.SDL_GetGamepadTypeForID | - | Deferred managed wrapper |
-| SDL_OpenGamepad | function | Gamepad.SDL_OpenGamepad | - | Deferred managed wrapper |
-| SDL_GetGamepadFromID | function | Gamepad.SDL_GetGamepadFromID | - | Deferred managed wrapper |
-| SDL_GetGamepadName | function | Gamepad.SDL_GetGamepadName | - | Deferred managed wrapper |
-| SDL_GetGamepadType | function | Gamepad.SDL_GetGamepadType | - | Deferred managed wrapper |
-| SDL_GetGamepadJoystick | function | Gamepad.SDL_GetGamepadJoystick | - | Deferred managed wrapper |
-| SDL_GetGamepadAxis | function | Gamepad.SDL_GetGamepadAxis | - | Deferred managed wrapper |
-| SDL_GetGamepadButton | function | Gamepad.SDL_GetGamepadButton | - | Deferred managed wrapper |
-| SDL_GetGamepadButtonLabel | function | Gamepad.SDL_GetGamepadButtonLabel | - | Deferred managed wrapper |
-| SDL_GetGamepadConnectionState | function | Gamepad.SDL_GetGamepadConnectionState | - | Deferred managed wrapper |
-| SDL_CloseGamepad | function | Gamepad.SDL_CloseGamepad | - | Deferred managed wrapper |
-| SDL_UpdateGamepads | function | Gamepad.SDL_UpdateGamepads | - | Deferred managed wrapper |
+| SDL_Gamepad | struct | Gamepad.SDL_Gamepad | Gamepad | |
+| SDL_GamepadType | enum | Gamepad.SDL_GamepadType | GamepadType | |
+| SDL_GamepadButton | enum | Gamepad.SDL_GamepadButton | GamepadButton | |
+| SDL_GamepadButtonLabel | enum | Gamepad.SDL_GamepadButtonLabel | GamepadButtonLabel | |
+| SDL_GamepadAxis | enum | Gamepad.SDL_GamepadAxis | GamepadAxis | |
+| SDL_GetGamepads | function | Gamepad.SDL_GetGamepads | Gamepad.GetDevices | |
+| SDL_IsGamepad | function | Gamepad.SDL_IsGamepad | Gamepad.IsGamepad | |
+| SDL_GetGamepadNameForID | function | Gamepad.SDL_GetGamepadNameForID | Gamepad.GetName | |
+| SDL_GetGamepadTypeForID | function | Gamepad.SDL_GetGamepadTypeForID | Gamepad.GetType | |
+| SDL_OpenGamepad | function | Gamepad.SDL_OpenGamepad | Gamepad.Open | |
+| SDL_GetGamepadFromID | function | Gamepad.SDL_GetGamepadFromID | - | Deferred |
+| SDL_GetGamepadName | function | Gamepad.SDL_GetGamepadName | Gamepad.Name | |
+| SDL_GetGamepadType | function | Gamepad.SDL_GetGamepadType | Gamepad.Type | |
+| SDL_GetGamepadJoystick | function | Gamepad.SDL_GetGamepadJoystick | - | Deferred |
+| SDL_GetGamepadAxis | function | Gamepad.SDL_GetGamepadAxis | Gamepad.GetAxis | |
+| SDL_GetGamepadButton | function | Gamepad.SDL_GetGamepadButton | Gamepad.GetButton | |
+| SDL_GetGamepadButtonLabel | function | Gamepad.SDL_GetGamepadButtonLabel | Gamepad.GetButtonLabel | |
+| SDL_GetGamepadConnectionState | function | Gamepad.SDL_GetGamepadConnectionState | Gamepad.ConnectionState | |
+| SDL_CloseGamepad | function | Gamepad.SDL_CloseGamepad | Gamepad.Dispose | |
+| SDL_UpdateGamepads | function | Gamepad.SDL_UpdateGamepads | Gamepad.Update | |
 | SDL_AddGamepadMapping | function | - | - | Deferred: mapping management |
 | SDL_AddGamepadMappingsFromFile | function | - | - | Deferred: mapping management |
 | SDL_GetGamepadMappings | function | - | - | Deferred: mapping management |
@@ -564,12 +564,12 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_GUIDToString | function | - | - | .NET has Guid.ToString |
 | SDL_StringToGUID | function | - | - | .NET has Guid.Parse |
 
-## SDL_haptic.h
+## SDL_haptic.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_HapticID | typedef | Haptic.SDL_HapticID | - | Deferred managed wrapper |
-| SDL_Haptic | struct | Haptic.SDL_Haptic | - | Deferred managed wrapper |
+| SDL_HapticID | typedef | Haptic.SDL_HapticID | - | Internal ID type |
+| SDL_Haptic | struct | Haptic.SDL_Haptic | Haptic | |
 | SDL_HapticDirection | struct | - | - | Deferred: complex effect struct union system |
 | SDL_HapticConstant | struct | - | - | Deferred: complex effect struct union system |
 | SDL_HapticPeriodic | struct | - | - | Deferred: complex effect struct union system |
@@ -578,17 +578,17 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_HapticLeftRight | struct | - | - | Deferred: complex effect struct union system |
 | SDL_HapticCustom | struct | - | - | Deferred: complex effect struct union system |
 | SDL_HapticEffect | union | - | - | Deferred: complex union with ~10 effect structs |
-| SDL_GetHaptics | function | Haptic.SDL_GetHaptics | - | Deferred managed wrapper |
-| SDL_GetHapticNameForID | function | Haptic.SDL_GetHapticNameForID | - | Deferred managed wrapper |
-| SDL_OpenHaptic | function | Haptic.SDL_OpenHaptic | - | Deferred managed wrapper |
+| SDL_GetHaptics | function | Haptic.SDL_GetHaptics | Haptic.GetDevices | |
+| SDL_GetHapticNameForID | function | Haptic.SDL_GetHapticNameForID | Haptic.GetName | |
+| SDL_OpenHaptic | function | Haptic.SDL_OpenHaptic | Haptic.Open | |
 | SDL_GetHapticFromID | function | - | - | Deferred |
-| SDL_GetHapticID | function | Haptic.SDL_GetHapticID | - | Deferred managed wrapper |
-| SDL_GetHapticName | function | Haptic.SDL_GetHapticName | - | Deferred managed wrapper |
+| SDL_GetHapticID | function | Haptic.SDL_GetHapticID | - | Used internally |
+| SDL_GetHapticName | function | Haptic.SDL_GetHapticName | Haptic.Name | |
 | SDL_IsMouseHaptic | function | - | - | Deferred |
-| SDL_OpenHapticFromMouse | function | Haptic.SDL_OpenHapticFromMouse | - | Deferred managed wrapper |
+| SDL_OpenHapticFromMouse | function | Haptic.SDL_OpenHapticFromMouse | Haptic.OpenFromMouse | |
 | SDL_IsJoystickHaptic | function | - | - | Deferred |
-| SDL_OpenHapticFromJoystick | function | Haptic.SDL_OpenHapticFromJoystick | - | Deferred managed wrapper |
-| SDL_CloseHaptic | function | Haptic.SDL_CloseHaptic | - | Deferred managed wrapper |
+| SDL_OpenHapticFromJoystick | function | Haptic.SDL_OpenHapticFromJoystick | Haptic.OpenFromJoystick | |
+| SDL_CloseHaptic | function | Haptic.SDL_CloseHaptic | Haptic.Dispose | |
 | SDL_GetMaxHapticEffects | function | - | - | Deferred: full effect system |
 | SDL_GetMaxHapticEffectsPlaying | function | - | - | Deferred: full effect system |
 | SDL_GetHapticFeatures | function | - | - | Deferred: full effect system |
@@ -605,10 +605,10 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_PauseHaptic | function | - | - | Deferred: full effect system |
 | SDL_ResumeHaptic | function | - | - | Deferred: full effect system |
 | SDL_StopHapticEffects | function | - | - | Deferred: full effect system |
-| SDL_HapticRumbleSupported | function | Haptic.SDL_HapticRumbleSupported | - | Deferred managed wrapper |
-| SDL_InitHapticRumble | function | Haptic.SDL_InitHapticRumble | - | Deferred managed wrapper |
-| SDL_PlayHapticRumble | function | Haptic.SDL_PlayHapticRumble | - | Deferred managed wrapper |
-| SDL_StopHapticRumble | function | Haptic.SDL_StopHapticRumble | - | Deferred managed wrapper |
+| SDL_HapticRumbleSupported | function | Haptic.SDL_HapticRumbleSupported | Haptic.RumbleSupported | |
+| SDL_InitHapticRumble | function | Haptic.SDL_InitHapticRumble | Haptic.InitRumble | |
+| SDL_PlayHapticRumble | function | Haptic.SDL_PlayHapticRumble | Haptic.PlayRumble | |
+| SDL_StopHapticRumble | function | Haptic.SDL_StopHapticRumble | Haptic.StopRumble | |
 
 ## SDL_hidapi.h
 
@@ -686,33 +686,33 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_SaveFile | function | - | - | .NET has File.WriteAllBytes |
 | SDL_ReadU8 .. SDL_WriteS64BE | function (32) | - | - | .NET has BinaryReader/BinaryWriter |
 
-## SDL_joystick.h
+## SDL_joystick.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_Joystick | struct | Joystick.SDL_Joystick | - | Deferred managed wrapper |
-| SDL_JoystickID | typedef | Joystick.SDL_JoystickID | - | Deferred managed wrapper |
-| SDL_JoystickType | enum | Joystick.SDL_JoystickType | - | Deferred managed wrapper |
-| SDL_JoystickConnectionState | enum | Joystick.SDL_JoystickConnectionState | - | Deferred managed wrapper |
-| SDL_HAT_* | macro (9) | Joystick.SDL_HAT_* | - | Deferred managed wrapper |
-| SDL_GetJoysticks | function | Joystick.SDL_GetJoysticks | - | Deferred managed wrapper |
-| SDL_GetJoystickNameForID | function | Joystick.SDL_GetJoystickNameForID | - | Deferred managed wrapper |
-| SDL_GetJoystickTypeForID | function | Joystick.SDL_GetJoystickTypeForID | - | Deferred managed wrapper |
-| SDL_OpenJoystick | function | Joystick.SDL_OpenJoystick | - | Deferred managed wrapper |
-| SDL_GetJoystickFromID | function | Joystick.SDL_GetJoystickFromID | - | Deferred managed wrapper |
-| SDL_GetJoystickName | function | Joystick.SDL_GetJoystickName | - | Deferred managed wrapper |
-| SDL_GetJoystickType | function | Joystick.SDL_GetJoystickType | - | Deferred managed wrapper |
-| SDL_GetJoystickID | function | Joystick.SDL_GetJoystickID | - | Deferred managed wrapper |
-| SDL_GetNumJoystickAxes | function | Joystick.SDL_GetNumJoystickAxes | - | Deferred managed wrapper |
-| SDL_GetNumJoystickBalls | function | Joystick.SDL_GetNumJoystickBalls | - | Deferred managed wrapper |
-| SDL_GetNumJoystickHats | function | Joystick.SDL_GetNumJoystickHats | - | Deferred managed wrapper |
-| SDL_GetNumJoystickButtons | function | Joystick.SDL_GetNumJoystickButtons | - | Deferred managed wrapper |
-| SDL_GetJoystickAxis | function | Joystick.SDL_GetJoystickAxis | - | Deferred managed wrapper |
-| SDL_GetJoystickHat | function | Joystick.SDL_GetJoystickHat | - | Deferred managed wrapper |
-| SDL_GetJoystickButton | function | Joystick.SDL_GetJoystickButton | - | Deferred managed wrapper |
-| SDL_GetJoystickConnectionState | function | Joystick.SDL_GetJoystickConnectionState | - | Deferred managed wrapper |
-| SDL_CloseJoystick | function | Joystick.SDL_CloseJoystick | - | Deferred managed wrapper |
-| SDL_UpdateJoysticks | function | Joystick.SDL_UpdateJoysticks | - | Deferred managed wrapper |
+| SDL_Joystick | struct | Joystick.SDL_Joystick | Joystick | |
+| SDL_JoystickID | typedef | Joystick.SDL_JoystickID | - | Internal ID type |
+| SDL_JoystickType | enum | Joystick.SDL_JoystickType | JoystickType | |
+| SDL_JoystickConnectionState | enum | Joystick.SDL_JoystickConnectionState | JoystickConnectionState | |
+| SDL_HAT_* | macro (9) | Joystick.SDL_HAT_* | HatPosition | |
+| SDL_GetJoysticks | function | Joystick.SDL_GetJoysticks | Joystick.GetDevices | |
+| SDL_GetJoystickNameForID | function | Joystick.SDL_GetJoystickNameForID | Joystick.GetName | |
+| SDL_GetJoystickTypeForID | function | Joystick.SDL_GetJoystickTypeForID | Joystick.GetType | |
+| SDL_OpenJoystick | function | Joystick.SDL_OpenJoystick | Joystick.Open | |
+| SDL_GetJoystickFromID | function | Joystick.SDL_GetJoystickFromID | - | Deferred |
+| SDL_GetJoystickName | function | Joystick.SDL_GetJoystickName | Joystick.Name | |
+| SDL_GetJoystickType | function | Joystick.SDL_GetJoystickType | Joystick.Type | |
+| SDL_GetJoystickID | function | Joystick.SDL_GetJoystickID | - | Used internally |
+| SDL_GetNumJoystickAxes | function | Joystick.SDL_GetNumJoystickAxes | Joystick.NumAxes | |
+| SDL_GetNumJoystickBalls | function | Joystick.SDL_GetNumJoystickBalls | Joystick.NumBalls | |
+| SDL_GetNumJoystickHats | function | Joystick.SDL_GetNumJoystickHats | Joystick.NumHats | |
+| SDL_GetNumJoystickButtons | function | Joystick.SDL_GetNumJoystickButtons | Joystick.NumButtons | |
+| SDL_GetJoystickAxis | function | Joystick.SDL_GetJoystickAxis | Joystick.GetAxis | |
+| SDL_GetJoystickHat | function | Joystick.SDL_GetJoystickHat | Joystick.GetHat | |
+| SDL_GetJoystickButton | function | Joystick.SDL_GetJoystickButton | Joystick.GetButton | |
+| SDL_GetJoystickConnectionState | function | Joystick.SDL_GetJoystickConnectionState | Joystick.ConnectionState | |
+| SDL_CloseJoystick | function | Joystick.SDL_CloseJoystick | Joystick.Dispose | |
+| SDL_UpdateJoysticks | function | Joystick.SDL_UpdateJoysticks | Joystick.Update | |
 | SDL_LockJoysticks | function | - | - | Deferred: virtual joystick and advanced features |
 | SDL_UnlockJoysticks | function | - | - | Deferred |
 | SDL_HasJoystick | function | - | - | Deferred |
@@ -889,15 +889,15 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_Semaphore | struct | - | - | .NET has SemaphoreSlim |
 | SDL_Condition | struct | - | - | .NET has Monitor.Wait/Pulse |
 
-## SDL_pen.h
+## SDL_pen.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_PenAxis | enum | Pen.SDL_PenAxis | - | Deferred managed wrapper |
-| SDL_PenDeviceType | enum | Pen.SDL_PenDeviceType | - | Deferred managed wrapper |
-| SDL_PEN_INPUT_* | macro (8) | Pen.SDL_PEN_INPUT_* | - | Deferred managed wrapper |
+| SDL_PenAxis | enum | Pen.SDL_PenAxis | PenAxis | |
+| SDL_PenDeviceType | enum | Pen.SDL_PenDeviceType | PenDeviceType | |
+| SDL_PEN_INPUT_* | macro (8) | Pen.SDL_PEN_INPUT_* | PenInput | |
 | SDL_PEN_TOUCHID | macro | Pen.SDL_PEN_TOUCHID | - | Used internally |
-| SDL_GetPenDeviceType | function | Pen.SDL_GetPenDeviceType | - | Deferred managed wrapper |
+| SDL_GetPenDeviceType | function | Pen.SDL_GetPenDeviceType | PenDevice.GetType | |
 
 ## SDL_pixels.h
 
@@ -1140,27 +1140,27 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 |---|---|---|---|---|
 | SDL_Scancode | enum (400+ values) | Scancode.SDL_Scancode | Scancode | |
 
-## SDL_sensor.h
+## SDL_sensor.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_Sensor | struct | Sensor.SDL_Sensor | - | Deferred managed wrapper |
-| SDL_SensorType | enum | Sensor.SDL_SensorType | - | Deferred managed wrapper |
-| SDL_STANDARD_GRAVITY | macro | Sensor.SDL_STANDARD_GRAVITY | - | Deferred managed wrapper |
-| SDL_GetSensors | function | Sensor.SDL_GetSensors | - | Deferred managed wrapper |
-| SDL_GetSensorNameForID | function | Sensor.SDL_GetSensorNameForID | - | Deferred managed wrapper |
-| SDL_GetSensorTypeForID | function | Sensor.SDL_GetSensorTypeForID | - | Deferred managed wrapper |
-| SDL_GetSensorNonPortableTypeForID | function | Sensor.SDL_GetSensorNonPortableTypeForID | - | Deferred managed wrapper |
-| SDL_OpenSensor | function | Sensor.SDL_OpenSensor | - | Deferred managed wrapper |
-| SDL_GetSensorFromID | function | Sensor.SDL_GetSensorFromID | - | Deferred managed wrapper |
-| SDL_GetSensorProperties | function | Sensor.SDL_GetSensorProperties | - | Deferred managed wrapper |
-| SDL_GetSensorName | function | Sensor.SDL_GetSensorName | - | Deferred managed wrapper |
-| SDL_GetSensorType | function | Sensor.SDL_GetSensorType | - | Deferred managed wrapper |
-| SDL_GetSensorNonPortableType | function | Sensor.SDL_GetSensorNonPortableType | - | Deferred managed wrapper |
-| SDL_GetSensorID | function | Sensor.SDL_GetSensorID | - | Deferred managed wrapper |
-| SDL_GetSensorData | function | Sensor.SDL_GetSensorData | - | Deferred managed wrapper |
-| SDL_CloseSensor | function | Sensor.SDL_CloseSensor | - | Deferred managed wrapper |
-| SDL_UpdateSensors | function | Sensor.SDL_UpdateSensors | - | Deferred managed wrapper |
+| SDL_Sensor | struct | Sensor.SDL_Sensor | Sensor | |
+| SDL_SensorType | enum | Sensor.SDL_SensorType | SensorType | |
+| SDL_STANDARD_GRAVITY | macro | Sensor.SDL_STANDARD_GRAVITY | - | Float constant, use directly |
+| SDL_GetSensors | function | Sensor.SDL_GetSensors | Sensor.GetDevices | |
+| SDL_GetSensorNameForID | function | Sensor.SDL_GetSensorNameForID | Sensor.GetName | |
+| SDL_GetSensorTypeForID | function | Sensor.SDL_GetSensorTypeForID | Sensor.GetType | |
+| SDL_GetSensorNonPortableTypeForID | function | Sensor.SDL_GetSensorNonPortableTypeForID | - | Deferred |
+| SDL_OpenSensor | function | Sensor.SDL_OpenSensor | Sensor.Open | |
+| SDL_GetSensorFromID | function | Sensor.SDL_GetSensorFromID | - | Deferred |
+| SDL_GetSensorProperties | function | Sensor.SDL_GetSensorProperties | Sensor.Properties | |
+| SDL_GetSensorName | function | Sensor.SDL_GetSensorName | Sensor.Name | |
+| SDL_GetSensorType | function | Sensor.SDL_GetSensorType | Sensor.Type | |
+| SDL_GetSensorNonPortableType | function | Sensor.SDL_GetSensorNonPortableType | Sensor.NonPortableType | |
+| SDL_GetSensorID | function | Sensor.SDL_GetSensorID | - | Used internally |
+| SDL_GetSensorData | function | Sensor.SDL_GetSensorData | Sensor.GetData | |
+| SDL_CloseSensor | function | Sensor.SDL_CloseSensor | Sensor.Dispose | |
+| SDL_UpdateSensors | function | Sensor.SDL_UpdateSensors | Sensor.Update | |
 
 ## SDL_stdinc.h
 
@@ -1292,17 +1292,17 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_GetTLS | function | - | - | .NET has ThreadLocal<T> |
 | SDL_SetTLS | function | - | - | .NET has ThreadLocal<T> |
 
-## SDL_time.h
+## SDL_time.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_DateTime | struct | Time.SDL_DateTime | - | Deferred managed wrapper |
-| SDL_DateFormat | enum | Time.SDL_DateFormat | - | Deferred managed wrapper |
-| SDL_TimeFormat | enum | Time.SDL_TimeFormat | - | Deferred managed wrapper |
-| SDL_GetDateTimeLocalePreferences | function | Time.SDL_GetDateTimeLocalePreferences | - | Deferred managed wrapper |
-| SDL_GetCurrentTime | function | Time.SDL_GetCurrentTime | - | Deferred managed wrapper |
-| SDL_TimeToDateTime | function | Time.SDL_TimeToDateTime | - | Deferred managed wrapper |
-| SDL_DateTimeToTime | function | Time.SDL_DateTimeToTime | - | Deferred managed wrapper |
+| SDL_DateTime | struct | Time.SDL_DateTime | - | Used internally by SdlDateTime |
+| SDL_DateFormat | enum | Time.SDL_DateFormat | DateFormat | |
+| SDL_TimeFormat | enum | Time.SDL_TimeFormat | TimeFormat | |
+| SDL_GetDateTimeLocalePreferences | function | Time.SDL_GetDateTimeLocalePreferences | SdlDateTime.GetPreferredDateFormat / SdlDateTime.GetPreferredTimeFormat | |
+| SDL_GetCurrentTime | function | Time.SDL_GetCurrentTime | SdlDateTime.GetCurrentTime | |
+| SDL_TimeToDateTime | function | Time.SDL_TimeToDateTime | SdlDateTime.ToDateTime | |
+| SDL_DateTimeToTime | function | Time.SDL_DateTimeToTime | SdlDateTime.FromDateTime | |
 | SDL_TimeToWindows | function | - | - | Platform: Windows FILETIME interop |
 | SDL_TimeFromWindows | function | - | - | Platform: Windows FILETIME interop |
 | SDL_GetDaysInMonth | function | - | - | .NET has DateTime.DaysInMonth |
@@ -1327,17 +1327,17 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_AddTimerNS | function | - | - | Deferred: callback-based timers |
 | SDL_RemoveTimer | function | - | - | Deferred: callback-based timers |
 
-## SDL_touch.h
+## SDL_touch.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_TouchDeviceType | enum | Touch.SDL_TouchDeviceType | - | Deferred managed wrapper |
-| SDL_Finger | struct | Touch.SDL_Finger | - | Deferred managed wrapper |
+| SDL_TouchDeviceType | enum | Touch.SDL_TouchDeviceType | TouchDeviceType | |
+| SDL_Finger | struct | Touch.SDL_Finger | Finger | |
 | SDL_MOUSE_TOUCHID | macro | Touch.SDL_MOUSE_TOUCHID | - | Used internally |
-| SDL_GetTouchDevices | function | Touch.SDL_GetTouchDevices | - | Deferred managed wrapper |
-| SDL_GetTouchDeviceName | function | Touch.SDL_GetTouchDeviceName | - | Deferred managed wrapper |
-| SDL_GetTouchDeviceType | function | Touch.SDL_GetTouchDeviceType | - | Deferred managed wrapper |
-| SDL_GetTouchFingers | function | Touch.SDL_GetTouchFingers | - | Deferred managed wrapper |
+| SDL_GetTouchDevices | function | Touch.SDL_GetTouchDevices | TouchDevice.GetDevices | |
+| SDL_GetTouchDeviceName | function | Touch.SDL_GetTouchDeviceName | TouchDevice.GetName | |
+| SDL_GetTouchDeviceType | function | Touch.SDL_GetTouchDeviceType | TouchDevice.GetType | |
+| SDL_GetTouchFingers | function | Touch.SDL_GetTouchFingers | TouchDevice.GetFingers | |
 
 ## SDL_tray.h
 

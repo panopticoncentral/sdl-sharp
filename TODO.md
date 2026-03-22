@@ -109,12 +109,12 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 - Static C# events: `Quit`, `KeyDown`, `KeyUp`, `TextInput`, `MouseMotion`, `MouseButtonDown`, `MouseButtonUp`, `MouseWheel`, `Window`
 - `DispatchEvents()` method: polls all pending events via `SDL_PollEvent`, dispatches to handlers, returns `true` on quit
 
-**Deferred high-level wrappers** (native layer ready, wrap later as needed):
-- `Input/Gamepad.cs` — sealed class wrapping `SDL_Gamepad*`
-- `Input/Joystick.cs` — sealed class wrapping `SDL_Joystick*`
-- `Input/TouchDevice.cs` — touch input
-- `Input/Pen.cs` — pen/stylus input
-- `Input/Sensor.cs` — accelerometer/gyroscope
+**High-level wrappers** (all completed in Phase 5c):
+- `Input/Gamepad.cs` ✅ — sealed class wrapping `SDL_Gamepad*`
+- `Input/Joystick.cs` ✅ — sealed class wrapping `SDL_Joystick*`
+- `Input/TouchDevice.cs` ✅ — static class: touch device and finger queries
+- `Input/PenDevice.cs` ✅ — static class: pen device type query
+- `Input/Sensor.cs` ✅ — sealed class wrapping `SDL_Sensor*`
 
 ### Phase 4: Audio ✅
 
@@ -186,6 +186,62 @@ All files compile clean (0 warnings, 0 errors) with `dotnet build`.
 - Full haptic effect system — complex struct unions, rumble API covers common case
 - Primary selection text (`SDL_SetPrimarySelectionText`, `SDL_GetPrimarySelectionText`, `SDL_HasPrimarySelectionText`) — X11/Wayland only, niche
 - File dialog properties variant — specific dialog functions suffice
+
+### Phase 5c: Additional Subsystems ✅
+
+#### Audio additions (`src/SdlSharp/Audio/`)
+
+| File | Purpose |
+|------|---------|
+| `WavData.cs` | `readonly record struct WavData(AudioSpec Spec, byte[] Data)` — `WavData.Load(path)` wraps `SDL_LoadWAV` |
+| `AudioFormatInfo.cs` | Static class — `AudioFormatInfo.GetName(AudioFormat)` wraps `SDL_GetAudioFormatName` |
+
+#### DateTime/Time (`src/SdlSharp/`)
+
+| File | Purpose |
+|------|---------|
+| `DateFormat.cs` | Public `DateFormat` enum wrapping `SDL_DateFormat` |
+| `TimeFormat.cs` | Public `TimeFormat` enum wrapping `SDL_TimeFormat` |
+| `SdlDateTime.cs` | Static class — locale date/time format preferences, `GetCurrentTime`, `ToDateTime`, `FromDateTime` bridging SDL nanosecond ticks to .NET `DateTime` |
+
+#### Input devices (`src/SdlSharp/Input/`)
+
+| File | Purpose |
+|------|---------|
+| `JoystickType.cs` | Public `JoystickType` enum |
+| `JoystickConnectionState.cs` | Public `JoystickConnectionState` enum |
+| `HatPosition.cs` | Public `HatPosition` flags enum (wraps `SDL_HAT_*` constants) |
+| `Joystick.cs` | `sealed unsafe class Joystick : IDisposable` — open/close, axes/hats/buttons, connection state |
+| `GamepadType.cs` | Public `GamepadType` enum |
+| `GamepadButton.cs` | Public `GamepadButton` enum |
+| `GamepadButtonLabel.cs` | Public `GamepadButtonLabel` enum |
+| `GamepadAxis.cs` | Public `GamepadAxis` enum |
+| `Gamepad.cs` | `sealed unsafe class Gamepad : IDisposable` — open/close, axis/button/label queries, connection state |
+| `Haptic.cs` | `sealed unsafe class Haptic : IDisposable` — open/close, open from mouse/joystick, simple rumble API |
+| `SensorType.cs` | Public `SensorType` enum |
+| `Sensor.cs` | `sealed unsafe class Sensor : IDisposable` — open/close, name/type/data queries, properties |
+| `TouchDeviceType.cs` | Public `TouchDeviceType` enum |
+| `Finger.cs` | `readonly record struct Finger(long Id, float X, float Y, float Pressure)` |
+| `TouchDevice.cs` | Static class — device enumeration, name/type queries, finger queries |
+| `PenAxis.cs` | Public `PenAxis` enum |
+| `PenDeviceType.cs` | Public `PenDeviceType` enum |
+| `PenInput.cs` | Public `PenInput` flags enum (wraps `SDL_PEN_INPUT_*` constants) |
+| `PenDevice.cs` | Static class — `PenDevice.GetType(id)` |
+
+#### Camera (`src/SdlSharp/Graphics/`)
+
+| File | Purpose |
+|------|---------|
+| `CameraPosition.cs` | Public `CameraPosition` enum |
+| `CameraSpec.cs` | `readonly record struct CameraSpec` — pixel format, colorspace, size, framerate |
+| `Camera.cs` | `sealed unsafe class Camera : IDisposable` — open/close, device/driver enumeration, format queries, frame acquire/release |
+
+#### File Dialogs (`src/SdlSharp/Graphics/`)
+
+| File | Purpose |
+|------|---------|
+| `FileDialogType.cs` | Public `FileDialogType` enum |
+| `FileDialog.cs` | Static class — `OpenFile`, `SaveFile`, `OpenFolder` (callback + async `Task<DialogResult>` variants) |
 
 ### Phase 5b: GPU ✅
 
