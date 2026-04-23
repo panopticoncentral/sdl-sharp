@@ -10,6 +10,7 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0-preview.1</Version>
     <Authors>Paul Vick</Authors>
     <Company>Paul Vick</Company>
     <Description>Dear ImGui bindings for SdlSharp, using SDL3 GPU backend.</Description>
@@ -21,6 +22,10 @@
 
   <ItemGroup>
     <ProjectReference Include="../SdlSharp/SdlSharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ImguiSharp.Redist" Version="0.1.0-preview.1" />
   </ItemGroup>
 
 </Project>

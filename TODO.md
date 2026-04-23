@@ -294,9 +294,8 @@ Native C/C++ build lives in sibling repo `../imgui-sharp-native/`.
 #### TODO
 
 **Runtime library loading:**
-- [ ] Set up native library resolution for `imgui_sharp` (NativeLibrary.SetDllImportResolver, runtimeconfig, or redist NuGet package)
-- [ ] Cross-platform build of `libimgui_sharp` (macOS dylib, Windows DLL, Linux .so)
-- [ ] Consider an `SdlSharp.ImGui.Redist` NuGet package mirroring the SDL3 redist pattern
+- [x] Set up native library resolution for `imgui_sharp` — consumed via the `ImguiSharp.Redist` NuGet package from the sibling `imgui-sharp-native` repo
+- [ ] Cross-platform build of `libimgui_sharp` (macOS dylib, Windows DLL, Linux .so) — tracked in sibling repo
 
 **Expand C# high-level API coverage:**
 - [ ] Drag widgets (DragFloat, DragInt, etc.)
