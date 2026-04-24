@@ -11,6 +11,8 @@ public sealed unsafe class GuiContext : IDisposable
 
     private GuiContext(ImGuiContext* handle) { _handle = handle; }
 
+    internal ImGuiContext* Handle => _handle;
+
     /// <summary>
     /// Creates a new ImGui context and sets it as the current context.
     /// </summary>
@@ -22,6 +24,16 @@ public sealed unsafe class GuiContext : IDisposable
         IGSharp_CheckVersion();
         return new GuiContext(ctx);
     }
+
+    /// <summary>Makes this context the active one for subsequent ImGui calls.</summary>
+    public void MakeCurrent()
+    {
+        if (_handle == null) throw new ObjectDisposedException(nameof(GuiContext));
+        IGSharp_SetCurrentContext(_handle);
+    }
+
+    /// <summary>True if this is the currently active ImGui context.</summary>
+    public bool IsCurrent => _handle != null && IGSharp_GetCurrentContext() == _handle;
 
     /// <inheritdoc/>
     public void Dispose()

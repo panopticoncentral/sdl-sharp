@@ -6,6 +6,7 @@ using SdlSharp.Graphics;
 using SdlSharp.Graphics.Gpu;
 using SdlSharp.Gui;
 using SdlSharp.Native;
+using WindowFlags = SdlSharp.Graphics.WindowFlags;
 
 unsafe
 {

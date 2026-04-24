@@ -17,6 +17,13 @@ public sealed unsafe class GpuTexture : IDisposable
     /// </summary>
     internal SDL_GPUTexture* Handle { get; private set; }
 
+    /// <summary>
+    /// Native handle value (pointer to the underlying SDL_GPUTexture).
+    /// Use this when passing the texture to a backend-aware API (for example ImGui image primitives,
+    /// which accept the SDL_GPU texture pointer as an <see cref="ulong"/> <c>ImTextureID</c>).
+    /// </summary>
+    public nuint NativeHandle => (nuint)Handle;
+
     internal GpuTexture(GpuDevice device, SDL_GPUTexture* handle)
     {
         _device = device;

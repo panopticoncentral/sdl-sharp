@@ -1,0 +1,9 @@
+using System.Runtime.InteropServices;
+
+namespace SdlSharp.Gui;
+
+/// <summary>
+/// A 2D float vector used by ImGui draw APIs. Layout-compatible with ImVec2.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public readonly record struct Vec2(float X, float Y);

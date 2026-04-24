@@ -277,12 +277,24 @@ Native C/C++ build lives in sibling repo `../imgui-sharp-native/`.
 
 #### Done ✅
 
-- Native C wrapper (`imgui-sharp-native/`) — CMake build, `libimgui_sharp` shared library
-  - Core subset: context, windows, layout, text, buttons, checkboxes, sliders, drags, inputs, combos, trees, tables, tabs, menus, popups, tooltips, color editors, selectables, item utilities, style stack, fonts (minimal)
+- Native C wrapper (`imgui-sharp-native/`) — CMake build, `libimgui_sharp` shared library, ImGui v1.92.7
+  - Core widgets: context, windows, child windows, layout, text, buttons, checkboxes, sliders, drags, inputs, combos, trees, tables, tabs, menus, popups, tooltips, color editors, selectables, images, list boxes, item utilities, style stack, progress bar, text links, arrow/invisible buttons
+  - DrawList API (primitives, path builder, images, clipping)
+  - Fonts (TTF file / memory / compressed memory, push/pop, default)
+  - ListClipper (virtualized lists)
+  - Full `ImGuiIO` field access + event queue injection
+  - Full `ImGuiStyle` field access (all spacing / rounding / alignment / color fields)
+  - InputText callbacks with full `InputTextCallbackData` access
+  - Plot widgets (PlotLines / PlotHistogram, array + callback variants)
+  - Drag and drop (source/target + `ImGuiPayload` accessors)
+  - Multi-select (`BeginMultiSelect` / `EndMultiSelect` + `MultiSelectIO` / `SelectionRequest` accessors)
+  - Table sort specs (`TableGetSortSpecs` + `TableSortSpecs` / `TableColumnSortSpecs` accessors)
+  - Viewport accessors, keyboard/mouse input queries, color utilities
   - SDL3 platform backend wrapper (init, shutdown, new frame, process event)
   - SDL_GPU renderer backend wrapper (init, shutdown, new frame, prepare draw data, render draw data)
-- C# native bindings (`src/SdlSharp.ImGui/Native/`)
-  - `ImGui.cs` — P/Invoke for core functions
+  - Shipped as `ImguiSharp.Redist` on nuget.org (currently 0.2.0-preview.1)
+- C# native P/Invoke bindings (`src/SdlSharp.ImGui/Native/`)
+  - `ImGui.cs` — P/Invoke for core subset of the 0.1.0 native surface
   - `ImGuiBackend.cs` — P/Invoke for backend functions
 - C# high-level wrappers (`src/SdlSharp.ImGui/Gui/`)
   - `GuiContext.cs` — IDisposable context
@@ -295,50 +307,104 @@ Native C/C++ build lives in sibling repo `../imgui-sharp-native/`.
 
 **Runtime library loading:**
 - [x] Set up native library resolution for `imgui_sharp` — consumed via the `ImguiSharp.Redist` NuGet package from the sibling `imgui-sharp-native` repo
-- [ ] Cross-platform build of `libimgui_sharp` (macOS dylib, Windows DLL, Linux .so) — tracked in sibling repo
+- [x] Cross-platform build: win-x64/x86/arm64, osx-x64/arm64 shipping via CI/NuGet (tracked in sibling repo)
+- [ ] Linux build of `libimgui_sharp` — requires building SDL3 from source; tracked in sibling repo
 
-**Expand C# high-level API coverage:**
-- [ ] Drag widgets (DragFloat, DragInt, etc.)
-- [ ] InputText with proper managed buffer handling
-- [ ] InputFloat/Int/Double wrappers
-- [ ] ColorEdit4, ColorPicker3/4, ColorButton
-- [ ] Image/ImageButton (with ImTextureRef from SDL_GPUTexture)
-- [ ] BeginChild/EndChild
-- [ ] BeginPopupModal, BeginPopupContextItem/Window
-- [ ] SelectablePtr (with ref bool)
-- [ ] RadioButtonInt
-- [ ] ListBox (BeginListBox/EndListBox)
+**Expand C# native P/Invoke bindings (`Native/ImGui.cs`):**
+
+The 0.2.0-preview.1 native library exposes ~500 entry points; `Native/ImGui.cs` currently binds only the ~100 functions that shipped in 0.1.0. Add `[LibraryImport]` declarations for:
+- [x] Drag widgets (`DragFloat[2-4]`, `DragInt[2-4]`)
+- [x] Multi-component slider / input variants (`SliderFloat[2-4]`, `SliderInt[2-4]`, `SliderAngle`, `InputFloat[2-4]`, `InputInt[2-4]`, `InputDouble`)
+- [x] InputText variants + callback entry points (`InputTextMultiline`, `InputTextWithHint`, `InputTextEx`, `InputTextMultilineEx`, `InputTextWithHintEx`, all `InputTextCallbackData_*` accessors/helpers)
+- [x] Color widgets — pickers/button (`ColorPicker3/4`, `ColorButton`), conversion utilities (`ColorConvert*`, `GetColorU32*`)
+- [x] DrawList bindings — accessors, clipping, primitives (line/rect/quad/tri/circle/ngon/ellipse/bezier/polyline/poly), images, full path API
+- [x] Images — top-level `Image` / `ImageButton` (raw `ulong` and typed `GpuTexture` overloads; `DrawList.AddImage*` also gets typed overloads)
+- [x] Plot widgets — `PlotLines`, `PlotHistogram` (array and callback variants)
+- [x] ListClipper — `ListClipper` IDisposable wrapper with `Begin`/`Step`/`End`/`DisplayStart`/`DisplayEnd`
+- [x] List boxes (`BeginListBox`/`EndListBox`), popups (`BeginPopupContextItem/Window`, `IsPopupOpen`), `BeginChild`/`EndChild`, `BeginPopupModal`
+- [x] Window queries (`GetWindowPos/Size/Width/Height`, `IsWindowAppearing/Collapsed`, `SetNextWindowCollapsed`)
+- [x] Item utilities (`IsItemActive/Focused/Visible/Edited/Activated/Deactivated*/ToggledOpen`, `GetItemRect*`, `SetItemDefaultFocus`)
+- [x] Style stack extras (`PushStyleColorU32`, `PushTextWrapPos`/`PopTextWrapPos`, `CalcItemWidth`)
+- [x] Selectable/radio/tree/tab/menu/tooltip extras (`SelectablePtr`, `RadioButtonInt`, `TreeNodeEx`, `TreeNodeGetOpen`, `GetTreeNodeToLabelSpacing`, `CollapsingHeaderClosable`, `SetNextItemOpen`, `TabItemButton`, `SetTabItemClosed`, `MenuItemPtr`, `BeginItemTooltip`)
+- [x] Text / button extras (`LabelText`, `TextLink`, `TextLinkOpenURL`, `InvisibleButton`, `ArrowButton`, `Bullet`)
+- [x] Layout cursor (`GetCursorPos`/`SetCursorPos`, `GetTextLineHeightWithSpacing`, `GetFrameHeightWithSpacing`, `CalcTextSize`)
+- [x] Tables extras: `TableGetSortSpecs` + `TableSortSpecs_*` / `TableColumnSortSpecs_*` accessors, `TableHeader`, `TableSetupScrollFreeze`
+- [ ] Menus (`MenuItemPtr`, `BeginItemTooltip`)
+- [ ] Misc text / button (`LabelText`, `TextLink`, `TextLinkOpenURL`, `InvisibleButton`, `ArrowButton`, `Bullet`)
+- [ ] Layout cursor (`GetCursorPos`, `SetCursorPos`, `GetTextLineHeightWithSpacing`, `GetFrameHeightWithSpacing`, `GetIDStr`)
+- [x] Fonts (`IO_GetFonts`, `FontAtlas_*`, `IO_SetFontDefault`/`IO_GetFontDefault`, `PushFont`/`PopFont`, `GetFont`, `GetFontSize`)
+- [ ] ListClipper (`ListClipper_New`/`Delete`/`Begin`/`End`/`Step`/`IncludeItemsByIndex`/`SeekCursorForItem`/`GetDisplayStart`/`GetDisplayEnd`)
+- [x] IO accessors/setters (display size, delta time, mouse pos/delta/wheel, key modifiers, metrics, backend flags, double-click/drag/repeat tuning)
+- [x] IO event queue (`AddKeyEvent`, `AddMousePosEvent`, `AddInputCharacter*`, `ClearEventsQueue`, …)
+- [x] Style accessors (per-field getters/setters for `FontSizeBase`, `Alpha`, `*Rounding`, `*Padding`, `*Align`, `Colors[idx]`, …)
+- [x] Viewport (`GetMainViewport`, `Viewport_Get{Pos,Size,WorkPos,WorkSize}`)
+- [ ] DrawList — accessors (`GetWindowDrawList`, `GetBackgroundDrawList`, `GetForegroundDrawList`), clipping (`Push/PopClipRect*`), primitives (`AddLine`/`AddRect*`/`AddQuad*`/`AddTriangle*`/`AddCircle*`/`AddNgon*`/`AddEllipse*`/`AddText`/`AddBezier*`/`AddPolyline`/`AddConvex/ConcavePolyFilled`), path API (`PathClear`/`PathLineTo*`/`PathFillConvex`/`PathStroke`/`PathArcTo*`/`PathBezier*CurveTo`/`PathRect`)
+- [x] Drag-and-drop (`BeginDragDropSource/Target`, `SetDragDropPayload`, `AcceptDragDropPayload`, `EndDragDropSource/Target`, `GetDragDropPayload`, `Payload_*` accessors)
+- [x] Multi-select (`BeginMultiSelect`/`EndMultiSelect`, `SetNextItemSelectionUserData`, `IsItemToggledSelection`, `MultiSelectIO_*` / `SelectionRequest_*` accessors)
+- [ ] Plot widgets (`PlotLines`, `PlotLinesCallback`, `PlotHistogram`, `PlotHistogramCallback`)
+- [x] Keyboard / mouse input queries (`IsKey{Down,Pressed,Released,ChordPressed}`, `IsMouse{Down,Clicked,Released,DoubleClicked,HoveringRect,PosValid,Dragging}`, `GetMousePos`, `GetMouseDragDelta`)
+- [ ] Misc (`CalcTextSize`)
+
+**Expand C# high-level API (`Gui/Gui.cs` + companion types):**
+
+Once the P/Invokes above are in place, lift them into idiomatic C# APIs. Prioritized list:
+- [x] Drag widgets (`Gui.DragFloat`, `Gui.DragInt`, `Gui.DragFloat[2-4]`/`DragInt[2-4]` via `Span<float>`/`Span<int>`)
+- [x] Multi-component slider variants (`SliderFloat[2-4]`, `SliderInt[2-4]`, `SliderAngle`)
+- [x] InputFloat/Int/Double wrappers (+ `InputFloat[2-4]`, `InputInt[2-4]` via `Span`)
+- [x] `InputText` with fixed-size buffer (`Span<byte>` overload)
+- [x] `InputText` with managed string buffer handling (fixed-size byte pool + UTF-8 round-trip), callback variants surfacing `InputTextCallbackData`, `InputTextMultiline`, `InputTextWithHint`
+- [ ] `CallbackResize`-backed growing buffer (unbounded managed-string input) — blocked on native wrapper exposing `SetBuf`/`SetBufSize`
+- [x] ColorEdit4, ColorPicker3/4, ColorButton
+- [x] Image / ImageButton — accept `ulong textureId` (SDL_GPU: `SDL_GPUTexture*`) and typed `GpuTexture` overloads
+- [x] ListClipper wrapper (`ListClipper` IDisposable class)
+- [x] Plot widgets (PlotLines/Histogram — array and callback variants)
+- [x] BeginChild / EndChild
+- [x] BeginPopupModal, BeginPopupContextItem / BeginPopupContextWindow, IsPopupOpen
+- [x] SelectablePtr (with `ref bool selected`) — exposed as overloaded `Selectable(string, ref bool, ...)`
+- [x] RadioButtonInt — exposed as overloaded `RadioButton(string, ref int, int)`
+- [x] ListBox (BeginListBox / EndListBox)
 - [ ] TabItemButton, SetTabItemClosed
-- [ ] Window queries (IsWindowFocused, IsWindowHovered, GetWindowPos/Size, SetNextWindow*)
-- [ ] More item utilities (IsItemActive, IsItemEdited, GetItemRect*)
-- [ ] Style color push/pop
-- [ ] PushTextWrapPos/PopTextWrapPos
-- [ ] PushItemWidth/PopItemWidth
+- [x] Window queries (IsWindowFocused/Hovered/Appearing/Collapsed, GetWindowPos/Size/Width/Height, SetNextWindowPos/Size/Collapsed/Focus/BgAlpha)
+- [x] More item utilities (IsItemActive/Focused/Visible/Edited/Activated/Deactivated/DeactivatedAfterEdit/ToggledOpen, GetItemRectMin/Max/Size, SetItemDefaultFocus)
+- [x] Style color push/pop (overloads for `(r,g,b,a)` + packed `uint`)
+- [x] PushTextWrapPos / PopTextWrapPos, CalcItemWidth
+- [x] PushItemWidth / PopItemWidth
+- [x] TabItemButton, SetTabItemClosed
+- [x] MenuItemPtr (`Gui.MenuItem(string, string?, ref bool, bool)` overload), BeginItemTooltip
+- [x] Text / button extras (LabelText, TextLink, TextLinkOpenURL, InvisibleButton, ArrowButton, Bullet)
+- [x] Layout cursor (`GetCursorPos`/`SetCursorPos`, `GetTextLineHeightWithSpacing`, `GetFrameHeightWithSpacing`, `CalcTextSize`)
+- [x] Color utilities (`GetColorU32`, `ColorConvert*`)
+- [x] DrawList wrapper (idiomatic access to background/foreground/window draw lists, primitives, path builder, images)
+- [x] Font atlas wrapper (`FontAtlas` / `Font` structs; load TTF from file/memory/compressed memory; push/pop/default)
+- [ ] ListClipper wrapper (`foreach`-style enumerator for virtualized lists)
+- [ ] Plot widgets (PlotLines/Histogram with `ReadOnlySpan<float>` and getter delegate overloads)
+- [x] Drag-and-drop API (`DragDropPayload` struct, typed `SetDragDropPayload<T>`/`AcceptDragDropPayload<T>` generics)
+- [x] Multi-select API (`MultiSelectIO` / `SelectionRequest` readonly structs, `BeginMultiSelect`/`EndMultiSelect`, `SetNextItemSelectionUserData`, `IsItemToggledSelection`)
+- [x] Table sort specs (`TableSortSpecs` / `TableColumnSortSpecs` readonly structs, `Gui.TableGetSortSpecs`)
+- [ ] Viewport wrapper
 
-**Expand native C wrapper:**
-- [ ] InputText with callback support (for resize, completion, history)
-- [ ] Drag and drop (BeginDragDropSource/Target, AcceptDragDropPayload, SetDragDropPayload)
-- [ ] Multi-select (BeginMultiSelect/EndMultiSelect)
-- [ ] ListClipper
-- [ ] DrawList API (custom drawing: lines, circles, rects, text)
-- [ ] Font loading (AddFontFromFileTTF, AddFontFromMemoryTTF)
-- [ ] IO accessors: display size, delta time, fonts pointer, more config flags
-- [ ] Style struct access (get/set individual style properties)
-- [ ] Columns (legacy but still used)
-- [ ] Plot widgets (PlotLines, PlotHistogram)
-- [ ] Table sort specs (TableGetSortSpecs)
-- [ ] Viewport API
+**Public enums (`SdlSharp.Gui` namespace):**
 
-**Public enums (SdlSharp.Gui namespace):**
-- [ ] WindowFlags, ChildFlags, InputTextFlags, TreeNodeFlags, SelectableFlags
-- [ ] ComboFlags, TabBarFlags, TabItemFlags, TableFlags, TableColumnFlags
-- [ ] PopupFlags, HoveredFlags, FocusedFlags, SliderFlags, ColorEditFlags
-- [ ] ConfigFlags, Dir, Cond, Col, StyleVar, ButtonFlags
-- [ ] MouseButton, MouseCursor
+Typed public enums replace raw `int` flag parameters on `Gui.*` methods:
+- [x] WindowFlags, ChildFlags, TreeNodeFlags, SelectableFlags
+- [x] ComboFlags, TabBarFlags, TabItemFlags, TableFlags, TableColumnFlags, TableRowFlags
+- [x] PopupFlags, HoveredFlags, FocusedFlags, SliderFlags, ColorEditFlags
+- [x] ConfigFlags, BackendFlags, Cond, Col, StyleVar
+- [x] MouseButton, Dir, SortDirection
+- [x] InputTextFlags, ButtonFlags
+- [ ] TableBgTarget (APIs not yet wrapped)
+- [x] Key (`ImGuiKey`) — covers keyboard, gamepad, mouse aliases, and mod flags for key chords
+- [ ] MouseCursor — needed once GetMouseCursor/SetMouseCursor are wrapped
+- [x] DragDropFlags
+- [x] MultiSelectFlags, SelectionRequestType
+- [ ] DataType — for scalar widgets (APIs not yet wrapped)
+
+**Inventory maintenance:**
+- [ ] `src/SdlSharp.ImGui/INVENTORY.md` — refresh the "Native Wrapper" column against the 0.2.0-preview.1 header; many entries are marked `-` but are now exposed by the native library and just need the C# P/Invoke added
 
 **Testing & samples:**
-- [ ] Run ImGuiDemo sample end-to-end with native library in place
+- [ ] Run ImGuiDemo sample end-to-end against the 0.2.0 native library
 - [ ] Verify input forwarding (keyboard, mouse, scroll)
 - [ ] Verify window resize handling
-- [ ] Create a more complex sample (custom widgets, multiple windows)
+- [ ] Create a more complex sample (custom widgets, multiple windows, DrawList, tables with sort specs)
 
