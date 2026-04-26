@@ -1,34 +1,35 @@
 using static SdlSharp.ImGui.Native;
+using NativeImGuiContext = SdlSharp.ImGui.Native.ImGuiContext;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Manages a Dear ImGui context. Dispose to destroy the context.
 /// </summary>
-public sealed unsafe class GuiContext : IDisposable
+public sealed unsafe class ImGuiContext : IDisposable
 {
-    private ImGuiContext* _handle;
+    private NativeImGuiContext* _handle;
 
-    private GuiContext(ImGuiContext* handle) { _handle = handle; }
+    private ImGuiContext(NativeImGuiContext* handle) { _handle = handle; }
 
-    internal ImGuiContext* Handle => _handle;
+    internal NativeImGuiContext* Handle => _handle;
 
     /// <summary>
     /// Creates a new ImGui context and sets it as the current context.
     /// </summary>
-    public static GuiContext Create()
+    public static ImGuiContext Create()
     {
         var ctx = IGSharp_CreateContext();
         if (ctx == null)
             throw new InvalidOperationException("Failed to create ImGui context.");
         IGSharp_CheckVersion();
-        return new GuiContext(ctx);
+        return new ImGuiContext(ctx);
     }
 
     /// <summary>Makes this context the active one for subsequent ImGui calls.</summary>
     public void MakeCurrent()
     {
-        if (_handle == null) throw new ObjectDisposedException(nameof(GuiContext));
+        if (_handle == null) throw new ObjectDisposedException(nameof(ImGuiContext));
         IGSharp_SetCurrentContext(_handle);
     }
 

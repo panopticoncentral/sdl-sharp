@@ -2,13 +2,13 @@ using SdlSharp.Graphics.Gpu;
 using static SdlSharp.Native.Common;
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// A handle to an ImGui draw list — used for custom drawing (lines, shapes, text, images)
 /// on the current window, or on the full-viewport background / foreground overlays.
-/// Obtain via <see cref="Gui.GetWindowDrawList"/>, <see cref="Gui.GetBackgroundDrawList"/>,
-/// or <see cref="Gui.GetForegroundDrawList"/>. The handle is only valid for the current frame.
+/// Obtain via <see cref="ImGui.GetWindowDrawList"/>, <see cref="ImGui.GetBackgroundDrawList"/>,
+/// or <see cref="ImGui.GetForegroundDrawList"/>. The handle is only valid for the current frame.
 /// </summary>
 public readonly unsafe struct DrawList
 {

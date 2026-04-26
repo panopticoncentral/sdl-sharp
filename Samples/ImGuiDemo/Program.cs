@@ -4,7 +4,7 @@
 using SdlSharp;
 using SdlSharp.Graphics;
 using SdlSharp.Graphics.Gpu;
-using SdlSharp.Gui;
+using SdlSharp.ImGui;
 using SdlSharp.Native;
 using WindowFlags = SdlSharp.Graphics.WindowFlags;
 
@@ -24,25 +24,25 @@ unsafe
     var swapFormat = device.GetSwapchainTextureFormat(window);
 
     // Initialize ImGui
-    using var ctx = GuiContext.Create();
-    Gui.StyleColorsDark();
+    using var ctx = ImGuiContext.Create();
+    ImGui.StyleColorsDark();
 
     // Initialize backends
-    GuiBackend.Init(window, device, swapFormat);
+    ImGuiBackend.Init(window, device, swapFormat);
 
     var showDemo = true;
 
     while (!Application.DispatchEvents())
     {
         // Start ImGui frame
-        GuiBackend.NewFrame();
+        ImGuiBackend.NewFrame();
 
         // Show demo window
-        Gui.ShowDemoWindow(ref showDemo);
+        ImGui.ShowDemoWindow(ref showDemo);
 
         // Render ImGui
-        Gui.Render();
-        var drawData = Gui.GetDrawData();
+        ImGui.Render();
+        var drawData = ImGui.GetDrawData();
 
         // GPU rendering
         var cmdBuf = device.AcquireCommandBuffer();
@@ -50,7 +50,7 @@ unsafe
         if (cmdBuf.WaitAndAcquireSwapchainTexture(window, out var swapTex, out _, out _) && swapTex != null)
         {
             // Upload vertex/index buffers BEFORE starting the render pass
-            GuiBackend.PrepareDrawData(drawData, cmdBuf);
+            ImGuiBackend.PrepareDrawData(drawData, cmdBuf);
 
             var colorTarget = new SDL_GPUColorTargetInfo
             {
@@ -63,7 +63,7 @@ unsafe
             var renderPass = cmdBuf.BeginRenderPass(&colorTarget, 1);
 
             // Render ImGui draw commands inside the render pass
-            GuiBackend.RenderDrawData(drawData, cmdBuf, renderPass);
+            ImGuiBackend.RenderDrawData(drawData, cmdBuf, renderPass);
 
             renderPass.End();
         }
@@ -72,5 +72,5 @@ unsafe
     }
 
     device.WaitForIdle();
-    GuiBackend.Shutdown();
+    ImGuiBackend.Shutdown();
 }

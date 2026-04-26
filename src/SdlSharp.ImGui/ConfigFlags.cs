@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Configuration flags stored in io.ConfigFlags.</summary>
 [Flags]

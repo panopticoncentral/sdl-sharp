@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Type of selection request emitted during multi-select.</summary>
 public enum SelectionRequestType

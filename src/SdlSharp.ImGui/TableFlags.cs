@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.BeginTable"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.BeginTable"/>.</summary>
 [Flags]
 public enum TableFlags
 {

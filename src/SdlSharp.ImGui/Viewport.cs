@@ -1,10 +1,10 @@
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// A handle to an ImGui viewport — represents the area where ImGui windows are rendered.
-/// Obtain via <see cref="Gui.GetMainViewport"/>. The handle is only valid for the current frame.
+/// Obtain via <see cref="ImGui.GetMainViewport"/>. The handle is only valid for the current frame.
 /// </summary>
 public readonly unsafe struct Viewport
 {

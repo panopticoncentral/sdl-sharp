@@ -1,6 +1,6 @@
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// A single selection request emitted by multi-select. Obtain via
@@ -24,9 +24,9 @@ public readonly unsafe struct SelectionRequest
     /// <summary>For SetRange: +1 when RangeFirstItem precedes RangeLastItem, -1 otherwise.</summary>
     public int RangeDirection => IGSharp_SelectionRequest_GetRangeDirection(Handle);
 
-    /// <summary>For SetRange: first item in the range (inclusive). User-data value set via <see cref="Gui.SetNextItemSelectionUserData"/>.</summary>
+    /// <summary>For SetRange: first item in the range (inclusive). User-data value set via <see cref="ImGui.SetNextItemSelectionUserData"/>.</summary>
     public long RangeFirstItem => IGSharp_SelectionRequest_GetRangeFirstItem(Handle);
 
-    /// <summary>For SetRange: last item in the range (inclusive). User-data value set via <see cref="Gui.SetNextItemSelectionUserData"/>.</summary>
+    /// <summary>For SetRange: last item in the range (inclusive). User-data value set via <see cref="ImGui.SetNextItemSelectionUserData"/>.</summary>
     public long RangeLastItem => IGSharp_SelectionRequest_GetRangeLastItem(Handle);
 }

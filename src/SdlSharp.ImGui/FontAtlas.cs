@@ -1,10 +1,10 @@
 using static SdlSharp.Native.Common;
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
-/// A handle to ImGui's shared font atlas. Obtain via <see cref="Gui.GetFontAtlas"/>.
+/// A handle to ImGui's shared font atlas. Obtain via <see cref="ImGui.GetFontAtlas"/>.
 /// The atlas is owned by ImGui — do not dispose.
 /// </summary>
 public readonly unsafe struct FontAtlas

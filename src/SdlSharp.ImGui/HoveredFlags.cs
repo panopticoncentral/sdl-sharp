@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.IsItemHovered"/> and <see cref="Gui.IsWindowHovered"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.IsItemHovered"/> and <see cref="ImGui.IsWindowHovered"/>.</summary>
 [Flags]
 public enum HoveredFlags
 {

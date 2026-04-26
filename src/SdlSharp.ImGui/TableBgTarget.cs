@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Target layer for <see cref="Gui.TableSetBgColor"/>.</summary>
+/// <summary>Target layer for <see cref="ImGui.TableSetBgColor"/>.</summary>
 public enum TableBgTarget
 {
     /// <summary>No target.</summary>

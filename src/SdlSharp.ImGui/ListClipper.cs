@@ -1,6 +1,6 @@
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Manually clips large lists of items to render only the ones currently visible.
@@ -10,7 +10,7 @@ namespace SdlSharp.Gui;
 /// clipper.Begin(items.Count);
 /// while (clipper.Step())
 ///     for (int i = clipper.DisplayStart; i &lt; clipper.DisplayEnd; i++)
-///         Gui.Text(items[i]);
+///         ImGui.Text(items[i]);
 /// </code>
 /// </summary>
 public sealed unsafe class ListClipper : IDisposable

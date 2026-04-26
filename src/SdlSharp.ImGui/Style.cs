@@ -1,11 +1,11 @@
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Accessors for the global ImGui <c>ImGuiStyle</c> struct — all rounding, padding,
 /// alignment, color, and tessellation fields. Changes apply immediately and persist
-/// until reset or overwritten (e.g. by <see cref="Gui.StyleColorsDark"/>).
+/// until reset or overwritten (e.g. by <see cref="ImGui.StyleColorsDark"/>).
 /// </summary>
 public static class Style
 {
@@ -25,7 +25,7 @@ public static class Style
         set => IGSharp_Style_SetFontScaleMain(value);
     }
 
-    /// <summary>DPI font scale (read-only; set via <see cref="Gui.SetFontScaleDpi"/>).</summary>
+    /// <summary>DPI font scale (read-only; set via <see cref="ImGui.SetFontScaleDpi"/>).</summary>
     public static float FontScaleDpi => IGSharp_Style_GetFontScaleDpi();
 
     /// <summary>Global alpha multiplier (1.0 opaque, 0.0 invisible).</summary>

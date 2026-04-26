@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.InvisibleButton(string, float, float, ButtonFlags)"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.InvisibleButton(string, float, float, ButtonFlags)"/>.</summary>
 [Flags]
 public enum ButtonFlags
 {

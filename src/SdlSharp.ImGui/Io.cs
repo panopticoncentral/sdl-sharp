@@ -1,7 +1,7 @@
 using static SdlSharp.Native.Common;
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Accessors for the global ImGui <c>ImGuiIO</c> struct — display size, timing,

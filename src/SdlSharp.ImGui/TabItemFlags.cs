@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.BeginTabItem(string, TabItemFlags)"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.BeginTabItem(string, TabItemFlags)"/>.</summary>
 [Flags]
 public enum TabItemFlags
 {

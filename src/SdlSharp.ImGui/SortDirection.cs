@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>A sorting direction.</summary>
 public enum SortDirection : byte

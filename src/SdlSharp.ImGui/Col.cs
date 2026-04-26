@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Color identifier for PushStyleColor / PopStyleColor.</summary>
 public enum Col

@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.Begin(string, WindowFlags)"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.Begin(string, WindowFlags)"/>.</summary>
 [Flags]
 public enum WindowFlags
 {

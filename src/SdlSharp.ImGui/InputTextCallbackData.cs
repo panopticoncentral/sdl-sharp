@@ -1,7 +1,7 @@
 using static SdlSharp.Native.Common;
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Data surface for an InputText callback. Inspect <see cref="EventFlag"/> to

@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Flags for <see cref="DrawList"/> functions.</summary>
 [Flags]

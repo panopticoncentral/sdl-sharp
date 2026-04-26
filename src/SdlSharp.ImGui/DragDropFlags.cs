@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.BeginDragDropSource"/> and <see cref="Gui.AcceptDragDropPayload"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.BeginDragDropSource"/> and <see cref="ImGui.AcceptDragDropPayload"/>.</summary>
 [Flags]
 public enum DragDropFlags
 {

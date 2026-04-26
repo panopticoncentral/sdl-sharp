@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.IsWindowFocused"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.IsWindowFocused"/>.</summary>
 [Flags]
 public enum FocusedFlags
 {

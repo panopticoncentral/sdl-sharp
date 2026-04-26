@@ -2,11 +2,11 @@ using System.Runtime.InteropServices;
 using static SdlSharp.Native.Common;
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// A handle to an in-flight drag-and-drop payload. Obtain via
-/// <see cref="Gui.AcceptDragDropPayload(string, DragDropFlags)"/> or <see cref="Gui.GetDragDropPayload"/>.
+/// <see cref="ImGui.AcceptDragDropPayload(string, DragDropFlags)"/> or <see cref="ImGui.GetDragDropPayload"/>.
 /// Data pointers returned by this handle are only valid until the next frame.
 /// </summary>
 public readonly unsafe struct DragDropPayload

@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.BeginMultiSelect"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.BeginMultiSelect"/>.</summary>
 [Flags]
 public enum MultiSelectFlags
 {

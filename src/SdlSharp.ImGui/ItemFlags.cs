@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Item flags pushed via <see cref="Gui.PushItemFlag"/>; affect all subsequently submitted items.</summary>
+/// <summary>Item flags pushed via <see cref="ImGui.PushItemFlag"/>; affect all subsequently submitted items.</summary>
 [Flags]
 public enum ItemFlags
 {

@@ -3,7 +3,7 @@
 Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bindings and managed wrappers.
 
 - **Native Wrapper**: Qualified name in the `SdlSharp.ImGui.Native` class (e.g. `Native.IGSharp_Begin`).
-- **Managed Wrapper**: Qualified name of the public C# API (e.g. `Gui.Begin`).
+- **Managed Wrapper**: Qualified name of the public C# API (e.g. `ImGui.Begin`).
 - **Notes**: Why an unwrapped API is skipped: *deferred* = planned but not yet done, *variadic* = C va_list/printf-style, *niche* = rarely needed, *internal* = not part of the public API, *C++ only* = template or operator overload.
 - **"-"**: Not yet wrapped.
 
@@ -13,8 +13,8 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| CreateContext | function | Native.IGSharp_CreateContext | GuiContext.Create | |
-| DestroyContext | function | Native.IGSharp_DestroyContext | GuiContext.Dispose | |
+| CreateContext | function | Native.IGSharp_CreateContext | ImGuiContext.Create | |
+| DestroyContext | function | Native.IGSharp_DestroyContext | ImGuiContext.Dispose | |
 | GetCurrentContext | function | Native.IGSharp_GetCurrentContext | - | deferred |
 | SetCurrentContext | function | Native.IGSharp_SetCurrentContext | - | deferred |
 
@@ -25,19 +25,19 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 | GetIO | function | - | - | deferred — struct accessor, exposed piecemeal via IO helpers |
 | GetPlatformIO | function | - | - | deferred |
 | GetStyle | function | - | - | deferred — style exposed piecemeal via Style helpers |
-| NewFrame | function | Native.IGSharp_NewFrame | GuiBackend.NewFrame (internal) | Called by backend |
+| NewFrame | function | Native.IGSharp_NewFrame | ImGuiBackend.NewFrame (internal) | Called by backend |
 | EndFrame | function | Native.IGSharp_EndFrame | - | deferred |
-| Render | function | Native.IGSharp_Render | Gui.Render | |
-| GetDrawData | function | Native.IGSharp_GetDrawData | Gui.GetDrawData | |
-| GetVersion | function | Native.IGSharp_GetVersion | Gui.GetVersion | |
-| IMGUI_CHECKVERSION | macro | Native.IGSharp_CheckVersion | GuiContext.Create (internal) | |
+| Render | function | Native.IGSharp_Render | ImGui.Render | |
+| GetDrawData | function | Native.IGSharp_GetDrawData | ImGui.GetDrawData | |
+| GetVersion | function | Native.IGSharp_GetVersion | ImGui.GetVersion | |
+| IMGUI_CHECKVERSION | macro | Native.IGSharp_CheckVersion | ImGuiContext.Create (internal) | |
 
 ## Demo, Debug, Information
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| ShowDemoWindow | function | Native.IGSharp_ShowDemoWindow | Gui.ShowDemoWindow | |
-| ShowMetricsWindow | function | Native.IGSharp_ShowMetricsWindow | Gui.ShowMetricsWindow | |
+| ShowDemoWindow | function | Native.IGSharp_ShowDemoWindow | ImGui.ShowDemoWindow | |
+| ShowMetricsWindow | function | Native.IGSharp_ShowMetricsWindow | ImGui.ShowMetricsWindow | |
 | ShowDebugLogWindow | function | - | - | deferred |
 | ShowIDStackToolWindow | function | - | - | deferred |
 | ShowAboutWindow | function | - | - | deferred |
@@ -50,16 +50,16 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| StyleColorsDark | function | Native.IGSharp_StyleColorsDark | Gui.StyleColorsDark | |
-| StyleColorsLight | function | Native.IGSharp_StyleColorsLight | Gui.StyleColorsLight | |
-| StyleColorsClassic | function | Native.IGSharp_StyleColorsClassic | Gui.StyleColorsClassic | |
+| StyleColorsDark | function | Native.IGSharp_StyleColorsDark | ImGui.StyleColorsDark | |
+| StyleColorsLight | function | Native.IGSharp_StyleColorsLight | ImGui.StyleColorsLight | |
+| StyleColorsClassic | function | Native.IGSharp_StyleColorsClassic | ImGui.StyleColorsClassic | |
 
 ## Windows
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| Begin | function | Native.IGSharp_Begin | Gui.Begin | |
-| End | function | Native.IGSharp_End | Gui.End | |
+| Begin | function | Native.IGSharp_Begin | ImGui.Begin | |
+| End | function | Native.IGSharp_End | ImGui.End | |
 
 ## Child Windows
 
@@ -122,9 +122,9 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 | PushStyleColor (U32) | function | - | - | deferred |
 | PushStyleColor (Vec4) | function | Native.IGSharp_PushStyleColorVec4 | - | deferred |
 | PopStyleColor | function | Native.IGSharp_PopStyleColor | - | deferred |
-| PushStyleVar (float) | function | Native.IGSharp_PushStyleVarFloat | Gui.PushStyleVar | |
+| PushStyleVar (float) | function | Native.IGSharp_PushStyleVarFloat | ImGui.PushStyleVar | |
 | PushStyleVar (Vec2) | function | Native.IGSharp_PushStyleVarVec2 | - | deferred |
-| PopStyleVar | function | Native.IGSharp_PopStyleVar | Gui.PopStyleVar | |
+| PopStyleVar | function | Native.IGSharp_PopStyleVar | ImGui.PopStyleVar | |
 | PushItemFlag | function | - | - | deferred |
 | PopItemFlag | function | - | - | deferred |
 
@@ -134,7 +134,7 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 |---|---|---|---|---|
 | PushItemWidth | function | Native.IGSharp_PushItemWidth | - | deferred |
 | PopItemWidth | function | Native.IGSharp_PopItemWidth | - | deferred |
-| SetNextItemWidth | function | Native.IGSharp_SetNextItemWidth | Gui.SetNextItemWidth | |
+| SetNextItemWidth | function | Native.IGSharp_SetNextItemWidth | ImGui.SetNextItemWidth | |
 | CalcItemWidth | function | - | - | deferred |
 | PushTextWrapPos | function | - | - | deferred |
 | PopTextWrapPos | function | - | - | deferred |
@@ -150,8 +150,8 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 | GetColorU32 (Vec4) | function | - | - | deferred |
 | GetColorU32 (U32) | function | - | - | deferred |
 | GetStyleColorVec4 | function | - | - | deferred |
-| ScaleAllSizes | function | Native.IGSharp_Style_ScaleAllSizes | Gui.ScaleAllSizes | |
-| SetFontScaleDpi | function | Native.IGSharp_Style_SetFontScaleDpi | Gui.SetFontScaleDpi | Custom wrapper |
+| ScaleAllSizes | function | Native.IGSharp_Style_ScaleAllSizes | ImGui.ScaleAllSizes | |
+| SetFontScaleDpi | function | Native.IGSharp_Style_SetFontScaleDpi | ImGui.SetFontScaleDpi | Custom wrapper |
 
 ## Layout cursor positioning
 
@@ -172,15 +172,15 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| Separator | function | Native.IGSharp_Separator | Gui.Separator | |
-| SameLine | function | Native.IGSharp_SameLine | Gui.SameLine | |
-| NewLine | function | Native.IGSharp_NewLine | Gui.NewLine | |
-| Spacing | function | Native.IGSharp_Spacing | Gui.Spacing | |
+| Separator | function | Native.IGSharp_Separator | ImGui.Separator | |
+| SameLine | function | Native.IGSharp_SameLine | ImGui.SameLine | |
+| NewLine | function | Native.IGSharp_NewLine | ImGui.NewLine | |
+| Spacing | function | Native.IGSharp_Spacing | ImGui.Spacing | |
 | Dummy | function | Native.IGSharp_Dummy | - | deferred |
 | Indent | function | Native.IGSharp_Indent | - | deferred |
 | Unindent | function | Native.IGSharp_Unindent | - | deferred |
-| BeginGroup | function | Native.IGSharp_BeginGroup | Gui.BeginGroup | |
-| EndGroup | function | Native.IGSharp_EndGroup | Gui.EndGroup | |
+| BeginGroup | function | Native.IGSharp_BeginGroup | ImGui.BeginGroup | |
+| EndGroup | function | Native.IGSharp_EndGroup | ImGui.EndGroup | |
 | AlignTextToFramePadding | function | Native.IGSharp_AlignTextToFramePadding | - | deferred |
 | GetTextLineHeight | function | Native.IGSharp_GetTextLineHeight | - | deferred |
 | GetTextLineHeightWithSpacing | function | - | - | deferred |
@@ -205,32 +205,32 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
 | TextUnformatted | function | Native.IGSharp_TextUnformatted | - | deferred |
-| Text | function | Native.IGSharp_Text | Gui.Text | |
+| Text | function | Native.IGSharp_Text | ImGui.Text | |
 | TextV | function | - | - | variadic |
-| TextColored | function | Native.IGSharp_TextColored | Gui.TextColored | |
+| TextColored | function | Native.IGSharp_TextColored | ImGui.TextColored | |
 | TextColoredV | function | - | - | variadic |
-| TextDisabled | function | Native.IGSharp_TextDisabled | Gui.TextDisabled | |
+| TextDisabled | function | Native.IGSharp_TextDisabled | ImGui.TextDisabled | |
 | TextDisabledV | function | - | - | variadic |
-| TextWrapped | function | Native.IGSharp_TextWrapped | Gui.TextWrapped | |
+| TextWrapped | function | Native.IGSharp_TextWrapped | ImGui.TextWrapped | |
 | TextWrappedV | function | - | - | variadic |
 | LabelText | function | - | - | deferred |
 | LabelTextV | function | - | - | variadic |
-| BulletText | function | Native.IGSharp_BulletText | Gui.BulletText | |
+| BulletText | function | Native.IGSharp_BulletText | ImGui.BulletText | |
 | BulletTextV | function | - | - | variadic |
-| SeparatorText | function | Native.IGSharp_SeparatorText | Gui.SeparatorText | |
+| SeparatorText | function | Native.IGSharp_SeparatorText | ImGui.SeparatorText | |
 
 ## Widgets: Main
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| Button | function | Native.IGSharp_Button | Gui.Button | |
-| SmallButton | function | Native.IGSharp_SmallButton | Gui.SmallButton | |
+| Button | function | Native.IGSharp_Button | ImGui.Button | |
+| SmallButton | function | Native.IGSharp_SmallButton | ImGui.SmallButton | |
 | InvisibleButton | function | - | - | deferred |
 | ArrowButton | function | - | - | deferred |
-| Checkbox | function | Native.IGSharp_Checkbox | Gui.Checkbox | |
+| Checkbox | function | Native.IGSharp_Checkbox | ImGui.Checkbox | |
 | CheckboxFlags (int) | function | - | - | deferred |
 | CheckboxFlags (uint) | function | - | - | deferred |
-| RadioButton | function | Native.IGSharp_RadioButton | Gui.RadioButton | |
+| RadioButton | function | Native.IGSharp_RadioButton | ImGui.RadioButton | |
 | RadioButton (int) | function | - | - | deferred |
 | ProgressBar | function | Native.IGSharp_ProgressBar | - | deferred |
 | Bullet | function | - | - | deferred |
@@ -246,8 +246,8 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| BeginCombo | function | Native.IGSharp_BeginCombo | Gui.BeginCombo | |
-| EndCombo | function | Native.IGSharp_EndCombo | Gui.EndCombo | |
+| BeginCombo | function | Native.IGSharp_BeginCombo | ImGui.BeginCombo | |
+| EndCombo | function | Native.IGSharp_EndCombo | ImGui.EndCombo | |
 | Combo (items[]) | function | - | - | deferred |
 | Combo (getter) | function | - | - | deferred |
 
@@ -272,12 +272,12 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SliderFloat | function | Native.IGSharp_SliderFloat | Gui.SliderFloat | |
+| SliderFloat | function | Native.IGSharp_SliderFloat | ImGui.SliderFloat | |
 | SliderFloat2 | function | - | - | deferred |
 | SliderFloat3 | function | - | - | deferred |
 | SliderFloat4 | function | - | - | deferred |
 | SliderAngle | function | - | - | deferred |
-| SliderInt | function | Native.IGSharp_SliderInt | Gui.SliderInt | |
+| SliderInt | function | Native.IGSharp_SliderInt | ImGui.SliderInt | |
 | SliderInt2 | function | - | - | deferred |
 | SliderInt3 | function | - | - | deferred |
 | SliderInt4 | function | - | - | deferred |
@@ -310,7 +310,7 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| ColorEdit3 | function | Native.IGSharp_ColorEdit3 | Gui.ColorEdit3 | |
+| ColorEdit3 | function | Native.IGSharp_ColorEdit3 | ImGui.ColorEdit3 | |
 | ColorEdit4 | function | Native.IGSharp_ColorEdit4 | - | deferred |
 | ColorPicker3 | function | - | - | deferred |
 | ColorPicker4 | function | - | - | deferred |
@@ -321,7 +321,7 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| TreeNode (str) | function | Native.IGSharp_TreeNode | Gui.TreeNode | |
+| TreeNode (str) | function | Native.IGSharp_TreeNode | ImGui.TreeNode | |
 | TreeNode (str, fmt) | function | - | - | variadic |
 | TreeNode (ptr, fmt) | function | - | - | variadic |
 | TreeNodeEx (str) | function | - | - | deferred |
@@ -329,9 +329,9 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 | TreeNodeEx (ptr, fmt) | function | - | - | variadic |
 | TreePush (str) | function | - | - | deferred |
 | TreePush (ptr) | function | - | - | deferred |
-| TreePop | function | Native.IGSharp_TreePop | Gui.TreePop | |
+| TreePop | function | Native.IGSharp_TreePop | ImGui.TreePop | |
 | GetTreeNodeToLabelSpacing | function | - | - | deferred |
-| CollapsingHeader (str) | function | Native.IGSharp_CollapsingHeader | Gui.CollapsingHeader | |
+| CollapsingHeader (str) | function | Native.IGSharp_CollapsingHeader | ImGui.CollapsingHeader | |
 | CollapsingHeader (str, bool*) | function | - | - | deferred |
 | SetNextItemOpen | function | - | - | deferred |
 | SetNextItemStorageID | function | - | - | deferred |
@@ -340,7 +340,7 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| Selectable (bool) | function | Native.IGSharp_Selectable | Gui.Selectable | |
+| Selectable (bool) | function | Native.IGSharp_Selectable | ImGui.Selectable | |
 | Selectable (bool*) | function | - | - | deferred |
 
 ## Widgets: Multi-selection
@@ -381,22 +381,22 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| BeginMenuBar | function | Native.IGSharp_BeginMenuBar | Gui.BeginMenuBar | |
-| EndMenuBar | function | Native.IGSharp_EndMenuBar | Gui.EndMenuBar | |
-| BeginMainMenuBar | function | Native.IGSharp_BeginMainMenuBar | Gui.BeginMainMenuBar | |
-| EndMainMenuBar | function | Native.IGSharp_EndMainMenuBar | Gui.EndMainMenuBar | |
-| BeginMenu | function | Native.IGSharp_BeginMenu | Gui.BeginMenu | |
-| EndMenu | function | Native.IGSharp_EndMenu | Gui.EndMenu | |
-| MenuItem (str) | function | Native.IGSharp_MenuItem | Gui.MenuItem | |
+| BeginMenuBar | function | Native.IGSharp_BeginMenuBar | ImGui.BeginMenuBar | |
+| EndMenuBar | function | Native.IGSharp_EndMenuBar | ImGui.EndMenuBar | |
+| BeginMainMenuBar | function | Native.IGSharp_BeginMainMenuBar | ImGui.BeginMainMenuBar | |
+| EndMainMenuBar | function | Native.IGSharp_EndMainMenuBar | ImGui.EndMainMenuBar | |
+| BeginMenu | function | Native.IGSharp_BeginMenu | ImGui.BeginMenu | |
+| EndMenu | function | Native.IGSharp_EndMenu | ImGui.EndMenu | |
+| MenuItem (str) | function | Native.IGSharp_MenuItem | ImGui.MenuItem | |
 | MenuItem (str, bool*) | function | - | - | deferred |
 
 ## Tooltips
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| BeginTooltip | function | Native.IGSharp_BeginTooltip | Gui.BeginTooltip | |
-| EndTooltip | function | Native.IGSharp_EndTooltip | Gui.EndTooltip | |
-| SetTooltip | function | Native.IGSharp_SetTooltip | Gui.SetTooltip | |
+| BeginTooltip | function | Native.IGSharp_BeginTooltip | ImGui.BeginTooltip | |
+| EndTooltip | function | Native.IGSharp_EndTooltip | ImGui.EndTooltip | |
+| SetTooltip | function | Native.IGSharp_SetTooltip | ImGui.SetTooltip | |
 | SetTooltipV | function | - | - | variadic |
 | BeginItemTooltip | function | - | - | deferred |
 | SetItemTooltip | function | - | - | deferred |
@@ -406,13 +406,13 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| BeginPopup | function | Native.IGSharp_BeginPopup | Gui.BeginPopup | |
+| BeginPopup | function | Native.IGSharp_BeginPopup | ImGui.BeginPopup | |
 | BeginPopupModal | function | Native.IGSharp_BeginPopupModal | - | deferred |
-| EndPopup | function | Native.IGSharp_EndPopup | Gui.EndPopup | |
-| OpenPopup (str) | function | Native.IGSharp_OpenPopup | Gui.OpenPopup | |
+| EndPopup | function | Native.IGSharp_EndPopup | ImGui.EndPopup | |
+| OpenPopup (str) | function | Native.IGSharp_OpenPopup | ImGui.OpenPopup | |
 | OpenPopup (ID) | function | - | - | deferred |
 | OpenPopupOnItemClick | function | - | - | deferred |
-| CloseCurrentPopup | function | Native.IGSharp_CloseCurrentPopup | Gui.CloseCurrentPopup | |
+| CloseCurrentPopup | function | Native.IGSharp_CloseCurrentPopup | ImGui.CloseCurrentPopup | |
 | BeginPopupContextItem | function | - | - | deferred |
 | BeginPopupContextWindow | function | - | - | deferred |
 | BeginPopupContextVoid | function | - | - | deferred |
@@ -422,14 +422,14 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| BeginTable | function | Native.IGSharp_BeginTable | Gui.BeginTable | |
-| EndTable | function | Native.IGSharp_EndTable | Gui.EndTable | |
-| TableNextRow | function | Native.IGSharp_TableNextRow | Gui.TableNextRow | |
-| TableNextColumn | function | Native.IGSharp_TableNextColumn | Gui.TableNextColumn | |
+| BeginTable | function | Native.IGSharp_BeginTable | ImGui.BeginTable | |
+| EndTable | function | Native.IGSharp_EndTable | ImGui.EndTable | |
+| TableNextRow | function | Native.IGSharp_TableNextRow | ImGui.TableNextRow | |
+| TableNextColumn | function | Native.IGSharp_TableNextColumn | ImGui.TableNextColumn | |
 | TableSetColumnIndex | function | Native.IGSharp_TableSetColumnIndex | - | deferred |
-| TableSetupColumn | function | Native.IGSharp_TableSetupColumn | Gui.TableSetupColumn | |
+| TableSetupColumn | function | Native.IGSharp_TableSetupColumn | ImGui.TableSetupColumn | |
 | TableSetupScrollFreeze | function | - | - | deferred |
-| TableHeadersRow | function | Native.IGSharp_TableHeadersRow | Gui.TableHeadersRow | |
+| TableHeadersRow | function | Native.IGSharp_TableHeadersRow | ImGui.TableHeadersRow | |
 | TableHeader | function | - | - | deferred |
 | TableGetSortSpecs | function | - | - | deferred |
 | TableGetColumnCount | function | - | - | deferred |
@@ -445,10 +445,10 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| BeginTabBar | function | Native.IGSharp_BeginTabBar | Gui.BeginTabBar | |
-| EndTabBar | function | Native.IGSharp_EndTabBar | Gui.EndTabBar | |
-| BeginTabItem | function | Native.IGSharp_BeginTabItem | Gui.BeginTabItem | |
-| EndTabItem | function | Native.IGSharp_EndTabItem | Gui.EndTabItem | |
+| BeginTabBar | function | Native.IGSharp_BeginTabBar | ImGui.BeginTabBar | |
+| EndTabBar | function | Native.IGSharp_EndTabBar | ImGui.EndTabBar | |
+| BeginTabItem | function | Native.IGSharp_BeginTabItem | ImGui.BeginTabItem | |
+| EndTabItem | function | Native.IGSharp_EndTabItem | ImGui.EndTabItem | |
 | TabItemButton | function | - | - | deferred |
 | SetTabItemClosed | function | - | - | deferred |
 
@@ -480,8 +480,8 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| BeginDisabled | function | Native.IGSharp_BeginDisabled | Gui.BeginDisabled | |
-| EndDisabled | function | Native.IGSharp_EndDisabled | Gui.EndDisabled | |
+| BeginDisabled | function | Native.IGSharp_BeginDisabled | ImGui.BeginDisabled | |
+| EndDisabled | function | Native.IGSharp_EndDisabled | ImGui.EndDisabled | |
 
 ## Clipping
 
@@ -502,10 +502,10 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| IsItemHovered | function | Native.IGSharp_IsItemHovered | Gui.IsItemHovered | |
+| IsItemHovered | function | Native.IGSharp_IsItemHovered | ImGui.IsItemHovered | |
 | IsItemActive | function | - | - | deferred |
 | IsItemFocused | function | - | - | deferred |
-| IsItemClicked | function | Native.IGSharp_IsItemClicked | Gui.IsItemClicked | |
+| IsItemClicked | function | Native.IGSharp_IsItemClicked | ImGui.IsItemClicked | |
 | IsItemVisible | function | - | - | deferred |
 | IsItemEdited | function | - | - | deferred |
 | IsItemActivated | function | - | - | deferred |
@@ -607,12 +607,12 @@ These are custom C wrapper functions that provide access to ImGuiIO fields.
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| io.WantCaptureMouse | field | Native.IGSharp_IO_GetWantCaptureMouse | Gui.WantCaptureMouse | |
-| io.WantCaptureKeyboard | field | Native.IGSharp_IO_GetWantCaptureKeyboard | Gui.WantCaptureKeyboard | |
+| io.WantCaptureMouse | field | Native.IGSharp_IO_GetWantCaptureMouse | ImGui.WantCaptureMouse | |
+| io.WantCaptureKeyboard | field | Native.IGSharp_IO_GetWantCaptureKeyboard | ImGui.WantCaptureKeyboard | |
 | io.ConfigFlags (get) | field | Native.IGSharp_IO_GetConfigFlags | - | deferred |
 | io.ConfigFlags (set) | field | Native.IGSharp_IO_SetConfigFlags | - | deferred |
-| io.IniFilename | field | Native.IGSharp_IO_SetIniFilename | Gui.SetIniFilename | |
-| io.Framerate | field | Native.IGSharp_IO_GetFramerate | Gui.Framerate | |
+| io.IniFilename | field | Native.IGSharp_IO_SetIniFilename | ImGui.SetIniFilename | |
+| io.Framerate | field | Native.IGSharp_IO_GetFramerate | ImGui.Framerate | |
 
 ## Flags & Enumerations
 
@@ -652,17 +652,17 @@ These are custom C wrapper functions that provide access to ImGuiIO fields.
 
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| ImGui_ImplSDL3_InitForSDLGPU | function | Native.IGSharp_ImplSDL3_InitForSDLGPU | GuiBackend.Init | |
-| ImGui_ImplSDL3_Shutdown | function | Native.IGSharp_ImplSDL3_Shutdown | GuiBackend.Shutdown | |
-| ImGui_ImplSDL3_NewFrame | function | Native.IGSharp_ImplSDL3_NewFrame | GuiBackend.NewFrame | |
-| ImGui_ImplSDL3_ProcessEvent | function | Native.IGSharp_ImplSDL3_ProcessEvent | GuiBackend (internal) | Via event filter |
+| ImGui_ImplSDL3_InitForSDLGPU | function | Native.IGSharp_ImplSDL3_InitForSDLGPU | ImGuiBackend.Init | |
+| ImGui_ImplSDL3_Shutdown | function | Native.IGSharp_ImplSDL3_Shutdown | ImGuiBackend.Shutdown | |
+| ImGui_ImplSDL3_NewFrame | function | Native.IGSharp_ImplSDL3_NewFrame | ImGuiBackend.NewFrame | |
+| ImGui_ImplSDL3_ProcessEvent | function | Native.IGSharp_ImplSDL3_ProcessEvent | ImGuiBackend (internal) | Via event filter |
 | ImGui_ImplSDL3_InitForOther | function | - | - | niche — using SDL_GPU path |
 | ImGui_ImplSDL3_InitForVulkan | function | - | - | niche — using SDL_GPU path |
 | ImGui_ImplSDL3_InitForD3D | function | - | - | niche — using SDL_GPU path |
 | ImGui_ImplSDL3_InitForMetal | function | - | - | niche — using SDL_GPU path |
 | ImGui_ImplSDL3_InitForOpenGL | function | - | - | niche — using SDL_GPU path |
-| ImGui_ImplSDLGPU3_Init | function | Native.IGSharp_ImplSDLGPU3_Init | GuiBackend.Init | |
-| ImGui_ImplSDLGPU3_Shutdown | function | Native.IGSharp_ImplSDLGPU3_Shutdown | GuiBackend.Shutdown | |
-| ImGui_ImplSDLGPU3_NewFrame | function | Native.IGSharp_ImplSDLGPU3_NewFrame | GuiBackend.NewFrame | |
-| ImGui_ImplSDLGPU3_PrepareDrawData | function | Native.IGSharp_ImplSDLGPU3_PrepareDrawData | GuiBackend.PrepareDrawData | |
-| ImGui_ImplSDLGPU3_RenderDrawData | function | Native.IGSharp_ImplSDLGPU3_RenderDrawData | GuiBackend.RenderDrawData | |
+| ImGui_ImplSDLGPU3_Init | function | Native.IGSharp_ImplSDLGPU3_Init | ImGuiBackend.Init | |
+| ImGui_ImplSDLGPU3_Shutdown | function | Native.IGSharp_ImplSDLGPU3_Shutdown | ImGuiBackend.Shutdown | |
+| ImGui_ImplSDLGPU3_NewFrame | function | Native.IGSharp_ImplSDLGPU3_NewFrame | ImGuiBackend.NewFrame | |
+| ImGui_ImplSDLGPU3_PrepareDrawData | function | Native.IGSharp_ImplSDLGPU3_PrepareDrawData | ImGuiBackend.PrepareDrawData | |
+| ImGui_ImplSDLGPU3_RenderDrawData | function | Native.IGSharp_ImplSDLGPU3_RenderDrawData | ImGuiBackend.RenderDrawData | |

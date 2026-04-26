@@ -1,6 +1,6 @@
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Sort specification for a single table column, obtained from <see cref="TableSortSpecs.GetSpec"/>.</summary>
 public readonly unsafe struct TableColumnSortSpecs
@@ -12,7 +12,7 @@ public readonly unsafe struct TableColumnSortSpecs
     /// <summary>True if this handle refers to a valid spec.</summary>
     public bool IsValid => Handle != null;
 
-    /// <summary>User-supplied column ID (from <see cref="Gui.TableSetupColumn"/>'s <c>userId</c> parameter).</summary>
+    /// <summary>User-supplied column ID (from <see cref="ImGui.TableSetupColumn"/>'s <c>userId</c> parameter).</summary>
     public uint ColumnUserId => IGSharp_TableColumnSortSpecs_GetColumnUserID(Handle);
 
     /// <summary>Zero-based column index within the table.</summary>

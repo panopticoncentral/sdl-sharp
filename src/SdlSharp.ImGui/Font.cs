@@ -1,9 +1,9 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// A handle to an ImGui font loaded into the font atlas. Obtain via
 /// <see cref="FontAtlas"/> methods (e.g. <see cref="FontAtlas.AddFontFromFileTTF"/>)
-/// or from <see cref="Gui.GetFont"/>. The handle is owned by the font atlas — do not dispose.
+/// or from <see cref="ImGui.GetFont"/>. The handle is owned by the font atlas — do not dispose.
 /// </summary>
 public readonly unsafe struct Font
 {

@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// A 2D float vector used by ImGui draw APIs. Layout-compatible with ImVec2.

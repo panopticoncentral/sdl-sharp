@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Flags for InputText, InputFloat/Int/Double, and related input widgets.</summary>
 [Flags]

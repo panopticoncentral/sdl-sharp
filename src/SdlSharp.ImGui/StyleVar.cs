@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Style variable identifier for PushStyleVar / PopStyleVar.</summary>
 public enum StyleVar

@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Condition for SetNextWindow*, SetWindow*, SetNextItem* functions.

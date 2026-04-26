@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.BeginChild"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.BeginChild"/>.</summary>
 [Flags]
 public enum ChildFlags
 {

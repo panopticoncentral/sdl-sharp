@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Source of a mouse-like pointer event (for <c>Io.AddMouseSourceEvent</c>).</summary>
 public enum MouseSource

@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Flags for Drag/Slider widgets (DragFloat, SliderFloat, etc.).</summary>
 [Flags]

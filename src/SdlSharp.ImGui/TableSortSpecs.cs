@@ -1,10 +1,10 @@
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Sort specs for a sortable table (<see cref="TableFlags.Sortable"/>). Obtain via
-/// <see cref="Gui.TableGetSortSpecs"/>. When <see cref="SpecsDirty"/> is true, re-sort your
+/// <see cref="ImGui.TableGetSortSpecs"/>. When <see cref="SpecsDirty"/> is true, re-sort your
 /// data and clear the flag.
 /// </summary>
 public readonly unsafe struct TableSortSpecs

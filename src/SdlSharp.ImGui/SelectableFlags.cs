@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.Selectable(string, bool, SelectableFlags, float, float)"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.Selectable(string, bool, SelectableFlags, float, float)"/>.</summary>
 [Flags]
 public enum SelectableFlags
 {

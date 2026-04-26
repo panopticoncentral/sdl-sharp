@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Backend capabilities flags stored in io.BackendFlags.</summary>
 [Flags]

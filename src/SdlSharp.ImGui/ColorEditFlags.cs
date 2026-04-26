@@ -1,4 +1,4 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>Flags for ColorEdit3/4, ColorPicker3/4, ColorButton.</summary>
 [Flags]

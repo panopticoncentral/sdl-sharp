@@ -3,12 +3,12 @@ using SdlSharp.Graphics.Gpu;
 using SdlSharp.Native;
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Manages the Dear ImGui SDL3 platform and SDL_GPU renderer backends.
 /// </summary>
-public static unsafe class GuiBackend
+public static unsafe class ImGuiBackend
 {
     /// <summary>
     /// Initializes both the SDL3 platform backend and the SDL_GPU renderer backend.
@@ -39,7 +39,7 @@ public static unsafe class GuiBackend
     /// <summary>
     /// Uploads vertex/index buffers to the GPU. Must be called BEFORE <see cref="GpuCommandBuffer.BeginRenderPass"/>.
     /// </summary>
-    /// <param name="drawData">The opaque draw data pointer from <see cref="Gui.GetDrawData"/>.</param>
+    /// <param name="drawData">The opaque draw data pointer from <see cref="ImGui.GetDrawData"/>.</param>
     /// <param name="commandBuffer">The GPU command buffer.</param>
     public static void PrepareDrawData(void* drawData, GpuCommandBuffer commandBuffer)
     {
@@ -50,7 +50,7 @@ public static unsafe class GuiBackend
     /// Renders ImGui draw data into the active render pass. Must be called AFTER <see cref="PrepareDrawData"/>
     /// and inside an active render pass.
     /// </summary>
-    /// <param name="drawData">The opaque draw data pointer from <see cref="Gui.GetDrawData"/>.</param>
+    /// <param name="drawData">The opaque draw data pointer from <see cref="ImGui.GetDrawData"/>.</param>
     /// <param name="commandBuffer">The GPU command buffer.</param>
     /// <param name="renderPass">The active GPU render pass.</param>
     public static void RenderDrawData(void* drawData, GpuCommandBuffer commandBuffer, GpuRenderPass renderPass)

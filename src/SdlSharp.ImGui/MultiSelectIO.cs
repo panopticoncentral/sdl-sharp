@@ -1,10 +1,10 @@
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
-/// Multi-select I/O context returned by <see cref="Gui.BeginMultiSelect"/> and
-/// <see cref="Gui.EndMultiSelect"/>. Iterate <see cref="GetRequest"/> from 0 to
+/// Multi-select I/O context returned by <see cref="ImGui.BeginMultiSelect"/> and
+/// <see cref="ImGui.EndMultiSelect"/>. Iterate <see cref="GetRequest"/> from 0 to
 /// <see cref="RequestsCount"/> and apply each to your selection state.
 /// </summary>
 public readonly unsafe struct MultiSelectIO
@@ -38,6 +38,6 @@ public readonly unsafe struct MultiSelectIO
         set => IGSharp_MultiSelectIO_SetRangeSrcReset(Handle, value);
     }
 
-    /// <summary>Items count parameter passed to <see cref="Gui.BeginMultiSelect"/>.</summary>
+    /// <summary>Items count parameter passed to <see cref="ImGui.BeginMultiSelect"/>.</summary>
     public int ItemsCount => IGSharp_MultiSelectIO_GetItemsCount(Handle);
 }

@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="Gui.BeginCombo"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.BeginCombo"/>.</summary>
 [Flags]
 public enum ComboFlags
 {

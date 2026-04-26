@@ -1,6 +1,6 @@
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
-/// <summary>Mouse cursor identifier (for <see cref="Gui.GetMouseCursor"/> / <see cref="Gui.SetMouseCursor"/>).</summary>
+/// <summary>Mouse cursor identifier (for <see cref="ImGui.GetMouseCursor"/> / <see cref="ImGui.SetMouseCursor"/>).</summary>
 public enum MouseCursor
 {
     /// <summary>No cursor.</summary>

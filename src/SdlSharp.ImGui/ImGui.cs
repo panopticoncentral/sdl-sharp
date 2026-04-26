@@ -4,13 +4,13 @@ using SdlSharp.Graphics.Gpu;
 using static SdlSharp.Native.Common;
 using static SdlSharp.ImGui.Native;
 
-namespace SdlSharp.Gui;
+namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Static class providing Dear ImGui widget and layout functions.
 /// Mirrors the ImGui:: C++ namespace.
 /// </summary>
-public static unsafe class Gui
+public static unsafe class ImGui
 {
     // --- Lifecycle ---
 

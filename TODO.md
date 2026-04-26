@@ -304,17 +304,17 @@ nuget.org — currently `0.2.0-preview.2`).
 #### C# managed surface (this repo)
 
 - `SdlSharp.ImGui.Native.ImGui` / `ImGuiBackend` — full P/Invoke layer (~620 entry points)
-- `SdlSharp.Gui.Gui` — static API mirroring `ImGui::*`
-- `SdlSharp.Gui.Io` — IO accessors (display size, delta time, mouse/keyboard state,
+- `SdlSharp.ImGui.ImGui` — static API mirroring `ImGui::*`
+- `SdlSharp.ImGui.Io` — IO accessors (display size, delta time, mouse/keyboard state,
   metrics, timing tunables, event-queue injection)
-- `SdlSharp.Gui.Style` — per-field getters/setters for the ImGui style struct
+- `SdlSharp.ImGui.Style` — per-field getters/setters for the ImGui style struct
 - Handle structs: `DrawList`, `Viewport`, `Font`, `FontAtlas`, `DragDropPayload`,
   `MultiSelectIO`, `SelectionRequest`, `TableSortSpecs`, `TableColumnSortSpecs`,
   `InputTextCallbackData`
-- IDisposable wrappers: `GuiContext` (with `MakeCurrent`/`IsCurrent`), `ListClipper`
+- IDisposable wrappers: `ImGuiContext` (with `MakeCurrent`/`IsCurrent`), `ListClipper`
 - Public types: `Vec2`, `Vec4` (layout-compatible with ImVec2/ImVec4)
 - Delegates: `InputTextCallback`, `PlotValuesGetter`
-- Generic scalar widgets: `Gui.Drag<T>`, `Slider<T>`, `VSlider<T>`, `Input<T>`
+- Generic scalar widgets: `ImGui.Drag<T>`, `Slider<T>`, `VSlider<T>`, `Input<T>`
   (any unmanaged numeric: sbyte/byte/short/ushort/int/uint/long/ulong/float/double),
   with N-component `Span<T>` overloads
 - Auto-growing managed-string `InputText` / `InputTextMultiline` / `InputTextWithHint`
