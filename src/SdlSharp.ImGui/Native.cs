@@ -1,33 +1,33 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SdlSharp.Native;
 // ReSharper disable InconsistentNaming
 
-namespace SdlSharp.ImGui.Native;
+namespace SdlSharp.ImGui;
 
 /// <summary>
-/// Native P/Invoke bindings for the imgui_sharp C wrapper library.
+/// Native P/Invoke bindings for the imgui_sharp C wrapper library,
+/// including the SDL3 platform backend and SDL_GPU renderer backend.
 /// </summary>
-public static unsafe partial class ImGui
+internal static unsafe partial class Native
 {
-    public const string ImGuiLib = "imgui_sharp";
+    private const string ImGuiLib = "imgui_sharp";
 
     /// <summary>Opaque ImGui context handle.</summary>
     public struct ImGuiContext;
 
     /// <summary>Layout-compatible with ImVec2.</summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct IGSharp_Vec2
+    public struct IGSharp_Vec2(float x, float y)
     {
-        public float X, Y;
-        public IGSharp_Vec2(float x, float y) { X = x; Y = y; }
+        public float X = x, Y = y;
     }
 
     /// <summary>Layout-compatible with ImVec4.</summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct IGSharp_Vec4
+    public struct IGSharp_Vec4(float x, float y, float z, float w)
     {
-        public float X, Y, Z, W;
-        public IGSharp_Vec4(float x, float y, float z, float w) { X = x; Y = y; Z = z; W = w; }
+        public float X = x, Y = y, Z = z, W = w;
     }
 
     // --- Context & Lifecycle ---
@@ -2447,4 +2447,51 @@ public static unsafe partial class ImGui
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool IGSharp_InputScalarN(ReadOnlySpan<byte> label, int data_type, void* p_data, int components, void* p_step, void* p_step_fast, ReadOnlySpan<byte> format, int flags);
+
+    // ============================================================
+    // SDL3 Platform Backend & SDL_GPU Renderer Backend
+    // ============================================================
+
+    // --- SDL3 Platform Backend ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDL3_InitForSDLGPU")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_ImplSDL3_InitForSDLGPU(SDL_Window* window);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDL3_Shutdown")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ImplSDL3_Shutdown();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDL3_NewFrame")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ImplSDL3_NewFrame();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDL3_ProcessEvent")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_ImplSDL3_ProcessEvent(SDL_Event* sdl_event);
+
+    // --- SDL_GPU Renderer Backend ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDLGPU3_Init")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_ImplSDLGPU3_Init(SDL_GPUDevice* device, int color_target_format, int msaa_samples);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDLGPU3_Shutdown")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ImplSDLGPU3_Shutdown();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDLGPU3_NewFrame")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ImplSDLGPU3_NewFrame();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDLGPU3_PrepareDrawData")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ImplSDLGPU3_PrepareDrawData(void* draw_data, SDL_GPUCommandBuffer* command_buffer);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDLGPU3_RenderDrawData")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ImplSDLGPU3_RenderDrawData(void* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass);
 }

@@ -1,6 +1,6 @@
 using SdlSharp.Graphics.Gpu;
 using static SdlSharp.Native.Common;
-using static SdlSharp.ImGui.Native.ImGui;
+using static SdlSharp.ImGui.Native;
 
 namespace SdlSharp.Gui;
 
