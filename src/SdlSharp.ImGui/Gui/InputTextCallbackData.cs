@@ -102,6 +102,19 @@ public readonly unsafe struct InputTextCallbackData
 
     /// <summary>True if there is a non-empty selection.</summary>
     public bool HasSelection() => IGSharp_InputTextCallbackData_HasSelection(Handle);
+
+    /// <summary>
+    /// Replaces the buffer pointer (used during a <see cref="InputTextFlags.CallbackResize"/> event
+    /// to point ImGui at a freshly-grown buffer). The new buffer must remain valid until the
+    /// callback returns.
+    /// </summary>
+    public void SetBuf(byte* newBuf) => IGSharp_InputTextCallbackData_SetBuf(Handle, newBuf);
+
+    /// <summary>Sets the buffer capacity in bytes.</summary>
+    public void SetBufSize(int size) => IGSharp_InputTextCallbackData_SetBufSize(Handle, size);
+
+    /// <summary>Atomic helper: replace both buffer pointer and capacity, used during a resize callback.</summary>
+    public void ResizeBuf(byte* newBuf, int newSize) => IGSharp_InputTextCallbackData_ResizeBuf(Handle, newBuf, newSize);
 }
 
 /// <summary>

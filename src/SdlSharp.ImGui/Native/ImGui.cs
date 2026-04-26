@@ -2224,4 +2224,227 @@ public static unsafe partial class ImGui
     [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_Style_SetColor")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void IGSharp_Style_SetColor(int idx, IGSharp_Vec4 col);
+
+    // --- Scrolling ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_GetScrollX")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial float IGSharp_GetScrollX();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_GetScrollY")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial float IGSharp_GetScrollY();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetScrollX")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetScrollX(float scroll_x);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetScrollY")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetScrollY(float scroll_y);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_GetScrollMaxX")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial float IGSharp_GetScrollMaxX();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_GetScrollMaxY")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial float IGSharp_GetScrollMaxY();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetScrollHereX")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetScrollHereX(float center_x_ratio);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetScrollHereY")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetScrollHereY(float center_y_ratio);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetScrollFromPosX")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetScrollFromPosX(float local_x, float center_x_ratio);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetScrollFromPosY")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetScrollFromPosY(float local_y, float center_y_ratio);
+
+    // --- Item Flags ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_PushItemFlag")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_PushItemFlag(int option, [MarshalAs(UnmanagedType.U1)] bool enabled);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_PopItemFlag")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_PopItemFlag();
+
+    // --- Focus / Activation ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetKeyboardFocusHere")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetKeyboardFocusHere(int offset);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetNextItemAllowOverlap")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetNextItemAllowOverlap();
+
+    // --- Item Utilities (extra) ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_GetItemID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial uint IGSharp_GetItemID();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_IsAnyItemHovered")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_IsAnyItemHovered();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_IsAnyItemActive")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_IsAnyItemActive();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_IsAnyItemFocused")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_IsAnyItemFocused();
+
+    // --- Mouse Cursor ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_GetMouseCursor")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int IGSharp_GetMouseCursor();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetMouseCursor")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetMouseCursor(int cursor_type);
+
+    // --- Window Manipulation (extra) ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetNextWindowSizeConstraints")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetNextWindowSizeConstraints(IGSharp_Vec2 size_min, IGSharp_Vec2 size_max);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetNextWindowContentSize")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetNextWindowContentSize(IGSharp_Vec2 size);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SetNextWindowScroll")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_SetNextWindowScroll(IGSharp_Vec2 scroll);
+
+    // --- Tables (extra) ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_TableSetBgColor")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_TableSetBgColor(int target, uint color, int column_n);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_TableGetColumnCount")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int IGSharp_TableGetColumnCount();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_TableGetColumnIndex")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int IGSharp_TableGetColumnIndex();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_TableGetRowIndex")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int IGSharp_TableGetRowIndex();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_TableGetColumnName")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial byte* IGSharp_TableGetColumnName(int column_n);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_TableGetColumnFlags")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int IGSharp_TableGetColumnFlags(int column_n);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_TableSetColumnEnabled")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_TableSetColumnEnabled(int column_n, [MarshalAs(UnmanagedType.U1)] bool v);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_TableGetHoveredColumn")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int IGSharp_TableGetHoveredColumn();
+
+    // --- Demo / Debug Windows (extra) ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ShowDebugLogWindow")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ShowDebugLogWindow(bool* p_open);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ShowIDStackToolWindow")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ShowIDStackToolWindow(bool* p_open);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ShowAboutWindow")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ShowAboutWindow(bool* p_open);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ShowStyleEditor")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ShowStyleEditor();
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ShowStyleSelector")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_ShowStyleSelector(ReadOnlySpan<byte> label);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ShowFontSelector")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ShowFontSelector(ReadOnlySpan<byte> label);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ShowUserGuide")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ShowUserGuide();
+
+    // --- InputTextCallbackData: Resize Helpers ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_InputTextCallbackData_SetBuf")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_InputTextCallbackData_SetBuf(void* data, byte* buf);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_InputTextCallbackData_SetBufSize")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_InputTextCallbackData_SetBufSize(void* data, int size);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_InputTextCallbackData_ResizeBuf")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_InputTextCallbackData_ResizeBuf(void* data, byte* new_buf, int new_buf_size);
+
+    // --- Widgets: Scalar (generic typed) ---
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_DragScalar")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_DragScalar(ReadOnlySpan<byte> label, int data_type, void* p_data, float v_speed, void* p_min, void* p_max, ReadOnlySpan<byte> format, int flags);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_DragScalarN")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_DragScalarN(ReadOnlySpan<byte> label, int data_type, void* p_data, int components, float v_speed, void* p_min, void* p_max, ReadOnlySpan<byte> format, int flags);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SliderScalar")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_SliderScalar(ReadOnlySpan<byte> label, int data_type, void* p_data, void* p_min, void* p_max, ReadOnlySpan<byte> format, int flags);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_SliderScalarN")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_SliderScalarN(ReadOnlySpan<byte> label, int data_type, void* p_data, int components, void* p_min, void* p_max, ReadOnlySpan<byte> format, int flags);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_VSliderScalar")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_VSliderScalar(ReadOnlySpan<byte> label, IGSharp_Vec2 size, int data_type, void* p_data, void* p_min, void* p_max, ReadOnlySpan<byte> format, int flags);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_InputScalar")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_InputScalar(ReadOnlySpan<byte> label, int data_type, void* p_data, void* p_step, void* p_step_fast, ReadOnlySpan<byte> format, int flags);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_InputScalarN")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool IGSharp_InputScalarN(ReadOnlySpan<byte> label, int data_type, void* p_data, int components, void* p_step, void* p_step_fast, ReadOnlySpan<byte> format, int flags);
 }

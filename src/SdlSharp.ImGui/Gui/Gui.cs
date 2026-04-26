@@ -54,6 +54,45 @@ public static unsafe class Gui
         fixed (bool* p = &open) IGSharp_ShowMetricsWindow(p);
     }
 
+    /// <summary>Shows the debug log window.</summary>
+    public static void ShowDebugLogWindow() => IGSharp_ShowDebugLogWindow(null);
+
+    /// <summary>Shows the debug log window with a close button.</summary>
+    public static void ShowDebugLogWindow(ref bool open)
+    {
+        fixed (bool* p = &open) IGSharp_ShowDebugLogWindow(p);
+    }
+
+    /// <summary>Shows the ID stack tool window for inspecting widget IDs.</summary>
+    public static void ShowIDStackToolWindow() => IGSharp_ShowIDStackToolWindow(null);
+
+    /// <summary>Shows the ID stack tool window with a close button.</summary>
+    public static void ShowIDStackToolWindow(ref bool open)
+    {
+        fixed (bool* p = &open) IGSharp_ShowIDStackToolWindow(p);
+    }
+
+    /// <summary>Shows the ImGui about window (version, contributors, license).</summary>
+    public static void ShowAboutWindow() => IGSharp_ShowAboutWindow(null);
+
+    /// <summary>Shows the about window with a close button.</summary>
+    public static void ShowAboutWindow(ref bool open)
+    {
+        fixed (bool* p = &open) IGSharp_ShowAboutWindow(p);
+    }
+
+    /// <summary>Shows the style editor (an inline form for tweaking the global ImGui style).</summary>
+    public static void ShowStyleEditor() => IGSharp_ShowStyleEditor();
+
+    /// <summary>Shows a combo to select a built-in style preset (Dark / Light / Classic). Returns true on selection change.</summary>
+    public static bool ShowStyleSelector(string label) => IGSharp_ShowStyleSelector(ToUtf8(label));
+
+    /// <summary>Shows a combo to select among the loaded fonts.</summary>
+    public static void ShowFontSelector(string label) => IGSharp_ShowFontSelector(ToUtf8(label));
+
+    /// <summary>Renders the user guide (default keyboard/mouse cheatsheet).</summary>
+    public static void ShowUserGuide() => IGSharp_ShowUserGuide();
+
     /// <summary>Applies the dark color theme.</summary>
     public static void StyleColorsDark() => IGSharp_StyleColorsDark();
 
@@ -356,6 +395,79 @@ public static unsafe class Gui
             return IGSharp_SliderInt(ToUtf8(label), p, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, (int)flags);
     }
 
+    // --- Widgets: Scalar (generic typed; supports any unmanaged numeric T) ---
+
+    /// <summary>Generic drag widget for any unmanaged numeric type (sbyte..ulong, float, double).</summary>
+    public static bool Drag<T>(string label, ref T v, float speed = 1f, T min = default, T max = default, string? format = null, SliderFlags flags = SliderFlags.None) where T : unmanaged
+    {
+        var dataType = DataTypeOf<T>();
+        fixed (T* p = &v)
+            return IGSharp_DragScalar(ToUtf8(label), dataType, p, speed, &min, &max, format != null ? ToUtf8(format) : default, (int)flags);
+    }
+
+    /// <summary>Generic N-component drag widget. The span must contain at least 1 element.</summary>
+    public static bool Drag<T>(string label, Span<T> values, float speed = 1f, T min = default, T max = default, string? format = null, SliderFlags flags = SliderFlags.None) where T : unmanaged
+    {
+        var dataType = DataTypeOf<T>();
+        fixed (T* p = values)
+            return IGSharp_DragScalarN(ToUtf8(label), dataType, p, values.Length, speed, &min, &max, format != null ? ToUtf8(format) : default, (int)flags);
+    }
+
+    /// <summary>Generic slider widget for any unmanaged numeric type.</summary>
+    public static bool Slider<T>(string label, ref T v, T min, T max, string? format = null, SliderFlags flags = SliderFlags.None) where T : unmanaged
+    {
+        var dataType = DataTypeOf<T>();
+        fixed (T* p = &v)
+            return IGSharp_SliderScalar(ToUtf8(label), dataType, p, &min, &max, format != null ? ToUtf8(format) : default, (int)flags);
+    }
+
+    /// <summary>Generic N-component slider widget.</summary>
+    public static bool Slider<T>(string label, Span<T> values, T min, T max, string? format = null, SliderFlags flags = SliderFlags.None) where T : unmanaged
+    {
+        var dataType = DataTypeOf<T>();
+        fixed (T* p = values)
+            return IGSharp_SliderScalarN(ToUtf8(label), dataType, p, values.Length, &min, &max, format != null ? ToUtf8(format) : default, (int)flags);
+    }
+
+    /// <summary>Generic vertical slider widget.</summary>
+    public static bool VSlider<T>(string label, float width, float height, ref T v, T min, T max, string? format = null, SliderFlags flags = SliderFlags.None) where T : unmanaged
+    {
+        var dataType = DataTypeOf<T>();
+        fixed (T* p = &v)
+            return IGSharp_VSliderScalar(ToUtf8(label), new IGSharp_Vec2(width, height), dataType, p, &min, &max, format != null ? ToUtf8(format) : default, (int)flags);
+    }
+
+    /// <summary>Generic input widget for any unmanaged numeric type, with optional step buttons.</summary>
+    public static bool Input<T>(string label, ref T v, T step = default, T stepFast = default, string? format = null, InputTextFlags flags = InputTextFlags.None) where T : unmanaged
+    {
+        var dataType = DataTypeOf<T>();
+        fixed (T* p = &v)
+            return IGSharp_InputScalar(ToUtf8(label), dataType, p, &step, &stepFast, format != null ? ToUtf8(format) : default, (int)flags);
+    }
+
+    /// <summary>Generic N-component input widget.</summary>
+    public static bool Input<T>(string label, Span<T> values, T step = default, T stepFast = default, string? format = null, InputTextFlags flags = InputTextFlags.None) where T : unmanaged
+    {
+        var dataType = DataTypeOf<T>();
+        fixed (T* p = values)
+            return IGSharp_InputScalarN(ToUtf8(label), dataType, p, values.Length, &step, &stepFast, format != null ? ToUtf8(format) : default, (int)flags);
+    }
+
+    private static int DataTypeOf<T>() where T : unmanaged
+    {
+        if (typeof(T) == typeof(sbyte))  return (int)DataType.S8;
+        if (typeof(T) == typeof(byte))   return (int)DataType.U8;
+        if (typeof(T) == typeof(short))  return (int)DataType.S16;
+        if (typeof(T) == typeof(ushort)) return (int)DataType.U16;
+        if (typeof(T) == typeof(int))    return (int)DataType.S32;
+        if (typeof(T) == typeof(uint))   return (int)DataType.U32;
+        if (typeof(T) == typeof(long))   return (int)DataType.S64;
+        if (typeof(T) == typeof(ulong))  return (int)DataType.U64;
+        if (typeof(T) == typeof(float))  return (int)DataType.Float;
+        if (typeof(T) == typeof(double)) return (int)DataType.Double;
+        throw new NotSupportedException($"Type {typeof(T).Name} is not a supported scalar widget type. Use one of: sbyte, byte, short, ushort, int, uint, long, ulong, float, double.");
+    }
+
     /// <summary>Creates a 2-component float slider. The span must contain at least 2 elements.</summary>
     public static bool SliderFloat2(string label, Span<float> v, float min, float max, string? format = null, SliderFlags flags = SliderFlags.None)
     {
@@ -466,61 +578,119 @@ public static unsafe class Gui
         finally { handle.Free(); }
     }
 
-    /// <summary>Creates a single-line text input bound to a <see cref="string"/>. The buffer is <paramref name="bufferSize"/> bytes (UTF-8).</summary>
-    public static bool InputText(string label, ref string value, int bufferSize = 256, InputTextFlags flags = InputTextFlags.None)
+    /// <summary>
+    /// Creates a single-line text input bound to a <see cref="string"/>. The buffer auto-grows
+    /// as the user types — the string can be of unbounded length. <paramref name="initialBufferSize"/>
+    /// is the starting capacity (defaults to a sensible small size).
+    /// </summary>
+    public static bool InputText(string label, ref string value, InputTextFlags flags = InputTextFlags.None, int initialBufferSize = 256)
     {
-        var buf = RentInputBuffer(value, bufferSize, out var pool);
+        using var state = new GrowingInputState(value, initialBufferSize);
+        var stateHandle = GCHandle.Alloc(state);
         try
         {
-            fixed (byte* p = buf)
+            var augmented = (int)flags | (int)InputTextFlags.CallbackResize;
+            if (IGSharp_InputTextEx(ToUtf8(label), state.Ptr, (nuint)state.Size, augmented, &GrowingInputCallback, (void*)GCHandle.ToIntPtr(stateHandle)))
             {
-                if (IGSharp_InputText(ToUtf8(label), p, (nuint)buf.Length, (int)flags))
-                {
-                    value = ReadUtf8NullTerminated(buf);
-                    return true;
-                }
-                return false;
+                value = state.ReadString();
+                return true;
             }
+            return false;
         }
-        finally { pool.Return(buf); }
+        finally { stateHandle.Free(); }
     }
 
-    /// <summary>Creates a multi-line text input bound to a <see cref="string"/>.</summary>
-    public static bool InputTextMultiline(string label, ref string value, float width = 0, float height = 0, int bufferSize = 1024, InputTextFlags flags = InputTextFlags.None)
+    /// <summary>Creates a multi-line text input bound to a <see cref="string"/> with auto-growing buffer.</summary>
+    public static bool InputTextMultiline(string label, ref string value, float width = 0, float height = 0, InputTextFlags flags = InputTextFlags.None, int initialBufferSize = 1024)
     {
-        var buf = RentInputBuffer(value, bufferSize, out var pool);
+        using var state = new GrowingInputState(value, initialBufferSize);
+        var stateHandle = GCHandle.Alloc(state);
         try
         {
-            fixed (byte* p = buf)
+            var augmented = (int)flags | (int)InputTextFlags.CallbackResize;
+            if (IGSharp_InputTextMultilineEx(ToUtf8(label), state.Ptr, (nuint)state.Size, new IGSharp_Vec2(width, height), augmented, &GrowingInputCallback, (void*)GCHandle.ToIntPtr(stateHandle)))
             {
-                if (IGSharp_InputTextMultiline(ToUtf8(label), p, (nuint)buf.Length, new IGSharp_Vec2(width, height), (int)flags))
-                {
-                    value = ReadUtf8NullTerminated(buf);
-                    return true;
-                }
-                return false;
+                value = state.ReadString();
+                return true;
             }
+            return false;
         }
-        finally { pool.Return(buf); }
+        finally { stateHandle.Free(); }
     }
 
-    /// <summary>Creates a single-line text input bound to a <see cref="string"/> with a hint shown when empty.</summary>
-    public static bool InputTextWithHint(string label, string hint, ref string value, int bufferSize = 256, InputTextFlags flags = InputTextFlags.None)
+    /// <summary>Creates a single-line text input with a hint shown when empty, bound to a <see cref="string"/> with auto-growing buffer.</summary>
+    public static bool InputTextWithHint(string label, string hint, ref string value, InputTextFlags flags = InputTextFlags.None, int initialBufferSize = 256)
     {
-        var buf = RentInputBuffer(value, bufferSize, out var pool);
+        using var state = new GrowingInputState(value, initialBufferSize);
+        var stateHandle = GCHandle.Alloc(state);
         try
         {
-            fixed (byte* p = buf)
+            var augmented = (int)flags | (int)InputTextFlags.CallbackResize;
+            if (IGSharp_InputTextWithHintEx(ToUtf8(label), ToUtf8(hint), state.Ptr, (nuint)state.Size, augmented, &GrowingInputCallback, (void*)GCHandle.ToIntPtr(stateHandle)))
             {
-                if (IGSharp_InputTextWithHint(ToUtf8(label), ToUtf8(hint), p, (nuint)buf.Length, (int)flags))
-                {
-                    value = ReadUtf8NullTerminated(buf);
-                    return true;
-                }
-                return false;
+                value = state.ReadString();
+                return true;
+            }
+            return false;
+        }
+        finally { stateHandle.Free(); }
+    }
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static int GrowingInputCallback(void* data)
+    {
+        if (IGSharp_InputTextCallbackData_GetEventFlag(data) == (int)InputTextFlags.CallbackResize)
+        {
+            var userData = IGSharp_InputTextCallbackData_GetUserData(data);
+            var handle = GCHandle.FromIntPtr((nint)userData);
+            var state = (GrowingInputState)handle.Target!;
+            var newSize = IGSharp_InputTextCallbackData_GetBufSize(data);
+            state.Resize(newSize);
+            IGSharp_InputTextCallbackData_ResizeBuf(data, state.Ptr, state.Size);
+        }
+        return 0;
+    }
+
+    private sealed class GrowingInputState : IDisposable
+    {
+        private nint _ptr;
+
+        public byte* Ptr => (byte*)_ptr;
+        public int Size { get; private set; }
+
+        public GrowingInputState(string value, int initialSize)
+        {
+            var byteCount = System.Text.Encoding.UTF8.GetByteCount(value);
+            Size = Math.Max(initialSize, byteCount + 1);
+            _ptr = Marshal.AllocHGlobal(Size);
+            var span = new Span<byte>(Ptr, Size);
+            var written = System.Text.Encoding.UTF8.GetBytes(value, span);
+            span[written] = 0;
+        }
+
+        public void Resize(int newSize)
+        {
+            if (newSize == Size) return;
+            _ptr = Marshal.ReAllocHGlobal(_ptr, newSize);
+            Size = newSize;
+        }
+
+        public string ReadString()
+        {
+            var span = new ReadOnlySpan<byte>(Ptr, Size);
+            var len = span.IndexOf((byte)0);
+            if (len < 0) len = span.Length;
+            return System.Text.Encoding.UTF8.GetString(span[..len]);
+        }
+
+        public void Dispose()
+        {
+            if (_ptr != 0)
+            {
+                Marshal.FreeHGlobal(_ptr);
+                _ptr = 0;
             }
         }
-        finally { pool.Return(buf); }
     }
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
@@ -532,25 +702,6 @@ public static unsafe class Gui
         return callback(new InputTextCallbackData(data));
     }
 
-    private static byte[] RentInputBuffer(string value, int bufferSize, out System.Buffers.ArrayPool<byte> pool)
-    {
-        pool = System.Buffers.ArrayPool<byte>.Shared;
-        var byteCount = System.Text.Encoding.UTF8.GetByteCount(value);
-        var size = Math.Max(bufferSize, byteCount + 1);
-        var buf = pool.Rent(size);
-        var written = System.Text.Encoding.UTF8.GetBytes(value, buf.AsSpan(0, size - 1));
-        buf[written] = 0;
-        // Zero the rest of the rented region so we don't leak stale bytes into the widget.
-        buf.AsSpan(written + 1).Clear();
-        return buf;
-    }
-
-    private static string ReadUtf8NullTerminated(ReadOnlySpan<byte> buf)
-    {
-        var len = buf.IndexOf((byte)0);
-        if (len < 0) len = buf.Length;
-        return System.Text.Encoding.UTF8.GetString(buf[..len]);
-    }
 
     /// <summary>Creates a float input with optional step buttons.</summary>
     public static bool InputFloat(string label, ref float v, float step = 0, float stepFast = 0, string? format = null, InputTextFlags flags = InputTextFlags.None)
@@ -928,6 +1079,37 @@ public static unsafe class Gui
     /// <summary>Locks the given number of leading columns / rows from scrolling when the table scrolls.</summary>
     public static void TableSetupScrollFreeze(int cols, int rows) => IGSharp_TableSetupScrollFreeze(cols, rows);
 
+    /// <summary>Overrides the background color of the current row or cell.</summary>
+    /// <param name="target">Which background layer to override.</param>
+    /// <param name="color">Packed RGBA color (use <see cref="GetColorU32(float, float, float, float)"/> to build).</param>
+    /// <param name="columnN">Column index for cell-level targets, or -1 for row-level targets.</param>
+    public static void TableSetBgColor(TableBgTarget target, uint color, int columnN = -1)
+        => IGSharp_TableSetBgColor((int)target, color, columnN);
+
+    /// <summary>Number of columns in the current table.</summary>
+    public static int TableGetColumnCount() => IGSharp_TableGetColumnCount();
+
+    /// <summary>Index of the column being submitted within the current row.</summary>
+    public static int TableGetColumnIndex() => IGSharp_TableGetColumnIndex();
+
+    /// <summary>Index of the current row.</summary>
+    public static int TableGetRowIndex() => IGSharp_TableGetRowIndex();
+
+    /// <summary>Returns the user-supplied label for a column (-1 = current column).</summary>
+    public static string? TableGetColumnName(int columnN = -1)
+        => Marshal.PtrToStringUTF8((nint)IGSharp_TableGetColumnName(columnN));
+
+    /// <summary>Returns the runtime flags (input + status) for the given column.</summary>
+    public static TableColumnFlags TableGetColumnFlags(int columnN = -1)
+        => (TableColumnFlags)IGSharp_TableGetColumnFlags(columnN);
+
+    /// <summary>Enables or disables a column at runtime.</summary>
+    public static void TableSetColumnEnabled(int columnN, bool enabled)
+        => IGSharp_TableSetColumnEnabled(columnN, enabled);
+
+    /// <summary>Index of the column currently hovered, or -1 if none.</summary>
+    public static int TableGetHoveredColumn() => IGSharp_TableGetHoveredColumn();
+
     // --- Widgets: Tabs ---
 
     /// <summary>Begins a tab bar.</summary>
@@ -1109,6 +1291,90 @@ public static unsafe class Gui
 
     /// <summary>Gets the foreground draw list — drawing happens in front of all windows, covering the full viewport.</summary>
     public static DrawList GetForegroundDrawList() => new(IGSharp_GetForegroundDrawList());
+
+    // --- Scrolling ---
+
+    /// <summary>Gets the current horizontal scroll position.</summary>
+    public static float GetScrollX() => IGSharp_GetScrollX();
+
+    /// <summary>Gets the current vertical scroll position.</summary>
+    public static float GetScrollY() => IGSharp_GetScrollY();
+
+    /// <summary>Sets the horizontal scroll position.</summary>
+    public static void SetScrollX(float scrollX) => IGSharp_SetScrollX(scrollX);
+
+    /// <summary>Sets the vertical scroll position.</summary>
+    public static void SetScrollY(float scrollY) => IGSharp_SetScrollY(scrollY);
+
+    /// <summary>Gets the maximum horizontal scroll position.</summary>
+    public static float GetScrollMaxX() => IGSharp_GetScrollMaxX();
+
+    /// <summary>Gets the maximum vertical scroll position.</summary>
+    public static float GetScrollMaxY() => IGSharp_GetScrollMaxY();
+
+    /// <summary>Adjusts horizontal scrolling so the cursor X position is centered (0.0 = left edge, 1.0 = right edge, 0.5 = center).</summary>
+    public static void SetScrollHereX(float centerXRatio = 0.5f) => IGSharp_SetScrollHereX(centerXRatio);
+
+    /// <summary>Adjusts vertical scrolling so the cursor Y position is centered.</summary>
+    public static void SetScrollHereY(float centerYRatio = 0.5f) => IGSharp_SetScrollHereY(centerYRatio);
+
+    /// <summary>Adjusts horizontal scrolling so the given local X position is centered.</summary>
+    public static void SetScrollFromPosX(float localX, float centerXRatio = 0.5f) => IGSharp_SetScrollFromPosX(localX, centerXRatio);
+
+    /// <summary>Adjusts vertical scrolling so the given local Y position is centered.</summary>
+    public static void SetScrollFromPosY(float localY, float centerYRatio = 0.5f) => IGSharp_SetScrollFromPosY(localY, centerYRatio);
+
+    // --- Item Flags ---
+
+    /// <summary>Pushes an item flag for all subsequently submitted items in the current scope.</summary>
+    public static void PushItemFlag(ItemFlags option, bool enabled) => IGSharp_PushItemFlag((int)option, enabled);
+
+    /// <summary>Pops the last pushed item flag.</summary>
+    public static void PopItemFlag() => IGSharp_PopItemFlag();
+
+    // --- Focus / Activation ---
+
+    /// <summary>Requests keyboard focus on the next or previously submitted item. <paramref name="offset"/> 0 = next, -1 = previous.</summary>
+    public static void SetKeyboardFocusHere(int offset = 0) => IGSharp_SetKeyboardFocusHere(offset);
+
+    /// <summary>Allows the next item to be overlapped by following items (e.g. invisible button over a tree node).</summary>
+    public static void SetNextItemAllowOverlap() => IGSharp_SetNextItemAllowOverlap();
+
+    // --- Item Utilities (extra) ---
+
+    /// <summary>Gets the unique ID of the last submitted item.</summary>
+    public static uint GetItemId() => IGSharp_GetItemID();
+
+    /// <summary>True if any item is currently hovered.</summary>
+    public static bool IsAnyItemHovered() => IGSharp_IsAnyItemHovered();
+
+    /// <summary>True if any item is currently active (held / edited).</summary>
+    public static bool IsAnyItemActive() => IGSharp_IsAnyItemActive();
+
+    /// <summary>True if any item currently has keyboard/gamepad focus.</summary>
+    public static bool IsAnyItemFocused() => IGSharp_IsAnyItemFocused();
+
+    // --- Mouse Cursor ---
+
+    /// <summary>Gets the desired mouse cursor shape for this frame (set by ImGui based on hovered widgets).</summary>
+    public static MouseCursor GetMouseCursor() => (MouseCursor)IGSharp_GetMouseCursor();
+
+    /// <summary>Sets the desired mouse cursor shape for this frame.</summary>
+    public static void SetMouseCursor(MouseCursor cursor) => IGSharp_SetMouseCursor((int)cursor);
+
+    // --- Window Manipulation (extra) ---
+
+    /// <summary>Sets minimum and maximum size for the next window.</summary>
+    public static void SetNextWindowSizeConstraints(float minWidth, float minHeight, float maxWidth, float maxHeight)
+        => IGSharp_SetNextWindowSizeConstraints(new IGSharp_Vec2(minWidth, minHeight), new IGSharp_Vec2(maxWidth, maxHeight));
+
+    /// <summary>Sets the content size used to compute scrollbar ranges for the next window.</summary>
+    public static void SetNextWindowContentSize(float width, float height)
+        => IGSharp_SetNextWindowContentSize(new IGSharp_Vec2(width, height));
+
+    /// <summary>Sets the scrolling position for the next window. Negative components keep the existing value.</summary>
+    public static void SetNextWindowScroll(float scrollX, float scrollY)
+        => IGSharp_SetNextWindowScroll(new IGSharp_Vec2(scrollX, scrollY));
 
     // --- Viewport ---
 
