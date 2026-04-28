@@ -13,6 +13,10 @@ internal static unsafe partial class Native
 {
     private const string ImGuiLib = "imgui_sharp";
 
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_CheckVersion")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_CheckVersion();
+
     /// <summary>Opaque ImGui context handle.</summary>
     public struct ImGuiContext;
 
@@ -67,10 +71,6 @@ internal static unsafe partial class Native
     [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_GetVersion")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial byte* IGSharp_GetVersion();
-
-    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_CheckVersion")]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void IGSharp_CheckVersion();
 
     // --- IO Accessors ---
 

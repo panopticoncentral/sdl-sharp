@@ -1,6 +1,12 @@
 // ImGuiDemo sample — creates an SDL3 window with GPU device and renders
 // the Dear ImGui demo window using the SDL_GPU backend.
+//
+// Two demo windows are shown side-by-side:
+//   - The native ImGui::ShowDemoWindow (C++ canonical demo).
+//   - The C# port in DemoWindow.cs, used as a coverage test of the
+//     SdlSharp.ImGui wrappers.
 
+using ImGuiDemo;
 using SdlSharp;
 using SdlSharp.Graphics;
 using SdlSharp.Graphics.Gpu;
@@ -24,21 +30,23 @@ unsafe
     var swapFormat = device.GetSwapchainTextureFormat(window);
 
     // Initialize ImGui
-    using var ctx = ImGuiContext.Create();
+    using var ctx = Context.Create();
     ImGui.StyleColorsDark();
 
     // Initialize backends
     ImGuiBackend.Init(window, device, swapFormat);
 
     var showDemo = true;
+    var showCSharpDemo = true;
 
     while (!Application.DispatchEvents())
     {
         // Start ImGui frame
         ImGuiBackend.NewFrame();
 
-        // Show demo window
-        ImGui.ShowDemoWindow(ref showDemo);
+        // Show the native and ported demo windows side-by-side.
+        if (showDemo) ImGui.ShowDemoWindow(ref showDemo);
+        if (showCSharpDemo) DemoWindow.Show(ref showCSharpDemo);
 
         // Render ImGui
         ImGui.Render();

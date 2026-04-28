@@ -235,6 +235,23 @@ public static unsafe class ImGui
     /// <summary>Aligns text so its baseline matches framed-widget baselines on the current line.</summary>
     public static void AlignTextToFramePadding() => IGSharp_AlignTextToFramePadding();
 
+    /// <summary>Indents subsequent items by <paramref name="indentWidth"/> pixels (0 = use default).</summary>
+    public static void Indent(float indentWidth = 0f) => IGSharp_Indent(indentWidth);
+
+    /// <summary>Cancels a previous <see cref="Indent"/>.</summary>
+    public static void Unindent(float indentWidth = 0f) => IGSharp_Unindent(indentWidth);
+
+    // --- ID Stack ---
+
+    /// <summary>Pushes a string ID onto the ID stack (used to disambiguate widgets with identical labels).</summary>
+    public static void PushID(string strId) => IGSharp_PushIDStr(ToUtf8(strId));
+
+    /// <summary>Pushes an integer ID onto the ID stack.</summary>
+    public static void PushID(int intId) => IGSharp_PushIDInt(intId);
+
+    /// <summary>Pops the last pushed ID.</summary>
+    public static void PopID() => IGSharp_PopID();
+
     /// <summary>Gets the text line height (font size).</summary>
     public static float GetTextLineHeight() => IGSharp_GetTextLineHeight();
 
@@ -901,6 +918,15 @@ public static unsafe class ImGui
         var getter = (PlotValuesGetter)handle.Target!;
         return getter(idx);
     }
+
+    // --- Widgets: Progress ---
+
+    /// <summary>
+    /// Draws a progress bar. <paramref name="fraction"/> is in [0, 1] (negative = animated indeterminate).
+    /// <paramref name="overlay"/> is optional centered text; when null, the percentage is shown.
+    /// </summary>
+    public static void ProgressBar(float fraction, float width = -float.Epsilon, float height = 0f, string? overlay = null)
+        => IGSharp_ProgressBar(fraction, new IGSharp_Vec2(width, height), overlay != null ? ToUtf8(overlay) : default);
 
     // --- Widgets: Trees ---
 

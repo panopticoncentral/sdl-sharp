@@ -1,48 +1,43 @@
 using static SdlSharp.ImGui.Native;
-using NativeImGuiContext = SdlSharp.ImGui.Native.ImGuiContext;
 
 namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Manages a Dear ImGui context. Dispose to destroy the context.
 /// </summary>
-public sealed unsafe class ImGuiContext : IDisposable
+public sealed unsafe class Context : IDisposable
 {
-    private NativeImGuiContext* _handle;
+    private Context(ImGuiContext* handle) { Handle = handle; }
 
-    private ImGuiContext(NativeImGuiContext* handle) { _handle = handle; }
-
-    internal NativeImGuiContext* Handle => _handle;
+    private ImGuiContext* Handle { get; set; }
 
     /// <summary>
     /// Creates a new ImGui context and sets it as the current context.
     /// </summary>
-    public static ImGuiContext Create()
+    public static Context Create()
     {
         var ctx = IGSharp_CreateContext();
         if (ctx == null)
             throw new InvalidOperationException("Failed to create ImGui context.");
         IGSharp_CheckVersion();
-        return new ImGuiContext(ctx);
+        return new Context(ctx);
     }
 
     /// <summary>Makes this context the active one for subsequent ImGui calls.</summary>
     public void MakeCurrent()
     {
-        if (_handle == null) throw new ObjectDisposedException(nameof(ImGuiContext));
-        IGSharp_SetCurrentContext(_handle);
+        ObjectDisposedException.ThrowIf(Handle == null, typeof(Context));
+        IGSharp_SetCurrentContext(Handle);
     }
 
     /// <summary>True if this is the currently active ImGui context.</summary>
-    public bool IsCurrent => _handle != null && IGSharp_GetCurrentContext() == _handle;
+    public bool IsCurrent => Handle != null && IGSharp_GetCurrentContext() == Handle;
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_handle != null)
-        {
-            IGSharp_DestroyContext(_handle);
-            _handle = null;
-        }
+        if (Handle == null) return;
+        IGSharp_DestroyContext(Handle);
+        Handle = null;
     }
 }
