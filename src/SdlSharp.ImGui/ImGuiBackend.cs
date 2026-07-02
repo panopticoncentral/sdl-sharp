@@ -39,23 +39,23 @@ public static unsafe class ImGuiBackend
     /// <summary>
     /// Uploads vertex/index buffers to the GPU. Must be called BEFORE <see cref="GpuCommandBuffer.BeginRenderPass"/>.
     /// </summary>
-    /// <param name="drawData">The opaque draw data pointer from <see cref="ImGui.GetDrawData"/>.</param>
+    /// <param name="drawData">The draw data from <see cref="ImGui.GetDrawData"/>.</param>
     /// <param name="commandBuffer">The GPU command buffer.</param>
-    public static void PrepareDrawData(void* drawData, GpuCommandBuffer commandBuffer)
+    public static void PrepareDrawData(DrawData drawData, GpuCommandBuffer commandBuffer)
     {
-        IGSharp_ImplSDLGPU3_PrepareDrawData(drawData, commandBuffer.Handle);
+        IGSharp_ImplSDLGPU3_PrepareDrawData(drawData.Handle, commandBuffer.Handle);
     }
 
     /// <summary>
     /// Renders ImGui draw data into the active render pass. Must be called AFTER <see cref="PrepareDrawData"/>
     /// and inside an active render pass.
     /// </summary>
-    /// <param name="drawData">The opaque draw data pointer from <see cref="ImGui.GetDrawData"/>.</param>
+    /// <param name="drawData">The draw data from <see cref="ImGui.GetDrawData"/>.</param>
     /// <param name="commandBuffer">The GPU command buffer.</param>
     /// <param name="renderPass">The active GPU render pass.</param>
-    public static void RenderDrawData(void* drawData, GpuCommandBuffer commandBuffer, GpuRenderPass renderPass)
+    public static void RenderDrawData(DrawData drawData, GpuCommandBuffer commandBuffer, GpuRenderPass renderPass)
     {
-        IGSharp_ImplSDLGPU3_RenderDrawData(drawData, commandBuffer.Handle, renderPass.Handle);
+        IGSharp_ImplSDLGPU3_RenderDrawData(drawData.Handle, commandBuffer.Handle, renderPass.Handle);
     }
 
     /// <summary>

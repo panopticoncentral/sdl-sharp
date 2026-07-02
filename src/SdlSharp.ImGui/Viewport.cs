@@ -15,6 +15,12 @@ public readonly unsafe struct Viewport
     /// <summary>True if this handle refers to a valid viewport.</summary>
     public bool IsValid => Handle != null;
 
+    /// <summary>Unique identifier of the viewport.</summary>
+    public uint Id => IGSharp_Viewport_GetID(Handle);
+
+    /// <summary>Viewport flags (platform window / monitor / app-owned).</summary>
+    public ViewportFlags Flags => (ViewportFlags)IGSharp_Viewport_GetFlags(Handle);
+
     /// <summary>Main Area: position of the viewport (the OS window client area).</summary>
     public Vec2 Pos
     {
@@ -53,5 +59,55 @@ public readonly unsafe struct Viewport
             var v = IGSharp_Viewport_GetWorkSize(Handle);
             return new Vec2(v.X, v.Y);
         }
+    }
+
+    /// <summary>Ratio of framebuffer pixels to viewport units (for Retina / HiDPI displays).</summary>
+    public Vec2 FramebufferScale
+    {
+        get
+        {
+            var v = IGSharp_Viewport_GetFramebufferScale(Handle);
+            return new Vec2(v.X, v.Y);
+        }
+    }
+
+    /// <summary>Center of the main area (helper: Pos + Size * 0.5).</summary>
+    public Vec2 Center
+    {
+        get
+        {
+            var v = IGSharp_Viewport_GetCenter(Handle);
+            return new Vec2(v.X, v.Y);
+        }
+    }
+
+    /// <summary>Center of the work area (helper: WorkPos + WorkSize * 0.5).</summary>
+    public Vec2 WorkCenter
+    {
+        get
+        {
+            var v = IGSharp_Viewport_GetWorkCenter(Handle);
+            return new Vec2(v.X, v.Y);
+        }
+    }
+
+    /// <summary>
+    /// Platform/backend-specific handle for the viewport (e.g. an <c>SDL_Window*</c>).
+    /// Owned by the backend; treat as opaque.
+    /// </summary>
+    public IntPtr PlatformHandle
+    {
+        get => (IntPtr)IGSharp_Viewport_GetPlatformHandle(Handle);
+        set => IGSharp_Viewport_SetPlatformHandle(Handle, (void*)value);
+    }
+
+    /// <summary>
+    /// Lower-level platform-native handle (e.g. an <c>HWND</c> / <c>NSWindow*</c>),
+    /// when the backend exposes one in addition to <see cref="PlatformHandle"/>.
+    /// </summary>
+    public IntPtr PlatformHandleRaw
+    {
+        get => (IntPtr)IGSharp_Viewport_GetPlatformHandleRaw(Handle);
+        set => IGSharp_Viewport_SetPlatformHandleRaw(Handle, (void*)value);
     }
 }

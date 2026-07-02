@@ -17,8 +17,11 @@ public static unsafe class ImGui
     /// <summary>Finalizes the frame and generates draw data.</summary>
     public static void Render() => IGSharp_Render();
 
-    /// <summary>Gets the opaque draw data pointer for the current frame. Valid after <see cref="Render"/>.</summary>
-    public static void* GetDrawData() => IGSharp_GetDrawData();
+    /// <summary>Ends the frame without rendering. Called automatically by <see cref="Render"/>; call this yourself only if you skip rendering for a frame.</summary>
+    public static void EndFrame() => IGSharp_EndFrame();
+
+    /// <summary>Gets the draw data for the current frame. Valid after <see cref="Render"/>.</summary>
+    public static DrawData GetDrawData() => new(IGSharp_GetDrawData());
 
     /// <summary>Gets the ImGui version string.</summary>
     public static string? GetVersion() => Marshal.PtrToStringUTF8((nint)IGSharp_GetVersion());
@@ -140,6 +143,10 @@ public static unsafe class ImGui
     public static bool BeginChild(string strId, float width = 0, float height = 0, ChildFlags childFlags = ChildFlags.None, WindowFlags windowFlags = WindowFlags.None)
         => IGSharp_BeginChild(ToUtf8(strId), new IGSharp_Vec2(width, height), (int)childFlags, (int)windowFlags);
 
+    /// <summary>Begins a child region identified by an ID obtained from <see cref="GetID(string)"/>.</summary>
+    public static bool BeginChild(uint id, float width = 0, float height = 0, ChildFlags childFlags = ChildFlags.None, WindowFlags windowFlags = WindowFlags.None)
+        => IGSharp_BeginChildID(id, new IGSharp_Vec2(width, height), (int)childFlags, (int)windowFlags);
+
     /// <summary>Ends the current child region.</summary>
     public static void EndChild() => IGSharp_EndChild();
 
@@ -210,6 +217,9 @@ public static unsafe class ImGui
     /// <summary>Adds vertical spacing.</summary>
     public static void Spacing() => IGSharp_Spacing();
 
+    /// <summary>Adds an invisible dummy item of the given size (useful for spacing and layout).</summary>
+    public static void Dummy(float width, float height) => IGSharp_Dummy(new IGSharp_Vec2(width, height));
+
     /// <summary>Begins a group.</summary>
     public static void BeginGroup() => IGSharp_BeginGroup();
 
@@ -225,6 +235,25 @@ public static unsafe class ImGui
 
     /// <summary>Sets the cursor position in local window coordinates.</summary>
     public static void SetCursorPos(float x, float y) => IGSharp_SetCursorPos(new IGSharp_Vec2(x, y));
+
+    /// <summary>Gets the cursor X position in local window coordinates.</summary>
+    public static float GetCursorPosX() => IGSharp_GetCursorPosX();
+
+    /// <summary>Gets the cursor Y position in local window coordinates.</summary>
+    public static float GetCursorPosY() => IGSharp_GetCursorPosY();
+
+    /// <summary>Sets the cursor X position in local window coordinates.</summary>
+    public static void SetCursorPosX(float localX) => IGSharp_SetCursorPosX(localX);
+
+    /// <summary>Sets the cursor Y position in local window coordinates.</summary>
+    public static void SetCursorPosY(float localY) => IGSharp_SetCursorPosY(localY);
+
+    /// <summary>Gets the initial cursor position in local window coordinates (top-left of the content region).</summary>
+    public static (float X, float Y) GetCursorStartPos()
+    {
+        var v = IGSharp_GetCursorStartPos();
+        return (v.X, v.Y);
+    }
 
     /// <summary>Gets the cursor position in screen coordinates.</summary>
     public static (float X, float Y) GetCursorScreenPos()
@@ -260,8 +289,20 @@ public static unsafe class ImGui
     /// <summary>Pushes an integer ID onto the ID stack.</summary>
     public static void PushID(int intId) => IGSharp_PushIDInt(intId);
 
+    /// <summary>Pushes a pointer-derived ID onto the ID stack (identity-based, e.g. from <see cref="GCHandle.ToIntPtr"/>).</summary>
+    public static void PushID(nint ptrId) => IGSharp_PushIDPtr((void*)ptrId);
+
     /// <summary>Pops the last pushed ID.</summary>
     public static void PopID() => IGSharp_PopID();
+
+    /// <summary>Computes the unique ID for the given string within the current ID stack.</summary>
+    public static uint GetID(string strId) => IGSharp_GetIDStr(ToUtf8(strId));
+
+    /// <summary>Computes the unique ID for the given integer within the current ID stack.</summary>
+    public static uint GetID(int intId) => IGSharp_GetIDInt(intId);
+
+    /// <summary>Computes the unique ID for the given pointer value within the current ID stack.</summary>
+    public static uint GetID(nint ptrId) => IGSharp_GetIDPtr((void*)ptrId);
 
     /// <summary>Gets the text line height (font size).</summary>
     public static float GetTextLineHeight() => IGSharp_GetTextLineHeight();
@@ -286,6 +327,9 @@ public static unsafe class ImGui
 
     /// <summary>Displays text (no formatting).</summary>
     public static void Text(string text) => IGSharp_Text(ToUtf8(text));
+
+    /// <summary>Displays raw text without format processing (faster; text is never treated as a format string).</summary>
+    public static void TextUnformatted(string text) => IGSharp_TextUnformatted(ToUtf8(text), default);
 
     /// <summary>Displays colored text.</summary>
     public static void TextColored(float r, float g, float b, float a, string text)
@@ -312,6 +356,19 @@ public static unsafe class ImGui
     /// <summary>Displays a clickable text link that opens a URL when clicked.</summary>
     public static void TextLinkOpenURL(string label, string url) => IGSharp_TextLinkOpenURL(ToUtf8(label), ToUtf8(url));
 
+    /// <summary>Displays "prefix: value" (shorthand debug helper).</summary>
+    public static void Value(string prefix, bool value) => IGSharp_ValueBool(ToUtf8(prefix), value);
+
+    /// <summary>Displays "prefix: value" (shorthand debug helper).</summary>
+    public static void Value(string prefix, int value) => IGSharp_ValueInt(ToUtf8(prefix), value);
+
+    /// <summary>Displays "prefix: value" (shorthand debug helper).</summary>
+    public static void Value(string prefix, uint value) => IGSharp_ValueUInt(ToUtf8(prefix), value);
+
+    /// <summary>Displays "prefix: value" (shorthand debug helper). <paramref name="floatFormat"/> is a printf-style format (e.g. "%.2f").</summary>
+    public static void Value(string prefix, float value, string? floatFormat = null)
+        => IGSharp_ValueFloat(ToUtf8(prefix), value, ToUtf8(floatFormat));
+
     // --- Widgets: Buttons ---
 
     /// <summary>Creates a button. Returns true when clicked.</summary>
@@ -335,6 +392,18 @@ public static unsafe class ImGui
     public static bool Checkbox(string label, ref bool v)
     {
         fixed (bool* p = &v) return IGSharp_Checkbox(ToUtf8(label), p);
+    }
+
+    /// <summary>Creates a checkbox that toggles the given bit(s) in an int flags value. Returns true when the value changes.</summary>
+    public static bool CheckboxFlags(string label, ref int flags, int flagsValue)
+    {
+        fixed (int* p = &flags) return IGSharp_CheckboxFlags(ToUtf8(label), p, flagsValue);
+    }
+
+    /// <summary>Creates a checkbox that toggles the given bit(s) in a uint flags value. Returns true when the value changes.</summary>
+    public static bool CheckboxFlags(string label, ref uint flags, uint flagsValue)
+    {
+        fixed (uint* p = &flags) return IGSharp_CheckboxFlagsUInt(ToUtf8(label), p, flagsValue);
     }
 
     /// <summary>Creates a radio button. Returns true when clicked.</summary>
@@ -405,6 +474,22 @@ public static unsafe class ImGui
     {
         fixed (int* p = v)
             return IGSharp_DragInt4(ToUtf8(label), p, speed, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, (int)flags);
+    }
+
+    /// <summary>Creates a two-handle float range drag slider. <paramref name="formatMax"/> null uses <paramref name="format"/> for both handles.</summary>
+    public static bool DragFloatRange2(string label, ref float currentMin, ref float currentMax, float speed = 1f, float min = 0, float max = 0, string? format = null, string? formatMax = null, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (float* pMin = &currentMin)
+        fixed (float* pMax = &currentMax)
+            return IGSharp_DragFloatRange2(ToUtf8(label), pMin, pMax, speed, min, max, format != null ? ToUtf8(format) : DefaultFloatFormat, ToUtf8(formatMax), (int)flags);
+    }
+
+    /// <summary>Creates a two-handle int range drag slider. <paramref name="formatMax"/> null uses <paramref name="format"/> for both handles.</summary>
+    public static bool DragIntRange2(string label, ref int currentMin, ref int currentMax, float speed = 1f, int min = 0, int max = 0, string? format = null, string? formatMax = null, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (int* pMin = &currentMin)
+        fixed (int* pMax = &currentMax)
+            return IGSharp_DragIntRange2(ToUtf8(label), pMin, pMax, speed, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, ToUtf8(formatMax), (int)flags);
     }
 
     // --- Widgets: Slider ---
@@ -545,6 +630,20 @@ public static unsafe class ImGui
     {
         fixed (float* p = &vRad)
             return IGSharp_SliderAngle(ToUtf8(label), p, degreesMin, degreesMax, format != null ? ToUtf8(format) : DefaultAngleFormat, (int)flags);
+    }
+
+    /// <summary>Creates a vertical float slider of the given size.</summary>
+    public static bool VSliderFloat(string label, float width, float height, ref float v, float min, float max, string? format = null, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (float* p = &v)
+            return IGSharp_VSliderFloat(ToUtf8(label), new IGSharp_Vec2(width, height), p, min, max, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
+    }
+
+    /// <summary>Creates a vertical int slider of the given size.</summary>
+    public static bool VSliderInt(string label, float width, float height, ref int v, int min, int max, string? format = null, SliderFlags flags = SliderFlags.None)
+    {
+        fixed (int* p = &v)
+            return IGSharp_VSliderInt(ToUtf8(label), new IGSharp_Vec2(width, height), p, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, (int)flags);
     }
 
     // --- Widgets: Input ---
@@ -838,6 +937,9 @@ public static unsafe class ImGui
     public static bool ColorButton(string descId, float r, float g, float b, float a, ColorEditFlags flags = ColorEditFlags.None, float width = 0, float height = 0)
         => IGSharp_ColorButton(ToUtf8(descId), new IGSharp_Vec4(r, g, b, a), (int)flags, new IGSharp_Vec2(width, height));
 
+    /// <summary>Sets the default options for all subsequent color editors (e.g. display as HSV, alpha bar).</summary>
+    public static void SetColorEditOptions(ColorEditFlags flags) => IGSharp_SetColorEditOptions((int)flags);
+
     // --- Widgets: Images ---
 
     /// <summary>
@@ -950,6 +1052,26 @@ public static unsafe class ImGui
     public static bool TreeNodeEx(string label, TreeNodeFlags flags = TreeNodeFlags.None)
         => IGSharp_TreeNodeEx(ToUtf8(label), (int)flags);
 
+    /// <summary>Creates a tree node whose ID (<paramref name="strId"/>) is decoupled from the displayed <paramref name="text"/>.</summary>
+    public static bool TreeNode(string strId, string text) => IGSharp_TreeNodeStr(ToUtf8(strId), ToUtf8(text));
+
+    /// <summary>Creates a tree node identified by a pointer value, displaying <paramref name="text"/>.</summary>
+    public static bool TreeNode(nint ptrId, string text) => IGSharp_TreeNodePtr((void*)ptrId, ToUtf8(text));
+
+    /// <summary>Creates a tree node with flags whose ID (<paramref name="strId"/>) is decoupled from the displayed <paramref name="text"/>.</summary>
+    public static bool TreeNodeEx(string strId, TreeNodeFlags flags, string text)
+        => IGSharp_TreeNodeExStr(ToUtf8(strId), (int)flags, ToUtf8(text));
+
+    /// <summary>Creates a tree node with flags identified by a pointer value, displaying <paramref name="text"/>.</summary>
+    public static bool TreeNodeEx(nint ptrId, TreeNodeFlags flags, string text)
+        => IGSharp_TreeNodeExPtr((void*)ptrId, (int)flags, ToUtf8(text));
+
+    /// <summary>Pushes onto the ID stack and indents, as if entering an open tree node. Pair with <see cref="TreePop"/>.</summary>
+    public static void TreePush(string strId) => IGSharp_TreePushStr(ToUtf8(strId));
+
+    /// <summary>Pushes a pointer-derived ID onto the ID stack and indents. Pair with <see cref="TreePop"/>.</summary>
+    public static void TreePush(nint ptrId) => IGSharp_TreePushPtr((void*)ptrId);
+
     /// <summary>Pops the tree node.</summary>
     public static void TreePop() => IGSharp_TreePop();
 
@@ -962,6 +1084,9 @@ public static unsafe class ImGui
     /// <summary>Sets whether the next tree node or collapsing header will be open.</summary>
     public static void SetNextItemOpen(bool isOpen, Cond cond = Cond.None)
         => IGSharp_SetNextItemOpen(isOpen, (int)cond);
+
+    /// <summary>Overrides the storage ID used to remember the next tree node's open state (default is the item ID).</summary>
+    public static void SetNextItemStorageID(uint storageId) => IGSharp_SetNextItemStorageID(storageId);
 
     /// <summary>Creates a collapsing header.</summary>
     public static bool CollapsingHeader(string label, TreeNodeFlags flags = TreeNodeFlags.None)
@@ -996,6 +1121,37 @@ public static unsafe class ImGui
     /// <summary>Ends the current list box.</summary>
     public static void EndListBox() => IGSharp_EndListBox();
 
+    /// <summary>Creates a list box from an array of items. Returns true when the selection changes.</summary>
+    public static bool ListBox(string label, ref int currentItem, string[] items, int heightInItems = -1)
+    {
+        var ptrs = new nint[items.Length];
+        try
+        {
+            for (var i = 0; i < items.Length; i++)
+                ptrs[i] = Marshal.StringToCoTaskMemUTF8(items[i]);
+            fixed (int* p = &currentItem)
+            fixed (nint* pp = ptrs)
+                return IGSharp_ListBox(ToUtf8(label), p, (byte**)pp, items.Length, heightInItems);
+        }
+        finally
+        {
+            foreach (var ptr in ptrs) Marshal.FreeCoTaskMem(ptr);
+        }
+    }
+
+    /// <summary>Creates a list box with item text supplied by a callback (useful for large or computed lists).</summary>
+    public static bool ListBox(string label, ref int currentItem, Func<int, string> itemGetter, int itemsCount, int heightInItems = -1)
+    {
+        using var state = new ItemsGetterState(itemGetter);
+        var handle = GCHandle.Alloc(state);
+        try
+        {
+            fixed (int* p = &currentItem)
+                return IGSharp_ListBoxCallback(ToUtf8(label), p, &ItemsGetterThunk, (void*)GCHandle.ToIntPtr(handle), itemsCount, heightInItems);
+        }
+        finally { handle.Free(); }
+    }
+
     // --- Widgets: Combo ---
 
     /// <summary>Begins a combo box.</summary>
@@ -1004,6 +1160,70 @@ public static unsafe class ImGui
 
     /// <summary>Ends a combo box.</summary>
     public static void EndCombo() => IGSharp_EndCombo();
+
+    /// <summary>Creates a combo box from an array of items. Returns true when the selection changes.</summary>
+    public static bool Combo(string label, ref int currentItem, string[] items, int popupMaxHeightInItems = -1)
+    {
+        var ptrs = new nint[items.Length];
+        try
+        {
+            for (var i = 0; i < items.Length; i++)
+                ptrs[i] = Marshal.StringToCoTaskMemUTF8(items[i]);
+            fixed (int* p = &currentItem)
+            fixed (nint* pp = ptrs)
+                return IGSharp_Combo(ToUtf8(label), p, (byte**)pp, items.Length, popupMaxHeightInItems);
+        }
+        finally
+        {
+            foreach (var ptr in ptrs) Marshal.FreeCoTaskMem(ptr);
+        }
+    }
+
+    /// <summary>Creates a combo box with item text supplied by a callback (useful for large or computed lists).</summary>
+    public static bool Combo(string label, ref int currentItem, Func<int, string> itemGetter, int itemsCount, int popupMaxHeightInItems = -1)
+    {
+        using var state = new ItemsGetterState(itemGetter);
+        var handle = GCHandle.Alloc(state);
+        try
+        {
+            fixed (int* p = &currentItem)
+                return IGSharp_ComboCallback(ToUtf8(label), p, &ItemsGetterThunk, (void*)GCHandle.ToIntPtr(handle), itemsCount, popupMaxHeightInItems);
+        }
+        finally { handle.Free(); }
+    }
+
+    // Shared state for Combo/ListBox callback overloads: item strings returned to native code
+    // must stay valid for the duration of the widget call, so the UTF-8 copies are kept
+    // alive here and freed when the wrapper returns.
+    private sealed class ItemsGetterState : IDisposable
+    {
+        private readonly Func<int, string> _getter;
+        private readonly List<nint> _allocations = [];
+
+        public ItemsGetterState(Func<int, string> getter) => _getter = getter;
+
+        public byte* GetItemText(int index)
+        {
+            var ptr = Marshal.StringToCoTaskMemUTF8(_getter(index));
+            _allocations.Add(ptr);
+            return (byte*)ptr;
+        }
+
+        public void Dispose()
+        {
+            foreach (var ptr in _allocations)
+                Marshal.FreeCoTaskMem(ptr);
+            _allocations.Clear();
+        }
+    }
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static byte* ItemsGetterThunk(void* data, int idx)
+    {
+        var handle = GCHandle.FromIntPtr((nint)data);
+        var state = (ItemsGetterState)handle.Target!;
+        return state.GetItemText(idx);
+    }
 
     // --- Widgets: Menus ---
 
@@ -1048,6 +1268,9 @@ public static unsafe class ImGui
     /// <summary>Sets a text tooltip (shorthand).</summary>
     public static void SetTooltip(string text) => IGSharp_SetTooltip(ToUtf8(text));
 
+    /// <summary>Sets a text tooltip shown only when the last item is hovered (shorthand for BeginItemTooltip + Text + EndTooltip).</summary>
+    public static void SetItemTooltip(string text) => IGSharp_SetItemTooltip(ToUtf8(text));
+
     /// <summary>Begins a tooltip that is shown only when the last item is hovered.</summary>
     public static bool BeginItemTooltip() => IGSharp_BeginItemTooltip();
 
@@ -1056,6 +1279,14 @@ public static unsafe class ImGui
     /// <summary>Opens a popup by string ID.</summary>
     public static void OpenPopup(string strId, PopupFlags flags = PopupFlags.None)
         => IGSharp_OpenPopup(ToUtf8(strId), (int)flags);
+
+    /// <summary>Opens a popup by ID obtained from <see cref="GetID(string)"/>.</summary>
+    public static void OpenPopup(uint id, PopupFlags flags = PopupFlags.None)
+        => IGSharp_OpenPopupID(id, (int)flags);
+
+    /// <summary>Opens a popup when the last item is clicked (helper for context menus).</summary>
+    public static void OpenPopupOnItemClick(string? strId = null, PopupFlags flags = PopupFlags.MouseButtonRight)
+        => IGSharp_OpenPopupOnItemClick(ToUtf8(strId), (int)flags);
 
     /// <summary>Begins a popup.</summary>
     public static bool BeginPopup(string strId, WindowFlags flags = WindowFlags.None)
@@ -1078,6 +1309,10 @@ public static unsafe class ImGui
     /// <summary>Begins a context-menu popup attached to the current window. Call inside an if().</summary>
     public static bool BeginPopupContextWindow(string? strId = null, PopupFlags flags = PopupFlags.MouseButtonRight)
         => IGSharp_BeginPopupContextWindow(ToUtf8(strId), (int)flags);
+
+    /// <summary>Begins a context-menu popup opened by clicking in the void (where there are no windows). Call inside an if().</summary>
+    public static bool BeginPopupContextVoid(string? strId = null, PopupFlags flags = PopupFlags.MouseButtonRight)
+        => IGSharp_BeginPopupContextVoid(ToUtf8(strId), (int)flags);
 
     /// <summary>Returns true if the popup with the given ID is currently open.</summary>
     public static bool IsPopupOpen(string strId, PopupFlags flags = PopupFlags.None)
@@ -1105,12 +1340,18 @@ public static unsafe class ImGui
     /// <summary>Advances to the next table column.</summary>
     public static bool TableNextColumn() => IGSharp_TableNextColumn();
 
+    /// <summary>Moves to the given column in the current row. Returns false if the column is not visible.</summary>
+    public static bool TableSetColumnIndex(int columnN) => IGSharp_TableSetColumnIndex(columnN);
+
     /// <summary>Sets up a table column.</summary>
     public static void TableSetupColumn(string label, TableColumnFlags flags = TableColumnFlags.None, float initWidthOrWeight = 0, uint userId = 0)
         => IGSharp_TableSetupColumn(ToUtf8(label), (int)flags, initWidthOrWeight, userId);
 
     /// <summary>Submits header row for all table columns.</summary>
     public static void TableHeadersRow() => IGSharp_TableHeadersRow();
+
+    /// <summary>Submits an angled header row for columns with the AngledHeader flag.</summary>
+    public static void TableAngledHeadersRow() => IGSharp_TableAngledHeadersRow();
 
     /// <summary>Submits a single header cell (inside a table row) with the given label.</summary>
     public static void TableHeader(string label) => IGSharp_TableHeader(ToUtf8(label));
@@ -1179,6 +1420,53 @@ public static unsafe class ImGui
     public static void SetTabItemClosed(string tabOrDockedWindowLabel)
         => IGSharp_SetTabItemClosed(ToUtf8(tabOrDockedWindowLabel));
 
+    // --- Columns (legacy; prefer Tables) ---
+
+    /// <summary>Begins a legacy multi-column layout. Prefer <see cref="BeginTable"/> for new code.</summary>
+    public static void Columns(int count = 1, string? id = null, bool borders = true)
+        => IGSharp_Columns(count, ToUtf8(id), borders);
+
+    /// <summary>Moves to the next column (legacy columns API).</summary>
+    public static void NextColumn() => IGSharp_NextColumn();
+
+    /// <summary>Gets the current column index (legacy columns API).</summary>
+    public static int GetColumnIndex() => IGSharp_GetColumnIndex();
+
+    /// <summary>Gets a column's width in pixels (-1 = current column; legacy columns API).</summary>
+    public static float GetColumnWidth(int columnIndex = -1) => IGSharp_GetColumnWidth(columnIndex);
+
+    /// <summary>Sets a column's width in pixels (-1 = current column; legacy columns API).</summary>
+    public static void SetColumnWidth(int columnIndex, float width) => IGSharp_SetColumnWidth(columnIndex, width);
+
+    /// <summary>Gets a column's left offset in pixels (-1 = current column; legacy columns API).</summary>
+    public static float GetColumnOffset(int columnIndex = -1) => IGSharp_GetColumnOffset(columnIndex);
+
+    /// <summary>Sets a column's left offset in pixels (-1 = current column; legacy columns API).</summary>
+    public static void SetColumnOffset(int columnIndex, float offsetX) => IGSharp_SetColumnOffset(columnIndex, offsetX);
+
+    /// <summary>Gets the number of columns in the current layout (legacy columns API).</summary>
+    public static int GetColumnsCount() => IGSharp_GetColumnsCount();
+
+    // --- Logging / Capture ---
+
+    /// <summary>Starts logging all rendered text to the terminal (stdout). <paramref name="autoOpenDepth"/> auto-opens tree nodes up to that depth (-1 = unlimited).</summary>
+    public static void LogToTTY(int autoOpenDepth = -1) => IGSharp_LogToTTY(autoOpenDepth);
+
+    /// <summary>Starts logging all rendered text to a file (null uses io.LogFilename).</summary>
+    public static void LogToFile(int autoOpenDepth = -1, string? filename = null) => IGSharp_LogToFile(autoOpenDepth, ToUtf8(filename));
+
+    /// <summary>Starts logging all rendered text to the clipboard.</summary>
+    public static void LogToClipboard(int autoOpenDepth = -1) => IGSharp_LogToClipboard(autoOpenDepth);
+
+    /// <summary>Stops logging and closes the file/clipboard capture.</summary>
+    public static void LogFinish() => IGSharp_LogFinish();
+
+    /// <summary>Displays buttons for starting text capture to TTY, file, or clipboard.</summary>
+    public static void LogButtons() => IGSharp_LogButtons();
+
+    /// <summary>Writes text directly into the current log output.</summary>
+    public static void LogText(string text) => IGSharp_LogText(ToUtf8(text));
+
     // --- Disabling ---
 
     /// <summary>Begins a disabled section.</summary>
@@ -1186,6 +1474,15 @@ public static unsafe class ImGui
 
     /// <summary>Ends a disabled section.</summary>
     public static void EndDisabled() => IGSharp_EndDisabled();
+
+    // --- Clipping ---
+
+    /// <summary>Pushes a clip rectangle in screen coordinates. Affects hit-testing and widget clipping. Pair with <see cref="PopClipRect"/>.</summary>
+    public static void PushClipRect(Vec2 clipRectMin, Vec2 clipRectMax, bool intersectWithCurrentClipRect)
+        => IGSharp_PushClipRect(new IGSharp_Vec2(clipRectMin.X, clipRectMin.Y), new IGSharp_Vec2(clipRectMax.X, clipRectMax.Y), intersectWithCurrentClipRect);
+
+    /// <summary>Pops the last pushed clip rectangle.</summary>
+    public static void PopClipRect() => IGSharp_PopClipRect();
 
     // --- Item Utilities ---
 
@@ -1261,8 +1558,24 @@ public static unsafe class ImGui
     /// <summary>Pushes a Vec2 style variable.</summary>
     public static void PushStyleVar(StyleVar idx, float x, float y) => IGSharp_PushStyleVarVec2((int)idx, new IGSharp_Vec2(x, y));
 
+    /// <summary>Pushes only the X component of a Vec2 style variable, keeping the current Y.</summary>
+    public static void PushStyleVarX(StyleVar idx, float x) => IGSharp_PushStyleVarX((int)idx, x);
+
+    /// <summary>Pushes only the Y component of a Vec2 style variable, keeping the current X.</summary>
+    public static void PushStyleVarY(StyleVar idx, float y) => IGSharp_PushStyleVarY((int)idx, y);
+
     /// <summary>Pops style variables.</summary>
     public static void PopStyleVar(int count = 1) => IGSharp_PopStyleVar(count);
+
+    /// <summary>Gets a style color as RGBA floats (unmodified by the current alpha; use <see cref="GetColorU32(Col, float)"/> for a render-ready color).</summary>
+    public static Vec4 GetStyleColorVec4(Col idx)
+    {
+        var v = IGSharp_GetStyleColorVec4((int)idx);
+        return new Vec4(v.X, v.Y, v.Z, v.W);
+    }
+
+    /// <summary>Gets the name of a style color (for display/debugging).</summary>
+    public static string? GetStyleColorName(Col idx) => Marshal.PtrToStringUTF8((nint)IGSharp_GetStyleColorName((int)idx));
 
     /// <summary>Pushes an item width (0 = default, negative = relative to right edge).</summary>
     public static void PushItemWidth(float itemWidth) => IGSharp_PushItemWidth(itemWidth);
@@ -1371,6 +1684,9 @@ public static unsafe class ImGui
     /// <summary>Pops the last pushed item flag.</summary>
     public static void PopItemFlag() => IGSharp_PopItemFlag();
 
+    /// <summary>Gets the item flags currently in effect (combination of pushed flags).</summary>
+    public static ItemFlags GetItemFlags() => (ItemFlags)IGSharp_GetItemFlags();
+
     // --- Focus / Activation ---
 
     /// <summary>Requests keyboard focus on the next or previously submitted item. <paramref name="offset"/> 0 = next, -1 = previous.</summary>
@@ -1378,6 +1694,9 @@ public static unsafe class ImGui
 
     /// <summary>Allows the next item to be overlapped by following items (e.g. invisible button over a tree node).</summary>
     public static void SetNextItemAllowOverlap() => IGSharp_SetNextItemAllowOverlap();
+
+    /// <summary>Shows or hides the keyboard/gamepad navigation cursor (highlight).</summary>
+    public static void SetNavCursorVisible(bool visible) => IGSharp_SetNavCursorVisible(visible);
 
     // --- Item Utilities (extra) ---
 
@@ -1415,6 +1734,36 @@ public static unsafe class ImGui
     public static void SetNextWindowScroll(float scrollX, float scrollY)
         => IGSharp_SetNextWindowScroll(new IGSharp_Vec2(scrollX, scrollY));
 
+    /// <summary>Sets the current window's position. Prefer <see cref="SetNextWindowPos"/> — calling this inside Begin/End causes a one-frame lag.</summary>
+    public static void SetWindowPos(float x, float y, Cond cond = Cond.None)
+        => IGSharp_SetWindowPos(new IGSharp_Vec2(x, y), (int)cond);
+
+    /// <summary>Sets a named window's position.</summary>
+    public static void SetWindowPos(string name, float x, float y, Cond cond = Cond.None)
+        => IGSharp_SetWindowPosNamed(ToUtf8(name), new IGSharp_Vec2(x, y), (int)cond);
+
+    /// <summary>Sets the current window's size. Prefer <see cref="SetNextWindowSize"/> — calling this inside Begin/End causes a one-frame lag.</summary>
+    public static void SetWindowSize(float width, float height, Cond cond = Cond.None)
+        => IGSharp_SetWindowSize(new IGSharp_Vec2(width, height), (int)cond);
+
+    /// <summary>Sets a named window's size.</summary>
+    public static void SetWindowSize(string name, float width, float height, Cond cond = Cond.None)
+        => IGSharp_SetWindowSizeNamed(ToUtf8(name), new IGSharp_Vec2(width, height), (int)cond);
+
+    /// <summary>Sets the current window's collapsed state. Prefer <see cref="SetNextWindowCollapsed"/>.</summary>
+    public static void SetWindowCollapsed(bool collapsed, Cond cond = Cond.None)
+        => IGSharp_SetWindowCollapsed(collapsed, (int)cond);
+
+    /// <summary>Sets a named window's collapsed state.</summary>
+    public static void SetWindowCollapsed(string name, bool collapsed, Cond cond = Cond.None)
+        => IGSharp_SetWindowCollapsedNamed(ToUtf8(name), collapsed, (int)cond);
+
+    /// <summary>Focuses the current window. Prefer <see cref="SetNextWindowFocus"/>.</summary>
+    public static void SetWindowFocus() => IGSharp_SetWindowFocus();
+
+    /// <summary>Focuses a named window.</summary>
+    public static void SetWindowFocus(string name) => IGSharp_SetWindowFocusNamed(ToUtf8(name));
+
     // --- Viewport ---
 
     /// <summary>Gets the main viewport — covers the OS window client area.</summary>
@@ -1434,6 +1783,30 @@ public static unsafe class ImGui
     /// <summary>Returns true if the given key chord (a key bitwise-or'd with mod flags) was pressed this frame.</summary>
     public static bool IsKeyChordPressed(Key keyChord) => IGSharp_IsKeyChordPressed((int)keyChord);
 
+    /// <summary>Gets the number of times the key was virtually pressed in the current frame, using the given repeat delay and rate.</summary>
+    public static int GetKeyPressedAmount(Key key, float repeatDelay, float rate) => IGSharp_GetKeyPressedAmount((int)key, repeatDelay, rate);
+
+    /// <summary>Gets a human-readable name for the key ("A", "Enter", ...).</summary>
+    public static string? GetKeyName(Key key) => Marshal.PtrToStringUTF8((nint)IGSharp_GetKeyName((int)key));
+
+    /// <summary>Overrides io.WantCaptureKeyboard for the next frame (e.g. to force capture or force pass-through).</summary>
+    public static void SetNextFrameWantCaptureKeyboard(bool wantCaptureKeyboard) => IGSharp_SetNextFrameWantCaptureKeyboard(wantCaptureKeyboard);
+
+    /// <summary>
+    /// Returns true if the key chord was pressed this frame and is routed to the current window/item.
+    /// <paramref name="inputFlags"/> takes raw ImGuiInputFlags bits (0 = default routing).
+    /// </summary>
+    public static bool Shortcut(Key keyChord, int inputFlags = 0) => IGSharp_Shortcut((int)keyChord, inputFlags);
+
+    /// <summary>
+    /// Assigns a shortcut that activates the next item when pressed (also shown in tooltips).
+    /// <paramref name="inputFlags"/> takes raw ImGuiInputFlags bits (0 = default routing).
+    /// </summary>
+    public static void SetNextItemShortcut(Key keyChord, int inputFlags = 0) => IGSharp_SetNextItemShortcut((int)keyChord, inputFlags);
+
+    /// <summary>Makes the last item the owner of the given key, preventing other code from reading it this frame.</summary>
+    public static void SetItemKeyOwner(Key key) => IGSharp_SetItemKeyOwner((int)key);
+
     // --- Input Queries: Mouse ---
 
     /// <summary>Returns true while the given mouse button is held down.</summary>
@@ -1447,6 +1820,15 @@ public static unsafe class ImGui
 
     /// <summary>Returns true if the mouse button was double-clicked this frame.</summary>
     public static bool IsMouseDoubleClicked(MouseButton button) => IGSharp_IsMouseDoubleClicked((int)button);
+
+    /// <summary>Returns true if the mouse button was released this frame after being held for at least <paramref name="delay"/> seconds.</summary>
+    public static bool IsMouseReleasedWithDelay(MouseButton button, float delay) => IGSharp_IsMouseReleasedWithDelay((int)button, delay);
+
+    /// <summary>Gets the number of successive clicks of the mouse button this frame (1 = single, 2 = double, ...).</summary>
+    public static int GetMouseClickedCount(MouseButton button) => IGSharp_GetMouseClickedCount((int)button);
+
+    /// <summary>Returns true while any mouse button is held down.</summary>
+    public static bool IsAnyMouseDown() => IGSharp_IsAnyMouseDown();
 
     /// <summary>Returns true if the mouse position is inside the given rectangle (optionally clipped against the current clip rect).</summary>
     public static bool IsMouseHoveringRect(Vec2 min, Vec2 max, bool clip = true)
@@ -1480,6 +1862,19 @@ public static unsafe class ImGui
         return new Vec2(v.X, v.Y);
     }
 
+    /// <summary>Resets the mouse drag delta for the given button (so <see cref="GetMouseDragDelta"/> measures from the current position).</summary>
+    public static void ResetMouseDragDelta(MouseButton button = MouseButton.Left) => IGSharp_ResetMouseDragDelta((int)button);
+
+    /// <summary>Gets the mouse position captured when the current popup was opened (useful for context-menu placement).</summary>
+    public static Vec2 GetMousePosOnOpeningCurrentPopup()
+    {
+        var v = IGSharp_GetMousePosOnOpeningCurrentPopup();
+        return new Vec2(v.X, v.Y);
+    }
+
+    /// <summary>Overrides io.WantCaptureMouse for the next frame (e.g. to force capture or force pass-through).</summary>
+    public static void SetNextFrameWantCaptureMouse(bool wantCaptureMouse) => IGSharp_SetNextFrameWantCaptureMouse(wantCaptureMouse);
+
     // --- Fonts ---
 
     /// <summary>Gets the shared font atlas. Use this to load custom fonts before the first frame.</summary>
@@ -1504,6 +1899,16 @@ public static unsafe class ImGui
 
     /// <summary>Gets the active font's pixel size (including DPI scale).</summary>
     public static float GetFontSize() => IGSharp_GetFontSize();
+
+    /// <summary>Gets the UV coordinate of a white pixel in the font atlas texture (useful for custom drawing).</summary>
+    /// <summary>Gets the current font's baked data at the current size (frame-transient view).</summary>
+    public static FontBaked GetFontBaked() => new(IGSharp_GetFontBaked());
+
+    public static Vec2 GetFontTexUvWhitePixel()
+    {
+        var v = IGSharp_GetFontTexUvWhitePixel();
+        return new Vec2(v.X, v.Y);
+    }
 
     // --- Drag and Drop ---
 
@@ -1545,6 +1950,27 @@ public static unsafe class ImGui
     /// <summary>Gets the payload currently being dragged (or an invalid handle if none).</summary>
     public static DragDropPayload GetDragDropPayload() => new(IGSharp_GetDragDropPayload());
 
+    // --- Miscellaneous Utilities ---
+
+    /// <summary>Returns true if a rectangle of the given size, starting at the cursor position, is visible (not clipped).</summary>
+    public static bool IsRectVisible(Vec2 size) => IGSharp_IsRectVisible(new IGSharp_Vec2(size.X, size.Y));
+
+    /// <summary>Returns true if the rectangle (in screen coordinates) is visible (not clipped).</summary>
+    public static bool IsRectVisible(Vec2 rectMin, Vec2 rectMax)
+        => IGSharp_IsRectVisibleRange(new IGSharp_Vec2(rectMin.X, rectMin.Y), new IGSharp_Vec2(rectMax.X, rectMax.Y));
+
+    /// <summary>Gets the global ImGui time in seconds (incremented by io.DeltaTime every frame).</summary>
+    public static double GetTime() => IGSharp_GetTime();
+
+    /// <summary>Gets the global frame counter (incremented every frame).</summary>
+    public static int GetFrameCount() => IGSharp_GetFrameCount();
+
+    /// <summary>Gets the current window's state storage (per-window key/value store used for widget state).</summary>
+    public static Storage GetStateStorage() => new(IGSharp_GetStateStorage());
+
+    /// <summary>Replaces the current window's state storage (advanced).</summary>
+    public static void SetStateStorage(Storage storage) => IGSharp_SetStateStorage(storage.Handle);
+
     // --- Multi-Select ---
 
     /// <summary>
@@ -1570,4 +1996,49 @@ public static unsafe class ImGui
 
     /// <summary>Gets the sort specs for the current sortable table. Returns an invalid handle if the table is not sortable.</summary>
     public static TableSortSpecs TableGetSortSpecs() => new(IGSharp_TableGetSortSpecs());
+
+    // --- Clipboard ---
+
+    /// <summary>Gets the clipboard text (via the platform backend).</summary>
+    public static string? GetClipboardText() => Marshal.PtrToStringUTF8((nint)IGSharp_GetClipboardText());
+
+    /// <summary>Sets the clipboard text (via the platform backend).</summary>
+    public static void SetClipboardText(string text) => IGSharp_SetClipboardText(ToUtf8(text));
+
+    // --- Settings / .Ini Utilities ---
+
+    /// <summary>Loads window layout and settings from an .ini file. Call after <see cref="Context.Create"/> and before the first frame.</summary>
+    public static void LoadIniSettingsFromDisk(string iniFilename) => IGSharp_LoadIniSettingsFromDisk(ToUtf8(iniFilename));
+
+    /// <summary>Loads window layout and settings from an in-memory .ini string.</summary>
+    public static void LoadIniSettingsFromMemory(string iniData)
+    {
+        var bytes = ToUtf8(iniData)!;
+        IGSharp_LoadIniSettingsFromMemory(bytes, (nuint)(bytes.Length - 1));
+    }
+
+    /// <summary>Saves window layout and settings to an .ini file.</summary>
+    public static void SaveIniSettingsToDisk(string iniFilename) => IGSharp_SaveIniSettingsToDisk(ToUtf8(iniFilename));
+
+    /// <summary>Serializes window layout and settings to an .ini-format string.</summary>
+    public static string? SaveIniSettingsToMemory()
+    {
+        nuint size;
+        var ptr = IGSharp_SaveIniSettingsToMemory(&size);
+        return ptr == null ? null : System.Text.Encoding.UTF8.GetString(ptr, (int)size);
+    }
+
+    // --- Debug Utilities ---
+
+    /// <summary>Helper to diagnose text encoding problems: draws a breakdown of each byte/codepoint in the given text.</summary>
+    public static void DebugTextEncoding(string text) => IGSharp_DebugTextEncoding(ToUtf8(text));
+
+    /// <summary>Briefly flashes widgets using the given style color, to help locate where it is used.</summary>
+    public static void DebugFlashStyleColor(Col idx) => IGSharp_DebugFlashStyleColor((int)idx);
+
+    /// <summary>Starts the item picker: the next click on any item breaks into the debugger at its submission site.</summary>
+    public static void DebugStartItemPicker() => IGSharp_DebugStartItemPicker();
+
+    /// <summary>Writes a line to the ImGui debug log (visible in <see cref="ShowDebugLogWindow()"/>).</summary>
+    public static void DebugLog(string text) => IGSharp_DebugLog(ToUtf8(text));
 }
