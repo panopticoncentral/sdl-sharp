@@ -353,3 +353,104 @@ MouseSource, DataType, Key (140-value enum: keyboard, gamepad, mouse aliases, mo
 - Viewport wrapper extras: secondary viewports, platform handles (only relevant if/when
   multi-viewport docking is enabled — not currently supported by the SDL_GPU backend).
 
+## Phases 7–11: SDL3 Surface Completion (planned 2026-07-02)
+
+Based on a full per-symbol audit of all 54 tracked SDL 3.4.2 headers against the
+native bindings, managed wrappers, and INVENTORY.md claims. Audit data (every
+missing symbol with importance rating, every INVENTORY.md discrepancy):
+`audit/sdl3-coverage-2026-07.json`. Coverage at audit time: 521/940 exported
+functions (55%) across the 41 active headers; the 13 deferred-by-design headers
+(331 functions) all verified as sound skips.
+
+### Phase 7: Truth and rules (no new SDL surface)
+
+- [ ] 7.1 Regenerate INVENTORY.md: 164 discrepancies across 43 headers, including
+      false ✅ on SDL_gamepad.h (15/73 actual), SDL_joystick.h (18/58), and
+      SDL_haptic.h (12/31); ~110 missing rows; wrong managed-wrapper names
+      (e.g. `GpuFence.WaitAll` doesn't exist); false "Used internally" notes.
+- [ ] 7.2 GPU managed descriptor layer: the `Gpu*` classes expose ~57 public members
+      taking/returning `SdlSharp.Native` types (`SDL_GPUShaderCreateInfo`,
+      `SDL_GPUColorTargetInfo*`, `out SDL_GPUTexture*`, …), violating the
+      no-native-types rule. Design public record structs for the create-info /
+      binding / region structs, a non-owning `GpuTexture` for swapchain returns,
+      and expose the 8 native-only functions (`SDL_WaitForGPUFences`,
+      `SDL_CreateGPUDeviceWithProperties` + property constants, swapchain-support
+      queries, texture-format size helpers). This is API design — do as its own
+      focused session.
+- [ ] 7.3 No-native-types fixes elsewhere: `Application` raw event filter exposes
+      `Native.SDL_Event*`; text input flow (`SDL_StartTextInput` etc.) reachable
+      only via native layer — make public, add `SDL_SetTextInputArea`/
+      `SDL_GetTextInputArea`/`SDL_StartTextInputWithProperties` + `TextInputType`/
+      `Capitalization` enums; add public `Cursor` class + `SystemCursor` enum over
+      the already-bound cursor API; public `MouseWheelDirection` + `Direction` on
+      `MouseWheelEventArgs`.
+
+### Phase 8: Input completion
+
+- [ ] 8.1 Gamepad (15/73 → full): `SDL_RumbleGamepad`(+Triggers),
+      `SDL_AddGamepadMapping`/`FromFile` (gamecontrollerdb.txt), `SDL_GamepadConnected`,
+      `SDL_GetGamepadID`/`FromID` (event correlation), LED, sensors, player index,
+      power info, button/axis↔string round-trips, capability properties.
+- [ ] 8.2 Joystick (18/58 → full): rumble (+triggers), LED, power info,
+      events-enabled, `SDL_HasJoystick`/`JoystickConnected`, player index,
+      AXIS_MIN/MAX constants; bind `SDL_guid.h` (`SDL_GUID`) to unlock
+      GUID/vendor/product identification. Virtual-joystick suite stays deferred.
+- [ ] 8.3 Complete public `Scancode` enum (~144 missing of 249 — prioritize
+      `NonUsBackslash`/`NonUsHash` (ISO keyboards), F13–F24, media keys) and
+      `Keycode` enum (keypad, punctuation, F13–F24, media/AC); add
+      `KeyModifiers.Level5`.
+
+### Phase 9: Graphics completion
+
+- [ ] 9.1 Video (48/114): fullscreen mode management (`SDL_GetFullscreenDisplayModes`,
+      `SDL_GetClosestFullscreenDisplayMode`, `SDL_Set/GetWindowFullscreenMode`);
+      all 38 `SDL_PROP_WINDOW_CREATE_*` constants (properties-based `Window.Create`
+      is unusable safely without them); then: `SDL_GetWindows`, system theme,
+      display orientation/properties, mouse grab/confine, always-on-top, aspect
+      ratio, `SDL_SyncWindow`, popup/modal windows, hit-test callback, screensaver,
+      taskbar progress. Decision: wrap `SDL_GL_*` context functions (~10 fns).
+- [ ] 9.2 Surface (25/65): color key (3 fns), `SDL_Read/WriteSurfacePixel`(+Float),
+      `SDL_LoadPNG`/`SDL_SavePNG` (new in 3.4) + generic `SDL_LoadSurface`,
+      `SDL_ScaleSurface`/`FlipSurface`/`RotateSurface`, `SDL_MapSurfaceRGB(A)`,
+      palette trio (Palette class exists), `SDL_PremultiplySurfaceAlpha`,
+      tiled/9-grid blits, `MustLock`/`Flags` on `Surface`.
+- [ ] 9.3 Render (70/102): `SDL_ConvertEventToRenderCoordinates` (deferral note
+      stale — events are bound), `SDL_CreateTextureWithProperties` (HDR/native
+      handles), managed `GeometryRaw`, YUV/NV texture updates,
+      `SDL_LockTextureToSurface`, logical-presentation rect, safe area; decide on
+      software renderer + GPU render-state group.
+
+### Phase 10: Audio + events depth
+
+- [ ] 10.1 Audio (38/58): stream Get/Put callbacks + `SDL_Lock/UnlockAudioStream`
+      (pull-model audio — use existing UnmanagedCallersOnly+GCHandle pattern),
+      `SDL_MixAudio`, `SDL_ConvertAudioSamples`, postmix callback; format helpers:
+      `SDL_AUDIO_S16/S32/F32` native-order aliases, `AudioSpec.FrameSize`,
+      bit-size/float/signed introspection on `AudioFormat`,
+      `SDL_GetSilenceValueForFormat`; expose `AudioStream.Device`.
+- [ ] 10.2 Events (12/20 native, 2 public): expose bound queue functions publicly
+      (`WaitEvent`/`WaitEventTimeout`, `PushEvent` + `RegisterEvents` for custom
+      events, Has/Flush/SetEventEnabled); typed dispatch for joystick/gamepad/
+      touch/pen/drop/clipboard/sensor/display event families;
+      `SDL_AddEventWatch`/`RemoveEventWatch` (only way to render during live
+      window resize); consider `SDL_SetEventFilter`/`SDL_PeepEvents`.
+
+### Phase 11: Decisions + small headers
+
+- [ ] 11.1 Haptic full effect system (decision: wrap) — `SDL_HapticEffect`
+      explicit-layout union, 19 effect functions, `SDL_HAPTIC_*` constants;
+      short-term: `Haptic.Id`, `SDL_IsJoystickHaptic`, gain/features/stop-all.
+- [ ] 11.2 Tray (decision: wrap) — 23 functions, one callback; Native/Tray.cs +
+      `Tray`/`TrayMenu`/`TrayEntry` handle classes. No .NET equivalent exists.
+- [ ] 11.3 Small items: `Native/Version.cs` + `Sdl.Version`/`Sdl.Revision`;
+      `HintPriority` enum + `SdlHints.Set` overload; full `SDL_ShowMessageBox`
+      (multi-button + support structs); `PropertyGroup` pointer get/set;
+      `CameraPermissionState` enum; `Sensor.Id`/`FromId`/`StandardGravity`;
+      `SDL_TOUCH_MOUSEID`/`SDL_MOUSE_TOUCHID` public constants;
+      `SystemInfo.CreateDirectory` (or delete binding);
+      `SDL_IsTablet`/`SDL_IsTV`/`SDL_GetSandbox`; `SdlLog` emit methods via
+      fixed-format `SDL_LogMessage`.
+- [ ] 11.4 Document skips per CLAUDE.md convention (native-file comments):
+      hidapi, metal, vulkan, and fully-deferred headers lacking a native file
+      to carry the comment.
+
