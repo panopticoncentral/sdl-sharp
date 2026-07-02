@@ -1726,6 +1726,39 @@ public static unsafe class ImGui
     public static void SetNextWindowSizeConstraints(float minWidth, float minHeight, float maxWidth, float maxHeight)
         => IGSharp_SetNextWindowSizeConstraints(new IGSharp_Vec2(minWidth, minHeight), new IGSharp_Vec2(maxWidth, maxHeight), null, null);
 
+    /// <summary>Custom size-constraint callback: receives the window position and current size, and may adjust the desired size.</summary>
+    public delegate void SizeConstraintCallback(Vec2 pos, Vec2 currentSize, ref Vec2 desiredSize);
+
+    // The constraint applies to the next Begin() only; a single pending slot mirrors native semantics.
+    private static SizeConstraintCallback? _sizeConstraintCallback;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static void SizeConstraintThunk(IGSharp_SizeCallbackData* data)
+    {
+        var cb = _sizeConstraintCallback;
+        if (cb == null) return;
+        try
+        {
+            var p = IGSharp_SizeCallbackData_GetPos(data);
+            var c = IGSharp_SizeCallbackData_GetCurrentSize(data);
+            var d = IGSharp_SizeCallbackData_GetDesiredSize(data);
+            var desired = new Vec2(d.X, d.Y);
+            cb(new Vec2(p.X, p.Y), new Vec2(c.X, c.Y), ref desired);
+            IGSharp_SizeCallbackData_SetDesiredSize(data, new IGSharp_Vec2(desired.X, desired.Y));
+        }
+        catch
+        {
+            // Exceptions must not cross the native boundary.
+        }
+    }
+
+    /// <summary>Sets a custom size constraint for the next window (e.g. fixed aspect ratio or stepped sizes).</summary>
+    public static void SetNextWindowSizeConstraints(Vec2 min, Vec2 max, SizeConstraintCallback callback)
+    {
+        _sizeConstraintCallback = callback;
+        IGSharp_SetNextWindowSizeConstraints(new IGSharp_Vec2(min.X, min.Y), new IGSharp_Vec2(max.X, max.Y), &SizeConstraintThunk, null);
+    }
+
     /// <summary>Sets the content size used to compute scrollbar ranges for the next window.</summary>
     public static void SetNextWindowContentSize(float width, float height)
         => IGSharp_SetNextWindowContentSize(new IGSharp_Vec2(width, height));
@@ -1796,13 +1829,13 @@ public static unsafe class ImGui
     /// Returns true if the key chord was pressed this frame and is routed to the current window/item.
     /// <paramref name="inputFlags"/> takes raw ImGuiInputFlags bits (0 = default routing).
     /// </summary>
-    public static bool Shortcut(Key keyChord, int inputFlags = 0) => IGSharp_Shortcut((int)keyChord, inputFlags);
+    public static bool Shortcut(Key keyChord, InputFlags flags = InputFlags.None) => IGSharp_Shortcut((int)keyChord, (int)flags);
 
     /// <summary>
     /// Assigns a shortcut that activates the next item when pressed (also shown in tooltips).
     /// <paramref name="inputFlags"/> takes raw ImGuiInputFlags bits (0 = default routing).
     /// </summary>
-    public static void SetNextItemShortcut(Key keyChord, int inputFlags = 0) => IGSharp_SetNextItemShortcut((int)keyChord, inputFlags);
+    public static void SetNextItemShortcut(Key keyChord, InputFlags flags = InputFlags.None) => IGSharp_SetNextItemShortcut((int)keyChord, (int)flags);
 
     /// <summary>Makes the last item the owner of the given key, preventing other code from reading it this frame.</summary>
     public static void SetItemKeyOwner(Key key) => IGSharp_SetItemKeyOwner((int)key);

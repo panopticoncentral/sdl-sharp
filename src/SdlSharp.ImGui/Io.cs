@@ -224,4 +224,229 @@ public static unsafe class Io
 
     /// <summary>Clears current mouse state.</summary>
     public static void ClearInputMouse() => IGSharp_IO_ClearInputMouse(IGSharp_GetIO());
+
+    // --- Configuration options (direct ImGuiIO mirror fields) ---
+
+    /// <summary>Mirror of <c>ImGuiIO::FontAllowUserScaling</c>.</summary>
+    public static bool FontAllowUserScaling
+    {
+        get => IGSharp_GetIO()->FontAllowUserScaling;
+        set => IGSharp_GetIO()->FontAllowUserScaling = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigNavSwapGamepadButtons</c>.</summary>
+    public static bool ConfigNavSwapGamepadButtons
+    {
+        get => IGSharp_GetIO()->ConfigNavSwapGamepadButtons;
+        set => IGSharp_GetIO()->ConfigNavSwapGamepadButtons = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigNavMoveSetMousePos</c>.</summary>
+    public static bool ConfigNavMoveSetMousePos
+    {
+        get => IGSharp_GetIO()->ConfigNavMoveSetMousePos;
+        set => IGSharp_GetIO()->ConfigNavMoveSetMousePos = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigNavCaptureKeyboard</c>.</summary>
+    public static bool ConfigNavCaptureKeyboard
+    {
+        get => IGSharp_GetIO()->ConfigNavCaptureKeyboard;
+        set => IGSharp_GetIO()->ConfigNavCaptureKeyboard = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigNavEscapeClearFocusItem</c>.</summary>
+    public static bool ConfigNavEscapeClearFocusItem
+    {
+        get => IGSharp_GetIO()->ConfigNavEscapeClearFocusItem;
+        set => IGSharp_GetIO()->ConfigNavEscapeClearFocusItem = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigNavEscapeClearFocusWindow</c>.</summary>
+    public static bool ConfigNavEscapeClearFocusWindow
+    {
+        get => IGSharp_GetIO()->ConfigNavEscapeClearFocusWindow;
+        set => IGSharp_GetIO()->ConfigNavEscapeClearFocusWindow = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigNavCursorVisibleAuto</c>.</summary>
+    public static bool ConfigNavCursorVisibleAuto
+    {
+        get => IGSharp_GetIO()->ConfigNavCursorVisibleAuto;
+        set => IGSharp_GetIO()->ConfigNavCursorVisibleAuto = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigNavCursorVisibleAlways</c>.</summary>
+    public static bool ConfigNavCursorVisibleAlways
+    {
+        get => IGSharp_GetIO()->ConfigNavCursorVisibleAlways;
+        set => IGSharp_GetIO()->ConfigNavCursorVisibleAlways = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::MouseDrawCursor</c>.</summary>
+    public static bool MouseDrawCursor
+    {
+        get => IGSharp_GetIO()->MouseDrawCursor;
+        set => IGSharp_GetIO()->MouseDrawCursor = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigMacOSXBehaviors</c>.</summary>
+    public static bool ConfigMacOSXBehaviors
+    {
+        get => IGSharp_GetIO()->ConfigMacOSXBehaviors;
+        set => IGSharp_GetIO()->ConfigMacOSXBehaviors = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigInputTrickleEventQueue</c>.</summary>
+    public static bool ConfigInputTrickleEventQueue
+    {
+        get => IGSharp_GetIO()->ConfigInputTrickleEventQueue;
+        set => IGSharp_GetIO()->ConfigInputTrickleEventQueue = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigInputTextCursorBlink</c>.</summary>
+    public static bool ConfigInputTextCursorBlink
+    {
+        get => IGSharp_GetIO()->ConfigInputTextCursorBlink;
+        set => IGSharp_GetIO()->ConfigInputTextCursorBlink = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigInputTextEnterKeepActive</c>.</summary>
+    public static bool ConfigInputTextEnterKeepActive
+    {
+        get => IGSharp_GetIO()->ConfigInputTextEnterKeepActive;
+        set => IGSharp_GetIO()->ConfigInputTextEnterKeepActive = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigDragClickToInputText</c>.</summary>
+    public static bool ConfigDragClickToInputText
+    {
+        get => IGSharp_GetIO()->ConfigDragClickToInputText;
+        set => IGSharp_GetIO()->ConfigDragClickToInputText = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigWindowsResizeFromEdges</c>.</summary>
+    public static bool ConfigWindowsResizeFromEdges
+    {
+        get => IGSharp_GetIO()->ConfigWindowsResizeFromEdges;
+        set => IGSharp_GetIO()->ConfigWindowsResizeFromEdges = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigWindowsMoveFromTitleBarOnly</c>.</summary>
+    public static bool ConfigWindowsMoveFromTitleBarOnly
+    {
+        get => IGSharp_GetIO()->ConfigWindowsMoveFromTitleBarOnly;
+        set => IGSharp_GetIO()->ConfigWindowsMoveFromTitleBarOnly = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigWindowsCopyContentsWithCtrlC</c>.</summary>
+    public static bool ConfigWindowsCopyContentsWithCtrlC
+    {
+        get => IGSharp_GetIO()->ConfigWindowsCopyContentsWithCtrlC;
+        set => IGSharp_GetIO()->ConfigWindowsCopyContentsWithCtrlC = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigScrollbarScrollByPage</c>.</summary>
+    public static bool ConfigScrollbarScrollByPage
+    {
+        get => IGSharp_GetIO()->ConfigScrollbarScrollByPage;
+        set => IGSharp_GetIO()->ConfigScrollbarScrollByPage = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigErrorRecovery</c>.</summary>
+    public static bool ConfigErrorRecovery
+    {
+        get => IGSharp_GetIO()->ConfigErrorRecovery;
+        set => IGSharp_GetIO()->ConfigErrorRecovery = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigErrorRecoveryEnableAssert</c>.</summary>
+    public static bool ConfigErrorRecoveryEnableAssert
+    {
+        get => IGSharp_GetIO()->ConfigErrorRecoveryEnableAssert;
+        set => IGSharp_GetIO()->ConfigErrorRecoveryEnableAssert = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigErrorRecoveryEnableDebugLog</c>.</summary>
+    public static bool ConfigErrorRecoveryEnableDebugLog
+    {
+        get => IGSharp_GetIO()->ConfigErrorRecoveryEnableDebugLog;
+        set => IGSharp_GetIO()->ConfigErrorRecoveryEnableDebugLog = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigErrorRecoveryEnableTooltip</c>.</summary>
+    public static bool ConfigErrorRecoveryEnableTooltip
+    {
+        get => IGSharp_GetIO()->ConfigErrorRecoveryEnableTooltip;
+        set => IGSharp_GetIO()->ConfigErrorRecoveryEnableTooltip = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigDebugIsDebuggerPresent</c>.</summary>
+    public static bool ConfigDebugIsDebuggerPresent
+    {
+        get => IGSharp_GetIO()->ConfigDebugIsDebuggerPresent;
+        set => IGSharp_GetIO()->ConfigDebugIsDebuggerPresent = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigDebugHighlightIdConflicts</c>.</summary>
+    public static bool ConfigDebugHighlightIdConflicts
+    {
+        get => IGSharp_GetIO()->ConfigDebugHighlightIdConflicts;
+        set => IGSharp_GetIO()->ConfigDebugHighlightIdConflicts = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigDebugHighlightIdConflictsShowItemPicker</c>.</summary>
+    public static bool ConfigDebugHighlightIdConflictsShowItemPicker
+    {
+        get => IGSharp_GetIO()->ConfigDebugHighlightIdConflictsShowItemPicker;
+        set => IGSharp_GetIO()->ConfigDebugHighlightIdConflictsShowItemPicker = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigDebugBeginReturnValueOnce</c>.</summary>
+    public static bool ConfigDebugBeginReturnValueOnce
+    {
+        get => IGSharp_GetIO()->ConfigDebugBeginReturnValueOnce;
+        set => IGSharp_GetIO()->ConfigDebugBeginReturnValueOnce = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigDebugBeginReturnValueLoop</c>.</summary>
+    public static bool ConfigDebugBeginReturnValueLoop
+    {
+        get => IGSharp_GetIO()->ConfigDebugBeginReturnValueLoop;
+        set => IGSharp_GetIO()->ConfigDebugBeginReturnValueLoop = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigDebugIgnoreFocusLoss</c>.</summary>
+    public static bool ConfigDebugIgnoreFocusLoss
+    {
+        get => IGSharp_GetIO()->ConfigDebugIgnoreFocusLoss;
+        set => IGSharp_GetIO()->ConfigDebugIgnoreFocusLoss = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiIO::ConfigDebugIniSettings</c>.</summary>
+    public static bool ConfigDebugIniSettings
+    {
+        get => IGSharp_GetIO()->ConfigDebugIniSettings;
+        set => IGSharp_GetIO()->ConfigDebugIniSettings = value;
+    }
+
+    /// <summary>Minimum time between saving the .ini state, in seconds.</summary>
+    public static float IniSavingRate
+    {
+        get => IGSharp_GetIO()->IniSavingRate;
+        set => IGSharp_GetIO()->IniSavingRate = value;
+    }
+
+    /// <summary>Timer to free transient windows/tables memory buffers when unused (seconds).</summary>
+    public static float ConfigMemoryCompactTimer
+    {
+        get => IGSharp_GetIO()->ConfigMemoryCompactTimer;
+        set => IGSharp_GetIO()->ConfigMemoryCompactTimer = value;
+    }
+
+    /// <summary>Name of the platform backend, if set (e.g. "imgui_impl_sdl3").</summary>
+    public static string? BackendPlatformName => Marshal.PtrToStringUTF8((IntPtr)IGSharp_GetIO()->BackendPlatformName);
+
+    /// <summary>Name of the renderer backend, if set (e.g. "imgui_impl_sdlgpu3").</summary>
+    public static string? BackendRendererName => Marshal.PtrToStringUTF8((IntPtr)IGSharp_GetIO()->BackendRendererName);
 }

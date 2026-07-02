@@ -340,4 +340,196 @@ public static unsafe class Style
     /// <summary>Sets the color for the given palette index from RGBA floats.</summary>
     public static void SetColor(Col idx, float r, float g, float b, float a)
         => IGSharp_GetStyle()->Colors[(int)idx] = new IGSharp_Vec4(r, g, b, a);
+
+    // --- Additional ImGuiStyle mirror fields ---
+
+    /// <summary>Mirror of <c>ImGuiStyle::WindowBorderHoverPadding</c>.</summary>
+    public static float WindowBorderHoverPadding
+    {
+        get => IGSharp_GetStyle()->WindowBorderHoverPadding;
+        set => IGSharp_GetStyle()->WindowBorderHoverPadding = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::ScrollbarPadding</c>.</summary>
+    public static float ScrollbarPadding
+    {
+        get => IGSharp_GetStyle()->ScrollbarPadding;
+        set => IGSharp_GetStyle()->ScrollbarPadding = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::LogSliderDeadzone</c>.</summary>
+    public static float LogSliderDeadzone
+    {
+        get => IGSharp_GetStyle()->LogSliderDeadzone;
+        set => IGSharp_GetStyle()->LogSliderDeadzone = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TabMinWidthBase</c>.</summary>
+    public static float TabMinWidthBase
+    {
+        get => IGSharp_GetStyle()->TabMinWidthBase;
+        set => IGSharp_GetStyle()->TabMinWidthBase = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TabMinWidthShrink</c>.</summary>
+    public static float TabMinWidthShrink
+    {
+        get => IGSharp_GetStyle()->TabMinWidthShrink;
+        set => IGSharp_GetStyle()->TabMinWidthShrink = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TabCloseButtonMinWidthSelected</c>.</summary>
+    public static float TabCloseButtonMinWidthSelected
+    {
+        get => IGSharp_GetStyle()->TabCloseButtonMinWidthSelected;
+        set => IGSharp_GetStyle()->TabCloseButtonMinWidthSelected = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TabCloseButtonMinWidthUnselected</c>.</summary>
+    public static float TabCloseButtonMinWidthUnselected
+    {
+        get => IGSharp_GetStyle()->TabCloseButtonMinWidthUnselected;
+        set => IGSharp_GetStyle()->TabCloseButtonMinWidthUnselected = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TabBarBorderSize</c>.</summary>
+    public static float TabBarBorderSize
+    {
+        get => IGSharp_GetStyle()->TabBarBorderSize;
+        set => IGSharp_GetStyle()->TabBarBorderSize = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TabBarOverlineSize</c>.</summary>
+    public static float TabBarOverlineSize
+    {
+        get => IGSharp_GetStyle()->TabBarOverlineSize;
+        set => IGSharp_GetStyle()->TabBarOverlineSize = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TableAngledHeadersAngle</c>.</summary>
+    public static float TableAngledHeadersAngle
+    {
+        get => IGSharp_GetStyle()->TableAngledHeadersAngle;
+        set => IGSharp_GetStyle()->TableAngledHeadersAngle = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TreeLinesSize</c>.</summary>
+    public static float TreeLinesSize
+    {
+        get => IGSharp_GetStyle()->TreeLinesSize;
+        set => IGSharp_GetStyle()->TreeLinesSize = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TreeLinesRounding</c>.</summary>
+    public static float TreeLinesRounding
+    {
+        get => IGSharp_GetStyle()->TreeLinesRounding;
+        set => IGSharp_GetStyle()->TreeLinesRounding = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::DragDropTargetRounding</c>.</summary>
+    public static float DragDropTargetRounding
+    {
+        get => IGSharp_GetStyle()->DragDropTargetRounding;
+        set => IGSharp_GetStyle()->DragDropTargetRounding = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::DragDropTargetBorderSize</c>.</summary>
+    public static float DragDropTargetBorderSize
+    {
+        get => IGSharp_GetStyle()->DragDropTargetBorderSize;
+        set => IGSharp_GetStyle()->DragDropTargetBorderSize = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::DragDropTargetPadding</c>.</summary>
+    public static float DragDropTargetPadding
+    {
+        get => IGSharp_GetStyle()->DragDropTargetPadding;
+        set => IGSharp_GetStyle()->DragDropTargetPadding = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::ColorMarkerSize</c>.</summary>
+    public static float ColorMarkerSize
+    {
+        get => IGSharp_GetStyle()->ColorMarkerSize;
+        set => IGSharp_GetStyle()->ColorMarkerSize = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::SeparatorTextBorderSize</c>.</summary>
+    public static float SeparatorTextBorderSize
+    {
+        get => IGSharp_GetStyle()->SeparatorTextBorderSize;
+        set => IGSharp_GetStyle()->SeparatorTextBorderSize = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::HoverStationaryDelay</c>.</summary>
+    public static float HoverStationaryDelay
+    {
+        get => IGSharp_GetStyle()->HoverStationaryDelay;
+        set => IGSharp_GetStyle()->HoverStationaryDelay = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::HoverDelayShort</c>.</summary>
+    public static float HoverDelayShort
+    {
+        get => IGSharp_GetStyle()->HoverDelayShort;
+        set => IGSharp_GetStyle()->HoverDelayShort = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::HoverDelayNormal</c>.</summary>
+    public static float HoverDelayNormal
+    {
+        get => IGSharp_GetStyle()->HoverDelayNormal;
+        set => IGSharp_GetStyle()->HoverDelayNormal = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::AntiAliasedLinesUseTex</c>.</summary>
+    public static bool AntiAliasedLinesUseTex
+    {
+        get => IGSharp_GetStyle()->AntiAliasedLinesUseTex;
+        set => IGSharp_GetStyle()->AntiAliasedLinesUseTex = value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TableAngledHeadersTextAlign</c>.</summary>
+    public static Vec2 TableAngledHeadersTextAlign
+    {
+        get { var v = IGSharp_GetStyle()->TableAngledHeadersTextAlign; return new Vec2(v.X, v.Y); }
+        set => IGSharp_GetStyle()->TableAngledHeadersTextAlign = new IGSharp_Vec2(value.X, value.Y);
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::WindowMenuButtonPosition</c>.</summary>
+    public static Dir WindowMenuButtonPosition
+    {
+        get => (Dir)IGSharp_GetStyle()->WindowMenuButtonPosition;
+        set => IGSharp_GetStyle()->WindowMenuButtonPosition = (int)value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::ColorButtonPosition</c>.</summary>
+    public static Dir ColorButtonPosition
+    {
+        get => (Dir)IGSharp_GetStyle()->ColorButtonPosition;
+        set => IGSharp_GetStyle()->ColorButtonPosition = (int)value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::TreeLinesFlags</c>.</summary>
+    public static TreeNodeFlags TreeLinesFlags
+    {
+        get => (TreeNodeFlags)IGSharp_GetStyle()->TreeLinesFlags;
+        set => IGSharp_GetStyle()->TreeLinesFlags = (int)value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::HoverFlagsForTooltipMouse</c>.</summary>
+    public static HoveredFlags HoverFlagsForTooltipMouse
+    {
+        get => (HoveredFlags)IGSharp_GetStyle()->HoverFlagsForTooltipMouse;
+        set => IGSharp_GetStyle()->HoverFlagsForTooltipMouse = (int)value;
+    }
+
+    /// <summary>Mirror of <c>ImGuiStyle::HoverFlagsForTooltipNav</c>.</summary>
+    public static HoveredFlags HoverFlagsForTooltipNav
+    {
+        get => (HoveredFlags)IGSharp_GetStyle()->HoverFlagsForTooltipNav;
+        set => IGSharp_GetStyle()->HoverFlagsForTooltipNav = (int)value;
+    }
+
 }
