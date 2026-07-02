@@ -10,9 +10,9 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct InputTextCallbackData
 {
-    internal readonly void* Handle;
+    internal readonly IGSharp_InputTextCallbackData* Handle;
 
-    internal InputTextCallbackData(void* handle) => Handle = handle;
+    internal InputTextCallbackData(IGSharp_InputTextCallbackData* handle) => Handle = handle;
 
     /// <summary>Which callback event fired (one of <c>InputTextFlags.Callback*</c>).</summary>
     public InputTextFlags EventFlag => (InputTextFlags)IGSharp_InputTextCallbackData_GetEventFlag(Handle);

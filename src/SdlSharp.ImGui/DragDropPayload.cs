@@ -11,9 +11,9 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct DragDropPayload
 {
-    internal readonly void* Handle;
+    internal readonly IGSharp_Payload* Handle;
 
-    internal DragDropPayload(void* handle) => Handle = handle;
+    internal DragDropPayload(IGSharp_Payload* handle) => Handle = handle;
 
     /// <summary>True if this handle refers to an active payload.</summary>
     public bool IsValid => Handle != null;

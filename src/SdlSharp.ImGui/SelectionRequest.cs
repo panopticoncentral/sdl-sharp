@@ -8,9 +8,9 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct SelectionRequest
 {
-    internal readonly void* Handle;
+    internal readonly IGSharp_SelectionRequest* Handle;
 
-    internal SelectionRequest(void* handle) => Handle = handle;
+    internal SelectionRequest(IGSharp_SelectionRequest* handle) => Handle = handle;
 
     /// <summary>True if this handle refers to a valid request.</summary>
     public bool IsValid => Handle != null;

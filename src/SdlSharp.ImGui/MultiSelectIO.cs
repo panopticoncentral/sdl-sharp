@@ -9,9 +9,9 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct MultiSelectIO
 {
-    internal readonly void* Handle;
+    internal readonly IGSharp_MultiSelectIO* Handle;
 
-    internal MultiSelectIO(void* handle) => Handle = handle;
+    internal MultiSelectIO(IGSharp_MultiSelectIO* handle) => Handle = handle;
 
     /// <summary>True if this handle refers to a valid multi-select context.</summary>
     public bool IsValid => Handle != null;

@@ -26,16 +26,27 @@ public static unsafe class ImGui
     // --- IO ---
 
     /// <summary>Returns true if ImGui wants to capture mouse input.</summary>
-    public static bool WantCaptureMouse => IGSharp_IO_GetWantCaptureMouse();
+    public static bool WantCaptureMouse => IGSharp_GetIO()->WantCaptureMouse;
 
     /// <summary>Returns true if ImGui wants to capture keyboard input.</summary>
-    public static bool WantCaptureKeyboard => IGSharp_IO_GetWantCaptureKeyboard();
+    public static bool WantCaptureKeyboard => IGSharp_GetIO()->WantCaptureKeyboard;
 
     /// <summary>Gets the current frame rate as computed by ImGui.</summary>
-    public static float Framerate => IGSharp_IO_GetFramerate();
+    public static float Framerate => IGSharp_GetIO()->Framerate;
+
+    // ImGui stores the io.IniFilename pointer without copying, so the UTF-8 string must
+    // stay valid until it is replaced (or the process exits). Kept in unmanaged memory.
+    private static nint _iniFilenamePtr;
 
     /// <summary>Sets the INI filename for saving/loading layout. Pass null to disable.</summary>
-    public static void SetIniFilename(string? filename) => IGSharp_IO_SetIniFilename(ToUtf8(filename));
+    public static void SetIniFilename(string? filename)
+    {
+        var newPtr = filename == null ? 0 : Marshal.StringToCoTaskMemUTF8(filename);
+        IGSharp_GetIO()->IniFilename = (byte*)newPtr;
+        if (_iniFilenamePtr != 0)
+            Marshal.FreeCoTaskMem(_iniFilenamePtr);
+        _iniFilenamePtr = newPtr;
+    }
 
     // --- Demo / Styles ---
 
@@ -82,7 +93,7 @@ public static unsafe class ImGui
     }
 
     /// <summary>Shows the style editor (an inline form for tweaking the global ImGui style).</summary>
-    public static void ShowStyleEditor() => IGSharp_ShowStyleEditor();
+    public static void ShowStyleEditor() => IGSharp_ShowStyleEditor(null);
 
     /// <summary>Shows a combo to select a built-in style preset (Dark / Light / Classic). Returns true on selection change.</summary>
     public static bool ShowStyleSelector(string label) => IGSharp_ShowStyleSelector(ToUtf8(label));
@@ -94,19 +105,19 @@ public static unsafe class ImGui
     public static void ShowUserGuide() => IGSharp_ShowUserGuide();
 
     /// <summary>Applies the dark color theme.</summary>
-    public static void StyleColorsDark() => IGSharp_StyleColorsDark();
+    public static void StyleColorsDark() => IGSharp_StyleColorsDark(null);
 
     /// <summary>Applies the light color theme.</summary>
-    public static void StyleColorsLight() => IGSharp_StyleColorsLight();
+    public static void StyleColorsLight() => IGSharp_StyleColorsLight(null);
 
     /// <summary>Applies the classic color theme.</summary>
-    public static void StyleColorsClassic() => IGSharp_StyleColorsClassic();
+    public static void StyleColorsClassic() => IGSharp_StyleColorsClassic(null);
 
     /// <summary>Scales all style sizes by the given factor.</summary>
-    public static void ScaleAllSizes(float scale) => IGSharp_Style_ScaleAllSizes(scale);
+    public static void ScaleAllSizes(float scale) => IGSharp_Style_ScaleAllSizes(IGSharp_GetStyle(), scale);
 
     /// <summary>Sets the DPI font scale.</summary>
-    public static void SetFontScaleDpi(float scale) => IGSharp_Style_SetFontScaleDpi(scale);
+    public static void SetFontScaleDpi(float scale) => IGSharp_GetStyle()->FontScaleDpi = scale;
 
     // --- Windows ---
 
@@ -654,7 +665,7 @@ public static unsafe class ImGui
     }
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-    private static int GrowingInputCallback(void* data)
+    private static int GrowingInputCallback(IGSharp_InputTextCallbackData* data)
     {
         if (IGSharp_InputTextCallbackData_GetEventFlag(data) == (int)InputTextFlags.CallbackResize)
         {
@@ -711,7 +722,7 @@ public static unsafe class ImGui
     }
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-    private static int InputTextCallbackThunk(void* data)
+    private static int InputTextCallbackThunk(IGSharp_InputTextCallbackData* data)
     {
         var userData = IGSharp_InputTextCallbackData_GetUserData(data);
         var handle = GCHandle.FromIntPtr((nint)userData);
@@ -834,14 +845,16 @@ public static unsafe class ImGui
     /// (SDL_GPU backend: the value must be a <c>SDL_GPUTexture*</c> cast to <see cref="ulong"/>).
     /// </summary>
     public static void Image(ulong textureId, float width, float height)
-        => IGSharp_Image(textureId, new IGSharp_Vec2(width, height), default, new IGSharp_Vec2(1, 1), new IGSharp_Vec4(1, 1, 1, 1), default);
+        => IGSharp_Image(textureId, new IGSharp_Vec2(width, height), default, new IGSharp_Vec2(1, 1));
 
     /// <summary>Draws an image with custom UV coordinates, tint, and border.</summary>
     public static void Image(ulong textureId, float width, float height, Vec2 uv0, Vec2 uv1, float tintR = 1, float tintG = 1, float tintB = 1, float tintA = 1, float borderR = 0, float borderG = 0, float borderB = 0, float borderA = 0)
-        => IGSharp_Image(textureId, new IGSharp_Vec2(width, height),
+        // ImGui removed the border_col parameter; the closest equivalent is ImageWithBg's
+        // background fill color, so the border color is now rendered as a background.
+        => IGSharp_ImageWithBg(textureId, new IGSharp_Vec2(width, height),
             new IGSharp_Vec2(uv0.X, uv0.Y), new IGSharp_Vec2(uv1.X, uv1.Y),
-            new IGSharp_Vec4(tintR, tintG, tintB, tintA),
-            new IGSharp_Vec4(borderR, borderG, borderB, borderA));
+            new IGSharp_Vec4(borderR, borderG, borderB, borderA),
+            new IGSharp_Vec4(tintR, tintG, tintB, tintA));
 
     /// <summary>
     /// Creates a clickable image button. <paramref name="textureId"/> is backend-specific
@@ -1392,7 +1405,7 @@ public static unsafe class ImGui
 
     /// <summary>Sets minimum and maximum size for the next window.</summary>
     public static void SetNextWindowSizeConstraints(float minWidth, float minHeight, float maxWidth, float maxHeight)
-        => IGSharp_SetNextWindowSizeConstraints(new IGSharp_Vec2(minWidth, minHeight), new IGSharp_Vec2(maxWidth, maxHeight));
+        => IGSharp_SetNextWindowSizeConstraints(new IGSharp_Vec2(minWidth, minHeight), new IGSharp_Vec2(maxWidth, maxHeight), null, null);
 
     /// <summary>Sets the content size used to compute scrollbar ranges for the next window.</summary>
     public static void SetNextWindowContentSize(float width, float height)
@@ -1470,18 +1483,18 @@ public static unsafe class ImGui
     // --- Fonts ---
 
     /// <summary>Gets the shared font atlas. Use this to load custom fonts before the first frame.</summary>
-    public static FontAtlas GetFontAtlas() => new(IGSharp_IO_GetFonts());
+    public static FontAtlas GetFontAtlas() => new(IGSharp_GetIO()->Fonts);
 
     /// <summary>Sets the default font used when no <see cref="PushFont"/> is active.</summary>
-    public static void SetDefaultFont(Font font) => IGSharp_IO_SetFontDefault(font.Handle);
+    public static void SetDefaultFont(Font font) => IGSharp_GetIO()->FontDefault = (IGSharp_Font*)font.Handle;
 
     /// <summary>Gets the current default font.</summary>
-    public static Font GetDefaultFont() => new(IGSharp_IO_GetFontDefault());
+    public static Font GetDefaultFont() => new(IGSharp_GetIO()->FontDefault);
 
     /// <summary>Pushes a font onto the font stack. Pair with <see cref="PopFont"/>.</summary>
     /// <param name="font">Font to activate.</param>
     /// <param name="sizeBaseUnscaled">Override base size in pixels (0 = use the font's declared size).</param>
-    public static void PushFont(Font font, float sizeBaseUnscaled = 0f) => IGSharp_PushFont(font.Handle, sizeBaseUnscaled);
+    public static void PushFont(Font font, float sizeBaseUnscaled = 0f) => IGSharp_PushFont((IGSharp_Font*)font.Handle, sizeBaseUnscaled);
 
     /// <summary>Pops the last pushed font.</summary>
     public static void PopFont() => IGSharp_PopFont();

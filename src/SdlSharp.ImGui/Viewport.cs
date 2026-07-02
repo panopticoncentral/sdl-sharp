@@ -8,9 +8,9 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct Viewport
 {
-    internal readonly void* Handle;
+    internal readonly IGSharp_Viewport* Handle;
 
-    internal Viewport(void* handle) => Handle = handle;
+    internal Viewport(IGSharp_Viewport* handle) => Handle = handle;
 
     /// <summary>True if this handle refers to a valid viewport.</summary>
     public bool IsValid => Handle != null;

@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImguiSharp.Redist" Version="0.2.0-preview.2" />
+    <PackageReference Include="ImguiSharp.Redist" Version="0.3.0-dev.1" />
   </ItemGroup>
 
 </Project>

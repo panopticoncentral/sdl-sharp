@@ -12,9 +12,9 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct DrawList
 {
-    internal readonly void* Handle;
+    internal readonly IGSharp_DrawList* Handle;
 
-    internal DrawList(void* handle) => Handle = handle;
+    internal DrawList(IGSharp_DrawList* handle) => Handle = handle;
 
     /// <summary>True if this handle refers to a valid draw list.</summary>
     public bool IsValid => Handle != null;

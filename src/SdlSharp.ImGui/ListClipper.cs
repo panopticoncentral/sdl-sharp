@@ -15,7 +15,7 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public sealed unsafe class ListClipper : IDisposable
 {
-    private void* _handle;
+    private IGSharp_ListClipper* _handle;
 
     /// <summary>Creates a new list clipper.</summary>
     public ListClipper()

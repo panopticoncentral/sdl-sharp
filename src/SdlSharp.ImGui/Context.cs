@@ -7,16 +7,20 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public sealed unsafe class Context : IDisposable
 {
-    private Context(ImGuiContext* handle) { Handle = handle; }
+    private Context(IGSharp_Context* handle) { Handle = handle; }
 
-    private ImGuiContext* Handle { get; set; }
+    private IGSharp_Context* Handle { get; set; }
 
     /// <summary>
     /// Creates a new ImGui context and sets it as the current context.
     /// </summary>
     public static Context Create()
     {
-        var ctx = IGSharp_CreateContext();
+        if (!IGSharp_ValidateLayouts(
+                (nuint)sizeof(IGSharp_IO), (nuint)sizeof(IGSharp_Style), (nuint)sizeof(IGSharp_KeyData),
+                (nuint)sizeof(IGSharp_PlatformImeData), (nuint)sizeof(IGSharp_DrawVert), (nuint)sizeof(IGSharp_FontAtlasRect)))
+            throw new InvalidOperationException("imgui_sharp struct layout mismatch between the managed mirrors and the native library.");
+        var ctx = IGSharp_CreateContext(null);
         if (ctx == null)
             throw new InvalidOperationException("Failed to create ImGui context.");
         IGSharp_CheckVersion();

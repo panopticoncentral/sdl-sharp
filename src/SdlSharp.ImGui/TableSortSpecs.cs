@@ -9,9 +9,9 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct TableSortSpecs
 {
-    internal readonly void* Handle;
+    internal readonly IGSharp_TableSortSpecs* Handle;
 
-    internal TableSortSpecs(void* handle) => Handle = handle;
+    internal TableSortSpecs(IGSharp_TableSortSpecs* handle) => Handle = handle;
 
     /// <summary>True if the table currently has sort specs (false outside a sortable table).</summary>
     public bool IsValid => Handle != null;

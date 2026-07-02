@@ -5,9 +5,9 @@ namespace SdlSharp.ImGui;
 /// <summary>Sort specification for a single table column, obtained from <see cref="TableSortSpecs.GetSpec"/>.</summary>
 public readonly unsafe struct TableColumnSortSpecs
 {
-    internal readonly void* Handle;
+    internal readonly IGSharp_TableColumnSortSpecs* Handle;
 
-    internal TableColumnSortSpecs(void* handle) => Handle = handle;
+    internal TableColumnSortSpecs(IGSharp_TableColumnSortSpecs* handle) => Handle = handle;
 
     /// <summary>True if this handle refers to a valid spec.</summary>
     public bool IsValid => Handle != null;
