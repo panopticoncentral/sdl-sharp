@@ -55,10 +55,26 @@ public sealed unsafe class GpuDevice : IDisposable
     /// </summary>
     /// <param name="createInfo">The shader creation parameters.</param>
     /// <returns>A new GPU shader.</returns>
-    public GpuShader CreateShader(in SDL_GPUShaderCreateInfo createInfo)
+    public GpuShader CreateShader(in GpuShaderCreateInfo createInfo)
     {
-        fixed (SDL_GPUShaderCreateInfo* p = &createInfo)
-            return new GpuShader(this, Check(SDL_CreateGPUShader(Handle, p)));
+        fixed (byte* code = createInfo.Code.Span)
+        fixed (byte* entryPoint = ToUtf8(createInfo.EntryPoint ?? "main"))
+        {
+            var native = new SDL_GPUShaderCreateInfo
+            {
+                code_size = (nuint)createInfo.Code.Length,
+                code = code,
+                entrypoint = entryPoint,
+                format = (SDL_GPUShaderFormat)createInfo.Format,
+                stage = (SDL_GPUShaderStage)createInfo.Stage,
+                num_samplers = createInfo.NumSamplers,
+                num_storage_textures = createInfo.NumStorageTextures,
+                num_storage_buffers = createInfo.NumStorageBuffers,
+                num_uniform_buffers = createInfo.NumUniformBuffers,
+                props = createInfo.Props?.Id ?? default,
+            };
+            return new GpuShader(this, Check(SDL_CreateGPUShader(Handle, &native)));
+        }
     }
 
     /// <summary>
@@ -66,10 +82,49 @@ public sealed unsafe class GpuDevice : IDisposable
     /// </summary>
     /// <param name="createInfo">The graphics pipeline creation parameters.</param>
     /// <returns>A new GPU graphics pipeline.</returns>
-    public GpuGraphicsPipeline CreateGraphicsPipeline(in SDL_GPUGraphicsPipelineCreateInfo createInfo)
+    public GpuGraphicsPipeline CreateGraphicsPipeline(in GpuGraphicsPipelineCreateInfo createInfo)
     {
-        fixed (SDL_GPUGraphicsPipelineCreateInfo* p = &createInfo)
-            return new GpuGraphicsPipeline(this, Check(SDL_CreateGPUGraphicsPipeline(Handle, p)));
+        var vertexBufferDescs = createInfo.VertexInputState.VertexBufferDescriptions ?? [];
+        var vertexAttributes = createInfo.VertexInputState.VertexAttributes ?? [];
+        var colorTargetDescs = createInfo.TargetInfo.ColorTargetDescriptions ?? [];
+
+        Span<SDL_GPUVertexBufferDescription> nativeVertexBuffers = stackalloc SDL_GPUVertexBufferDescription[vertexBufferDescs.Length];
+        for (var i = 0; i < vertexBufferDescs.Length; i++) nativeVertexBuffers[i] = vertexBufferDescs[i].ToNative();
+        Span<SDL_GPUVertexAttribute> nativeAttributes = stackalloc SDL_GPUVertexAttribute[vertexAttributes.Length];
+        for (var i = 0; i < vertexAttributes.Length; i++) nativeAttributes[i] = vertexAttributes[i].ToNative();
+        Span<SDL_GPUColorTargetDescription> nativeColorTargets = stackalloc SDL_GPUColorTargetDescription[colorTargetDescs.Length];
+        for (var i = 0; i < colorTargetDescs.Length; i++) nativeColorTargets[i] = colorTargetDescs[i].ToNative();
+
+        fixed (SDL_GPUVertexBufferDescription* pVertexBuffers = nativeVertexBuffers)
+        fixed (SDL_GPUVertexAttribute* pAttributes = nativeAttributes)
+        fixed (SDL_GPUColorTargetDescription* pColorTargets = nativeColorTargets)
+        {
+            var native = new SDL_GPUGraphicsPipelineCreateInfo
+            {
+                vertex_shader = createInfo.VertexShader.Handle,
+                fragment_shader = createInfo.FragmentShader.Handle,
+                vertex_input_state = new SDL_GPUVertexInputState
+                {
+                    vertex_buffer_descriptions = pVertexBuffers,
+                    num_vertex_buffers = (uint)vertexBufferDescs.Length,
+                    vertex_attributes = pAttributes,
+                    num_vertex_attributes = (uint)vertexAttributes.Length,
+                },
+                primitive_type = (SDL_GPUPrimitiveType)createInfo.PrimitiveType,
+                rasterizer_state = createInfo.RasterizerState.ToNative(),
+                multisample_state = createInfo.MultisampleState.ToNative(),
+                depth_stencil_state = createInfo.DepthStencilState.ToNative(),
+                target_info = new SDL_GPUGraphicsPipelineTargetInfo
+                {
+                    color_target_descriptions = pColorTargets,
+                    num_color_targets = (uint)colorTargetDescs.Length,
+                    depth_stencil_format = (SDL_GPUTextureFormat)(createInfo.TargetInfo.DepthStencilFormat ?? GpuTextureFormat.Invalid),
+                    has_depth_stencil_target = (byte)(createInfo.TargetInfo.DepthStencilFormat is not null ? 1 : 0),
+                },
+                props = createInfo.Props?.Id ?? default,
+            };
+            return new GpuGraphicsPipeline(this, Check(SDL_CreateGPUGraphicsPipeline(Handle, &native)));
+        }
     }
 
     /// <summary>
@@ -77,10 +132,30 @@ public sealed unsafe class GpuDevice : IDisposable
     /// </summary>
     /// <param name="createInfo">The compute pipeline creation parameters.</param>
     /// <returns>A new GPU compute pipeline.</returns>
-    public GpuComputePipeline CreateComputePipeline(in SDL_GPUComputePipelineCreateInfo createInfo)
+    public GpuComputePipeline CreateComputePipeline(in GpuComputePipelineCreateInfo createInfo)
     {
-        fixed (SDL_GPUComputePipelineCreateInfo* p = &createInfo)
-            return new GpuComputePipeline(this, Check(SDL_CreateGPUComputePipeline(Handle, p)));
+        fixed (byte* code = createInfo.Code.Span)
+        fixed (byte* entryPoint = ToUtf8(createInfo.EntryPoint ?? "main"))
+        {
+            var native = new SDL_GPUComputePipelineCreateInfo
+            {
+                code_size = (nuint)createInfo.Code.Length,
+                code = code,
+                entrypoint = entryPoint,
+                format = (SDL_GPUShaderFormat)createInfo.Format,
+                num_samplers = createInfo.NumSamplers,
+                num_readonly_storage_textures = createInfo.NumReadonlyStorageTextures,
+                num_readonly_storage_buffers = createInfo.NumReadonlyStorageBuffers,
+                num_readwrite_storage_textures = createInfo.NumReadwriteStorageTextures,
+                num_readwrite_storage_buffers = createInfo.NumReadwriteStorageBuffers,
+                num_uniform_buffers = createInfo.NumUniformBuffers,
+                threadcount_x = createInfo.ThreadcountX,
+                threadcount_y = createInfo.ThreadcountY,
+                threadcount_z = createInfo.ThreadcountZ,
+                props = createInfo.Props?.Id ?? default,
+            };
+            return new GpuComputePipeline(this, Check(SDL_CreateGPUComputePipeline(Handle, &native)));
+        }
     }
 
     /// <summary>
@@ -88,10 +163,10 @@ public sealed unsafe class GpuDevice : IDisposable
     /// </summary>
     /// <param name="createInfo">The sampler creation parameters.</param>
     /// <returns>A new GPU sampler.</returns>
-    public GpuSampler CreateSampler(in SDL_GPUSamplerCreateInfo createInfo)
+    public GpuSampler CreateSampler(in GpuSamplerCreateInfo createInfo)
     {
-        fixed (SDL_GPUSamplerCreateInfo* p = &createInfo)
-            return new GpuSampler(this, Check(SDL_CreateGPUSampler(Handle, p)));
+        var native = createInfo.ToNative();
+        return new GpuSampler(this, Check(SDL_CreateGPUSampler(Handle, &native)));
     }
 
     /// <summary>
@@ -99,10 +174,10 @@ public sealed unsafe class GpuDevice : IDisposable
     /// </summary>
     /// <param name="createInfo">The texture creation parameters.</param>
     /// <returns>A new GPU texture.</returns>
-    public GpuTexture CreateTexture(in SDL_GPUTextureCreateInfo createInfo)
+    public GpuTexture CreateTexture(in GpuTextureCreateInfo createInfo)
     {
-        fixed (SDL_GPUTextureCreateInfo* p = &createInfo)
-            return new GpuTexture(this, Check(SDL_CreateGPUTexture(Handle, p)));
+        var native = createInfo.ToNative();
+        return new GpuTexture(this, Check(SDL_CreateGPUTexture(Handle, &native)));
     }
 
     /// <summary>
@@ -110,10 +185,10 @@ public sealed unsafe class GpuDevice : IDisposable
     /// </summary>
     /// <param name="createInfo">The buffer creation parameters.</param>
     /// <returns>A new GPU buffer.</returns>
-    public GpuBuffer CreateBuffer(in SDL_GPUBufferCreateInfo createInfo)
+    public GpuBuffer CreateBuffer(in GpuBufferCreateInfo createInfo)
     {
-        fixed (SDL_GPUBufferCreateInfo* p = &createInfo)
-            return new GpuBuffer(this, Check(SDL_CreateGPUBuffer(Handle, p)));
+        var native = createInfo.ToNative();
+        return new GpuBuffer(this, Check(SDL_CreateGPUBuffer(Handle, &native)));
     }
 
     /// <summary>
@@ -121,10 +196,10 @@ public sealed unsafe class GpuDevice : IDisposable
     /// </summary>
     /// <param name="createInfo">The transfer buffer creation parameters.</param>
     /// <returns>A new GPU transfer buffer.</returns>
-    public GpuTransferBuffer CreateTransferBuffer(in SDL_GPUTransferBufferCreateInfo createInfo)
+    public GpuTransferBuffer CreateTransferBuffer(in GpuTransferBufferCreateInfo createInfo)
     {
-        fixed (SDL_GPUTransferBufferCreateInfo* p = &createInfo)
-            return new GpuTransferBuffer(this, Check(SDL_CreateGPUTransferBuffer(Handle, p)));
+        var native = createInfo.ToNative();
+        return new GpuTransferBuffer(this, Check(SDL_CreateGPUTransferBuffer(Handle, &native)));
     }
 
     /// <summary>
