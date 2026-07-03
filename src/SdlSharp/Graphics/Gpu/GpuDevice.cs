@@ -29,6 +29,23 @@ public sealed unsafe class GpuDevice : IDisposable
         new(Check(SDL_CreateGPUDevice((SDL_GPUShaderFormat)shaderFormats, debugMode, ToUtf8(preferredBackend))));
 
     /// <summary>
+    /// Creates a new GPU device from a property group. Property names are in <see cref="GpuDeviceProperties"/>.
+    /// </summary>
+    /// <param name="props">The creation properties.</param>
+    /// <returns>A new GPU device.</returns>
+    public static GpuDevice Create(PropertyGroup props) =>
+        new(Check(SDL_CreateGPUDeviceWithProperties(props.Id)));
+
+    /// <summary>
+    /// Checks whether a GPU device with the given shader format support can be created.
+    /// </summary>
+    /// <param name="shaderFormats">The required shader formats.</param>
+    /// <param name="preferredBackend">An optional GPU backend name, or null for any.</param>
+    /// <returns>True if a device supporting the formats can be created.</returns>
+    public static bool SupportsShaderFormats(GpuShaderFormat shaderFormats, string? preferredBackend = null) =>
+        SDL_GPUSupportsShaderFormats((SDL_GPUShaderFormat)shaderFormats, ToUtf8(preferredBackend));
+
+    /// <summary>
     /// Gets the number of GPU drivers compiled into SDL.
     /// </summary>
     public static int NumDrivers => SDL_GetNumGPUDrivers();
@@ -49,6 +66,11 @@ public sealed unsafe class GpuDevice : IDisposable
     /// Gets the shader formats supported by this GPU device.
     /// </summary>
     public GpuShaderFormat ShaderFormats => (GpuShaderFormat)SDL_GetGPUShaderFormats(Handle);
+
+    /// <summary>
+    /// Gets the properties of this device (name, driver info). The returned group is owned by SDL.
+    /// </summary>
+    public PropertyGroup Properties => new(SDL_GetGPUDeviceProperties(Handle), ownsHandle: false);
 
     /// <summary>
     /// Creates a GPU shader from the specified creation info.
@@ -242,6 +264,24 @@ public sealed unsafe class GpuDevice : IDisposable
     /// <returns>The swapchain texture format.</returns>
     public GpuTextureFormat GetSwapchainTextureFormat(Window window) =>
         (GpuTextureFormat)SDL_GetGPUSwapchainTextureFormat(Handle, window.Handle);
+
+    /// <summary>
+    /// Checks whether a window's swapchain supports the given present mode.
+    /// </summary>
+    /// <param name="window">The claimed window.</param>
+    /// <param name="presentMode">The present mode to check.</param>
+    /// <returns>True if supported.</returns>
+    public bool WindowSupportsPresentMode(Window window, GpuPresentMode presentMode) =>
+        SDL_WindowSupportsGPUPresentMode(Handle, window.Handle, (SDL_GPUPresentMode)presentMode);
+
+    /// <summary>
+    /// Checks whether a window's swapchain supports the given composition.
+    /// </summary>
+    /// <param name="window">The claimed window.</param>
+    /// <param name="composition">The swapchain composition to check.</param>
+    /// <returns>True if supported.</returns>
+    public bool WindowSupportsSwapchainComposition(Window window, GpuSwapchainComposition composition) =>
+        SDL_WindowSupportsGPUSwapchainComposition(Handle, window.Handle, (SDL_GPUSwapchainComposition)composition);
 
     /// <summary>
     /// Blocks until the GPU is idle.
