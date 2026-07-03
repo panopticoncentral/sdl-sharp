@@ -32,7 +32,12 @@ public readonly record struct SdlGuid
     /// Parses a GUID from its canonical 32-character hex string form.
     /// </summary>
     /// <param name="text">The GUID string.</param>
-    /// <returns>The parsed GUID (the zero GUID if the string is not parseable).</returns>
+    /// <returns>
+    /// The decoded GUID. Malformed input is not rejected: SDL decodes any character that is not a
+    /// hex digit as the nibble 0, so invalid input silently yields a partial — possibly non-zero —
+    /// meaningless GUID. <see cref="IsZero"/> is therefore not a reliable validity check; only an
+    /// empty or entirely non-hex string reliably produces the zero GUID.
+    /// </returns>
     public static SdlGuid Parse(string text) => new(SDL_StringToGUID(ToUtf8(text)));
 
     /// <summary>

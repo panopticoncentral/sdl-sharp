@@ -19,6 +19,9 @@ public struct SDL_GUID
 /// <summary>
 /// Native bindings for SDL_guid.h.
 /// </summary>
+// Note: this class name shadows System.Guid in files with `using SdlSharp.Native;` — such files
+// must fully-qualify System.Guid if they ever need it (compile-time failure, noted to save the
+// next reader the surprise).
 [SuppressMessage("Interoperability", "CA1401:P/Invokes should not be visible")]
 public static partial class Guid
 {
