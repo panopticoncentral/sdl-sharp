@@ -27,28 +27,28 @@ public sealed unsafe class GpuRenderPass
     /// Sets the viewport for the render pass.
     /// </summary>
     /// <param name="viewport">The viewport parameters.</param>
-    public void SetViewport(in SDL_GPUViewport viewport)
+    public void SetViewport(in GpuViewport viewport)
     {
-        fixed (SDL_GPUViewport* p = &viewport)
-            SDL_SetGPUViewport(Handle, p);
+        var native = viewport.ToNative();
+        SDL_SetGPUViewport(Handle, &native);
     }
 
     /// <summary>
     /// Sets the scissor rectangle for the render pass.
     /// </summary>
     /// <param name="scissor">The scissor rectangle.</param>
-    public void SetScissor(in SDL_Rect scissor)
+    public void SetScissor(Rectangle scissor)
     {
-        fixed (SDL_Rect* p = &scissor)
-            SDL_SetGPUScissor(Handle, p);
+        var native = scissor.ToNative();
+        SDL_SetGPUScissor(Handle, &native);
     }
 
     /// <summary>
     /// Sets the blend constant color values.
     /// </summary>
     /// <param name="constants">The blend constants as an RGBA float color.</param>
-    public void SetBlendConstants(SDL_FColor constants) =>
-        SDL_SetGPUBlendConstants(Handle, constants);
+    public void SetBlendConstants(FColor constants) =>
+        SDL_SetGPUBlendConstants(Handle, constants.ToNative());
 
     /// <summary>
     /// Sets the stencil reference value.
@@ -61,75 +61,99 @@ public sealed unsafe class GpuRenderPass
     /// Binds vertex buffers to the render pass.
     /// </summary>
     /// <param name="firstSlot">The first vertex buffer slot to bind to.</param>
-    /// <param name="bindings">Pointer to the buffer binding array.</param>
-    /// <param name="numBindings">Number of buffer bindings.</param>
-    public void BindVertexBuffers(uint firstSlot, SDL_GPUBufferBinding* bindings, uint numBindings) =>
-        SDL_BindGPUVertexBuffers(Handle, firstSlot, bindings, numBindings);
+    /// <param name="bindings">The buffer bindings to bind.</param>
+    public void BindVertexBuffers(uint firstSlot, ReadOnlySpan<GpuBufferBinding> bindings)
+    {
+        Span<SDL_GPUBufferBinding> native = stackalloc SDL_GPUBufferBinding[bindings.Length];
+        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative();
+        fixed (SDL_GPUBufferBinding* p = native)
+            SDL_BindGPUVertexBuffers(Handle, firstSlot, p, (uint)bindings.Length);
+    }
 
     /// <summary>
     /// Binds an index buffer to the render pass.
     /// </summary>
     /// <param name="binding">The index buffer binding.</param>
     /// <param name="elementSize">The size of each index element.</param>
-    public void BindIndexBuffer(in SDL_GPUBufferBinding binding, SDL_GPUIndexElementSize elementSize)
+    public void BindIndexBuffer(in GpuBufferBinding binding, GpuIndexElementSize elementSize)
     {
-        fixed (SDL_GPUBufferBinding* p = &binding)
-            SDL_BindGPUIndexBuffer(Handle, p, elementSize);
+        var native = binding.ToNative();
+        SDL_BindGPUIndexBuffer(Handle, &native, (SDL_GPUIndexElementSize)elementSize);
     }
 
     /// <summary>
     /// Binds texture-sampler pairs to vertex shader sampler slots.
     /// </summary>
     /// <param name="firstSlot">The first sampler slot to bind to.</param>
-    /// <param name="bindings">Pointer to the texture-sampler binding array.</param>
-    /// <param name="numBindings">Number of bindings.</param>
-    public void BindVertexSamplers(uint firstSlot, SDL_GPUTextureSamplerBinding* bindings, uint numBindings) =>
-        SDL_BindGPUVertexSamplers(Handle, firstSlot, bindings, numBindings);
+    /// <param name="bindings">The texture-sampler bindings to bind.</param>
+    public void BindVertexSamplers(uint firstSlot, ReadOnlySpan<GpuTextureSamplerBinding> bindings)
+    {
+        Span<SDL_GPUTextureSamplerBinding> native = stackalloc SDL_GPUTextureSamplerBinding[bindings.Length];
+        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative();
+        fixed (SDL_GPUTextureSamplerBinding* p = native)
+            SDL_BindGPUVertexSamplers(Handle, firstSlot, p, (uint)bindings.Length);
+    }
 
     /// <summary>
     /// Binds texture-sampler pairs to fragment shader sampler slots.
     /// </summary>
     /// <param name="firstSlot">The first sampler slot to bind to.</param>
-    /// <param name="bindings">Pointer to the texture-sampler binding array.</param>
-    /// <param name="numBindings">Number of bindings.</param>
-    public void BindFragmentSamplers(uint firstSlot, SDL_GPUTextureSamplerBinding* bindings, uint numBindings) =>
-        SDL_BindGPUFragmentSamplers(Handle, firstSlot, bindings, numBindings);
+    /// <param name="bindings">The texture-sampler bindings to bind.</param>
+    public void BindFragmentSamplers(uint firstSlot, ReadOnlySpan<GpuTextureSamplerBinding> bindings)
+    {
+        Span<SDL_GPUTextureSamplerBinding> native = stackalloc SDL_GPUTextureSamplerBinding[bindings.Length];
+        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative();
+        fixed (SDL_GPUTextureSamplerBinding* p = native)
+            SDL_BindGPUFragmentSamplers(Handle, firstSlot, p, (uint)bindings.Length);
+    }
 
     /// <summary>
     /// Binds storage textures to vertex shader storage texture slots.
     /// </summary>
     /// <param name="firstSlot">The first storage texture slot to bind to.</param>
-    /// <param name="textures">Pointer to the texture pointer array.</param>
-    /// <param name="count">Number of textures to bind.</param>
-    public void BindVertexStorageTextures(uint firstSlot, SDL_GPUTexture** textures, uint count) =>
-        SDL_BindGPUVertexStorageTextures(Handle, firstSlot, textures, count);
+    /// <param name="textures">The storage textures to bind.</param>
+    public void BindVertexStorageTextures(uint firstSlot, ReadOnlySpan<GpuTexture> textures)
+    {
+        var pointers = stackalloc SDL_GPUTexture*[textures.Length];
+        for (var i = 0; i < textures.Length; i++) pointers[i] = textures[i].Handle;
+        SDL_BindGPUVertexStorageTextures(Handle, firstSlot, pointers, (uint)textures.Length);
+    }
 
     /// <summary>
     /// Binds storage textures to fragment shader storage texture slots.
     /// </summary>
     /// <param name="firstSlot">The first storage texture slot to bind to.</param>
-    /// <param name="textures">Pointer to the texture pointer array.</param>
-    /// <param name="count">Number of textures to bind.</param>
-    public void BindFragmentStorageTextures(uint firstSlot, SDL_GPUTexture** textures, uint count) =>
-        SDL_BindGPUFragmentStorageTextures(Handle, firstSlot, textures, count);
+    /// <param name="textures">The storage textures to bind.</param>
+    public void BindFragmentStorageTextures(uint firstSlot, ReadOnlySpan<GpuTexture> textures)
+    {
+        var pointers = stackalloc SDL_GPUTexture*[textures.Length];
+        for (var i = 0; i < textures.Length; i++) pointers[i] = textures[i].Handle;
+        SDL_BindGPUFragmentStorageTextures(Handle, firstSlot, pointers, (uint)textures.Length);
+    }
 
     /// <summary>
     /// Binds storage buffers to vertex shader storage buffer slots.
     /// </summary>
     /// <param name="firstSlot">The first storage buffer slot to bind to.</param>
-    /// <param name="buffers">Pointer to the buffer pointer array.</param>
-    /// <param name="count">Number of buffers to bind.</param>
-    public void BindVertexStorageBuffers(uint firstSlot, SDL_GPUBuffer** buffers, uint count) =>
-        SDL_BindGPUVertexStorageBuffers(Handle, firstSlot, buffers, count);
+    /// <param name="buffers">The storage buffers to bind.</param>
+    public void BindVertexStorageBuffers(uint firstSlot, ReadOnlySpan<GpuBuffer> buffers)
+    {
+        var pointers = stackalloc SDL_GPUBuffer*[buffers.Length];
+        for (var i = 0; i < buffers.Length; i++) pointers[i] = buffers[i].Handle;
+        SDL_BindGPUVertexStorageBuffers(Handle, firstSlot, pointers, (uint)buffers.Length);
+    }
 
     /// <summary>
     /// Binds storage buffers to fragment shader storage buffer slots.
     /// </summary>
     /// <param name="firstSlot">The first storage buffer slot to bind to.</param>
-    /// <param name="buffers">Pointer to the buffer pointer array.</param>
-    /// <param name="count">Number of buffers to bind.</param>
-    public void BindFragmentStorageBuffers(uint firstSlot, SDL_GPUBuffer** buffers, uint count) =>
-        SDL_BindGPUFragmentStorageBuffers(Handle, firstSlot, buffers, count);
+    /// <param name="buffers">The storage buffers to bind.</param>
+    public void BindFragmentStorageBuffers(uint firstSlot, ReadOnlySpan<GpuBuffer> buffers)
+    {
+        var pointers = stackalloc SDL_GPUBuffer*[buffers.Length];
+        for (var i = 0; i < buffers.Length; i++) pointers[i] = buffers[i].Handle;
+        SDL_BindGPUFragmentStorageBuffers(Handle, firstSlot, pointers, (uint)buffers.Length);
+    }
 
     /// <summary>
     /// Draws non-indexed primitives.
