@@ -27,28 +27,38 @@ public sealed unsafe class GpuComputePass
     /// Binds texture-sampler pairs to compute shader sampler slots.
     /// </summary>
     /// <param name="firstSlot">The first sampler slot to bind to.</param>
-    /// <param name="bindings">Pointer to the texture-sampler binding array.</param>
-    /// <param name="numBindings">Number of bindings.</param>
-    public void BindSamplers(uint firstSlot, SDL_GPUTextureSamplerBinding* bindings, uint numBindings) =>
-        SDL_BindGPUComputeSamplers(Handle, firstSlot, bindings, numBindings);
+    /// <param name="bindings">The texture-sampler bindings to bind.</param>
+    public void BindSamplers(uint firstSlot, ReadOnlySpan<GpuTextureSamplerBinding> bindings)
+    {
+        Span<SDL_GPUTextureSamplerBinding> native = stackalloc SDL_GPUTextureSamplerBinding[bindings.Length];
+        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative();
+        fixed (SDL_GPUTextureSamplerBinding* p = native)
+            SDL_BindGPUComputeSamplers(Handle, firstSlot, p, (uint)bindings.Length);
+    }
 
     /// <summary>
     /// Binds storage textures to compute shader storage texture slots.
     /// </summary>
     /// <param name="firstSlot">The first storage texture slot to bind to.</param>
-    /// <param name="textures">Pointer to the texture pointer array.</param>
-    /// <param name="count">Number of textures to bind.</param>
-    public void BindStorageTextures(uint firstSlot, SDL_GPUTexture** textures, uint count) =>
-        SDL_BindGPUComputeStorageTextures(Handle, firstSlot, textures, count);
+    /// <param name="textures">The storage textures to bind.</param>
+    public void BindStorageTextures(uint firstSlot, ReadOnlySpan<GpuTexture> textures)
+    {
+        var pointers = stackalloc SDL_GPUTexture*[textures.Length];
+        for (var i = 0; i < textures.Length; i++) pointers[i] = textures[i].Handle;
+        SDL_BindGPUComputeStorageTextures(Handle, firstSlot, pointers, (uint)textures.Length);
+    }
 
     /// <summary>
     /// Binds storage buffers to compute shader storage buffer slots.
     /// </summary>
     /// <param name="firstSlot">The first storage buffer slot to bind to.</param>
-    /// <param name="buffers">Pointer to the buffer pointer array.</param>
-    /// <param name="count">Number of buffers to bind.</param>
-    public void BindStorageBuffers(uint firstSlot, SDL_GPUBuffer** buffers, uint count) =>
-        SDL_BindGPUComputeStorageBuffers(Handle, firstSlot, buffers, count);
+    /// <param name="buffers">The storage buffers to bind.</param>
+    public void BindStorageBuffers(uint firstSlot, ReadOnlySpan<GpuBuffer> buffers)
+    {
+        var pointers = stackalloc SDL_GPUBuffer*[buffers.Length];
+        for (var i = 0; i < buffers.Length; i++) pointers[i] = buffers[i].Handle;
+        SDL_BindGPUComputeStorageBuffers(Handle, firstSlot, pointers, (uint)buffers.Length);
+    }
 
     /// <summary>
     /// Dispatches compute work groups.
