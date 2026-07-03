@@ -128,11 +128,20 @@ public sealed unsafe class Joystick : IDisposable
     /// <summary>Gets the USB vendor ID, or 0 if unavailable.</summary>
     public ushort Vendor => SDL_GetJoystickVendor(Handle);
 
+    /// <summary>Gets the USB vendor ID for a joystick instance ID, or 0 if unavailable.</summary>
+    public static ushort GetVendorForId(uint id) => SDL_GetJoystickVendorForID(new Native.SDL_JoystickID(id));
+
     /// <summary>Gets the USB product ID, or 0 if unavailable.</summary>
     public ushort Product => SDL_GetJoystickProduct(Handle);
 
+    /// <summary>Gets the USB product ID for a joystick instance ID, or 0 if unavailable.</summary>
+    public static ushort GetProductForId(uint id) => SDL_GetJoystickProductForID(new Native.SDL_JoystickID(id));
+
     /// <summary>Gets the product version, or 0 if unavailable.</summary>
     public ushort ProductVersion => SDL_GetJoystickProductVersion(Handle);
+
+    /// <summary>Gets the product version for a joystick instance ID, or 0 if unavailable.</summary>
+    public static ushort GetProductVersionForId(uint id) => SDL_GetJoystickProductVersionForID(new Native.SDL_JoystickID(id));
 
     /// <summary>Gets the firmware version, or 0 if unavailable.</summary>
     public ushort FirmwareVersion => SDL_GetJoystickFirmwareVersion(Handle);
@@ -142,6 +151,10 @@ public sealed unsafe class Joystick : IDisposable
 
     /// <summary>Gets the implementation-dependent path, or null if unavailable.</summary>
     public string? Path => Marshal.PtrToStringUTF8((nint)SDL_GetJoystickPath(Handle));
+
+    /// <summary>Gets the implementation-dependent path for a joystick instance ID, or null if unavailable.</summary>
+    public static string? GetPathForId(uint id) =>
+        Marshal.PtrToStringUTF8((nint)SDL_GetJoystickPathForID(new Native.SDL_JoystickID(id)));
 
     /// <summary>Gets the properties of this joystick (capability flags — names in <see cref="JoystickProperties"/>). Owned by SDL.</summary>
     public PropertyGroup Properties => new(SDL_GetJoystickProperties(Handle), ownsHandle: false);
