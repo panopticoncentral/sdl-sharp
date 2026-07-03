@@ -86,3 +86,18 @@ public readonly record struct WindowEventArgs(
 /// Event data for quit events.
 /// </summary>
 public readonly record struct QuitEventArgs;
+
+/// <summary>
+/// Event data for user-defined events (types at or above <see cref="EventType.User"/>).
+/// </summary>
+/// <param name="Type">The registered event type.</param>
+/// <param name="WindowId">The associated window ID, or 0 if none.</param>
+/// <param name="Code">The user-defined event code.</param>
+/// <param name="Data1">The first user-defined data pointer; the caller owns any pointed-to memory.</param>
+/// <param name="Data2">The second user-defined data pointer; the caller owns any pointed-to memory.</param>
+public readonly record struct UserEventArgs(
+    EventType Type,
+    uint WindowId,
+    int Code,
+    nint Data1,
+    nint Data2);

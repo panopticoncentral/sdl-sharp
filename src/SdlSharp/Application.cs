@@ -153,6 +153,52 @@ public sealed unsafe class Application : IDisposable
     /// <summary>Raised for window events (shown, hidden, moved, resized, etc.).</summary>
     public static event Action<WindowEventArgs>? Window;
 
+    /// <summary>Raised for user-defined events (see <see cref="RegisterEvents"/>).</summary>
+    public static event Action<UserEventArgs>? UserEvent;
+
+    /// <summary>
+    /// Allocates a contiguous block of user event types for use with <see cref="PushUserEvent"/>.
+    /// </summary>
+    /// <param name="count">The number of event types to allocate.</param>
+    /// <returns>The first allocated event type; subsequent types are consecutive.</returns>
+    /// <exception cref="SdlException">No more user event types are available.</exception>
+    public static EventType RegisterEvents(int count)
+    {
+        var first = SDL_RegisterEvents(count);
+        if (first == 0)
+        {
+            throw new SdlException();
+        }
+
+        return (EventType)first;
+    }
+
+    /// <summary>
+    /// Pushes a user-defined event onto the queue. Register the type with
+    /// <see cref="RegisterEvents"/> first. Any memory referenced by <paramref name="data1"/>
+    /// or <paramref name="data2"/> is owned by the caller and must outlive the event's dispatch.
+    /// </summary>
+    /// <param name="type">A type obtained from <see cref="RegisterEvents"/>.</param>
+    /// <param name="code">A user-defined code.</param>
+    /// <param name="data1">A user-defined pointer, or 0.</param>
+    /// <param name="data2">A user-defined pointer, or 0.</param>
+    /// <returns>True if the event was queued; false if a filter dropped it.</returns>
+    public static bool PushUserEvent(EventType type, int code, nint data1 = 0, nint data2 = 0)
+    {
+        var e = new Native.SDL_Event
+        {
+            user = new Native.SDL_UserEvent
+            {
+                type = (uint)type,
+                code = code,
+                data1 = (void*)data1,
+                data2 = (void*)data2,
+            }
+        };
+
+        return SDL_PushEvent(&e);
+    }
+
     /// <summary>
     /// Polls all pending events and dispatches them to the appropriate event handlers.
     /// Must be called on the main thread. Returns true if a quit event was received.
@@ -257,6 +303,15 @@ public sealed unsafe class Application : IDisposable
                 Window?.Invoke(new WindowEventArgs(
                     e.window.windowID.Value,
                     e.window.data1, e.window.data2));
+                break;
+
+            case >= Native.SDL_EventType.SDL_EVENT_USER:
+                UserEvent?.Invoke(new UserEventArgs(
+                    (EventType)e.type,
+                    e.user.windowID.Value,
+                    e.user.code,
+                    (nint)e.user.data1,
+                    (nint)e.user.data2));
                 break;
 
             default:
