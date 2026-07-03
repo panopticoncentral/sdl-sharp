@@ -146,7 +146,10 @@ public sealed unsafe class Joystick : IDisposable
     /// <summary>Gets the properties of this joystick (capability flags — names in <see cref="JoystickProperties"/>). Owned by SDL.</summary>
     public PropertyGroup Properties => new(SDL_GetJoystickProperties(Handle), ownsHandle: false);
 
-    /// <summary>Gets or sets the player index, or -1 when unset. Setting -1 clears it.</summary>
+    /// <summary>
+    /// Gets or sets the player index. The getter returns -1 when no player index is
+    /// available for this joystick; setting -1 clears the index.
+    /// </summary>
     public int PlayerIndex
     {
         get => SDL_GetJoystickPlayerIndex(Handle);
@@ -156,9 +159,13 @@ public sealed unsafe class Joystick : IDisposable
     /// <summary>Gets the player index for an instance ID, or -1.</summary>
     public static int GetPlayerIndexForId(uint id) => SDL_GetJoystickPlayerIndexForID(new Native.SDL_JoystickID(id));
 
-    /// <summary>Gets the battery state.</summary>
+    /// <summary>
+    /// Gets the battery state. This method does not throw on failure — unlike the
+    /// <c>Check</c>-wrapped methods in this class, failure is reported by returning
+    /// <see cref="PowerState.Error"/>, which callers must handle.
+    /// </summary>
     /// <param name="percent">Receives the charge percentage, or -1 if unknown.</param>
-    /// <returns>The power state.</returns>
+    /// <returns>The power state (<see cref="PowerState.Error"/> on failure).</returns>
     public PowerState GetPowerInfo(out int percent)
     {
         int p;
@@ -167,21 +174,33 @@ public sealed unsafe class Joystick : IDisposable
         return (PowerState)state;
     }
 
-    /// <summary>Rumbles the joystick. Zero intensities stop rumbling.</summary>
+    /// <summary>
+    /// Rumbles the joystick. Zero intensities stop rumbling. Throws <see cref="SdlException"/>
+    /// on devices without rumble support. The rumble command is processed when events are
+    /// pumped (<see cref="Update"/> or the event loop).
+    /// </summary>
     /// <param name="lowFrequency">Low-frequency (left) motor intensity.</param>
     /// <param name="highFrequency">High-frequency (right) motor intensity.</param>
     /// <param name="duration">How long to rumble.</param>
     public void Rumble(ushort lowFrequency, ushort highFrequency, TimeSpan duration) =>
         Check(SDL_RumbleJoystick(Handle, lowFrequency, highFrequency, ToMilliseconds(duration)));
 
-    /// <summary>Rumbles the triggers. Not all devices support trigger rumble.</summary>
+    /// <summary>
+    /// Rumbles the triggers. Throws <see cref="SdlException"/> on devices without trigger
+    /// rumble support. The rumble command is processed when events are pumped
+    /// (<see cref="Update"/> or the event loop).
+    /// </summary>
     /// <param name="left">Left trigger motor intensity.</param>
     /// <param name="right">Right trigger motor intensity.</param>
     /// <param name="duration">How long to rumble.</param>
     public void RumbleTriggers(ushort left, ushort right, TimeSpan duration) =>
         Check(SDL_RumbleJoystickTriggers(Handle, left, right, ToMilliseconds(duration)));
 
-    /// <summary>Sets the LED color. Alpha is ignored.</summary>
+    /// <summary>
+    /// Sets the LED color. Alpha is ignored. Throws <see cref="SdlException"/> on devices
+    /// without an LED — query <see cref="JoystickProperties.CapRgbLed"/> via
+    /// <see cref="Properties"/> to check support first.
+    /// </summary>
     public void SetLed(Color color) => Check(SDL_SetJoystickLED(Handle, color.R, color.G, color.B));
 
     /// <summary>Sends a device-specific effect packet.</summary>
