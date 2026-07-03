@@ -44,6 +44,51 @@ public sealed unsafe class Texture : IDisposable
     /// <summary>Property: the HDR headroom for the texture (float).</summary>
     public const string PropCreateHdrHeadroom = Render.SDL_PROP_TEXTURE_CREATE_HDR_HEADROOM_FLOAT;
 
+    // --- Create property names: platform-specific native handles ---
+
+    /// <summary>Property: the ID3D11Texture2D associated with the texture, if it was created via SDL_PROP_TEXTURE_CREATE_D3D11_TEXTURE_POINTER (pointer).</summary>
+    public const string PropCreateD3D11Texture = Render.SDL_PROP_TEXTURE_CREATE_D3D11_TEXTURE_POINTER;
+    /// <summary>Property: the ID3D11Texture2D associated with the U plane of a YUV texture (pointer).</summary>
+    public const string PropCreateD3D11TextureU = Render.SDL_PROP_TEXTURE_CREATE_D3D11_TEXTURE_U_POINTER;
+    /// <summary>Property: the ID3D11Texture2D associated with the V plane of a YUV texture (pointer).</summary>
+    public const string PropCreateD3D11TextureV = Render.SDL_PROP_TEXTURE_CREATE_D3D11_TEXTURE_V_POINTER;
+    /// <summary>Property: the ID3D12Resource associated with the texture (pointer).</summary>
+    public const string PropCreateD3D12Texture = Render.SDL_PROP_TEXTURE_CREATE_D3D12_TEXTURE_POINTER;
+    /// <summary>Property: the ID3D12Resource associated with the U plane of a YUV texture (pointer).</summary>
+    public const string PropCreateD3D12TextureU = Render.SDL_PROP_TEXTURE_CREATE_D3D12_TEXTURE_U_POINTER;
+    /// <summary>Property: the ID3D12Resource associated with the V plane of a YUV texture (pointer).</summary>
+    public const string PropCreateD3D12TextureV = Render.SDL_PROP_TEXTURE_CREATE_D3D12_TEXTURE_V_POINTER;
+    /// <summary>Property: the CVPixelBufferRef associated with the texture, if you want to create a texture from an existing pixel buffer (pointer).</summary>
+    public const string PropCreateMetalPixelBuffer = Render.SDL_PROP_TEXTURE_CREATE_METAL_PIXELBUFFER_POINTER;
+    /// <summary>Property: the OpenGL texture name (number).</summary>
+    public const string PropCreateOpenGlTexture = Render.SDL_PROP_TEXTURE_CREATE_OPENGL_TEXTURE_NUMBER;
+    /// <summary>Property: the OpenGL texture name for the UV plane of a NV12 texture (number).</summary>
+    public const string PropCreateOpenGlTextureUv = Render.SDL_PROP_TEXTURE_CREATE_OPENGL_TEXTURE_UV_NUMBER;
+    /// <summary>Property: the OpenGL texture name for the U plane of a YUV texture (number).</summary>
+    public const string PropCreateOpenGlTextureU = Render.SDL_PROP_TEXTURE_CREATE_OPENGL_TEXTURE_U_NUMBER;
+    /// <summary>Property: the OpenGL texture name for the V plane of a YUV texture (number).</summary>
+    public const string PropCreateOpenGlTextureV = Render.SDL_PROP_TEXTURE_CREATE_OPENGL_TEXTURE_V_NUMBER;
+    /// <summary>Property: the OpenGLES2 texture name (number).</summary>
+    public const string PropCreateOpenGles2Texture = Render.SDL_PROP_TEXTURE_CREATE_OPENGLES2_TEXTURE_NUMBER;
+    /// <summary>Property: the OpenGLES2 texture name for the UV plane of a NV12 texture (number).</summary>
+    public const string PropCreateOpenGles2TextureUv = Render.SDL_PROP_TEXTURE_CREATE_OPENGLES2_TEXTURE_UV_NUMBER;
+    /// <summary>Property: the OpenGLES2 texture name for the U plane of a YUV texture (number).</summary>
+    public const string PropCreateOpenGles2TextureU = Render.SDL_PROP_TEXTURE_CREATE_OPENGLES2_TEXTURE_U_NUMBER;
+    /// <summary>Property: the OpenGLES2 texture name for the V plane of a YUV texture (number).</summary>
+    public const string PropCreateOpenGles2TextureV = Render.SDL_PROP_TEXTURE_CREATE_OPENGLES2_TEXTURE_V_NUMBER;
+    /// <summary>Property: the VkImage associated with the texture (number).</summary>
+    public const string PropCreateVulkanTexture = Render.SDL_PROP_TEXTURE_CREATE_VULKAN_TEXTURE_NUMBER;
+    /// <summary>Property: the VkImageLayout of the VkImage associated with the texture (number).</summary>
+    public const string PropCreateVulkanLayout = Render.SDL_PROP_TEXTURE_CREATE_VULKAN_LAYOUT_NUMBER;
+    /// <summary>Property: the SDL_GPUTexture associated with the texture (pointer).</summary>
+    public const string PropCreateGpuTexture = Render.SDL_PROP_TEXTURE_CREATE_GPU_TEXTURE_POINTER;
+    /// <summary>Property: the SDL_GPUTexture associated with the UV plane of a NV12 texture (pointer).</summary>
+    public const string PropCreateGpuTextureUv = Render.SDL_PROP_TEXTURE_CREATE_GPU_TEXTURE_UV_POINTER;
+    /// <summary>Property: the SDL_GPUTexture associated with the U plane of a YUV texture (pointer).</summary>
+    public const string PropCreateGpuTextureU = Render.SDL_PROP_TEXTURE_CREATE_GPU_TEXTURE_U_POINTER;
+    /// <summary>Property: the SDL_GPUTexture associated with the V plane of a YUV texture (pointer).</summary>
+    public const string PropCreateGpuTextureV = Render.SDL_PROP_TEXTURE_CREATE_GPU_TEXTURE_V_POINTER;
+
     // --- Texture property names ---
 
     /// <summary>Property: the colorspace of the texture (number).</summary>
@@ -61,11 +106,72 @@ public sealed unsafe class Texture : IDisposable
     /// <summary>Property: the HDR headroom of the texture (float).</summary>
     public const string PropHdrHeadroom = Render.SDL_PROP_TEXTURE_HDR_HEADROOM_FLOAT;
 
+    // --- Texture property names: platform-specific native handles ---
+
+    /// <summary>Property: the ID3D11Texture2D associated with the texture (pointer).</summary>
+    public const string PropD3D11Texture = Render.SDL_PROP_TEXTURE_D3D11_TEXTURE_POINTER;
+    /// <summary>Property: the ID3D11Texture2D associated with the U plane of a YUV texture (pointer).</summary>
+    public const string PropD3D11TextureU = Render.SDL_PROP_TEXTURE_D3D11_TEXTURE_U_POINTER;
+    /// <summary>Property: the ID3D11Texture2D associated with the V plane of a YUV texture (pointer).</summary>
+    public const string PropD3D11TextureV = Render.SDL_PROP_TEXTURE_D3D11_TEXTURE_V_POINTER;
+    /// <summary>Property: the ID3D12Resource associated with the texture (pointer).</summary>
+    public const string PropD3D12Texture = Render.SDL_PROP_TEXTURE_D3D12_TEXTURE_POINTER;
+    /// <summary>Property: the ID3D12Resource associated with the U plane of a YUV texture (pointer).</summary>
+    public const string PropD3D12TextureU = Render.SDL_PROP_TEXTURE_D3D12_TEXTURE_U_POINTER;
+    /// <summary>Property: the ID3D12Resource associated with the V plane of a YUV texture (pointer).</summary>
+    public const string PropD3D12TextureV = Render.SDL_PROP_TEXTURE_D3D12_TEXTURE_V_POINTER;
+    /// <summary>Property: the OpenGL texture name (number).</summary>
+    public const string PropOpenGlTexture = Render.SDL_PROP_TEXTURE_OPENGL_TEXTURE_NUMBER;
+    /// <summary>Property: the OpenGL texture name for the UV plane of a NV12 texture (number).</summary>
+    public const string PropOpenGlTextureUv = Render.SDL_PROP_TEXTURE_OPENGL_TEXTURE_UV_NUMBER;
+    /// <summary>Property: the OpenGL texture name for the U plane of a YUV texture (number).</summary>
+    public const string PropOpenGlTextureU = Render.SDL_PROP_TEXTURE_OPENGL_TEXTURE_U_NUMBER;
+    /// <summary>Property: the OpenGL texture name for the V plane of a YUV texture (number).</summary>
+    public const string PropOpenGlTextureV = Render.SDL_PROP_TEXTURE_OPENGL_TEXTURE_V_NUMBER;
+    /// <summary>Property: the OpenGL texture target (number).</summary>
+    public const string PropOpenGlTextureTarget = Render.SDL_PROP_TEXTURE_OPENGL_TEXTURE_TARGET_NUMBER;
+    /// <summary>Property: the texture coordinate width of the OpenGL texture (float).</summary>
+    public const string PropOpenGlTexW = Render.SDL_PROP_TEXTURE_OPENGL_TEX_W_FLOAT;
+    /// <summary>Property: the texture coordinate height of the OpenGL texture (float).</summary>
+    public const string PropOpenGlTexH = Render.SDL_PROP_TEXTURE_OPENGL_TEX_H_FLOAT;
+    /// <summary>Property: the OpenGLES2 texture name (number).</summary>
+    public const string PropOpenGles2Texture = Render.SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_NUMBER;
+    /// <summary>Property: the OpenGLES2 texture name for the UV plane of a NV12 texture (number).</summary>
+    public const string PropOpenGles2TextureUv = Render.SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER;
+    /// <summary>Property: the OpenGLES2 texture name for the U plane of a YUV texture (number).</summary>
+    public const string PropOpenGles2TextureU = Render.SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER;
+    /// <summary>Property: the OpenGLES2 texture name for the V plane of a YUV texture (number).</summary>
+    public const string PropOpenGles2TextureV = Render.SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER;
+    /// <summary>Property: the OpenGLES2 texture target (number).</summary>
+    public const string PropOpenGles2TextureTarget = Render.SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_TARGET_NUMBER;
+    /// <summary>Property: the VkImage associated with the texture (number).</summary>
+    public const string PropVulkanTexture = Render.SDL_PROP_TEXTURE_VULKAN_TEXTURE_NUMBER;
+    /// <summary>Property: the SDL_GPUTexture associated with the texture (pointer).</summary>
+    public const string PropGpuTexture = Render.SDL_PROP_TEXTURE_GPU_TEXTURE_POINTER;
+    /// <summary>Property: the SDL_GPUTexture associated with the UV plane of a NV12 texture (pointer).</summary>
+    public const string PropGpuTextureUv = Render.SDL_PROP_TEXTURE_GPU_TEXTURE_UV_POINTER;
+    /// <summary>Property: the SDL_GPUTexture associated with the U plane of a YUV texture (pointer).</summary>
+    public const string PropGpuTextureU = Render.SDL_PROP_TEXTURE_GPU_TEXTURE_U_POINTER;
+    /// <summary>Property: the SDL_GPUTexture associated with the V plane of a YUV texture (pointer).</summary>
+    public const string PropGpuTextureV = Render.SDL_PROP_TEXTURE_GPU_TEXTURE_V_POINTER;
+
     internal Texture(SDL_Texture* handle, bool ownsHandle = true)
     {
         _handle = handle;
         _ownsHandle = ownsHandle;
     }
+
+    /// <summary>
+    /// Gets the renderer that created this texture. The returned renderer is non-owning.
+    /// </summary>
+    /// <returns>The owning renderer.</returns>
+    public Renderer GetRenderer() => new(Check(SDL_GetRendererFromTexture(Handle)), ownsHandle: false);
+
+    /// <summary>
+    /// Gets the properties associated with this texture.
+    /// </summary>
+    public PropertyGroup Properties =>
+        new(CheckId(SDL_GetTextureProperties(Handle)), ownsHandle: false);
 
     /// <summary>
     /// Gets the width of the texture in pixels.
@@ -121,6 +227,32 @@ public sealed unsafe class Texture : IDisposable
     }
 
     /// <summary>
+    /// Gets or sets the additional color value multiplied into texture copy operations, with floating point precision.
+    /// </summary>
+    public FColor ColorModFloat
+    {
+        get
+        {
+            Check(SDL_GetTextureColorModFloat(Handle, out var r, out var g, out var b));
+            return new FColor(r, g, b, 1.0f);
+        }
+        set => Check(SDL_SetTextureColorModFloat(Handle, value.R, value.G, value.B));
+    }
+
+    /// <summary>
+    /// Gets or sets the additional alpha value multiplied into texture copy operations, with floating point precision.
+    /// </summary>
+    public float AlphaModFloat
+    {
+        get
+        {
+            Check(SDL_GetTextureAlphaModFloat(Handle, out var alpha));
+            return alpha;
+        }
+        set => Check(SDL_SetTextureAlphaModFloat(Handle, value));
+    }
+
+    /// <summary>
     /// Gets or sets the blend mode used for texture copy operations.
     /// </summary>
     public BlendMode BlendMode
@@ -147,6 +279,21 @@ public sealed unsafe class Texture : IDisposable
     }
 
     /// <summary>
+    /// Gets or sets the palette used by this texture, for textures created with an indexed
+    /// pixel format. The getter returns a non-owning wrapper, or <c>null</c> if the texture
+    /// does not use a palette.
+    /// </summary>
+    public Palette? Palette
+    {
+        get
+        {
+            var ptr = SDL_GetTexturePalette(Handle);
+            return ptr == null ? null : new Palette(ptr, ownsHandle: false);
+        }
+        set => Check(SDL_SetTexturePalette(Handle, value is { } p ? p.Handle : null));
+    }
+
+    /// <summary>
     /// Updates the given texture rectangle with new pixel data.
     /// </summary>
     /// <param name="rect">The area to update, or <c>null</c> to update the entire texture.</param>
@@ -162,6 +309,60 @@ public sealed unsafe class Texture : IDisposable
         else
         {
             Check(SDL_UpdateTexture(Handle, null, (void*)pixels, pitch));
+        }
+    }
+
+    /// <summary>
+    /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
+    /// </summary>
+    /// <param name="rect">The area to update, or <c>null</c> to update the entire texture.</param>
+    /// <param name="yPlane">The raw pixel data for the Y plane.</param>
+    /// <param name="yPitch">The number of bytes between rows of pixel data for the Y plane.</param>
+    /// <param name="uPlane">The raw pixel data for the U plane.</param>
+    /// <param name="uPitch">The number of bytes between rows of pixel data for the U plane.</param>
+    /// <param name="vPlane">The raw pixel data for the V plane.</param>
+    /// <param name="vPitch">The number of bytes between rows of pixel data for the V plane.</param>
+    public void UpdateYuv(Rectangle? rect, ReadOnlySpan<byte> yPlane, int yPitch,
+        ReadOnlySpan<byte> uPlane, int uPitch, ReadOnlySpan<byte> vPlane, int vPitch)
+    {
+        fixed (byte* yPtr = yPlane)
+        fixed (byte* uPtr = uPlane)
+        fixed (byte* vPtr = vPlane)
+        {
+            if (rect is { } r)
+            {
+                var native = r.ToNative();
+                Check(SDL_UpdateYUVTexture(Handle, &native, yPtr, yPitch, uPtr, uPitch, vPtr, vPitch));
+            }
+            else
+            {
+                Check(SDL_UpdateYUVTexture(Handle, null, yPtr, yPitch, uPtr, uPitch, vPtr, vPitch));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Updates a rectangle within a planar NV12 or NV21 texture with new pixel data.
+    /// </summary>
+    /// <param name="rect">The area to update, or <c>null</c> to update the entire texture.</param>
+    /// <param name="yPlane">The raw pixel data for the Y plane.</param>
+    /// <param name="yPitch">The number of bytes between rows of pixel data for the Y plane.</param>
+    /// <param name="uvPlane">The raw pixel data for the interleaved UV plane.</param>
+    /// <param name="uvPitch">The number of bytes between rows of pixel data for the UV plane.</param>
+    public void UpdateNv(Rectangle? rect, ReadOnlySpan<byte> yPlane, int yPitch, ReadOnlySpan<byte> uvPlane, int uvPitch)
+    {
+        fixed (byte* yPtr = yPlane)
+        fixed (byte* uvPtr = uvPlane)
+        {
+            if (rect is { } r)
+            {
+                var native = r.ToNative();
+                Check(SDL_UpdateNVTexture(Handle, &native, yPtr, yPitch, uvPtr, uvPitch));
+            }
+            else
+            {
+                Check(SDL_UpdateNVTexture(Handle, null, yPtr, yPitch, uvPtr, uvPitch));
+            }
         }
     }
 
@@ -183,6 +384,29 @@ public sealed unsafe class Texture : IDisposable
         {
             Check(SDL_LockTexture(Handle, null, out var p, out pitch));
             pixels = (nint)p;
+        }
+    }
+
+    /// <summary>
+    /// Locks a portion of the texture for write-only pixel access, exposing it as a surface.
+    /// The returned surface is non-owning — it is only valid until <see cref="Unlock"/> is
+    /// called, which frees it; do not dispose it directly, and call <see cref="Unlock"/>
+    /// (not <see cref="IDisposable.Dispose"/> on the surface) to release it.
+    /// </summary>
+    /// <param name="rect">The area to lock, or <c>null</c> for the entire texture.</param>
+    /// <returns>A surface representing the locked pixels, valid until <see cref="Unlock"/> is called.</returns>
+    public Surface LockToSurface(Rectangle? rect = null)
+    {
+        if (rect is { } r)
+        {
+            var native = r.ToNative();
+            Check(SDL_LockTextureToSurface(Handle, &native, out var surface));
+            return new Surface(surface, ownsHandle: false);
+        }
+        else
+        {
+            Check(SDL_LockTextureToSurface(Handle, null, out var surface));
+            return new Surface(surface, ownsHandle: false);
         }
     }
 

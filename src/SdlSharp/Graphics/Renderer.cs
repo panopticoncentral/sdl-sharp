@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
 
+using SdlSharp.Graphics.Gpu;
+using SdlSharp.Input;
 using SdlSharp.Native;
 using static SdlSharp.Native.Common;
 using static SdlSharp.Native.Render;
@@ -91,6 +93,35 @@ public sealed unsafe class Renderer : IDisposable
 
     // --- Renderer property names (for use with Properties) ---
 
+    // --- D3D / Vulkan native handles (for use with Properties) ---
+
+    /// <summary>Property: the IDirect3DDevice9 associated with the renderer (pointer).</summary>
+    public const string PropD3D9Device = Render.SDL_PROP_RENDERER_D3D9_DEVICE_POINTER;
+    /// <summary>Property: the ID3D11Device associated with the renderer (pointer).</summary>
+    public const string PropD3D11Device = Render.SDL_PROP_RENDERER_D3D11_DEVICE_POINTER;
+    /// <summary>Property: the IDXGISwapChain1 associated with the renderer (pointer).</summary>
+    public const string PropD3D11SwapChain = Render.SDL_PROP_RENDERER_D3D11_SWAPCHAIN_POINTER;
+    /// <summary>Property: the ID3D12Device associated with the renderer (pointer).</summary>
+    public const string PropD3D12Device = Render.SDL_PROP_RENDERER_D3D12_DEVICE_POINTER;
+    /// <summary>Property: the IDXGISwapChain4 associated with the renderer (pointer).</summary>
+    public const string PropD3D12SwapChain = Render.SDL_PROP_RENDERER_D3D12_SWAPCHAIN_POINTER;
+    /// <summary>Property: the ID3D12CommandQueue associated with the renderer (pointer).</summary>
+    public const string PropD3D12CommandQueue = Render.SDL_PROP_RENDERER_D3D12_COMMAND_QUEUE_POINTER;
+    /// <summary>Property: the VkInstance associated with the renderer (pointer).</summary>
+    public const string PropVulkanInstance = Render.SDL_PROP_RENDERER_VULKAN_INSTANCE_POINTER;
+    /// <summary>Property: the VkSurfaceKHR associated with the renderer (number).</summary>
+    public const string PropVulkanSurface = Render.SDL_PROP_RENDERER_VULKAN_SURFACE_NUMBER;
+    /// <summary>Property: the VkPhysicalDevice associated with the renderer (pointer).</summary>
+    public const string PropVulkanPhysicalDevice = Render.SDL_PROP_RENDERER_VULKAN_PHYSICAL_DEVICE_POINTER;
+    /// <summary>Property: the VkDevice associated with the renderer (pointer).</summary>
+    public const string PropVulkanDevice = Render.SDL_PROP_RENDERER_VULKAN_DEVICE_POINTER;
+    /// <summary>Property: the queue family index used for rendering (number).</summary>
+    public const string PropVulkanGraphicsQueueFamilyIndex = Render.SDL_PROP_RENDERER_VULKAN_GRAPHICS_QUEUE_FAMILY_INDEX_NUMBER;
+    /// <summary>Property: the queue family index used for presentation (number).</summary>
+    public const string PropVulkanPresentQueueFamilyIndex = Render.SDL_PROP_RENDERER_VULKAN_PRESENT_QUEUE_FAMILY_INDEX_NUMBER;
+    /// <summary>Property: the number of swapchain images (number).</summary>
+    public const string PropVulkanSwapchainImageCount = Render.SDL_PROP_RENDERER_VULKAN_SWAPCHAIN_IMAGE_COUNT_NUMBER;
+
     /// <summary>Property: the name of the rendering driver (string).</summary>
     public const string PropName = Render.SDL_PROP_RENDERER_NAME_STRING;
     /// <summary>Property: the window where rendering is displayed (pointer).</summary>
@@ -134,6 +165,23 @@ public sealed unsafe class Renderer : IDisposable
         new(Check(SDL_CreateRendererWithProperties(properties.Id)));
 
     /// <summary>
+    /// Creates a 2D software rendering context for a surface.
+    /// </summary>
+    /// <param name="surface">The surface where rendering is done.</param>
+    /// <returns>A new renderer.</returns>
+    public static Renderer CreateSoftware(Surface surface) =>
+        new(Check(SDL_CreateSoftwareRenderer(surface.Handle)));
+
+    /// <summary>
+    /// Creates a 2D rendering context for a window, using an existing GPU device.
+    /// </summary>
+    /// <param name="device">The GPU device to use for rendering.</param>
+    /// <param name="window">The window to create the renderer for.</param>
+    /// <returns>A new renderer.</returns>
+    public static Renderer CreateGpu(GpuDevice device, Window window) =>
+        new(Check(SDL_CreateGPURenderer(device.Handle, window.Handle)));
+
+    /// <summary>
     /// Creates a window and default renderer.
     /// </summary>
     /// <param name="title">The title of the window.</param>
@@ -169,6 +217,14 @@ public sealed unsafe class Renderer : IDisposable
     /// </summary>
     public PropertyGroup Properties =>
         new(CheckId(SDL_GetRendererProperties(Handle)), ownsHandle: false);
+
+    /// <summary>
+    /// Gets the GPU device associated with this renderer, for renderers created via
+    /// <see cref="CreateGpu"/> or with <see cref="PropCreateGpuDevice"/>. The returned
+    /// device is non-owning; do not dispose it independently of the renderer.
+    /// </summary>
+    /// <returns>The GPU device backing this renderer.</returns>
+    public GpuDevice GetGpuDevice() => new(Check(SDL_GetGPURendererDevice(Handle)), ownsHandle: false);
 
     /// <summary>
     /// Gets the output size in pixels of this renderer.
@@ -380,6 +436,15 @@ public sealed unsafe class Renderer : IDisposable
         new(Check(SDL_CreateTextureFromSurface(Handle, surface.Handle)));
 
     /// <summary>
+    /// Creates a texture for this renderer, using properties to specify options. Property names
+    /// are the <c>PropCreate*</c> members on <see cref="Texture"/>.
+    /// </summary>
+    /// <param name="properties">The properties to create the texture with.</param>
+    /// <returns>A new texture.</returns>
+    public Texture CreateTexture(PropertyGroup properties) =>
+        new(Check(SDL_CreateTextureWithProperties(Handle, properties.Id)));
+
+    /// <summary>
     /// Copies a portion of the texture to the current rendering target.
     /// </summary>
     /// <param name="texture">The source texture.</param>
@@ -516,6 +581,32 @@ public sealed unsafe class Renderer : IDisposable
         Check(SDL_RenderTexture9Grid(Handle, texture.Handle, pSrc, leftWidth, rightWidth, topHeight, bottomHeight, scale, pDst));
     }
 
+    /// <summary>
+    /// Performs a scaled, tiled 9-grid blit of a texture to the current rendering target.
+    /// The corners are left unscaled while the borders and center are tiled to fill the destination.
+    /// </summary>
+    /// <param name="texture">The source texture.</param>
+    /// <param name="src">The source rectangle, or <c>null</c> for the entire texture.</param>
+    /// <param name="leftWidth">The width of the left corners in source coordinates.</param>
+    /// <param name="rightWidth">The width of the right corners in source coordinates.</param>
+    /// <param name="topHeight">The height of the top corners in source coordinates.</param>
+    /// <param name="bottomHeight">The height of the bottom corners in source coordinates.</param>
+    /// <param name="scale">The scale used to transform the corner sizes.</param>
+    /// <param name="dst">The destination rectangle, or <c>null</c> for the entire rendering target.</param>
+    /// <param name="tileScale">The scale used to transform the borders and center of the 9-grid before tiling.</param>
+    public void RenderTexture9GridTiled(Texture texture, FRectangle? src, float leftWidth, float rightWidth,
+        float topHeight, float bottomHeight, float scale, FRectangle? dst, float tileScale)
+    {
+        SDL_FRect nSrc, nDst;
+        var pSrc = (SDL_FRect*)null;
+        var pDst = (SDL_FRect*)null;
+
+        if (src is { } s) { nSrc = s.ToNative(); pSrc = &nSrc; }
+        if (dst is { } d) { nDst = d.ToNative(); pDst = &nDst; }
+
+        Check(SDL_RenderTexture9GridTiled(Handle, texture.Handle, pSrc, leftWidth, rightWidth, topHeight, bottomHeight, scale, pDst, tileScale));
+    }
+
     // --- Geometry ---
 
     /// <summary>
@@ -533,6 +624,37 @@ public sealed unsafe class Renderer : IDisposable
                 texture is { } t ? t.Handle : null,
                 (SDL_Vertex*)vPtr, vertices.Length,
                 indices.Length > 0 ? iPtr : null, indices.Length));
+        }
+    }
+
+    /// <summary>
+    /// Renders a list of triangles from separate position/color/texture-coordinate arrays, optionally
+    /// using a texture and indices into the vertex arrays.
+    /// </summary>
+    /// <param name="texture">The texture to use, or <c>null</c> for untextured geometry.</param>
+    /// <param name="xy">The vertex positions, as interleaved (x, y) pairs.</param>
+    /// <param name="xyStride">The byte stride between consecutive <paramref name="xy"/> pairs.</param>
+    /// <param name="colors">The vertex colors.</param>
+    /// <param name="colorStride">The byte stride between consecutive <paramref name="colors"/> entries.</param>
+    /// <param name="uv">The vertex texture coordinates, as interleaved (u, v) pairs.</param>
+    /// <param name="uvStride">The byte stride between consecutive <paramref name="uv"/> pairs.</param>
+    /// <param name="vertexCount">The number of vertices.</param>
+    /// <param name="indices">The indices into the vertex arrays, or an empty span for sequential rendering.</param>
+    public void GeometryRaw(Texture? texture, ReadOnlySpan<float> xy, int xyStride, ReadOnlySpan<FColor> colors,
+        int colorStride, ReadOnlySpan<float> uv, int uvStride, int vertexCount, ReadOnlySpan<int> indices)
+    {
+        fixed (float* xyPtr = xy)
+        fixed (FColor* colorPtr = colors)
+        fixed (float* uvPtr = uv)
+        fixed (int* indexPtr = indices)
+        {
+            Check(SDL_RenderGeometryRaw(Handle,
+                texture is { } t ? t.Handle : null,
+                xyPtr, xyStride,
+                (SDL_FColor*)colorPtr, colorStride,
+                uvPtr, uvStride,
+                vertexCount,
+                indices.Length > 0 ? indexPtr : null, indices.Length, sizeof(int)));
         }
     }
 
@@ -584,6 +706,18 @@ public sealed unsafe class Renderer : IDisposable
         Check(SDL_RenderCoordinatesToWindow(Handle, x, y, out var wx, out var wy));
         return new FPoint(wx, wy);
     }
+
+    /// <summary>
+    /// Converts the coordinates in an event to render coordinates, mutating the event in place.
+    /// Events that do not carry coordinates are left unmodified.
+    /// </summary>
+    /// <param name="e">
+    /// The event to convert. Only valid to call while <paramref name="e"/>'s <see cref="RawEvent.Pointer"/>
+    /// is live — i.e. from within an <see cref="Application.RawEventFilter"/> callback (see the
+    /// <see cref="RawEvent.Pointer"/> contract for the lifetime of that pointer).
+    /// </param>
+    public void ConvertEventToRenderCoordinates(in RawEvent e) =>
+        Check(SDL_ConvertEventToRenderCoordinates(Handle, (SDL_Event*)e.Pointer));
 
     // --- Viewport / clipping ---
 
@@ -648,6 +782,22 @@ public sealed unsafe class Renderer : IDisposable
     /// </summary>
     public bool ClipEnabled => SDL_RenderClipEnabled(Handle);
 
+    /// <summary>
+    /// Gets whether an explicit rectangle was set as the viewport (as opposed to the default,
+    /// which covers the entire render target).
+    /// </summary>
+    public bool IsViewportSet => SDL_RenderViewportSet(Handle);
+
+    /// <summary>
+    /// Gets the safe area for rendering within the current viewport, in render coordinates.
+    /// This is the area not occluded by physical display features such as notches or curved edges.
+    /// </summary>
+    public Rectangle GetSafeArea()
+    {
+        Check(SDL_GetRenderSafeArea(Handle, out var rect));
+        return Rectangle.FromNative(rect);
+    }
+
     // --- Scale / target / logical / vsync ---
 
     /// <summary>
@@ -697,6 +847,32 @@ public sealed unsafe class Renderer : IDisposable
     }
 
     /// <summary>
+    /// Gets the final presentation rectangle for rendering, in window coordinates, taking into
+    /// account the current logical presentation mode and output size.
+    /// </summary>
+    /// <returns>The presentation rectangle.</returns>
+    public FRectangle GetLogicalPresentationRect()
+    {
+        Check(SDL_GetRenderLogicalPresentationRect(Handle, out var rect));
+        return FRectangle.FromNative(rect);
+    }
+
+    /// <summary>
+    /// Gets or sets the color scale used for render operations. This acts as a
+    /// multiplier applied to color values, allowing intensity levels beyond 1.0
+    /// (e.g. for high dynamic range rendering).
+    /// </summary>
+    public float ColorScale
+    {
+        get
+        {
+            Check(SDL_GetRenderColorScale(Handle, out var scale));
+            return scale;
+        }
+        set => Check(SDL_SetRenderColorScale(Handle, value));
+    }
+
+    /// <summary>
     /// Gets or sets the texture address mode used for rendering.
     /// </summary>
     public (TextureAddressMode U, TextureAddressMode V) TextureAddressMode
@@ -720,6 +896,19 @@ public sealed unsafe class Renderer : IDisposable
             return vsync;
         }
         set => Check(SDL_SetRenderVSync(Handle, value));
+    }
+
+    /// <summary>
+    /// Gets or sets the default scale mode used by textures created with this renderer.
+    /// </summary>
+    public ScaleMode DefaultTextureScaleMode
+    {
+        get
+        {
+            Check(SDL_GetDefaultTextureScaleMode(Handle, out var mode));
+            return (ScaleMode)mode;
+        }
+        set => Check(SDL_SetDefaultTextureScaleMode(Handle, (SDL_ScaleMode)value));
     }
 
     /// <inheritdoc/>

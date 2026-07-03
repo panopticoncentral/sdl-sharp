@@ -5,12 +5,23 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Deferred:
-// SDL_ConvertEventToRenderCoordinates (needs SDL_Event — Phase 3),
-// SDL_GetRenderMetalLayer, SDL_GetRenderMetalCommandEncoder (Metal-specific),
-// SDL_AddVulkanRenderSemaphores (Vulkan-specific),
-// SDL_RenderDebugTextFormat (printf-style variadic — use SDL_RenderDebugText instead; C# formatting is done on the managed side),
-// SDL_SetRenderGPUState (GPU renderer-specific).
+// Permanently skipped:
+//   - SDL_GetRenderMetalLayer, SDL_GetRenderMetalCommandEncoder — Metal-specific
+//     (macOS/iOS); no cross-platform managed surface is planned for them.
+//   - SDL_AddVulkanRenderSemaphores — Vulkan-specific (Sint64 semaphore handles
+//     tied to a specific Vulkan instance/device); no Vulkan interop layer exists here.
+//   - SDL_RenderDebugTextFormat — printf-style variadic (SDL_PRINTF_VARARG_FUNC);
+//     use SDL_RenderDebugText instead, with formatting done on the managed side
+//     via string interpolation/composite formatting.
+//   - SDL_CreateGPURenderState, SDL_SetGPURenderState, SDL_SetGPURenderStateFragmentUniforms,
+//     SDL_DestroyGPURenderState (+ the SDL_GPURenderState opaque struct and
+//     SDL_GPURenderStateCreateInfo struct) — the GPU render-state quartet lets an app
+//     inject a custom GPU shader/pipeline into the 2D render backend's GPU path. This
+//     needs its own design pass tying into the SdlSharp.Graphics.Gpu surface (GpuShader,
+//     GpuSampler, etc.) rather than a mechanical binding; deferred until that design exists.
+//
+// Final accounting: 94 bound + 4 GPU-render-state skips + 2 Metal skips + 1 Vulkan-semaphore
+// skip + 1 variadic skip = 102 (header total).
 
 /// <summary>
 /// The texture address mode for texture coordinates.
@@ -405,6 +416,35 @@ public static partial class Render
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_GetCurrentRenderOutputSize(SDL_Renderer* renderer, out int w, out int h);
 
+    /// <summary>
+    /// Create a 2D software rendering context for a surface.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_CreateSoftwareRenderer")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_Renderer* SDL_CreateSoftwareRenderer(SDL_Surface* surface);
+
+    /// <summary>
+    /// Create a 2D rendering context for a window, using an existing GPU device.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_CreateGPURenderer")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_Renderer* SDL_CreateGPURenderer(SDL_GPUDevice* device, SDL_Window* window);
+
+    /// <summary>
+    /// Get the GPU device associated with a renderer created via SDL_CreateGPURenderer or
+    /// a properties bag with SDL_PROP_RENDERER_CREATE_GPU_DEVICE_POINTER.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGPURendererDevice")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_GPUDevice* SDL_GetGPURendererDevice(SDL_Renderer* renderer);
+
+    /// <summary>
+    /// Get the renderer that created a texture.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetRendererFromTexture")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_Renderer* SDL_GetRendererFromTexture(SDL_Texture* texture);
+
     // --- Texture ---
 
     /// <summary>
@@ -422,11 +462,25 @@ public static partial class Render
     public static unsafe partial SDL_Texture* SDL_CreateTextureFromSurface(SDL_Renderer* renderer, SDL_Surface* surface);
 
     /// <summary>
+    /// Create a texture for a rendering context, using properties to specify options.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_CreateTextureWithProperties")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_Texture* SDL_CreateTextureWithProperties(SDL_Renderer* renderer, SDL_PropertiesID props);
+
+    /// <summary>
     /// Destroy the specified texture.
     /// </summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_DestroyTexture")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static unsafe partial void SDL_DestroyTexture(SDL_Texture* texture);
+
+    /// <summary>
+    /// Get the properties associated with a texture.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetTextureProperties")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_PropertiesID SDL_GetTextureProperties(SDL_Texture* texture);
 
     /// <summary>
     /// Get the size of a texture, as floating point values.
@@ -469,6 +523,38 @@ public static partial class Render
     public static unsafe partial bool SDL_GetTextureAlphaMod(SDL_Texture* texture, out byte alpha);
 
     /// <summary>
+    /// Set an additional color value multiplied into texture copy operations, with floating point precision.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetTextureColorModFloat")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetTextureColorModFloat(SDL_Texture* texture, float r, float g, float b);
+
+    /// <summary>
+    /// Get the additional color value multiplied into texture copy operations, with floating point precision.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetTextureColorModFloat")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetTextureColorModFloat(SDL_Texture* texture, out float r, out float g, out float b);
+
+    /// <summary>
+    /// Set an additional alpha value multiplied into texture copy operations, with floating point precision.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetTextureAlphaModFloat")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetTextureAlphaModFloat(SDL_Texture* texture, float alpha);
+
+    /// <summary>
+    /// Get the additional alpha value multiplied into texture copy operations, with floating point precision.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetTextureAlphaModFloat")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetTextureAlphaModFloat(SDL_Texture* texture, out float alpha);
+
+    /// <summary>
     /// Set the blend mode for a texture, used by SDL_RenderTexture.
     /// </summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetTextureBlendMode")]
@@ -501,6 +587,37 @@ public static partial class Render
     public static unsafe partial bool SDL_GetTextureScaleMode(SDL_Texture* texture, out SDL_ScaleMode scaleMode);
 
     /// <summary>
+    /// Set the default scale mode used by textures created with this renderer.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetDefaultTextureScaleMode")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetDefaultTextureScaleMode(SDL_Renderer* renderer, SDL_ScaleMode scaleMode);
+
+    /// <summary>
+    /// Get the default scale mode used by textures created with this renderer.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetDefaultTextureScaleMode")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetDefaultTextureScaleMode(SDL_Renderer* renderer, out SDL_ScaleMode scaleMode);
+
+    /// <summary>
+    /// Set the palette used by a texture created with an indexed pixel format.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetTexturePalette")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetTexturePalette(SDL_Texture* texture, Native.SDL_Palette* palette);
+
+    /// <summary>
+    /// Get the palette used by a texture, or NULL if the texture does not use a palette.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetTexturePalette")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial Native.SDL_Palette* SDL_GetTexturePalette(SDL_Texture* texture);
+
+    /// <summary>
     /// Update the given texture rectangle with new pixel data.
     /// </summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_UpdateTexture")]
@@ -509,12 +626,38 @@ public static partial class Render
     public static unsafe partial bool SDL_UpdateTexture(SDL_Texture* texture, SDL_Rect* rect, void* pixels, int pitch);
 
     /// <summary>
+    /// Update a rectangle within a planar YV12 or IYUV texture with new pixel data.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_UpdateYUVTexture")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_UpdateYUVTexture(SDL_Texture* texture, SDL_Rect* rect,
+        byte* Yplane, int Ypitch, byte* Uplane, int Upitch, byte* Vplane, int Vpitch);
+
+    /// <summary>
+    /// Update a rectangle within a planar NV12 or NV21 texture with new pixel data.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_UpdateNVTexture")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_UpdateNVTexture(SDL_Texture* texture, SDL_Rect* rect,
+        byte* Yplane, int Ypitch, byte* UVplane, int UVpitch);
+
+    /// <summary>
     /// Lock a portion of the texture for write-only pixel access.
     /// </summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_LockTexture")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_LockTexture(SDL_Texture* texture, SDL_Rect* rect, out void* pixels, out int pitch);
+
+    /// <summary>
+    /// Lock a portion of the texture for write-only pixel access, exposing it as a SDL surface.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_LockTextureToSurface")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_LockTextureToSurface(SDL_Texture* texture, SDL_Rect* rect, out SDL_Surface* surface);
 
     /// <summary>
     /// Unlock a texture, uploading the changes to video memory, if needed.
@@ -684,6 +827,17 @@ public static partial class Render
         float scale, SDL_FRect* dstrect);
 
     /// <summary>
+    /// Perform a scaled, tiled 9-grid blit of a texture to the current rendering target at subpixel precision.
+    /// The corners are left unscaled while the borders and center are tiled to fill the destination.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_RenderTexture9GridTiled")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_RenderTexture9GridTiled(SDL_Renderer* renderer, SDL_Texture* texture,
+        SDL_FRect* srcrect, float left_width, float right_width, float top_height, float bottom_height,
+        float scale, SDL_FRect* dstrect, float tileScale);
+
+    /// <summary>
     /// Copy a portion of the source texture to the current rendering target, with rotation and flipping, at subpixel precision.
     /// </summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_RenderTextureRotated")]
@@ -764,6 +918,16 @@ public static partial class Render
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_RenderCoordinatesToWindow(SDL_Renderer* renderer, float x, float y, out float window_x, out float window_y);
 
+    /// <summary>
+    /// Convert the coordinates in an SDL_Event to render coordinates, in place. Events that do not
+    /// carry coordinates are left unmodified. Intended for use inside an app event filter/watcher
+    /// installed before SDL's own coordinate conversion runs.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_ConvertEventToRenderCoordinates")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_ConvertEventToRenderCoordinates(SDL_Renderer* renderer, SDL_Event* @event);
+
     // --- Viewport / clipping ---
 
     /// <summary>
@@ -781,6 +945,22 @@ public static partial class Render
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_GetRenderViewport(SDL_Renderer* renderer, out SDL_Rect rect);
+
+    /// <summary>
+    /// Get whether an explicit rectangle was set as the viewport.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_RenderViewportSet")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_RenderViewportSet(SDL_Renderer* renderer);
+
+    /// <summary>
+    /// Get the safe area for rendering within the current viewport, in render coordinates.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetRenderSafeArea")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetRenderSafeArea(SDL_Renderer* renderer, out SDL_Rect rect);
 
     /// <summary>
     /// Set the clip rectangle for rendering on the specified target.
@@ -854,6 +1034,31 @@ public static partial class Render
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_GetRenderLogicalPresentation(SDL_Renderer* renderer, out int w, out int h, out SDL_RendererLogicalPresentation mode);
+
+    /// <summary>
+    /// Get the final presentation rectangle for rendering, in window coordinates, taking into
+    /// account the current logical presentation mode and output size.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetRenderLogicalPresentationRect")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetRenderLogicalPresentationRect(SDL_Renderer* renderer, out SDL_FRect rect);
+
+    /// <summary>
+    /// Set the color scale used for render operations.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetRenderColorScale")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetRenderColorScale(SDL_Renderer* renderer, float scale);
+
+    /// <summary>
+    /// Get the color scale used for render operations.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetRenderColorScale")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetRenderColorScale(SDL_Renderer* renderer, out float scale);
 
     /// <summary>
     /// Toggle VSync of the given renderer.

@@ -11,6 +11,8 @@ namespace SdlSharp.Graphics.Gpu;
 /// </summary>
 public sealed unsafe class GpuDevice : IDisposable
 {
+    private readonly bool _ownsHandle;
+
     /// <summary>
     /// The underlying native SDL_GPUDevice pointer.
     /// </summary>
@@ -25,7 +27,11 @@ public sealed unsafe class GpuDevice : IDisposable
 
     private SDL_GPUDevice* _handle;
 
-    private GpuDevice(SDL_GPUDevice* handle) { _handle = handle; }
+    internal GpuDevice(SDL_GPUDevice* handle, bool ownsHandle = true)
+    {
+        _handle = handle;
+        _ownsHandle = ownsHandle;
+    }
 
     /// <summary>
     /// Whether this device has been disposed. Lets dependent GPU resources skip
@@ -338,7 +344,7 @@ public sealed unsafe class GpuDevice : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_handle != null)
+        if (_ownsHandle && _handle != null)
         {
             SDL_DestroyGPUDevice(_handle);
         }
