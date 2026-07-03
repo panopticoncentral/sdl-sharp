@@ -222,7 +222,8 @@ public sealed unsafe class Renderer : IDisposable
     public string? Name => Marshal.PtrToStringUTF8((nint)SDL_GetRendererName(Handle));
 
     /// <summary>
-    /// Gets the properties associated with this renderer.
+    /// Gets the properties associated with this renderer. The returned group is owned
+    /// by SDL and must not be disposed.
     /// </summary>
     public PropertyGroup Properties =>
         new(CheckId(SDL_GetRendererProperties(Handle)), ownsHandle: false);

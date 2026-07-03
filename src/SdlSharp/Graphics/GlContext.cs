@@ -76,7 +76,7 @@ public sealed unsafe class GlContext : IDisposable
     {
         if (_ownsHandle && _handle != null)
         {
-            Check(SDL_GL_DestroyContext(_handle));
+            _ = SDL_GL_DestroyContext(_handle);
         }
         _handle = null;
     }

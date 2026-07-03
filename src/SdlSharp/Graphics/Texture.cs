@@ -168,7 +168,8 @@ public sealed unsafe class Texture : IDisposable
     public Renderer GetRenderer() => new(Check(SDL_GetRendererFromTexture(Handle)), ownsHandle: false);
 
     /// <summary>
-    /// Gets the properties associated with this texture.
+    /// Gets the properties associated with this texture. The returned group is owned
+    /// by SDL and must not be disposed.
     /// </summary>
     public PropertyGroup Properties =>
         new(CheckId(SDL_GetTextureProperties(Handle)), ownsHandle: false);
@@ -228,6 +229,8 @@ public sealed unsafe class Texture : IDisposable
 
     /// <summary>
     /// Gets or sets the additional color value multiplied into texture copy operations, with floating point precision.
+    /// The setter ignores the alpha component of <see cref="FColor"/>; the getter always reports alpha as 1.0.
+    /// Alpha modulation is set and read separately via <see cref="AlphaModFloat"/>.
     /// </summary>
     public FColor ColorModFloat
     {

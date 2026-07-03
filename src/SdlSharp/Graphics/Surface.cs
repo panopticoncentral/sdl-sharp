@@ -96,7 +96,8 @@ public sealed unsafe class Surface : IDisposable
     }
 
     /// <summary>
-    /// Gets the properties associated with this surface.
+    /// Gets the properties associated with this surface. The returned group is owned
+    /// by SDL and must not be disposed.
     /// </summary>
     public PropertyGroup Properties =>
         new(CheckId(SDL_GetSurfaceProperties(Handle)), ownsHandle: false);

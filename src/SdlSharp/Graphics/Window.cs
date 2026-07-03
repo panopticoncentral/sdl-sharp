@@ -151,7 +151,8 @@ public sealed unsafe class Window : IDisposable
     public uint Id => CheckId(SDL_GetWindowID(Handle).Value);
 
     /// <summary>
-    /// Gets the properties associated with this window.
+    /// Gets the properties associated with this window. The returned group is owned
+    /// by SDL and must not be disposed.
     /// </summary>
     public PropertyGroup Properties =>
         new(CheckId(SDL_GetWindowProperties(Handle)), ownsHandle: false);
@@ -414,15 +415,11 @@ public sealed unsafe class Window : IDisposable
     /// <param name="rects">The areas to copy, in window coordinates.</param>
     public unsafe void UpdateSurfaceRects(ReadOnlySpan<Rectangle> rects)
     {
-        Span<SDL_Rect> native = stackalloc SDL_Rect[rects.Length];
-        for (var i = 0; i < rects.Length; i++)
+        // Rectangle has the same layout as SDL_Rect (x, y, w, h ints), so the span
+        // can be reinterpret-cast directly instead of copying element by element.
+        fixed (Rectangle* ptr = rects)
         {
-            native[i] = rects[i].ToNative();
-        }
-
-        fixed (SDL_Rect* ptr = native)
-        {
-            Check(SDL_UpdateWindowSurfaceRects(Handle, ptr, rects.Length));
+            Check(SDL_UpdateWindowSurfaceRects(Handle, (SDL_Rect*)ptr, rects.Length));
         }
     }
 
@@ -671,7 +668,9 @@ public sealed unsafe class Window : IDisposable
     // --- Progress ---
 
     /// <summary>
-    /// Gets or sets the state of the window's taskbar progress bar.
+    /// Gets or sets the state of the window's taskbar progress bar. The getter returns
+    /// <see cref="ProgressState.Invalid"/> without throwing if the query fails; check
+    /// the last SDL error for details in that case.
     /// </summary>
     public ProgressState ProgressState
     {
@@ -681,6 +680,8 @@ public sealed unsafe class Window : IDisposable
 
     /// <summary>
     /// Gets or sets the value of the window's taskbar progress bar, from 0.0f to 1.0f.
+    /// The getter returns -1.0f without throwing if the query fails; check the last
+    /// SDL error for details in that case.
     /// </summary>
     public float ProgressValue
     {
@@ -711,21 +712,28 @@ public sealed unsafe class Window : IDisposable
     /// <param name="handler">The hit-test handler, or <c>null</c> to clear it.</param>
     public unsafe void SetHitTest(HitTestHandler? handler)
     {
-        if (_hitTestHandle.IsAllocated)
-        {
-            _hitTestHandle.Free();
-            _hitTestHandle = default;
-        }
-
         if (handler == null)
         {
+            if (_hitTestHandle.IsAllocated)
+            {
+                _hitTestHandle.Free();
+                _hitTestHandle = default;
+            }
+
             Check(SDL_SetWindowHitTest(Handle, null, null));
             return;
         }
 
+        var previousHandle = _hitTestHandle;
         var holder = new HitTestHolder(this, handler);
-        _hitTestHandle = GCHandle.Alloc(holder);
-        Check(SDL_SetWindowHitTest(Handle, &HitTestCallback, (void*)GCHandle.ToIntPtr(_hitTestHandle)));
+        var newHandle = GCHandle.Alloc(holder);
+        Check(SDL_SetWindowHitTest(Handle, &HitTestCallback, (void*)GCHandle.ToIntPtr(newHandle)));
+        _hitTestHandle = newHandle;
+
+        if (previousHandle.IsAllocated)
+        {
+            previousHandle.Free();
+        }
     }
 
     private sealed record HitTestHolder(Window Window, HitTestHandler Handler);
@@ -747,8 +755,8 @@ public sealed unsafe class Window : IDisposable
     // --- Fill document (Emscripten) ---
 
     /// <summary>
-    /// Requests that the window fill the browser document (Emscripten only; no-op /
-    /// throws on other platforms).
+    /// Requests that the window fill the browser document (Emscripten only; silently
+    /// does nothing on non-Emscripten platforms).
     /// </summary>
     /// <param name="fill">true to fill the document, false to restore the window's set size.</param>
     public void SetFillDocument(bool fill) => Check(SDL_SetWindowFillDocument(Handle, fill));
@@ -780,6 +788,13 @@ public sealed unsafe class Window : IDisposable
     {
         if (_hitTestHandle.IsAllocated)
         {
+            if (!_ownsHandle && _handle != null)
+            {
+                // A non-owning wrapper doesn't destroy the underlying SDL window, which
+                // stays alive and would otherwise keep calling back into a freed GCHandle.
+                _ = SDL_SetWindowHitTest(_handle, null, null);
+            }
+
             _hitTestHandle.Free();
             _hitTestHandle = default;
         }
