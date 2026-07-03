@@ -1,7 +1,9 @@
 using System.Runtime.InteropServices;
 
+using SdlSharp.Input;
 using SdlSharp.Native;
 using static SdlSharp.Native.Common;
+using static SdlSharp.Native.Keyboard;
 using static SdlSharp.Native.Video;
 
 namespace SdlSharp.Graphics;
@@ -259,6 +261,72 @@ public sealed unsafe class Window : IDisposable
     /// </summary>
     /// <param name="operation">The flash operation to perform.</param>
     public void Flash(FlashOperation operation) => Check(SDL_FlashWindow(Handle, (SDL_FlashOperation)operation));
+
+    /// <summary>
+    /// Starts accepting Unicode text input events in this window. Shows the
+    /// on-screen keyboard where applicable.
+    /// </summary>
+    public void StartTextInput() => Check(SDL_StartTextInput(Handle));
+
+    /// <summary>
+    /// Starts accepting Unicode text input events in this window, with hints
+    /// describing the kind of text being entered.
+    /// </summary>
+    /// <param name="properties">The text input configuration. Unset fields use SDL's defaults.</param>
+    public void StartTextInput(in TextInputProperties properties)
+    {
+        using var props = new PropertyGroup();
+        if (properties.Type is { } type)
+            props.SetNumber(Native.Keyboard.SDL_PROP_TEXTINPUT_TYPE_NUMBER, (long)type);
+        if (properties.Capitalization is { } capitalization)
+            props.SetNumber(Native.Keyboard.SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER, (long)capitalization);
+        if (properties.Autocorrect is { } autocorrect)
+            props.SetBoolean(Native.Keyboard.SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN, autocorrect);
+        if (properties.Multiline is { } multiline)
+            props.SetBoolean(Native.Keyboard.SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN, multiline);
+        Check(SDL_StartTextInputWithProperties(Handle, props.Id));
+    }
+
+    /// <summary>
+    /// Stops accepting text input events in this window.
+    /// </summary>
+    public void StopTextInput() => Check(SDL_StopTextInput(Handle));
+
+    /// <summary>
+    /// Gets whether text input is active in this window.
+    /// </summary>
+    public bool IsTextInputActive => SDL_TextInputActive(Handle);
+
+    /// <summary>
+    /// Sets the area used for typing in this window, informing the IME where to
+    /// position candidate/composition windows.
+    /// </summary>
+    /// <param name="area">The text input area, in window coordinates.</param>
+    /// <param name="cursorOffset">The cursor X offset relative to the area's left edge.</param>
+    public void SetTextInputArea(Rectangle area, int cursorOffset = 0)
+    {
+        var native = area.ToNative();
+        Check(SDL_SetTextInputArea(Handle, &native, cursorOffset));
+    }
+
+    /// <summary>
+    /// Gets the area used for typing in this window.
+    /// </summary>
+    /// <param name="cursorOffset">Receives the cursor X offset relative to the area's left edge.</param>
+    /// <returns>The text input area, in window coordinates.</returns>
+    public Rectangle GetTextInputArea(out int cursorOffset)
+    {
+        SDL_Rect rect;
+        int cursor;
+        Check(SDL_GetTextInputArea(Handle, &rect, &cursor));
+        cursorOffset = cursor;
+        return Rectangle.FromNative(rect);
+    }
+
+    /// <summary>
+    /// Dismisses the composition window and clears any pending IME composition state.
+    /// </summary>
+    public void ClearComposition() => Check(SDL_ClearComposition(Handle));
 
     /// <summary>
     /// Gets the SDL surface associated with the window for software rendering.
