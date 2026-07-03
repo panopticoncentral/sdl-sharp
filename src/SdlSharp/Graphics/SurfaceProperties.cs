@@ -22,6 +22,6 @@ public static class SurfaceProperties
     /// <summary>The hotspot pixel offset from the top edge of the image, if this surface is being used as a cursor (number).</summary>
     public const string HotspotY = SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER;
 
-    /// <summary>The number of degrees a surface's data is meant to be rotated clockwise to make the image right-side up (float).</summary>
+    /// <summary>The number of degrees a surface's data is meant to be rotated clockwise to make the image right-side up (float). <see cref="Surface.Rotate"/> sets an adjusted value on the surfaces it returns.</summary>
     public const string Rotation = SDL_PROP_SURFACE_ROTATION_FLOAT;
 }

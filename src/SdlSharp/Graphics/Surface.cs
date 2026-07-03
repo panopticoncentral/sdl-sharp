@@ -584,6 +584,14 @@ public sealed unsafe class Surface : IDisposable
     /// Creates a copy of this surface, rotated clockwise by an arbitrary angle. The result
     /// surface is sized to fit the rotated content.
     /// </summary>
+    /// <remarks>
+    /// A negative angle rotates counter-clockwise. When the rotation is not a multiple of
+    /// 90 degrees, the resulting surface is larger than the original, with the background
+    /// filled with the color key if one is set, or RGBA 255/255/255/0 (transparent white)
+    /// if not. If this surface has the <see cref="SurfaceProperties.Rotation"/> property
+    /// set, the result surface gets an adjusted value (the rotation remaining to make the
+    /// image upright).
+    /// </remarks>
     /// <param name="angleDegrees">The angle, in degrees, to rotate the surface clockwise.</param>
     /// <returns>A new, rotated surface.</returns>
     public Surface Rotate(float angleDegrees) =>
@@ -591,6 +599,8 @@ public sealed unsafe class Surface : IDisposable
 
     /// <summary>
     /// Maps an RGBA color to an opaque or transparent pixel value for this surface's format.
+    /// If the surface has a palette, the returned value is the index of the closest matching
+    /// color in the palette.
     /// </summary>
     /// <param name="color">The color to map.</param>
     /// <returns>The raw pixel value.</returns>
@@ -598,7 +608,8 @@ public sealed unsafe class Surface : IDisposable
 
     /// <summary>
     /// Maps an RGB color to an opaque pixel value for this surface's format. The alpha
-    /// component is ignored.
+    /// component is ignored. If the surface has a palette, the returned value is the index
+    /// of the closest matching color in the palette.
     /// </summary>
     /// <param name="color">The color to map (alpha is ignored).</param>
     /// <returns>The raw pixel value.</returns>
