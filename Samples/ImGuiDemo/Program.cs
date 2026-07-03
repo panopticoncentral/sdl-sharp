@@ -11,7 +11,6 @@ using SdlSharp;
 using SdlSharp.Graphics;
 using SdlSharp.Graphics.Gpu;
 using SdlSharp.ImGui;
-using SdlSharp.Native;
 using WindowFlags = SdlSharp.Graphics.WindowFlags;
 
 unsafe
@@ -55,20 +54,20 @@ unsafe
         // GPU rendering
         var cmdBuf = device.AcquireCommandBuffer();
 
-        if (cmdBuf.WaitAndAcquireSwapchainTexture(window, out var swapTex, out _, out _) && swapTex != null)
+        if (cmdBuf.WaitAndAcquireSwapchainTexture(window, out _) is { } swapTex)
         {
             // Upload vertex/index buffers BEFORE starting the render pass
             ImGuiBackend.PrepareDrawData(drawData, cmdBuf);
 
-            var colorTarget = new SDL_GPUColorTargetInfo
+            var colorTarget = new GpuColorTargetInfo
             {
-                texture = swapTex,
-                clear_color = new SDL_FColor { r = 0.45f, g = 0.55f, b = 0.60f, a = 1.0f },
-                load_op = SDL_GPULoadOp.SDL_GPU_LOADOP_CLEAR,
-                store_op = SDL_GPUStoreOp.SDL_GPU_STOREOP_STORE,
+                Texture = swapTex,
+                ClearColor = new FColor(0.45f, 0.55f, 0.60f, 1.0f),
+                LoadOp = GpuLoadOp.Clear,
+                StoreOp = GpuStoreOp.Store,
             };
 
-            var renderPass = cmdBuf.BeginRenderPass(&colorTarget, 1);
+            var renderPass = cmdBuf.BeginRenderPass(colorTarget);
 
             // Render ImGui draw commands inside the render pass
             ImGuiBackend.RenderDrawData(drawData, cmdBuf, renderPass);
