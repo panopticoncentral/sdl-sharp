@@ -5,14 +5,24 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Deferred: virtual joystick (SDL_AttachVirtualJoystick, SDL_DetachVirtualJoystick, SDL_SetJoystickVirtual*),
+// Deferred: virtual joystick (SDL_AttachVirtualJoystick, SDL_DetachVirtualJoystick, SDL_IsJoystickVirtual,
+// SDL_SetJoystickVirtual*, SDL_SendJoystickVirtualSensorData),
 // rumble (SDL_RumbleJoystick, SDL_RumbleJoystickTriggers),
-// LED (SDL_SetJoystickLED), player index (SDL_SetJoystickPlayerIndex),
-// sensors (SDL_SetJoystickSensorEnabled, SDL_GetJoystickSensorData),
-// GUID (SDL_GetJoystickGUIDForID, SDL_GetJoystickGUID — needs SDL_GUID struct),
+// LED (SDL_SetJoystickLED),
+// player index (SDL_SetJoystickPlayerIndex, SDL_GetJoystickPlayerIndex, SDL_GetJoystickPlayerIndexForID,
+// SDL_GetJoystickFromPlayerIndex),
+// presence/connection (SDL_HasJoystick, SDL_JoystickConnected),
+// event state (SDL_SetJoystickEventsEnabled, SDL_JoystickEventsEnabled),
+// trackballs (SDL_GetJoystickBall),
+// axis initial state (SDL_GetJoystickAxisInitialState),
+// device info getters (SDL_GetJoystickPath/Vendor/Product/ProductVersion + their ForID variants,
+// SDL_GetJoystickFirmwareVersion, SDL_GetJoystickSerial),
+// effects (SDL_SendJoystickEffect),
+// GUID (SDL_GetJoystickGUIDForID, SDL_GetJoystickGUID, SDL_GetJoystickGUIDInfo — needs SDL_GUID struct),
 // power (SDL_GetJoystickPowerInfo — needs SDL_PowerState from Events.cs),
 // properties (SDL_GetJoystickProperties, property constants),
-// locking (SDL_LockJoysticks, SDL_UnlockJoysticks).
+// locking (SDL_LockJoysticks, SDL_UnlockJoysticks),
+// constants (SDL_JOYSTICK_AXIS_MIN, SDL_JOYSTICK_AXIS_MAX).
 
 /// <summary>
 /// Opaque joystick handle.
