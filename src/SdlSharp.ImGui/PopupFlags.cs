@@ -1,6 +1,6 @@
 namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="ImGui.OpenPopup"/>, BeginPopupContext*(), and IsPopupOpen().</summary>
+/// <summary>Flags for <see cref="ImGui.OpenPopup(string, PopupFlags)"/>, BeginPopupContext*(), and IsPopupOpen().</summary>
 [Flags]
 public enum PopupFlags
 {

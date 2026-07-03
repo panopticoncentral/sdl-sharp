@@ -1,6 +1,6 @@
 namespace SdlSharp.ImGui;
 
-/// <summary>Flags for <see cref="ImGui.CollapsingHeader(string, TreeNodeFlags)"/> and <see cref="ImGui.TreeNodeEx"/>.</summary>
+/// <summary>Flags for <see cref="ImGui.CollapsingHeader(string, TreeNodeFlags)"/> and <see cref="ImGui.TreeNodeEx(string, TreeNodeFlags)"/>.</summary>
 [Flags]
 public enum TreeNodeFlags
 {

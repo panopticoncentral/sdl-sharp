@@ -16,9 +16,11 @@ Follow these patterns when adding new wrappers.
 - **Separate static classes per SDL header** in `SdlSharp.Native` namespace (e.g., `Init`, `Error`, `Properties`)
 - **Opaque pointer types** as empty structs: `public struct SDL_Window;` for type safety
 - **Callbacks**: `[UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]` static methods + `GCHandle` for userdata
+- **No XML docs required**: CS1591 is suppressed for this layer via `src/SdlSharp/Native/.editorconfig` — the SDL headers are the documentation. Doc comments are welcome but optional here.
 
 ### High-level wrappers (`SdlSharp`, `SdlSharp.Graphics`, etc.)
 
+- **XML docs required**: every public type and member gets a `///` doc comment (`GenerateDocumentationFile` is on; CS1591 must stay at zero)
 - **`Common.ToUtf8(string?)`** converts `string?` to null-terminated UTF-8 `byte[]?` for passing to native layer (null input → null → null pointer)
 - **Handle wrappers**: `sealed unsafe class` with `IDisposable`, raw pointer `Handle` property, `_ownsHandle` flag
 - **Error checking**: `Common.Check(bool)`, `Common.Check<T>(T*)`, `Common.CheckId(uint)` → throw `SdlException`

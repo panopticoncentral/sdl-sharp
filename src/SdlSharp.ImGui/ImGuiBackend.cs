@@ -37,7 +37,7 @@ public static unsafe class ImGuiBackend
     }
 
     /// <summary>
-    /// Uploads vertex/index buffers to the GPU. Must be called BEFORE <see cref="GpuCommandBuffer.BeginRenderPass"/>.
+    /// Uploads vertex/index buffers to the GPU. Must be called BEFORE <see cref="GpuCommandBuffer.BeginRenderPass(in GpuColorTargetInfo)"/>.
     /// </summary>
     /// <param name="drawData">The draw data from <see cref="ImGui.GetDrawData"/>.</param>
     /// <param name="commandBuffer">The GPU command buffer.</param>

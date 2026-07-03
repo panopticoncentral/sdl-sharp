@@ -1,0 +1,7 @@
+# The native layer is a mechanical 1:1 mirror of the SDL3 C headers; the SDL
+# headers themselves are the documentation. XML docs are only required on the
+# public high-level wrappers.
+
+# CS1591: Missing XML comment for publicly visible type or member
+[*.cs]
+dotnet_diagnostic.CS1591.severity = none

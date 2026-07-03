@@ -1,6 +1,6 @@
 namespace SdlSharp.ImGui;
 
-/// <summary>Primitive data type identifier for the scalar widgets (<see cref="ImGui.DragScalar"/> etc.).</summary>
+/// <summary>Primitive data type identifier for the generic scalar widgets (<see cref="ImGui.Drag{T}(string, ref T, float, T, T, string, SliderFlags)"/> etc.).</summary>
 public enum DataType
 {
     /// <summary>signed 8-bit integer (sbyte).</summary>

@@ -7,7 +7,7 @@ Per-API tracking is in `INVENTORY.md` (SdlSharp) and `src/SdlSharp.ImGui/INVENTO
 
 ### Phase 1: Foundation ✅
 
-All files compile clean (0 warnings, 0 errors) with `dotnet build`.
+All files compile clean (0 warnings, 0 errors) with `dotnet build`. XML docs are required on all public high-level APIs; the `SdlSharp.Native` layer is exempt from CS1591 via `src/SdlSharp/Native/.editorconfig` (the SDL headers are its documentation).
 
 #### Native layer (`src/SdlSharp/Native/`)
 

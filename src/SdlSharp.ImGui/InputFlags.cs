@@ -7,6 +7,7 @@ namespace SdlSharp.ImGui;
 [Flags]
 public enum InputFlags
 {
+    /// <summary>No flags.</summary>
     None = 0,
 
     /// <summary>Enable repeat. Return true on successive repeats.</summary>

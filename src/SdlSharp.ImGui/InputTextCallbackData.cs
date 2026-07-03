@@ -5,7 +5,7 @@ namespace SdlSharp.ImGui;
 
 /// <summary>
 /// Data surface for an InputText callback. Inspect <see cref="EventFlag"/> to
-/// determine which event is firing, and use the mutation helpers (<see cref="InsertChars"/>,
+/// determine which event is firing, and use the mutation helpers (<see cref="InsertChars(int, string)"/>,
 /// <see cref="DeleteChars"/>, <see cref="SelectAll"/>, etc.) to react.
 /// </summary>
 public readonly unsafe struct InputTextCallbackData

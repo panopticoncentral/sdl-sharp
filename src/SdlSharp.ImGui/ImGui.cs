@@ -1827,13 +1827,13 @@ public static unsafe class ImGui
 
     /// <summary>
     /// Returns true if the key chord was pressed this frame and is routed to the current window/item.
-    /// <paramref name="inputFlags"/> takes raw ImGuiInputFlags bits (0 = default routing).
+    /// <paramref name="flags"/> takes raw ImGuiInputFlags bits (0 = default routing).
     /// </summary>
     public static bool Shortcut(Key keyChord, InputFlags flags = InputFlags.None) => IGSharp_Shortcut((int)keyChord, (int)flags);
 
     /// <summary>
     /// Assigns a shortcut that activates the next item when pressed (also shown in tooltips).
-    /// <paramref name="inputFlags"/> takes raw ImGuiInputFlags bits (0 = default routing).
+    /// <paramref name="flags"/> takes raw ImGuiInputFlags bits (0 = default routing).
     /// </summary>
     public static void SetNextItemShortcut(Key keyChord, InputFlags flags = InputFlags.None) => IGSharp_SetNextItemShortcut((int)keyChord, (int)flags);
 
@@ -1933,10 +1933,10 @@ public static unsafe class ImGui
     /// <summary>Gets the active font's pixel size (including DPI scale).</summary>
     public static float GetFontSize() => IGSharp_GetFontSize();
 
-    /// <summary>Gets the UV coordinate of a white pixel in the font atlas texture (useful for custom drawing).</summary>
     /// <summary>Gets the current font's baked data at the current size (frame-transient view).</summary>
     public static FontBaked GetFontBaked() => new(IGSharp_GetFontBaked());
 
+    /// <summary>Gets the UV coordinate of a white pixel in the font atlas texture (useful for custom drawing).</summary>
     public static Vec2 GetFontTexUvWhitePixel()
     {
         var v = IGSharp_GetFontTexUvWhitePixel();

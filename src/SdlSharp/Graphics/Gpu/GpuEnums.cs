@@ -74,135 +74,239 @@ public enum GpuTextureFormat
     Invalid = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_INVALID,
 
     // Unsigned Normalized
+    /// <summary>8-bit alpha, unsigned normalized.</summary>
     A8Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_A8_UNORM,
+    /// <summary>8-bit red, unsigned normalized.</summary>
     R8Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8_UNORM,
+    /// <summary>8-bit per channel RG, unsigned normalized.</summary>
     R8G8Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8G8_UNORM,
+    /// <summary>8-bit per channel RGBA, unsigned normalized.</summary>
     R8G8B8A8Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+    /// <summary>16-bit red, unsigned normalized.</summary>
     R16Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16_UNORM,
+    /// <summary>16-bit per channel RG, unsigned normalized.</summary>
     R16G16Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16_UNORM,
+    /// <summary>16-bit per channel RGBA, unsigned normalized.</summary>
     R16G16B16A16Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16B16A16_UNORM,
+    /// <summary>10-bit RGB with 2-bit alpha, unsigned normalized.</summary>
     R10G10B10A2Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R10G10B10A2_UNORM,
+    /// <summary>5/6/5-bit BGR, unsigned normalized.</summary>
     B5G6R5Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_B5G6R5_UNORM,
+    /// <summary>5-bit BGR with 1-bit alpha, unsigned normalized.</summary>
     B5G5R5A1Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_B5G5R5A1_UNORM,
+    /// <summary>4-bit per channel BGRA, unsigned normalized.</summary>
     B4G4R4A4Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_B4G4R4A4_UNORM,
+    /// <summary>8-bit per channel BGRA, unsigned normalized.</summary>
     B8G8R8A8Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_B8G8R8A8_UNORM,
 
     // Compressed Unsigned Normalized
+    /// <summary>BC1 block compressed RGBA, unsigned normalized.</summary>
     Bc1RgbaUnorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC1_RGBA_UNORM,
+    /// <summary>BC2 block compressed RGBA, unsigned normalized.</summary>
     Bc2RgbaUnorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC2_RGBA_UNORM,
+    /// <summary>BC3 block compressed RGBA, unsigned normalized.</summary>
     Bc3RgbaUnorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC3_RGBA_UNORM,
+    /// <summary>BC4 block compressed single-channel red, unsigned normalized.</summary>
     Bc4RUnorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC4_R_UNORM,
+    /// <summary>BC5 block compressed two-channel RG, unsigned normalized.</summary>
     Bc5RgUnorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC5_RG_UNORM,
+    /// <summary>BC7 block compressed RGBA, unsigned normalized.</summary>
     Bc7RgbaUnorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC7_RGBA_UNORM,
 
     // Compressed Signed/Unsigned Float
+    /// <summary>BC6H block compressed RGB, signed floating point.</summary>
     Bc6hRgbFloat = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC6H_RGB_FLOAT,
+    /// <summary>BC6H block compressed RGB, unsigned floating point.</summary>
     Bc6hRgbUfloat = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC6H_RGB_UFLOAT,
 
     // Signed Normalized
+    /// <summary>8-bit red, signed normalized.</summary>
     R8Snorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8_SNORM,
+    /// <summary>8-bit per channel RG, signed normalized.</summary>
     R8G8Snorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8G8_SNORM,
+    /// <summary>8-bit per channel RGBA, signed normalized.</summary>
     R8G8B8A8Snorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8G8B8A8_SNORM,
+    /// <summary>16-bit red, signed normalized.</summary>
     R16Snorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16_SNORM,
+    /// <summary>16-bit per channel RG, signed normalized.</summary>
     R16G16Snorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16_SNORM,
+    /// <summary>16-bit per channel RGBA, signed normalized.</summary>
     R16G16B16A16Snorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16B16A16_SNORM,
 
     // Signed Float
+    /// <summary>16-bit red, floating point.</summary>
     R16Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16_FLOAT,
+    /// <summary>16-bit per channel RG, floating point.</summary>
     R16G16Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16_FLOAT,
+    /// <summary>16-bit per channel RGBA, floating point.</summary>
     R16G16B16A16Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT,
+    /// <summary>32-bit red, floating point.</summary>
     R32Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R32_FLOAT,
+    /// <summary>32-bit per channel RG, floating point.</summary>
     R32G32Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R32G32_FLOAT,
+    /// <summary>32-bit per channel RGBA, floating point.</summary>
     R32G32B32A32Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R32G32B32A32_FLOAT,
 
     // Unsigned Float
+    /// <summary>11/11/10-bit RGB, unsigned floating point.</summary>
     R11G11B10Ufloat = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R11G11B10_UFLOAT,
 
     // Unsigned Integer
+    /// <summary>8-bit red, unsigned integer.</summary>
     R8Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8_UINT,
+    /// <summary>8-bit per channel RG, unsigned integer.</summary>
     R8G8Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8G8_UINT,
+    /// <summary>8-bit per channel RGBA, unsigned integer.</summary>
     R8G8B8A8Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UINT,
+    /// <summary>16-bit red, unsigned integer.</summary>
     R16Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16_UINT,
+    /// <summary>16-bit per channel RG, unsigned integer.</summary>
     R16G16Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16_UINT,
+    /// <summary>16-bit per channel RGBA, unsigned integer.</summary>
     R16G16B16A16Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16B16A16_UINT,
+    /// <summary>32-bit red, unsigned integer.</summary>
     R32Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R32_UINT,
+    /// <summary>32-bit per channel RG, unsigned integer.</summary>
     R32G32Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R32G32_UINT,
+    /// <summary>32-bit per channel RGBA, unsigned integer.</summary>
     R32G32B32A32Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R32G32B32A32_UINT,
 
     // Signed Integer
+    /// <summary>8-bit red, signed integer.</summary>
     R8Int = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8_INT,
+    /// <summary>8-bit per channel RG, signed integer.</summary>
     R8G8Int = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8G8_INT,
+    /// <summary>8-bit per channel RGBA, signed integer.</summary>
     R8G8B8A8Int = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8G8B8A8_INT,
+    /// <summary>16-bit red, signed integer.</summary>
     R16Int = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16_INT,
+    /// <summary>16-bit per channel RG, signed integer.</summary>
     R16G16Int = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16_INT,
+    /// <summary>16-bit per channel RGBA, signed integer.</summary>
     R16G16B16A16Int = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R16G16B16A16_INT,
+    /// <summary>32-bit red, signed integer.</summary>
     R32Int = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R32_INT,
+    /// <summary>32-bit per channel RG, signed integer.</summary>
     R32G32Int = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R32G32_INT,
+    /// <summary>32-bit per channel RGBA, signed integer.</summary>
     R32G32B32A32Int = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R32G32B32A32_INT,
 
     // sRGB
+    /// <summary>8-bit per channel RGBA, unsigned normalized, sRGB encoded.</summary>
     R8G8B8A8UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM_SRGB,
+    /// <summary>8-bit per channel BGRA, unsigned normalized, sRGB encoded.</summary>
     B8G8R8A8UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_B8G8R8A8_UNORM_SRGB,
 
     // Compressed sRGB
+    /// <summary>BC1 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Bc1RgbaUnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC1_RGBA_UNORM_SRGB,
+    /// <summary>BC2 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Bc2RgbaUnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC2_RGBA_UNORM_SRGB,
+    /// <summary>BC3 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Bc3RgbaUnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC3_RGBA_UNORM_SRGB,
+    /// <summary>BC7 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Bc7RgbaUnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_BC7_RGBA_UNORM_SRGB,
 
     // Depth
+    /// <summary>16-bit depth, unsigned normalized.</summary>
     D16Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_D16_UNORM,
+    /// <summary>24-bit depth, unsigned normalized.</summary>
     D24Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_D24_UNORM,
+    /// <summary>32-bit depth, floating point.</summary>
     D32Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_D32_FLOAT,
+    /// <summary>24-bit unsigned normalized depth with 8-bit unsigned integer stencil.</summary>
     D24UnormS8Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT,
+    /// <summary>32-bit floating point depth with 8-bit unsigned integer stencil.</summary>
     D32FloatS8Uint = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
 
     // ASTC Normalized
+    /// <summary>ASTC 4x4 block compressed RGBA, unsigned normalized.</summary>
     Astc4x4Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_4x4_UNORM,
+    /// <summary>ASTC 5x4 block compressed RGBA, unsigned normalized.</summary>
     Astc5x4Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_5x4_UNORM,
+    /// <summary>ASTC 5x5 block compressed RGBA, unsigned normalized.</summary>
     Astc5x5Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_5x5_UNORM,
+    /// <summary>ASTC 6x5 block compressed RGBA, unsigned normalized.</summary>
     Astc6x5Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_6x5_UNORM,
+    /// <summary>ASTC 6x6 block compressed RGBA, unsigned normalized.</summary>
     Astc6x6Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_6x6_UNORM,
+    /// <summary>ASTC 8x5 block compressed RGBA, unsigned normalized.</summary>
     Astc8x5Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_8x5_UNORM,
+    /// <summary>ASTC 8x6 block compressed RGBA, unsigned normalized.</summary>
     Astc8x6Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_8x6_UNORM,
+    /// <summary>ASTC 8x8 block compressed RGBA, unsigned normalized.</summary>
     Astc8x8Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_8x8_UNORM,
+    /// <summary>ASTC 10x5 block compressed RGBA, unsigned normalized.</summary>
     Astc10x5Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x5_UNORM,
+    /// <summary>ASTC 10x6 block compressed RGBA, unsigned normalized.</summary>
     Astc10x6Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x6_UNORM,
+    /// <summary>ASTC 10x8 block compressed RGBA, unsigned normalized.</summary>
     Astc10x8Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x8_UNORM,
+    /// <summary>ASTC 10x10 block compressed RGBA, unsigned normalized.</summary>
     Astc10x10Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x10_UNORM,
+    /// <summary>ASTC 12x10 block compressed RGBA, unsigned normalized.</summary>
     Astc12x10Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_12x10_UNORM,
+    /// <summary>ASTC 12x12 block compressed RGBA, unsigned normalized.</summary>
     Astc12x12Unorm = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_12x12_UNORM,
 
     // ASTC sRGB
+    /// <summary>ASTC 4x4 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc4x4UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_4x4_UNORM_SRGB,
+    /// <summary>ASTC 5x4 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc5x4UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_5x4_UNORM_SRGB,
+    /// <summary>ASTC 5x5 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc5x5UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_5x5_UNORM_SRGB,
+    /// <summary>ASTC 6x5 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc6x5UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_6x5_UNORM_SRGB,
+    /// <summary>ASTC 6x6 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc6x6UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_6x6_UNORM_SRGB,
+    /// <summary>ASTC 8x5 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc8x5UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_8x5_UNORM_SRGB,
+    /// <summary>ASTC 8x6 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc8x6UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_8x6_UNORM_SRGB,
+    /// <summary>ASTC 8x8 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc8x8UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_8x8_UNORM_SRGB,
+    /// <summary>ASTC 10x5 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc10x5UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x5_UNORM_SRGB,
+    /// <summary>ASTC 10x6 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc10x6UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x6_UNORM_SRGB,
+    /// <summary>ASTC 10x8 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc10x8UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x8_UNORM_SRGB,
+    /// <summary>ASTC 10x10 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc10x10UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x10_UNORM_SRGB,
+    /// <summary>ASTC 12x10 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc12x10UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_12x10_UNORM_SRGB,
+    /// <summary>ASTC 12x12 block compressed RGBA, unsigned normalized, sRGB encoded.</summary>
     Astc12x12UnormSrgb = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_12x12_UNORM_SRGB,
 
     // ASTC Float
+    /// <summary>ASTC 4x4 block compressed RGBA, floating point.</summary>
     Astc4x4Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_4x4_FLOAT,
+    /// <summary>ASTC 5x4 block compressed RGBA, floating point.</summary>
     Astc5x4Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_5x4_FLOAT,
+    /// <summary>ASTC 5x5 block compressed RGBA, floating point.</summary>
     Astc5x5Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_5x5_FLOAT,
+    /// <summary>ASTC 6x5 block compressed RGBA, floating point.</summary>
     Astc6x5Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_6x5_FLOAT,
+    /// <summary>ASTC 6x6 block compressed RGBA, floating point.</summary>
     Astc6x6Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_6x6_FLOAT,
+    /// <summary>ASTC 8x5 block compressed RGBA, floating point.</summary>
     Astc8x5Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_8x5_FLOAT,
+    /// <summary>ASTC 8x6 block compressed RGBA, floating point.</summary>
     Astc8x6Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_8x6_FLOAT,
+    /// <summary>ASTC 8x8 block compressed RGBA, floating point.</summary>
     Astc8x8Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_8x8_FLOAT,
+    /// <summary>ASTC 10x5 block compressed RGBA, floating point.</summary>
     Astc10x5Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x5_FLOAT,
+    /// <summary>ASTC 10x6 block compressed RGBA, floating point.</summary>
     Astc10x6Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x6_FLOAT,
+    /// <summary>ASTC 10x8 block compressed RGBA, floating point.</summary>
     Astc10x8Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x8_FLOAT,
+    /// <summary>ASTC 10x10 block compressed RGBA, floating point.</summary>
     Astc10x10Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_10x10_FLOAT,
+    /// <summary>ASTC 12x10 block compressed RGBA, floating point.</summary>
     Astc12x10Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_12x10_FLOAT,
+    /// <summary>ASTC 12x12 block compressed RGBA, floating point.</summary>
     Astc12x12Float = (int)SDL_GPUTextureFormat.SDL_GPU_TEXTUREFORMAT_ASTC_12x12_FLOAT,
 }
 
@@ -211,10 +315,19 @@ public enum GpuTextureFormat
 /// </summary>
 public enum GpuTextureType
 {
+    /// <summary>The texture is a 2-dimensional image.</summary>
     Texture2D = (int)SDL_GPUTextureType.SDL_GPU_TEXTURETYPE_2D,
+
+    /// <summary>The texture is a 2-dimensional array image.</summary>
     Texture2DArray = (int)SDL_GPUTextureType.SDL_GPU_TEXTURETYPE_2D_ARRAY,
+
+    /// <summary>The texture is a 3-dimensional image.</summary>
     Texture3D = (int)SDL_GPUTextureType.SDL_GPU_TEXTURETYPE_3D,
+
+    /// <summary>The texture is a cube image.</summary>
     Cube = (int)SDL_GPUTextureType.SDL_GPU_TEXTURETYPE_CUBE,
+
+    /// <summary>The texture is a cube array image.</summary>
     CubeArray = (int)SDL_GPUTextureType.SDL_GPU_TEXTURETYPE_CUBE_ARRAY,
 }
 
@@ -251,9 +364,16 @@ public enum GpuTextureUsage : uint
 /// </summary>
 public enum GpuSampleCount
 {
+    /// <summary>No multisampling.</summary>
     One = (int)SDL_GPUSampleCount.SDL_GPU_SAMPLECOUNT_1,
+
+    /// <summary>MSAA 2x.</summary>
     Two = (int)SDL_GPUSampleCount.SDL_GPU_SAMPLECOUNT_2,
+
+    /// <summary>MSAA 4x.</summary>
     Four = (int)SDL_GPUSampleCount.SDL_GPU_SAMPLECOUNT_4,
+
+    /// <summary>MSAA 8x.</summary>
     Eight = (int)SDL_GPUSampleCount.SDL_GPU_SAMPLECOUNT_8,
 }
 
@@ -262,10 +382,19 @@ public enum GpuSampleCount
 /// </summary>
 public enum GpuPrimitiveType
 {
+    /// <summary>A series of separate triangles.</summary>
     TriangleList = (int)SDL_GPUPrimitiveType.SDL_GPU_PRIMITIVETYPE_TRIANGLELIST,
+
+    /// <summary>A series of connected triangles.</summary>
     TriangleStrip = (int)SDL_GPUPrimitiveType.SDL_GPU_PRIMITIVETYPE_TRIANGLESTRIP,
+
+    /// <summary>A series of separate lines.</summary>
     LineList = (int)SDL_GPUPrimitiveType.SDL_GPU_PRIMITIVETYPE_LINELIST,
+
+    /// <summary>A series of connected lines.</summary>
     LineStrip = (int)SDL_GPUPrimitiveType.SDL_GPU_PRIMITIVETYPE_LINESTRIP,
+
+    /// <summary>A series of separate points.</summary>
     PointList = (int)SDL_GPUPrimitiveType.SDL_GPU_PRIMITIVETYPE_POINTLIST,
 }
 
@@ -274,7 +403,10 @@ public enum GpuPrimitiveType
 /// </summary>
 public enum GpuIndexElementSize
 {
+    /// <summary>The index elements are 16-bit.</summary>
     Sixteen = (int)SDL_GPUIndexElementSize.SDL_GPU_INDEXELEMENTSIZE_16BIT,
+
+    /// <summary>The index elements are 32-bit.</summary>
     ThirtyTwo = (int)SDL_GPUIndexElementSize.SDL_GPU_INDEXELEMENTSIZE_32BIT,
 }
 
