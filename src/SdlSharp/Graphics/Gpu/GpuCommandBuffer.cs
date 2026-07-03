@@ -24,25 +24,60 @@ public sealed unsafe class GpuCommandBuffer
     }
 
     /// <summary>
-    /// Begins a render pass with the specified color and optional depth/stencil targets.
+    /// Begins a render pass with a single color target and no depth/stencil target.
     /// </summary>
-    /// <param name="colorTargets">Pointer to the color target info array.</param>
-    /// <param name="numColorTargets">Number of color targets.</param>
-    /// <param name="depthStencilTarget">Optional depth/stencil target info, or null.</param>
+    /// <param name="colorTarget">The color target info.</param>
     /// <returns>A new render pass.</returns>
-    public GpuRenderPass BeginRenderPass(SDL_GPUColorTargetInfo* colorTargets, uint numColorTargets, SDL_GPUDepthStencilTargetInfo* depthStencilTarget = null) =>
-        new(Check(SDL_BeginGPURenderPass(Handle, colorTargets, numColorTargets, depthStencilTarget)));
+    public GpuRenderPass BeginRenderPass(in GpuColorTargetInfo colorTarget)
+    {
+        var native = colorTarget.ToNative();
+        return new(Check(SDL_BeginGPURenderPass(Handle, &native, 1, null)));
+    }
 
     /// <summary>
-    /// Begins a compute pass with the specified storage texture and buffer bindings.
+    /// Begins a render pass with the specified color targets and no depth/stencil target.
     /// </summary>
-    /// <param name="storageTextures">Pointer to storage texture read-write bindings, or null.</param>
-    /// <param name="numStorageTextures">Number of storage texture bindings.</param>
-    /// <param name="storageBuffers">Pointer to storage buffer read-write bindings, or null.</param>
-    /// <param name="numStorageBuffers">Number of storage buffer bindings.</param>
+    /// <param name="colorTargets">The color target infos.</param>
+    /// <returns>A new render pass.</returns>
+    public GpuRenderPass BeginRenderPass(ReadOnlySpan<GpuColorTargetInfo> colorTargets)
+    {
+        Span<SDL_GPUColorTargetInfo> native = stackalloc SDL_GPUColorTargetInfo[colorTargets.Length];
+        for (var i = 0; i < colorTargets.Length; i++) native[i] = colorTargets[i].ToNative();
+        fixed (SDL_GPUColorTargetInfo* p = native)
+            return new(Check(SDL_BeginGPURenderPass(Handle, p, (uint)colorTargets.Length, null)));
+    }
+
+    /// <summary>
+    /// Begins a render pass with the specified color targets and a depth/stencil target.
+    /// </summary>
+    /// <param name="colorTargets">The color target infos.</param>
+    /// <param name="depthStencilTarget">The depth/stencil target info.</param>
+    /// <returns>A new render pass.</returns>
+    public GpuRenderPass BeginRenderPass(ReadOnlySpan<GpuColorTargetInfo> colorTargets, in GpuDepthStencilTargetInfo depthStencilTarget)
+    {
+        Span<SDL_GPUColorTargetInfo> native = stackalloc SDL_GPUColorTargetInfo[colorTargets.Length];
+        for (var i = 0; i < colorTargets.Length; i++) native[i] = colorTargets[i].ToNative();
+        var nativeDepth = depthStencilTarget.ToNative();
+        fixed (SDL_GPUColorTargetInfo* p = native)
+            return new(Check(SDL_BeginGPURenderPass(Handle, p, (uint)colorTargets.Length, &nativeDepth)));
+    }
+
+    /// <summary>
+    /// Begins a compute pass with the specified read-write storage bindings.
+    /// </summary>
+    /// <param name="storageTextures">The storage texture read-write bindings.</param>
+    /// <param name="storageBuffers">The storage buffer read-write bindings.</param>
     /// <returns>A new compute pass.</returns>
-    public GpuComputePass BeginComputePass(SDL_GPUStorageTextureReadWriteBinding* storageTextures, uint numStorageTextures, SDL_GPUStorageBufferReadWriteBinding* storageBuffers, uint numStorageBuffers) =>
-        new(Check(SDL_BeginGPUComputePass(Handle, storageTextures, numStorageTextures, storageBuffers, numStorageBuffers)));
+    public GpuComputePass BeginComputePass(ReadOnlySpan<GpuStorageTextureReadWriteBinding> storageTextures, ReadOnlySpan<GpuStorageBufferReadWriteBinding> storageBuffers)
+    {
+        Span<SDL_GPUStorageTextureReadWriteBinding> nativeTextures = stackalloc SDL_GPUStorageTextureReadWriteBinding[storageTextures.Length];
+        for (var i = 0; i < storageTextures.Length; i++) nativeTextures[i] = storageTextures[i].ToNative();
+        Span<SDL_GPUStorageBufferReadWriteBinding> nativeBuffers = stackalloc SDL_GPUStorageBufferReadWriteBinding[storageBuffers.Length];
+        for (var i = 0; i < storageBuffers.Length; i++) nativeBuffers[i] = storageBuffers[i].ToNative();
+        fixed (SDL_GPUStorageTextureReadWriteBinding* pt = nativeTextures)
+        fixed (SDL_GPUStorageBufferReadWriteBinding* pb = nativeBuffers)
+            return new(Check(SDL_BeginGPUComputePass(Handle, pt, (uint)storageTextures.Length, pb, (uint)storageBuffers.Length)));
+    }
 
     /// <summary>
     /// Begins a copy pass for transferring data between CPU and GPU resources.
@@ -88,50 +123,44 @@ public sealed unsafe class GpuCommandBuffer
     /// Blits (copies with potential scaling/filtering) between texture regions.
     /// </summary>
     /// <param name="info">The blit operation parameters.</param>
-    public void Blit(in SDL_GPUBlitInfo info)
+    public void Blit(in GpuBlitInfo info)
     {
-        fixed (SDL_GPUBlitInfo* p = &info)
-            SDL_BlitGPUTexture(Handle, p);
+        var native = info.ToNative();
+        SDL_BlitGPUTexture(Handle, &native);
     }
 
     /// <summary>
     /// Acquires a swapchain texture for rendering to a window.
+    /// Returns null when no texture is available this frame (too many frames in flight) — skip rendering.
+    /// The returned texture is owned by the swapchain; disposing it is a no-op.
     /// </summary>
     /// <param name="window">The window to acquire the swapchain texture from.</param>
-    /// <param name="texture">Receives the swapchain texture pointer, or null if not ready.</param>
-    /// <param name="width">Receives the swapchain texture width.</param>
-    /// <param name="height">Receives the swapchain texture height.</param>
-    /// <returns>True if a texture was acquired; false if not ready yet (texture will be null).</returns>
-    public bool AcquireSwapchainTexture(Window window, out SDL_GPUTexture* texture, out uint width, out uint height)
+    /// <param name="size">Receives the swapchain texture size.</param>
+    /// <returns>The swapchain texture, or null if not ready yet this frame.</returns>
+    public GpuTexture? AcquireSwapchainTexture(Window window, out Size size)
     {
         SDL_GPUTexture* tex;
         uint w, h;
-        var result = SDL_AcquireGPUSwapchainTexture(Handle, window.Handle, &tex, &w, &h);
-        texture = tex;
-        width = w;
-        height = h;
-        if (!result) throw new SdlException();
-        return tex != null;
+        Check(SDL_AcquireGPUSwapchainTexture(Handle, window.Handle, &tex, &w, &h));
+        size = new Size((int)w, (int)h);
+        return tex == null ? null : new GpuTexture(_device, tex, ownsHandle: false);
     }
 
     /// <summary>
     /// Waits for and acquires a swapchain texture for rendering to a window.
+    /// Returns null when no texture is available — skip rendering.
+    /// The returned texture is owned by the swapchain; disposing it is a no-op.
     /// </summary>
     /// <param name="window">The window to acquire the swapchain texture from.</param>
-    /// <param name="texture">Receives the swapchain texture pointer, or null if not ready.</param>
-    /// <param name="width">Receives the swapchain texture width.</param>
-    /// <param name="height">Receives the swapchain texture height.</param>
-    /// <returns>True if a texture was acquired; false if not ready yet (texture will be null).</returns>
-    public bool WaitAndAcquireSwapchainTexture(Window window, out SDL_GPUTexture* texture, out uint width, out uint height)
+    /// <param name="size">Receives the swapchain texture size.</param>
+    /// <returns>The swapchain texture, or null if not ready.</returns>
+    public GpuTexture? WaitAndAcquireSwapchainTexture(Window window, out Size size)
     {
         SDL_GPUTexture* tex;
         uint w, h;
-        var result = SDL_WaitAndAcquireGPUSwapchainTexture(Handle, window.Handle, &tex, &w, &h);
-        texture = tex;
-        width = w;
-        height = h;
-        if (!result) throw new SdlException();
-        return tex != null;
+        Check(SDL_WaitAndAcquireGPUSwapchainTexture(Handle, window.Handle, &tex, &w, &h));
+        size = new Size((int)w, (int)h);
+        return tex == null ? null : new GpuTexture(_device, tex, ownsHandle: false);
     }
 
     /// <summary>

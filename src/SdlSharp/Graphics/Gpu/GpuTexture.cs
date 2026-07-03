@@ -11,6 +11,7 @@ namespace SdlSharp.Graphics.Gpu;
 public sealed unsafe class GpuTexture : IDisposable
 {
     private readonly GpuDevice _device;
+    private readonly bool _ownsHandle;
 
     /// <summary>
     /// The underlying native SDL_GPUTexture pointer.
@@ -24,10 +25,11 @@ public sealed unsafe class GpuTexture : IDisposable
     /// </summary>
     public nuint NativeHandle => (nuint)Handle;
 
-    internal GpuTexture(GpuDevice device, SDL_GPUTexture* handle)
+    internal GpuTexture(GpuDevice device, SDL_GPUTexture* handle, bool ownsHandle = true)
     {
         _device = device;
         Handle = handle;
+        _ownsHandle = ownsHandle;
     }
 
     /// <summary>
@@ -39,10 +41,10 @@ public sealed unsafe class GpuTexture : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (Handle != null)
+        if (_ownsHandle && Handle != null)
         {
             SDL_ReleaseGPUTexture(_device.Handle, Handle);
-            Handle = null;
         }
+        Handle = null;
     }
 }
