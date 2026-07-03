@@ -23,4 +23,10 @@ public enum AudioFormat : ushort
     F32LE = (ushort)Native.SDL_AudioFormat.SDL_AUDIO_F32LE,
     /// <summary>32-bit floating point samples, big-endian.</summary>
     F32BE = (ushort)Native.SDL_AudioFormat.SDL_AUDIO_F32BE,
+    /// <summary>Signed 16-bit samples in native byte order (little-endian on all supported platforms).</summary>
+    S16 = (ushort)Native.SDL_AudioFormat.SDL_AUDIO_S16,
+    /// <summary>Signed 32-bit integer samples in native byte order (little-endian on all supported platforms).</summary>
+    S32 = (ushort)Native.SDL_AudioFormat.SDL_AUDIO_S32,
+    /// <summary>32-bit floating point samples in native byte order (little-endian on all supported platforms).</summary>
+    F32 = (ushort)Native.SDL_AudioFormat.SDL_AUDIO_F32,
 }
