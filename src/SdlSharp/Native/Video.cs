@@ -384,6 +384,17 @@ public static partial class Video
     /// <summary>Emscripten: the keyboard element that associates keyboard events to this window.</summary>
     public const string SDL_PROP_WINDOW_EMSCRIPTEN_KEYBOARD_ELEMENT_STRING = "SDL.window.emscripten.keyboard_element";
 
+    // --- SDL_GetDisplayProperties property names ---
+
+    /// <summary>True if the display has HDR headroom above the SDR white point.</summary>
+    public const string SDL_PROP_DISPLAY_HDR_ENABLED_BOOLEAN = "SDL.display.HDR_enabled";
+    /// <summary>KMS/DRM: the "panel orientation" property for the display in degrees of clockwise rotation (a hint only).</summary>
+    public const string SDL_PROP_DISPLAY_KMSDRM_PANEL_ORIENTATION_NUMBER = "SDL.display.KMSDRM.panel_orientation";
+    /// <summary>Wayland: the wl_output associated with the display.</summary>
+    public const string SDL_PROP_DISPLAY_WAYLAND_WL_OUTPUT_POINTER = "SDL.display.wayland.wl_output";
+    /// <summary>Windows: the monitor handle (HMONITOR) associated with the display.</summary>
+    public const string SDL_PROP_DISPLAY_WINDOWS_HMONITOR_POINTER = "SDL.display.windows.hmonitor";
+
     // --- Window lifecycle ---
 
     /// <summary>
