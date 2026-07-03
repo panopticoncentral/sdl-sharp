@@ -5,11 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Skipped: SDL_PeepEvents, SDL_SetEventFilter, SDL_GetEventFilter, SDL_AddEventWatch,
-// SDL_RemoveEventWatch, SDL_FilterEvents (callback-based — complex interop, add later if needed),
-// SDL_GetWindowFromEvent (returns SDL_Window*), SDL_GetEventDescription (debug utility).
-// Skipped event structs: SDL_AudioDeviceEvent (Phase 4), SDL_CameraDeviceEvent (Phase 5),
-// SDL_ScreenKeyboardEvent (SDL 3.4, niche).
+// Skipped event structs: SDL_ScreenKeyboardEvent (SDL 3.4, niche).
 
 /// <summary>
 /// The types of events that can be delivered.
@@ -723,6 +719,53 @@ public struct SDL_RenderEvent
 }
 
 /// <summary>
+/// Audio device hotplug event structure.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct SDL_AudioDeviceEvent
+{
+    public SDL_EventType type;
+    public uint reserved;
+    public ulong timestamp;
+    public SDL_AudioDeviceID which;
+    public byte recording;
+    public byte padding1;
+    public byte padding2;
+    public byte padding3;
+}
+
+/// <summary>
+/// Camera device hotplug/permission event structure.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct SDL_CameraDeviceEvent
+{
+    public SDL_EventType type;
+    public uint reserved;
+    public ulong timestamp;
+    public SDL_CameraID which;
+}
+
+/// <summary>
+/// Keyboard IME candidates event structure.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct SDL_TextEditingCandidatesEvent
+{
+    public SDL_EventType type;
+    public uint reserved;
+    public ulong timestamp;
+    public SDL_WindowID windowID;
+    public byte** candidates;
+    public int num_candidates;
+    public int selected_candidate;
+    public byte horizontal;
+    public byte padding1;
+    public byte padding2;
+    public byte padding3;
+}
+
+/// <summary>
 /// The structure for all events in SDL.
 /// </summary>
 [StructLayout(LayoutKind.Explicit, Size = 128)]
@@ -764,6 +807,9 @@ public unsafe struct SDL_Event
     [FieldOffset(0)] public SDL_RenderEvent render;
     [FieldOffset(0)] public SDL_DropEvent drop;
     [FieldOffset(0)] public SDL_ClipboardEvent clipboard;
+    [FieldOffset(0)] public SDL_AudioDeviceEvent adevice;
+    [FieldOffset(0)] public SDL_CameraDeviceEvent cdevice;
+    [FieldOffset(0)] public SDL_TextEditingCandidatesEvent editCandidates;
 }
 
 /// <summary>
@@ -826,4 +872,43 @@ public static partial class Events
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_RegisterEvents")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial uint SDL_RegisterEvents(int numevents);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_AddEventWatch")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_AddEventWatch(
+        delegate* unmanaged[Cdecl]<void*, SDL_Event*, byte> filter, void* userdata);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_RemoveEventWatch")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial void SDL_RemoveEventWatch(
+        delegate* unmanaged[Cdecl]<void*, SDL_Event*, byte> filter, void* userdata);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetEventFilter")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial void SDL_SetEventFilter(
+        delegate* unmanaged[Cdecl]<void*, SDL_Event*, byte> filter, void* userdata);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_FilterEvents")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial void SDL_FilterEvents(
+        delegate* unmanaged[Cdecl]<void*, SDL_Event*, byte> filter, void* userdata);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetWindowFromEvent")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_Window* SDL_GetWindowFromEvent(SDL_Event* @event);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetEventDescription")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial int SDL_GetEventDescription(SDL_Event* @event, byte* buf, int buflen);
+
+    // Skipped SDL_PeepEvents (and its SDL_EventAction enum): bulk add/peek/get on a
+    // caller-supplied SDL_Event array does not fit the transient-pointer RawEvent
+    // model and would require a second managed event representation. The queue is
+    // served by SDL_PollEvent/SDL_WaitEvent/SDL_PushEvent/SDL_Has*/SDL_Flush*.
+
+    // Skipped SDL_GetEventFilter: it returns the currently-installed native filter
+    // pointer + userdata, which is only meaningful to whoever installed it. The
+    // managed Application owns the single filter slot via SetEventFilter, so a getter
+    // would only expose an opaque native callback identity.
 }
