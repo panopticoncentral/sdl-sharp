@@ -6,7 +6,7 @@
 ## Goals
 
 1. SDL_audio.h reaches full accounting: 56/58 functions bound, 2 documented skips.
-2. SDL_events.h reaches full accounting: 19/20 functions bound, 1 documented skip.
+2. SDL_events.h reaches full accounting: 18/20 functions bound, 2 documented skips.
 3. Every event struct in SDL_events.h has a typed dispatch path on `Application`.
 4. Pull-model audio (stream Get/Put callbacks) and postmix become usable from C#.
 
@@ -95,7 +95,7 @@ Bind 7 functions:
 | `SDL_GetWindowFromEvent` | returns `SDL_Window*` (null OK) |
 | `SDL_GetEventDescription` | `SDL_Event*, byte* buf, int buflen` → int (needed length) |
 
-Documented skip: `SDL_PeepEvents` — bulk add/peek/get on caller-supplied `SDL_Event` arrays; doesn't fit the `RawEvent` transient-pointer model and would require a second managed event representation. `Has*/Flush*/Wait*/Push*` cover the practical uses. (Also skip the `SDL_EventAction` enum that exists only for PeepEvents.)
+Documented skips (2): `SDL_PeepEvents` — bulk add/peek/get on caller-supplied `SDL_Event` arrays; doesn't fit the `RawEvent` transient-pointer model and would require a second managed event representation. `Has*/Flush*/Wait*/Push*` cover the practical uses. (Also skip the `SDL_EventAction` enum that exists only for PeepEvents.) `SDL_GetEventFilter` — returns the installed native filter pointer + userdata, meaningful only to whoever installed it; the managed `Application` owns the single filter slot via `SetEventFilter`, so binding a getter would create a native orphan (no managed caller) and expose an opaque callback identity.
 
 Event structs: audit Native/Events.cs against the header; add any missing structs — known gaps at design time: `SDL_TextEditingCandidatesEvent`, `SDL_CameraDeviceEvent`. The plan's accounting step must set-diff the header's typedef list and close every gap.
 
