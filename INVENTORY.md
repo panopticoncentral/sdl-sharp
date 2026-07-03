@@ -849,7 +849,7 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_JoystickConnected | function | Joystick.SDL_JoystickConnected | Joystick.Connected | |
 | SDL_SetJoystickEventsEnabled | function | Joystick.SDL_SetJoystickEventsEnabled | Joystick.SetEventsEnabled | |
 | SDL_JoystickEventsEnabled | function | Joystick.SDL_JoystickEventsEnabled | Joystick.EventsEnabled | |
-| SDL_GetJoystickAxisInitialState | function | - | - | niche: rarely-needed initial-value query; can be added on request |
+| SDL_GetJoystickAxisInitialState | function | Joystick.SDL_GetJoystickAxisInitialState | Joystick.GetAxisInitialState | |
 | SDL_GetJoystickBall | function | Joystick.SDL_GetJoystickBall | Joystick.GetBall | |
 | SDL_GetJoystickPath | function | Joystick.SDL_GetJoystickPath | Joystick.Path | |
 | SDL_GetJoystickPathForID | function | Joystick.SDL_GetJoystickPathForID | Joystick.GetPathForId | |

@@ -12,8 +12,7 @@ namespace SdlSharp.Native;
 // virtual/synthetic joysticks are a niche use case),
 // locking (SDL_LockJoysticks, SDL_UnlockJoysticks — thread-safety guards not needed by this
 // wrapper's usage model),
-// SDL_GetJoystickGUIDInfo (GUID decomposition — SdlGuid exposes the canonical string form instead),
-// SDL_GetJoystickAxisInitialState (rarely-needed initial-value query; can be added on request).
+// SDL_GetJoystickGUIDInfo (GUID decomposition — SdlGuid exposes the canonical string form instead).
 
 /// <summary>
 /// Opaque joystick handle.
@@ -131,6 +130,11 @@ public static partial class Joystick
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickAxis")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static unsafe partial short SDL_GetJoystickAxis(SDL_Joystick* joystick, int axis);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickAxisInitialState")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetJoystickAxisInitialState(SDL_Joystick* joystick, int axis, short* state);
 
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickHat")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]

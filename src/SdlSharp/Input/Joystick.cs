@@ -83,6 +83,22 @@ public sealed unsafe class Joystick : IDisposable
     /// <summary>Gets the current value of an axis.</summary>
     public short GetAxis(int index) => SDL_GetJoystickAxis(Handle, index);
 
+    /// <summary>
+    /// Gets the initial state of an axis, if the axis reported one when the
+    /// joystick was opened.
+    /// </summary>
+    /// <param name="axis">The zero-based axis index.</param>
+    /// <param name="state">Receives the initial axis value, or 0 when none was reported.</param>
+    /// <returns>True if the axis has an initial state; false otherwise. A false
+    /// return is not an error — many axes simply report no initial value.</returns>
+    public bool GetAxisInitialState(int axis, out short state)
+    {
+        short s;
+        var result = SDL_GetJoystickAxisInitialState(Handle, axis, &s);
+        state = s;
+        return result;
+    }
+
     /// <summary>Gets the current position of a hat.</summary>
     public HatPosition GetHat(int index) => (HatPosition)SDL_GetJoystickHat(Handle, index);
 
