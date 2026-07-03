@@ -63,6 +63,11 @@ public sealed unsafe class Application : IDisposable
     public static bool IsMainThread => SDL_IsMainThread();
 
     /// <summary>
+    /// Gets the current system theme (light, dark, or unknown).
+    /// </summary>
+    public static Graphics.SystemTheme SystemTheme => (Graphics.SystemTheme)Native.Video.SDL_GetSystemTheme();
+
+    /// <summary>
     /// Runs an action on the main thread during event processing.
     /// If called from the main thread, the action executes immediately.
     /// </summary>
