@@ -11,7 +11,8 @@ namespace SdlSharp.Native;
 // operates on raw pixel buffers; Surface-based equivalents (SDL_ConvertSurface[AndColorspace], SDL_PremultiplySurfaceAlpha) cover the managed use cases.
 // Skipped: SDL_BlitSurfaceUnchecked, SDL_BlitSurfaceUncheckedScaled — niche/unsafe (no bounds clipping);
 // the clipping SDL_BlitSurface/SDL_BlitSurfaceScaled cover the managed use cases.
-// Skipped: SDL_MUSTLOCK — this is a macro (`#define`), not an exported function; exposed as a managed property instead.
+// Skipped: SDL_MUSTLOCK — this is a macro (`#define`), not an exported function; exposed as the managed Surface.MustLock property instead.
+// Final accounting: 55 unique bound (+2 overloads) + 10 skipped = 65 (header total).
 
 /// <summary>
 /// Surface flags.
