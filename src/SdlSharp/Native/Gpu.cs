@@ -931,6 +931,51 @@ public static partial class Gpu
     /// <summary>GPU driver info property.</summary>
     public static ReadOnlySpan<byte> SDL_PROP_GPU_DEVICE_DRIVER_INFO_STRING => "SDL.gpu.device.driver_info"u8;
 
+    // --- Device create property names ---
+
+    /// <summary>Enable debug mode properties and validations.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN = "SDL.gpu.device.create.debugmode";
+    /// <summary>Prefer energy efficiency over maximum GPU performance.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_PREFERLOWPOWER_BOOLEAN = "SDL.gpu.device.create.preferlowpower";
+    /// <summary>Automatically log useful debug information on device creation.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_VERBOSE_BOOLEAN = "SDL.gpu.device.create.verbose";
+    /// <summary>The name of the GPU driver to use.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING = "SDL.gpu.device.create.name";
+    /// <summary>Enable Vulkan clip distance support.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_FEATURE_CLIP_DISTANCE_BOOLEAN = "SDL.gpu.device.create.feature.clip_distance";
+    /// <summary>Enable depth clamping support.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_FEATURE_DEPTH_CLAMPING_BOOLEAN = "SDL.gpu.device.create.feature.depth_clamping";
+    /// <summary>Enable indirect draw first-instance support.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_FEATURE_INDIRECT_DRAW_FIRST_INSTANCE_BOOLEAN = "SDL.gpu.device.create.feature.indirect_draw_first_instance";
+    /// <summary>Enable anisotropic filtering support.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_FEATURE_ANISOTROPY_BOOLEAN = "SDL.gpu.device.create.feature.anisotropy";
+    /// <summary>The app is able to provide private (NDA) shaders.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_SHADERS_PRIVATE_BOOLEAN = "SDL.gpu.device.create.shaders.private";
+    /// <summary>The app is able to provide SPIR-V shaders.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN = "SDL.gpu.device.create.shaders.spirv";
+    /// <summary>The app is able to provide DXBC shaders.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXBC_BOOLEAN = "SDL.gpu.device.create.shaders.dxbc";
+    /// <summary>The app is able to provide DXIL shaders.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXIL_BOOLEAN = "SDL.gpu.device.create.shaders.dxil";
+    /// <summary>The app is able to provide MSL shaders.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_SHADERS_MSL_BOOLEAN = "SDL.gpu.device.create.shaders.msl";
+    /// <summary>The app is able to provide Metal library shaders.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_SHADERS_METALLIB_BOOLEAN = "SDL.gpu.device.create.shaders.metallib";
+    /// <summary>Allow D3D12 tier-1 resource binding hardware.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_D3D12_ALLOW_FEWER_RESOURCE_SLOTS_BOOLEAN = "SDL.gpu.device.create.d3d12.allowtier1resourcebinding";
+    /// <summary>The D3D12 semantic name prefix for vertex attributes.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_D3D12_SEMANTIC_NAME_STRING = "SDL.gpu.device.create.d3d12.semantic";
+    /// <summary>The D3D12 Agility SDK version.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_D3D12_AGILITY_SDK_VERSION_NUMBER = "SDL.gpu.device.create.d3d12.agility_sdk_version";
+    /// <summary>The D3D12 Agility SDK path.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_D3D12_AGILITY_SDK_PATH_STRING = "SDL.gpu.device.create.d3d12.agility_sdk_path";
+    /// <summary>Require Vulkan hardware acceleration.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_VULKAN_REQUIRE_HARDWARE_ACCELERATION_BOOLEAN = "SDL.gpu.device.create.vulkan.requirehardwareacceleration";
+    /// <summary>A pointer to an SDL_GPUVulkanOptions structure.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_VULKAN_OPTIONS_POINTER = "SDL.gpu.device.create.vulkan.options";
+    /// <summary>Allow the Metal MTLGPUFamilyMac1 hardware tier.</summary>
+    public const string SDL_PROP_GPU_DEVICE_CREATE_METAL_ALLOW_MACFAMILY1_BOOLEAN = "SDL.gpu.device.create.metal.allowmacfamily1";
+
     // --- Device creation ---
 
     /// <summary>Checks if a GPU backend supports given shader formats.</summary>

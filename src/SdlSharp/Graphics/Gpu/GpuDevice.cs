@@ -25,6 +25,11 @@ public sealed unsafe class GpuDevice : IDisposable
     /// <param name="debugMode">Whether to enable GPU debug mode.</param>
     /// <param name="preferredBackend">An optional preferred GPU backend name, or null for auto-selection.</param>
     /// <returns>A new GPU device.</returns>
+    /// <remarks>
+    /// For debug or backend-specific creation knobs beyond these parameters, use
+    /// <see cref="Create(PropertyGroup)"/> with the property names in <see cref="GpuDeviceProperties"/>.
+    /// </remarks>
+    /// <seealso cref="Create(PropertyGroup)"/>
     public static GpuDevice Create(GpuShaderFormat shaderFormats, bool debugMode = false, string? preferredBackend = null) =>
         new(Check(SDL_CreateGPUDevice((SDL_GPUShaderFormat)shaderFormats, debugMode, ToUtf8(preferredBackend))));
 
@@ -69,6 +74,8 @@ public sealed unsafe class GpuDevice : IDisposable
 
     /// <summary>
     /// Gets the properties of this device (name, driver info). The returned group is owned by SDL.
+    /// Each access returns a new wrapper around the same underlying SDL property set;
+    /// the wrappers are not equal to each other.
     /// </summary>
     public PropertyGroup Properties => new(SDL_GetGPUDeviceProperties(Handle), ownsHandle: false);
 

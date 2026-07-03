@@ -30,16 +30,18 @@ public sealed unsafe class GpuFence : IDisposable
 
     /// <summary>
     /// Blocks until all of the given fences are signaled.
+    /// All fences must belong to the given device.
     /// </summary>
     /// <param name="device">The device the fences belong to.</param>
-    /// <param name="fences">The fences to wait for.</param>
+    /// <param name="fences">The fences to wait for; all must have been created by <paramref name="device"/>.</param>
     public static void WaitAll(GpuDevice device, ReadOnlySpan<GpuFence> fences) => Wait(device, waitAll: true, fences);
 
     /// <summary>
     /// Blocks until at least one of the given fences is signaled.
+    /// All fences must belong to the given device.
     /// </summary>
     /// <param name="device">The device the fences belong to.</param>
-    /// <param name="fences">The fences to wait for.</param>
+    /// <param name="fences">The fences to wait for; all must have been created by <paramref name="device"/>.</param>
     public static void WaitAny(GpuDevice device, ReadOnlySpan<GpuFence> fences) => Wait(device, waitAll: false, fences);
 
     private static void Wait(GpuDevice device, bool waitAll, ReadOnlySpan<GpuFence> fences)
