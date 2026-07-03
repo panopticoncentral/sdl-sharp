@@ -30,5 +30,6 @@ var probe = reloaded.ReadPixel(53, 10);
 Console.WriteLine($"PNG round-trip: {probe.R == 255}");
 File.Delete(pngPath);
 
+// Flags reflects SDL's internal allocation choices (e.g. SimdAligned when SDL allocated the pixel memory SIMD-aligned).
 Console.WriteLine($"MustLock: {surface.MustLock}, Flags: {surface.Flags}");
 Console.WriteLine("Done.");
