@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -125,6 +126,145 @@ public sealed unsafe class Application : IDisposable
     /// <see cref="RawEvent.Pointer"/> is only valid during the callback.
     /// </summary>
     public static event RawEventHandler? RawEventFilter;
+
+    /// <summary>
+    /// A predicate applied to a raw event at queue-insertion time (see
+    /// <see cref="SetEventFilter"/> and <see cref="FilterEvents"/>). Return true to keep
+    /// the event, false to drop it. The event's <see cref="RawEvent.Pointer"/> is only
+    /// valid during the call.
+    /// </summary>
+    /// <param name="e">The raw event.</param>
+    /// <returns>True to keep the event, false to drop it.</returns>
+    public delegate bool RawEventPredicate(in RawEvent e);
+
+    private static readonly Dictionary<RawEventHandler, GCHandle> WatchHandles = new();
+    private static GCHandle _eventFilterHandle;
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static byte WatchTrampoline(void* userdata, Native.SDL_Event* e)
+    {
+        try
+        {
+            var handler = (RawEventHandler)GCHandle.FromIntPtr((nint)userdata).Target!;
+            handler(new RawEvent((EventType)e->type, (nint)e));
+        }
+        catch
+        {
+            // A throwing watch must not drop the event or cross the boundary.
+        }
+
+        return 1; // Watches ignore the return value; keep the event regardless.
+    }
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static byte FilterTrampoline(void* userdata, Native.SDL_Event* e)
+    {
+        try
+        {
+            var predicate = (RawEventPredicate)GCHandle.FromIntPtr((nint)userdata).Target!;
+            return predicate(new RawEvent((EventType)e->type, (nint)e)) ? (byte)1 : (byte)0;
+        }
+        catch
+        {
+            return 1; // On error keep the event rather than silently dropping it.
+        }
+    }
+
+    /// <summary>
+    /// Registers a callback invoked for every event as it is added to the queue. Watches
+    /// may fire from the thread that pushes the event, including during
+    /// <see cref="PumpEvents"/> or from SDL-internal threads. The same handler cannot be
+    /// added twice.
+    /// </summary>
+    /// <param name="watch">The watch callback.</param>
+    /// <exception cref="ArgumentException">The handler is already registered.</exception>
+    public static void AddEventWatch(RawEventHandler watch)
+    {
+        lock (WatchHandles)
+        {
+            if (WatchHandles.ContainsKey(watch))
+            {
+                throw new ArgumentException("This handler is already registered as an event watch.", nameof(watch));
+            }
+
+            var handle = GCHandle.Alloc(watch);
+            if (!SDL_AddEventWatch(&WatchTrampoline, (void*)GCHandle.ToIntPtr(handle)))
+            {
+                handle.Free();
+                throw new SdlException();
+            }
+
+            WatchHandles[watch] = handle;
+        }
+    }
+
+    /// <summary>
+    /// Removes a watch previously registered with <see cref="AddEventWatch"/>. Does nothing
+    /// if the handler was not registered.
+    /// </summary>
+    /// <param name="watch">The watch callback to remove.</param>
+    public static void RemoveEventWatch(RawEventHandler watch)
+    {
+        lock (WatchHandles)
+        {
+            if (!WatchHandles.TryGetValue(watch, out var handle))
+            {
+                return;
+            }
+
+            SDL_RemoveEventWatch(&WatchTrampoline, (void*)GCHandle.ToIntPtr(handle));
+            handle.Free();
+            WatchHandles.Remove(watch);
+        }
+    }
+
+    /// <summary>
+    /// Sets or clears (<c>null</c>) the event filter. Unlike <see cref="RawEventFilter"/>
+    /// (which observes events during dispatch on the main loop), this filter runs at the
+    /// moment an event is added to the queue — possibly on another thread — and dropping
+    /// an event here prevents it from ever being queued. Only one filter is installed at a
+    /// time; setting a new one replaces the previous.
+    /// </summary>
+    /// <param name="filter">The filter predicate, or <c>null</c> to clear.</param>
+    public static void SetEventFilter(RawEventPredicate? filter)
+    {
+        var previous = _eventFilterHandle;
+
+        if (filter == null)
+        {
+            SDL_SetEventFilter(null, null);
+            _eventFilterHandle = default;
+        }
+        else
+        {
+            var handle = GCHandle.Alloc(filter);
+            SDL_SetEventFilter(&FilterTrampoline, (void*)GCHandle.ToIntPtr(handle));
+            _eventFilterHandle = handle;
+        }
+
+        if (previous.IsAllocated)
+        {
+            previous.Free();
+        }
+    }
+
+    /// <summary>
+    /// Runs a predicate over every event currently in the queue, removing those for which
+    /// it returns false. This is a one-shot sweep and does not install a persistent filter.
+    /// </summary>
+    /// <param name="predicate">The predicate; return false to remove an event.</param>
+    public static void FilterEvents(RawEventPredicate predicate)
+    {
+        var handle = GCHandle.Alloc(predicate);
+        try
+        {
+            SDL_FilterEvents(&FilterTrampoline, (void*)GCHandle.ToIntPtr(handle));
+        }
+        finally
+        {
+            handle.Free();
+        }
+    }
 
     /// <summary>Raised when the user requests a quit (e.g. closes the last window).</summary>
     public static event Action<QuitEventArgs>? Quit;
@@ -358,5 +498,23 @@ public sealed unsafe class Application : IDisposable
     public static bool IsEventEnabled(EventType type) => SDL_EventEnabled((uint)type);
 
     /// <inheritdoc/>
-    public void Dispose() => SDL_Quit();
+    public void Dispose()
+    {
+        SDL_SetEventFilter(null, null);
+        if (_eventFilterHandle.IsAllocated) _eventFilterHandle.Free();
+        _eventFilterHandle = default;
+
+        lock (WatchHandles)
+        {
+            foreach (var (handler, handle) in WatchHandles)
+            {
+                SDL_RemoveEventWatch(&WatchTrampoline, (void*)GCHandle.ToIntPtr(handle));
+                handle.Free();
+            }
+
+            WatchHandles.Clear();
+        }
+
+        SDL_Quit();
+    }
 }
