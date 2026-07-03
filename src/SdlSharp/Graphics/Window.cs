@@ -751,6 +751,22 @@ public sealed unsafe class Window : IDisposable
     /// <param name="fill">true to fill the document, false to restore the window's set size.</param>
     public void SetFillDocument(bool fill) => Check(SDL_SetWindowFillDocument(Handle, fill));
 
+    // --- OpenGL ---
+
+    /// <summary>
+    /// Creates an OpenGL context for this window. The window must have been created with
+    /// the <see cref="WindowFlags.OpenGL"/> flag.
+    /// </summary>
+    /// <returns>A new OpenGL context. Dispose it when no longer needed.</returns>
+    public GlContext CreateGlContext() => new(Check(SDL_GL_CreateContext(Handle)));
+
+    /// <summary>
+    /// Updates this window's OpenGL surface with the rendered content. The window must have
+    /// been created with the <see cref="WindowFlags.OpenGL"/> flag, and this window's OpenGL
+    /// context must be current.
+    /// </summary>
+    public void GlSwap() => Check(SDL_GL_SwapWindow(Handle));
+
     /// <inheritdoc/>
     public void Dispose()
     {
