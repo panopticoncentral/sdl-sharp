@@ -1132,14 +1132,16 @@ Refactor `DispatchEvents` so the `switch` body moves into a private `static bool
     }
 ```
 
-`DispatchExtended` is added in Task 10 (the remaining families). For this task, add a temporary empty partial method stub so the file compiles:
+`DispatchExtended` is filled in by Task 10 (the remaining families). For this task, add a real but empty method body so the file compiles — do NOT use a `partial` method (a partial method with an explicit `private` accessibility modifier requires an implementing declaration, so a bare stub would not compile, and the class does not otherwise need to be `partial`):
 
 ```csharp
     // Filled in by Task 10 with the remaining typed event families.
-    private static partial void DispatchExtended(ref Native.SDL_Event e);
+    private static void DispatchExtended(ref Native.SDL_Event e)
+    {
+    }
 ```
 
-To use a partial method, mark the class `partial` (it is `public sealed unsafe class Application`; change to `public sealed unsafe partial class Application`). Add the implementing partial in Task 10. If the subagent prefers, instead of a partial method it may inline all Task-10 cases directly here and skip `DispatchExtended` — but the plan's structure keeps them separate for reviewability.
+Task 10 replaces this empty body with the full switch (it edits the body in place; the signature stays identical). The class stays `public sealed unsafe class Application` — no `partial` needed.
 
 - [ ] **Step 2: Add the queue-state query/flush/enable methods**
 
@@ -1958,10 +1960,10 @@ Add with the other `public static event` declarations in `Application`:
 
 - [ ] **Step 6: Implement `DispatchExtended`**
 
-Add the partial implementation (matches the stub signature from Task 7). Use `N` = `Native.SDL_EventType` locally for brevity is not allowed (no alias); write it out. Note pen `pmotion`/`ptouch`/`pbutton`/`paxis`, gamepad `gsensor.data` fixed[3], sensor `data` fixed[6], drop strings via `Marshal.PtrToStringUTF8`, clipboard/candidate string arrays via a small local helper:
+Replace the empty `DispatchExtended` body added in Task 7 with the full switch below (keep the exact same signature `private static void DispatchExtended(ref Native.SDL_Event e)` — it is NOT a partial method). Write out `Native.SDL_EventType` in full (no alias). Note pen `pmotion`/`ptouch`/`pbutton`/`paxis`, gamepad `gsensor.data` fixed[3], sensor `data` fixed[6], drop strings via `Marshal.PtrToStringUTF8`, clipboard/candidate string arrays via a small local helper:
 
 ```csharp
-    private static partial void DispatchExtended(ref Native.SDL_Event e)
+    private static void DispatchExtended(ref Native.SDL_Event e)
     {
         switch ((Native.SDL_EventType)e.type)
         {
