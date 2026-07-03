@@ -387,15 +387,15 @@ functions (55%) across the 41 active headers; the 13 deferred-by-design headers
 
 ### Phase 8: Input completion
 
-- [ ] 8.1 Gamepad (15/73 → full): `SDL_RumbleGamepad`(+Triggers),
+- [x] 8.1 Gamepad (15/73 → full): `SDL_RumbleGamepad`(+Triggers),
       `SDL_AddGamepadMapping`/`FromFile` (gamecontrollerdb.txt), `SDL_GamepadConnected`,
       `SDL_GetGamepadID`/`FromID` (event correlation), LED, sensors, player index,
       power info, button/axis↔string round-trips, capability properties.
-- [ ] 8.2 Joystick (18/58 → full): rumble (+triggers), LED, power info,
+- [x] 8.2 Joystick (18/58 → full): rumble (+triggers), LED, power info,
       events-enabled, `SDL_HasJoystick`/`JoystickConnected`, player index,
       AXIS_MIN/MAX constants; bind `SDL_guid.h` (`SDL_GUID`) to unlock
       GUID/vendor/product identification. Virtual-joystick suite stays deferred.
-- [ ] 8.3 Complete public `Scancode` enum (~144 missing of 249 — prioritize
+- [x] 8.3 Complete public `Scancode` enum (~144 missing of 249 — prioritize
       `NonUsBackslash`/`NonUsHash` (ISO keyboards), F13–F24, media keys) and
       `Keycode` enum (keypad, punctuation, F13–F24, media/AC); add
       `KeyModifiers.Level5`.

@@ -367,7 +367,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_RenamePath | function | - | - | .NET has File.Move/Directory.Move |
 | SDL_CopyFile | function | - | - | .NET has File.Copy |
 
-## SDL_gamepad.h
+## SDL_gamepad.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -376,82 +376,82 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_GamepadButton | enum | Gamepad.SDL_GamepadButton | GamepadButton | |
 | SDL_GamepadButtonLabel | enum | Gamepad.SDL_GamepadButtonLabel | GamepadButtonLabel | |
 | SDL_GamepadAxis | enum | Gamepad.SDL_GamepadAxis | GamepadAxis | |
-| SDL_GamepadBindingType | enum | - | - | Deferred: binding introspection |
-| SDL_GamepadBinding | struct | - | - | Deferred: binding introspection |
+| SDL_GamepadBindingType | enum | - | - | niche: binding introspection (mapping strings are the supported way to inspect/configure bindings) |
+| SDL_GamepadBinding | struct | - | - | niche: binding introspection |
 | SDL_GetGamepads | function | Gamepad.SDL_GetGamepads | Gamepad.GetDevices | |
 | SDL_IsGamepad | function | Gamepad.SDL_IsGamepad | Gamepad.IsGamepad | |
 | SDL_GetGamepadNameForID | function | Gamepad.SDL_GetGamepadNameForID | Gamepad.GetName | |
 | SDL_GetGamepadTypeForID | function | Gamepad.SDL_GetGamepadTypeForID | Gamepad.GetType | |
 | SDL_OpenGamepad | function | Gamepad.SDL_OpenGamepad | Gamepad.Open | |
-| SDL_GetGamepadFromID | function | Gamepad.SDL_GetGamepadFromID | - | Deferred |
+| SDL_GetGamepadFromID | function | Gamepad.SDL_GetGamepadFromID | Gamepad.FromId | |
 | SDL_GetGamepadName | function | Gamepad.SDL_GetGamepadName | Gamepad.Name | |
 | SDL_GetGamepadType | function | Gamepad.SDL_GetGamepadType | Gamepad.Type | |
-| SDL_GetGamepadJoystick | function | Gamepad.SDL_GetGamepadJoystick | - | Deferred |
+| SDL_GetGamepadJoystick | function | Gamepad.SDL_GetGamepadJoystick | Gamepad.GetJoystick | |
 | SDL_GetGamepadAxis | function | Gamepad.SDL_GetGamepadAxis | Gamepad.GetAxis | |
 | SDL_GetGamepadButton | function | Gamepad.SDL_GetGamepadButton | Gamepad.GetButton | |
 | SDL_GetGamepadButtonLabel | function | Gamepad.SDL_GetGamepadButtonLabel | Gamepad.GetButtonLabel | |
 | SDL_GetGamepadConnectionState | function | Gamepad.SDL_GetGamepadConnectionState | Gamepad.ConnectionState | |
 | SDL_CloseGamepad | function | Gamepad.SDL_CloseGamepad | Gamepad.Dispose | |
 | SDL_UpdateGamepads | function | Gamepad.SDL_UpdateGamepads | Gamepad.Update | |
-| SDL_AddGamepadMapping | function | - | - | Deferred: mapping management |
-| SDL_AddGamepadMappingsFromIO | function | - | - | Deferred: mapping management (SDL_IOStream deferred in favor of .NET streams) |
-| SDL_AddGamepadMappingsFromFile | function | - | - | Deferred: mapping management |
-| SDL_ReloadGamepadMappings | function | - | - | Deferred: mapping management |
-| SDL_GetGamepadMappings | function | - | - | Deferred: mapping management |
-| SDL_GetGamepadMappingForGUID | function | - | - | Deferred: mapping management |
-| SDL_GetGamepadMapping | function | - | - | Deferred: mapping management |
-| SDL_GetGamepadMappingForID | function | - | - | Deferred: mapping management |
-| SDL_SetGamepadMapping | function | - | - | Deferred: mapping management |
-| SDL_HasGamepad | function | - | - | Deferred |
-| SDL_GetGamepadPathForID | function | - | - | Deferred: device identification |
-| SDL_GetGamepadGUIDForID | function | - | - | Deferred: device identification |
-| SDL_GetGamepadVendorForID | function | - | - | Deferred: device identification |
-| SDL_GetGamepadProductForID | function | - | - | Deferred: device identification |
-| SDL_GetGamepadProductVersionForID | function | - | - | Deferred: device identification |
-| SDL_GetRealGamepadTypeForID | function | - | - | Deferred: device identification |
-| SDL_GetGamepadPath | function | - | - | Deferred: device identification |
-| SDL_GetRealGamepadType | function | - | - | Deferred: device identification |
-| SDL_GetGamepadVendor | function | - | - | Deferred: device identification |
-| SDL_GetGamepadProduct | function | - | - | Deferred: device identification |
-| SDL_GetGamepadProductVersion | function | - | - | Deferred: device identification |
-| SDL_GetGamepadFirmwareVersion | function | - | - | Deferred: device identification |
-| SDL_GetGamepadSerial | function | - | - | Deferred: device identification |
-| SDL_GetGamepadSteamHandle | function | - | - | Deferred: Steam handle |
-| SDL_GetGamepadPlayerIndexForID | function | - | - | Deferred: player index |
-| SDL_GetGamepadFromPlayerIndex | function | - | - | Deferred: player index |
-| SDL_GetGamepadPlayerIndex | function | - | - | Deferred: player index |
-| SDL_SetGamepadPlayerIndex | function | - | - | Deferred: player index |
-| SDL_GetGamepadProperties | function | - | - | Deferred: properties |
-| SDL_PROP_GAMEPAD_CAP_*_BOOLEAN | macro (5) | - | - | Deferred: properties; property string constants |
-| SDL_GetGamepadID | function | - | - | Deferred |
-| SDL_GamepadConnected | function | - | - | Deferred |
-| SDL_GetGamepadPowerInfo | function | - | - | Deferred: power |
-| SDL_SetGamepadEventsEnabled | function | - | - | Deferred: event state toggles |
-| SDL_GamepadEventsEnabled | function | - | - | Deferred: event state toggles |
-| SDL_GetGamepadBindings | function | - | - | Deferred: binding introspection |
-| SDL_GetGamepadTypeFromString | function | - | - | Deferred: string conversion |
-| SDL_GetGamepadStringForType | function | - | - | Deferred: string conversion |
-| SDL_GetGamepadAxisFromString | function | - | - | Deferred: string conversion |
-| SDL_GetGamepadStringForAxis | function | - | - | Deferred: string conversion |
-| SDL_GetGamepadButtonFromString | function | - | - | Deferred: string conversion |
-| SDL_GetGamepadStringForButton | function | - | - | Deferred: string conversion |
-| SDL_GamepadHasAxis | function | - | - | Deferred: capability queries |
-| SDL_GamepadHasButton | function | - | - | Deferred: capability queries |
-| SDL_GetGamepadButtonLabelForType | function | - | - | Deferred |
-| SDL_GetNumGamepadTouchpads | function | - | - | Deferred: touchpad |
-| SDL_GetNumGamepadTouchpadFingers | function | - | - | Deferred: touchpad |
-| SDL_GetGamepadTouchpadFinger | function | - | - | Deferred: touchpad |
-| SDL_GamepadHasSensor | function | - | - | Deferred: sensors |
-| SDL_SetGamepadSensorEnabled | function | - | - | Deferred: sensors |
-| SDL_GamepadSensorEnabled | function | - | - | Deferred: sensors |
-| SDL_GetGamepadSensorDataRate | function | - | - | Deferred: sensors |
-| SDL_GetGamepadSensorData | function | - | - | Deferred: sensors |
-| SDL_RumbleGamepad | function | - | - | Deferred: rumble/LED/effects |
-| SDL_RumbleGamepadTriggers | function | - | - | Deferred: rumble/LED/effects |
-| SDL_SetGamepadLED | function | - | - | Deferred: rumble/LED/effects |
-| SDL_SendGamepadEffect | function | - | - | Deferred: rumble/LED/effects |
-| SDL_GetGamepadAppleSFSymbolsNameForButton | function | - | - | Platform: Apple SF Symbols |
-| SDL_GetGamepadAppleSFSymbolsNameForAxis | function | - | - | Platform: Apple SF Symbols |
+| SDL_AddGamepadMapping | function | Gamepad.SDL_AddGamepadMapping | Gamepad.AddMapping | |
+| SDL_AddGamepadMappingsFromIO | function | - | - | .NET: project policy favors the SDL_AddGamepadMappingsFromFile path over SDL_IOStream interop |
+| SDL_AddGamepadMappingsFromFile | function | Gamepad.SDL_AddGamepadMappingsFromFile | Gamepad.AddMappingsFromFile | |
+| SDL_ReloadGamepadMappings | function | Gamepad.SDL_ReloadGamepadMappings | Gamepad.ReloadMappings | |
+| SDL_GetGamepadMappings | function | - | - | niche: full-database enumerator; individual lookups covered by GetMapping/GetMappingForGuid/GetMappingForId |
+| SDL_GetGamepadMappingForGUID | function | Gamepad.SDL_GetGamepadMappingForGUID | Gamepad.GetMappingForGuid | |
+| SDL_GetGamepadMapping | function | Gamepad.SDL_GetGamepadMapping | Gamepad.GetMapping | |
+| SDL_GetGamepadMappingForID | function | Gamepad.SDL_GetGamepadMappingForID | Gamepad.GetMappingForId | |
+| SDL_SetGamepadMapping | function | Gamepad.SDL_SetGamepadMapping | Gamepad.SetMapping | |
+| SDL_HasGamepad | function | Gamepad.SDL_HasGamepad | Gamepad.HasGamepad | |
+| SDL_GetGamepadPathForID | function | Gamepad.SDL_GetGamepadPathForID | Gamepad.GetPathForId | |
+| SDL_GetGamepadGUIDForID | function | Gamepad.SDL_GetGamepadGUIDForID | Gamepad.GetGuidForId | |
+| SDL_GetGamepadVendorForID | function | Gamepad.SDL_GetGamepadVendorForID | Gamepad.GetVendorForId | |
+| SDL_GetGamepadProductForID | function | Gamepad.SDL_GetGamepadProductForID | Gamepad.GetProductForId | |
+| SDL_GetGamepadProductVersionForID | function | Gamepad.SDL_GetGamepadProductVersionForID | Gamepad.GetProductVersionForId | |
+| SDL_GetRealGamepadTypeForID | function | Gamepad.SDL_GetRealGamepadTypeForID | Gamepad.GetRealType | |
+| SDL_GetGamepadPath | function | Gamepad.SDL_GetGamepadPath | Gamepad.Path | |
+| SDL_GetRealGamepadType | function | Gamepad.SDL_GetRealGamepadType | Gamepad.RealType | |
+| SDL_GetGamepadVendor | function | Gamepad.SDL_GetGamepadVendor | Gamepad.Vendor | |
+| SDL_GetGamepadProduct | function | Gamepad.SDL_GetGamepadProduct | Gamepad.Product | |
+| SDL_GetGamepadProductVersion | function | Gamepad.SDL_GetGamepadProductVersion | Gamepad.ProductVersion | |
+| SDL_GetGamepadFirmwareVersion | function | Gamepad.SDL_GetGamepadFirmwareVersion | Gamepad.FirmwareVersion | |
+| SDL_GetGamepadSerial | function | Gamepad.SDL_GetGamepadSerial | Gamepad.Serial | |
+| SDL_GetGamepadSteamHandle | function | Gamepad.SDL_GetGamepadSteamHandle | Gamepad.SteamHandle | |
+| SDL_GetGamepadPlayerIndexForID | function | Gamepad.SDL_GetGamepadPlayerIndexForID | Gamepad.GetPlayerIndexForId | |
+| SDL_GetGamepadFromPlayerIndex | function | Gamepad.SDL_GetGamepadFromPlayerIndex | Gamepad.FromPlayerIndex | |
+| SDL_GetGamepadPlayerIndex | function | Gamepad.SDL_GetGamepadPlayerIndex | Gamepad.PlayerIndex (get) | |
+| SDL_SetGamepadPlayerIndex | function | Gamepad.SDL_SetGamepadPlayerIndex | Gamepad.PlayerIndex (set) | |
+| SDL_GetGamepadProperties | function | Gamepad.SDL_GetGamepadProperties | Gamepad.Properties | |
+| SDL_PROP_GAMEPAD_CAP_*_BOOLEAN | macro (5) | Gamepad.SDL_PROP_GAMEPAD_CAP_*_BOOLEAN | GamepadProperties.Cap* | Aliases of the joystick CAP properties (SDL_gamepad.h lines 813-817) |
+| SDL_GetGamepadID | function | Gamepad.SDL_GetGamepadID | Gamepad.Id | |
+| SDL_GamepadConnected | function | Gamepad.SDL_GamepadConnected | Gamepad.Connected | |
+| SDL_GetGamepadPowerInfo | function | Gamepad.SDL_GetGamepadPowerInfo | Gamepad.GetPowerInfo | |
+| SDL_SetGamepadEventsEnabled | function | Gamepad.SDL_SetGamepadEventsEnabled | Gamepad.SetEventsEnabled | |
+| SDL_GamepadEventsEnabled | function | Gamepad.SDL_GamepadEventsEnabled | Gamepad.EventsEnabled | |
+| SDL_GetGamepadBindings | function | - | - | niche: low-level binding introspection (see SDL_GamepadBinding) |
+| SDL_GetGamepadTypeFromString | function | Gamepad.SDL_GetGamepadTypeFromString | Gamepad.GetTypeFromString | |
+| SDL_GetGamepadStringForType | function | Gamepad.SDL_GetGamepadStringForType | Gamepad.GetStringForType | |
+| SDL_GetGamepadAxisFromString | function | Gamepad.SDL_GetGamepadAxisFromString | Gamepad.GetAxisFromString | |
+| SDL_GetGamepadStringForAxis | function | Gamepad.SDL_GetGamepadStringForAxis | Gamepad.GetStringForAxis | |
+| SDL_GetGamepadButtonFromString | function | Gamepad.SDL_GetGamepadButtonFromString | Gamepad.GetButtonFromString | |
+| SDL_GetGamepadStringForButton | function | Gamepad.SDL_GetGamepadStringForButton | Gamepad.GetStringForButton | |
+| SDL_GamepadHasAxis | function | Gamepad.SDL_GamepadHasAxis | Gamepad.HasAxis | |
+| SDL_GamepadHasButton | function | Gamepad.SDL_GamepadHasButton | Gamepad.HasButton | |
+| SDL_GetGamepadButtonLabelForType | function | Gamepad.SDL_GetGamepadButtonLabelForType | Gamepad.GetButtonLabelForType | |
+| SDL_GetNumGamepadTouchpads | function | Gamepad.SDL_GetNumGamepadTouchpads | Gamepad.NumTouchpads | |
+| SDL_GetNumGamepadTouchpadFingers | function | Gamepad.SDL_GetNumGamepadTouchpadFingers | Gamepad.GetNumTouchpadFingers | |
+| SDL_GetGamepadTouchpadFinger | function | Gamepad.SDL_GetGamepadTouchpadFinger | Gamepad.GetTouchpadFinger | |
+| SDL_GamepadHasSensor | function | Gamepad.SDL_GamepadHasSensor | Gamepad.HasSensor | |
+| SDL_SetGamepadSensorEnabled | function | Gamepad.SDL_SetGamepadSensorEnabled | Gamepad.SetSensorEnabled | |
+| SDL_GamepadSensorEnabled | function | Gamepad.SDL_GamepadSensorEnabled | Gamepad.IsSensorEnabled | |
+| SDL_GetGamepadSensorDataRate | function | Gamepad.SDL_GetGamepadSensorDataRate | Gamepad.GetSensorDataRate | |
+| SDL_GetGamepadSensorData | function | Gamepad.SDL_GetGamepadSensorData | Gamepad.GetSensorData | |
+| SDL_RumbleGamepad | function | Gamepad.SDL_RumbleGamepad | Gamepad.Rumble | |
+| SDL_RumbleGamepadTriggers | function | Gamepad.SDL_RumbleGamepadTriggers | Gamepad.RumbleTriggers | |
+| SDL_SetGamepadLED | function | Gamepad.SDL_SetGamepadLED | Gamepad.SetLed | |
+| SDL_SendGamepadEffect | function | Gamepad.SDL_SendGamepadEffect | Gamepad.SendEffect | |
+| SDL_GetGamepadAppleSFSymbolsNameForButton | function | - | - | platform: Apple SF Symbols |
+| SDL_GetGamepadAppleSFSymbolsNameForAxis | function | - | - | platform: Apple SF Symbols |
 
 ## SDL_gpu.h
 
@@ -638,13 +638,13 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_GDKSuspendGPU | function | - | - | Platform: Xbox GDK only |
 | SDL_GDKResumeGPU | function | - | - | Platform: Xbox GDK only |
 
-## SDL_guid.h
+## SDL_guid.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_GUID | struct | - | - | .NET has System.Guid |
-| SDL_GUIDToString | function | - | - | .NET has Guid.ToString |
-| SDL_StringToGUID | function | - | - | .NET has Guid.Parse |
+| SDL_GUID | struct | Guid.SDL_GUID | SdlGuid | |
+| SDL_GUIDToString | function | Guid.SDL_GUIDToString | SdlGuid.ToString | |
+| SDL_StringToGUID | function | Guid.SDL_StringToGUID | SdlGuid.Parse | |
 
 ## SDL_haptic.h
 
@@ -810,7 +810,7 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_ReadU8 .. SDL_WriteS64BE | function (28) | - | - | .NET has BinaryReader/BinaryWriter |
 | SDL_PROP_IOSTREAM_* | macro (9) | - | - | niche: property names for SDL_GetIOProperties |
 
-## SDL_joystick.h
+## SDL_joystick.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -818,21 +818,21 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_JoystickID | typedef | Joystick.SDL_JoystickID | - | Internal ID type |
 | SDL_JoystickType | enum | Joystick.SDL_JoystickType | JoystickType | |
 | SDL_JoystickConnectionState | enum | Joystick.SDL_JoystickConnectionState | JoystickConnectionState | |
-| SDL_VirtualJoystickTouchpadDesc | struct | - | - | Deferred: virtual joystick |
-| SDL_VirtualJoystickSensorDesc | struct | - | - | Deferred: virtual joystick |
-| SDL_VirtualJoystickDesc | struct | - | - | Deferred: virtual joystick (contains 8 callback pointers) |
-| SDL_JOYSTICK_AXIS_MAX | constant | - | - | Deferred: axis range constant |
-| SDL_JOYSTICK_AXIS_MIN | constant | - | - | Deferred: axis range constant |
+| SDL_VirtualJoystickTouchpadDesc | struct | - | - | niche: virtual joystick |
+| SDL_VirtualJoystickSensorDesc | struct | - | - | niche: virtual joystick |
+| SDL_VirtualJoystickDesc | struct | - | - | niche: virtual joystick (contains 8 callback pointers) |
+| SDL_JOYSTICK_AXIS_MAX | constant | Joystick.SDL_JOYSTICK_AXIS_MAX | Joystick.AxisMax | |
+| SDL_JOYSTICK_AXIS_MIN | constant | Joystick.SDL_JOYSTICK_AXIS_MIN | Joystick.AxisMin | |
 | SDL_HAT_* | macro (9) | Joystick.SDL_HAT_* | HatPosition | |
-| SDL_PROP_JOYSTICK_CAP_* | constant (5) | - | - | Deferred: capability properties |
+| SDL_PROP_JOYSTICK_CAP_* | constant (5) | Joystick.SDL_PROP_JOYSTICK_CAP_* | JoystickProperties.Cap* | |
 | SDL_GetJoysticks | function | Joystick.SDL_GetJoysticks | Joystick.GetDevices | |
 | SDL_GetJoystickNameForID | function | Joystick.SDL_GetJoystickNameForID | Joystick.GetName | |
 | SDL_GetJoystickTypeForID | function | Joystick.SDL_GetJoystickTypeForID | Joystick.GetType | |
 | SDL_OpenJoystick | function | Joystick.SDL_OpenJoystick | Joystick.Open | |
-| SDL_GetJoystickFromID | function | Joystick.SDL_GetJoystickFromID | - | Deferred: managed exposure for event correlation |
+| SDL_GetJoystickFromID | function | Joystick.SDL_GetJoystickFromID | Joystick.FromId | |
 | SDL_GetJoystickName | function | Joystick.SDL_GetJoystickName | Joystick.Name | |
 | SDL_GetJoystickType | function | Joystick.SDL_GetJoystickType | Joystick.Type | |
-| SDL_GetJoystickID | function | Joystick.SDL_GetJoystickID | - | Deferred: managed exposure for event correlation |
+| SDL_GetJoystickID | function | Joystick.SDL_GetJoystickID | Joystick.Id | |
 | SDL_GetNumJoystickAxes | function | Joystick.SDL_GetNumJoystickAxes | Joystick.NumAxes | |
 | SDL_GetNumJoystickBalls | function | Joystick.SDL_GetNumJoystickBalls | Joystick.NumBalls | |
 | SDL_GetNumJoystickHats | function | Joystick.SDL_GetNumJoystickHats | Joystick.NumHats | |
@@ -843,46 +843,46 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_GetJoystickConnectionState | function | Joystick.SDL_GetJoystickConnectionState | Joystick.ConnectionState | |
 | SDL_CloseJoystick | function | Joystick.SDL_CloseJoystick | Joystick.Dispose | |
 | SDL_UpdateJoysticks | function | Joystick.SDL_UpdateJoysticks | Joystick.Update | |
-| SDL_LockJoysticks | function | - | - | Deferred: SDL joystick lock |
-| SDL_UnlockJoysticks | function | - | - | Deferred: SDL joystick lock |
-| SDL_HasJoystick | function | - | - | Deferred |
-| SDL_JoystickConnected | function | - | - | Deferred |
-| SDL_SetJoystickEventsEnabled | function | - | - | Deferred |
-| SDL_JoystickEventsEnabled | function | - | - | Deferred |
-| SDL_GetJoystickAxisInitialState | function | - | - | Deferred |
-| SDL_GetJoystickBall | function | - | - | Deferred (NumBalls is exposed but ball motion is not) |
-| SDL_GetJoystickPath | function | - | - | Deferred |
-| SDL_GetJoystickPathForID | function | - | - | Deferred |
-| SDL_GetJoystickPlayerIndex | function | - | - | Deferred: player index |
-| SDL_SetJoystickPlayerIndex | function | - | - | Deferred: player index |
-| SDL_GetJoystickPlayerIndexForID | function | - | - | Deferred: player index |
-| SDL_GetJoystickFromPlayerIndex | function | - | - | Deferred: player index |
-| SDL_GetJoystickGUID | function | - | - | Deferred: needs SDL_GUID (SDL_guid.h) |
-| SDL_GetJoystickGUIDForID | function | - | - | Deferred: needs SDL_GUID (SDL_guid.h) |
-| SDL_GetJoystickGUIDInfo | function | - | - | Deferred: needs SDL_GUID (SDL_guid.h) |
-| SDL_GetJoystickVendor | function | - | - | Deferred: device identification |
-| SDL_GetJoystickProduct | function | - | - | Deferred: device identification |
-| SDL_GetJoystickProductVersion | function | - | - | Deferred: device identification |
-| SDL_GetJoystickFirmwareVersion | function | - | - | Deferred: device identification |
-| SDL_GetJoystickSerial | function | - | - | Deferred: device identification |
-| SDL_GetJoystickVendorForID | function | - | - | Deferred: device identification |
-| SDL_GetJoystickProductForID | function | - | - | Deferred: device identification |
-| SDL_GetJoystickProductVersionForID | function | - | - | Deferred: device identification |
-| SDL_GetJoystickProperties | function | - | - | Deferred: capability properties |
-| SDL_RumbleJoystick | function | - | - | Deferred: rumble/LED/effects |
-| SDL_RumbleJoystickTriggers | function | - | - | Deferred: rumble/LED/effects |
-| SDL_SetJoystickLED | function | - | - | Deferred: rumble/LED/effects |
-| SDL_SendJoystickEffect | function | - | - | Deferred: rumble/LED/effects |
-| SDL_GetJoystickPowerInfo | function | - | - | Deferred: needs SDL_PowerState |
-| SDL_AttachVirtualJoystick | function | - | - | Deferred: virtual joystick |
-| SDL_DetachVirtualJoystick | function | - | - | Deferred: virtual joystick |
-| SDL_IsJoystickVirtual | function | - | - | Deferred: virtual joystick |
-| SDL_SetJoystickVirtualAxis | function | - | - | Deferred: virtual joystick |
-| SDL_SetJoystickVirtualBall | function | - | - | Deferred: virtual joystick |
-| SDL_SetJoystickVirtualButton | function | - | - | Deferred: virtual joystick |
-| SDL_SetJoystickVirtualHat | function | - | - | Deferred: virtual joystick |
-| SDL_SetJoystickVirtualTouchpad | function | - | - | Deferred: virtual joystick |
-| SDL_SendJoystickVirtualSensorData | function | - | - | Deferred: virtual joystick |
+| SDL_LockJoysticks | function | - | - | niche/.NET: thread-safety guard not needed by this wrapper's usage model |
+| SDL_UnlockJoysticks | function | - | - | niche/.NET: thread-safety guard not needed by this wrapper's usage model |
+| SDL_HasJoystick | function | Joystick.SDL_HasJoystick | Joystick.HasJoystick | |
+| SDL_JoystickConnected | function | Joystick.SDL_JoystickConnected | Joystick.Connected | |
+| SDL_SetJoystickEventsEnabled | function | Joystick.SDL_SetJoystickEventsEnabled | Joystick.SetEventsEnabled | |
+| SDL_JoystickEventsEnabled | function | Joystick.SDL_JoystickEventsEnabled | Joystick.EventsEnabled | |
+| SDL_GetJoystickAxisInitialState | function | - | - | niche: rarely-needed initial-value query; can be added on request |
+| SDL_GetJoystickBall | function | Joystick.SDL_GetJoystickBall | Joystick.GetBall | |
+| SDL_GetJoystickPath | function | Joystick.SDL_GetJoystickPath | Joystick.Path | |
+| SDL_GetJoystickPathForID | function | Joystick.SDL_GetJoystickPathForID | Joystick.GetPathForId | |
+| SDL_GetJoystickPlayerIndex | function | Joystick.SDL_GetJoystickPlayerIndex | Joystick.PlayerIndex (get) | |
+| SDL_SetJoystickPlayerIndex | function | Joystick.SDL_SetJoystickPlayerIndex | Joystick.PlayerIndex (set) | |
+| SDL_GetJoystickPlayerIndexForID | function | Joystick.SDL_GetJoystickPlayerIndexForID | Joystick.GetPlayerIndexForId | |
+| SDL_GetJoystickFromPlayerIndex | function | Joystick.SDL_GetJoystickFromPlayerIndex | Joystick.FromPlayerIndex | |
+| SDL_GetJoystickGUID | function | Joystick.SDL_GetJoystickGUID | Joystick.Guid | |
+| SDL_GetJoystickGUIDForID | function | Joystick.SDL_GetJoystickGUIDForID | Joystick.GetGuidForId | |
+| SDL_GetJoystickGUIDInfo | function | - | - | niche: GUID decomposition — SdlGuid exposes the canonical string form instead |
+| SDL_GetJoystickVendor | function | Joystick.SDL_GetJoystickVendor | Joystick.Vendor | |
+| SDL_GetJoystickProduct | function | Joystick.SDL_GetJoystickProduct | Joystick.Product | |
+| SDL_GetJoystickProductVersion | function | Joystick.SDL_GetJoystickProductVersion | Joystick.ProductVersion | |
+| SDL_GetJoystickFirmwareVersion | function | Joystick.SDL_GetJoystickFirmwareVersion | Joystick.FirmwareVersion | |
+| SDL_GetJoystickSerial | function | Joystick.SDL_GetJoystickSerial | Joystick.Serial | |
+| SDL_GetJoystickVendorForID | function | Joystick.SDL_GetJoystickVendorForID | Joystick.GetVendorForId | |
+| SDL_GetJoystickProductForID | function | Joystick.SDL_GetJoystickProductForID | Joystick.GetProductForId | |
+| SDL_GetJoystickProductVersionForID | function | Joystick.SDL_GetJoystickProductVersionForID | Joystick.GetProductVersionForId | |
+| SDL_GetJoystickProperties | function | Joystick.SDL_GetJoystickProperties | Joystick.Properties | |
+| SDL_RumbleJoystick | function | Joystick.SDL_RumbleJoystick | Joystick.Rumble | |
+| SDL_RumbleJoystickTriggers | function | Joystick.SDL_RumbleJoystickTriggers | Joystick.RumbleTriggers | |
+| SDL_SetJoystickLED | function | Joystick.SDL_SetJoystickLED | Joystick.SetLed | |
+| SDL_SendJoystickEffect | function | Joystick.SDL_SendJoystickEffect | Joystick.SendEffect | |
+| SDL_GetJoystickPowerInfo | function | Joystick.SDL_GetJoystickPowerInfo | Joystick.GetPowerInfo | |
+| SDL_AttachVirtualJoystick | function | - | - | niche: virtual joystick |
+| SDL_DetachVirtualJoystick | function | - | - | niche: virtual joystick |
+| SDL_IsJoystickVirtual | function | - | - | niche: virtual joystick |
+| SDL_SetJoystickVirtualAxis | function | - | - | niche: virtual joystick |
+| SDL_SetJoystickVirtualBall | function | - | - | niche: virtual joystick |
+| SDL_SetJoystickVirtualButton | function | - | - | niche: virtual joystick |
+| SDL_SetJoystickVirtualHat | function | - | - | niche: virtual joystick |
+| SDL_SetJoystickVirtualTouchpad | function | - | - | niche: virtual joystick |
+| SDL_SendJoystickVirtualSensorData | function | - | - | niche: virtual joystick |
 
 ## SDL_keyboard.h
 
@@ -918,15 +918,15 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_PROP_TEXTINPUT_TYPE_NUMBER/CAPITALIZATION_NUMBER/AUTOCORRECT_BOOLEAN/MULTILINE_BOOLEAN | macro (4) | Keyboard.SDL_PROP_TEXTINPUT_* | TextInputProperties | |
 | SDL_PROP_TEXTINPUT_ANDROID_INPUTTYPE_NUMBER | macro | - | - | Deferred: platform-specific (Android) |
 
-## SDL_keycode.h
+## SDL_keycode.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_Keycode | typedef (Uint32) + 256 SDLK_* constants | Keycode.SDL_Keycode | Keycode | Native enum has all 256 SDLK_* values; managed Keycode exposes only 86 of 256 — rest deferred |
-| SDLK_EXTENDED_MASK | constant | - | - | Deferred: needed to classify extended keycodes |
-| SDLK_SCANCODE_MASK | constant | - | - | Deferred: needed to test scancode-derived keycodes |
+| SDL_Keycode | typedef (Uint32) + 256 SDLK_* constants | Keycode.SDL_Keycode | Keycode | Full parity: native enum has all 256 SDLK_* values; managed `Keycode` enum covers all 256, verified by set-diff of native member names against managed cast targets |
+| SDLK_EXTENDED_MASK | constant | - | - | niche: needed to classify extended keycodes |
+| SDLK_SCANCODE_MASK | constant | - | - | niche: needed to test scancode-derived keycodes |
 | SDL_SCANCODE_TO_KEYCODE | macro | - | - | macro; SDL_GetKeyFromScancode (SDL_keyboard.h) is the layout-aware alternative |
-| SDL_Keymod | typedef (Uint16) + 18 SDL_KMOD_* flags | Keycode.SDL_Keymod | KeyModifiers | Managed enum missing SDL_KMOD_LEVEL5 (Level5) — deferred |
+| SDL_Keymod | typedef (Uint16) + 18 SDL_KMOD_* flags | Keycode.SDL_Keymod | KeyModifiers | Full parity: all 18 native flags covered — 14 direct casts plus Ctrl/Shift/Alt/Gui expressed as `L*\|R*` composites (matching the header's own `SDL_KMOD_CTRL = SDL_KMOD_LCTRL\|SDL_KMOD_RCTRL` definition); includes Level5 |
 
 ## SDL_loadso.h
 
@@ -1376,11 +1376,11 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_SetGPURenderState | function | - | - | Deferred: GPU renderer-specific |
 | SDL_DestroyGPURenderState | function | - | - | Deferred: GPU renderer-specific |
 
-## SDL_scancode.h
+## SDL_scancode.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_Scancode | enum (249 values) | Scancode.SDL_Scancode | Scancode | Native enum complete (LOCKING* values commented out upstream, omitted); managed enum covers only 105 of 249 members (through RGui) — NonUsBackslash/NonUsHash, F13–F24, media/volume, international/language, extended keypad, AC_*, system/mobile keys, and Count deferred |
+| SDL_Scancode | enum (249 values) | Scancode.SDL_Scancode | Scancode | Full parity: native enum has 249 members (LOCKING* values commented out upstream, not counted); managed `Scancode` enum covers all 249, verified by set-diff of native member names against managed cast targets |
 
 ## SDL_sensor.h
 
