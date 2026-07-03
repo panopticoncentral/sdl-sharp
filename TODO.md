@@ -422,13 +422,13 @@ functions (55%) across the 41 active headers; the 13 deferred-by-design headers
 
 ### Phase 10: Audio + events depth
 
-- [ ] 10.1 Audio (38/58): stream Get/Put callbacks + `SDL_Lock/UnlockAudioStream`
+- [x] 10.1 Audio (38/58): stream Get/Put callbacks + `SDL_Lock/UnlockAudioStream`
       (pull-model audio — use existing UnmanagedCallersOnly+GCHandle pattern),
       `SDL_MixAudio`, `SDL_ConvertAudioSamples`, postmix callback; format helpers:
       `SDL_AUDIO_S16/S32/F32` native-order aliases, `AudioSpec.FrameSize`,
       bit-size/float/signed introspection on `AudioFormat`,
       `SDL_GetSilenceValueForFormat`; expose `AudioStream.Device`.
-- [ ] 10.2 Events (12/20 native, 2 public): expose bound queue functions publicly
+- [x] 10.2 Events (12/20 native, 2 public): expose bound queue functions publicly
       (`WaitEvent`/`WaitEventTimeout`, `PushEvent` + `RegisterEvents` for custom
       events, Has/Flush/SetEventEnabled); typed dispatch for joystick/gamepad/
       touch/pen/drop/clipboard/sensor/display event families;

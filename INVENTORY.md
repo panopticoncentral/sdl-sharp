@@ -88,7 +88,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_SetAtomicPointer | function | - | - | .NET has Interlocked.Exchange |
 | SDL_GetAtomicPointer | function | - | - | .NET has Volatile.Read |
 
-## SDL_audio.h
+## SDL_audio.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -102,13 +102,13 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_AUDIO_S32BE | enum value | Audio.SDL_AudioFormat.SDL_AUDIO_S32BE | AudioFormat.S32BE | |
 | SDL_AUDIO_F32LE | enum value | Audio.SDL_AudioFormat.SDL_AUDIO_F32LE | AudioFormat.F32LE | |
 | SDL_AUDIO_F32BE | enum value | Audio.SDL_AudioFormat.SDL_AUDIO_F32BE | AudioFormat.F32BE | |
-| SDL_AUDIO_S16 / SDL_AUDIO_S32 / SDL_AUDIO_F32 | enum value | - | - | Deferred: native-byte-order aliases, missing from both SDL_AudioFormat and AudioFormat |
+| SDL_AUDIO_S16 / SDL_AUDIO_S32 / SDL_AUDIO_F32 | enum value | - | - | Native-byte-order aliases of the explicit LE/BE members already wrapped; callers pick the endian-explicit value |
 | SDL_AUDIO_MASK_BITSIZE / _FLOAT / _BIG_ENDIAN / _SIGNED | macro | - | - | macro — format bit masks (4 constants) |
 | SDL_DEFINE_AUDIO_FORMAT | macro | - | - | macro — internal format constructor |
-| SDL_AUDIO_BITSIZE / BYTESIZE / ISFLOAT / ISBIGENDIAN / ISLITTLEENDIAN / ISSIGNED / ISINT / ISUNSIGNED | macro | - | - | Deferred: format-introspection helpers (AudioFormat extensions; 8 macros) |
+| SDL_AUDIO_BITSIZE / BYTESIZE / ISFLOAT / ISBIGENDIAN / ISLITTLEENDIAN / ISSIGNED / ISINT / ISUNSIGNED | macro | - | - | macro — bit-twiddling format-introspection helpers over the AudioFormat value; not part of the callable API surface |
 | SDL_AudioDeviceID | typedef | Audio.SDL_AudioDeviceID | - | Internal ID type |
 | SDL_AudioSpec | struct | Audio.SDL_AudioSpec | AudioSpec | |
-| SDL_AUDIO_FRAMESIZE | macro | - | - | Deferred: AudioSpec.FrameSize helper |
+| SDL_AUDIO_FRAMESIZE | macro | - | - | macro — frame-size helper computable from AudioSpec.Format/Channels; not part of the callable API surface |
 | SDL_AudioStream | opaque | Audio.SDL_AudioStream | AudioStream | |
 | SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK | constant | Audio.SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK | - | Used internally |
 | SDL_AUDIO_DEVICE_DEFAULT_RECORDING | constant | Audio.SDL_AUDIO_DEVICE_DEFAULT_RECORDING | - | Used internally |
@@ -129,7 +129,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_SetAudioDeviceGain | function | Audio.SDL_SetAudioDeviceGain | AudioDevice.Gain (set) | |
 | SDL_BindAudioStream | function | Audio.SDL_BindAudioStream | AudioDevice.Bind | |
 | SDL_UnbindAudioStream | function | Audio.SDL_UnbindAudioStream | AudioStream.Unbind | |
-| SDL_GetAudioStreamDevice | function | Audio.SDL_GetAudioStreamDevice | - | Deferred: expose as AudioStream.Device — native binding exists but is currently unused |
+| SDL_GetAudioStreamDevice | function | Audio.SDL_GetAudioStreamDevice | AudioStream.Device | |
 | SDL_CreateAudioStream | function | Audio.SDL_CreateAudioStream | AudioStream.Create | |
 | SDL_DestroyAudioStream | function | Audio.SDL_DestroyAudioStream | AudioStream.Dispose | |
 | SDL_OpenAudioDeviceStream | function | Audio.SDL_OpenAudioDeviceStream | AudioStream.OpenDevice | |
@@ -151,29 +151,29 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_AudioStreamDevicePaused | function | Audio.SDL_AudioStreamDevicePaused | AudioStream.IsDevicePaused | |
 | SDL_LoadWAV | function | Audio.SDL_LoadWAV | WavData.Load | |
 | SDL_GetAudioFormatName | function | Audio.SDL_GetAudioFormatName | AudioFormatInfo.GetName | |
-| SDL_LoadWAV_IO | function | - | - | Deferred: needs SDL_IOStream |
-| SDL_AudioPostmixCallback | callback | - | - | Deferred: advanced callback interop |
-| SDL_SetAudioPostmixCallback | function | - | - | Deferred: advanced callback interop |
-| SDL_AudioStreamDataCompleteCallback | callback | - | - | Deferred: only needed for SDL_PutAudioStreamDataNoCopy |
-| SDL_PutAudioStreamDataNoCopy | function | - | - | Deferred: advanced zero-copy |
-| SDL_PutAudioStreamPlanarData | function | - | - | Deferred: planar layout, niche |
-| SDL_ConvertAudioSamples | function | - | - | Deferred: use AudioStream instead |
-| SDL_MixAudio | function | - | - | Deferred: low-level mixing |
-| SDL_GetSilenceValueForFormat | function | - | - | Deferred: low-level |
-| SDL_AudioStreamCallback | callback | Audio.SDL_OpenAudioDeviceStream (function pointer param) | - | Deferred: managed callback interop — AudioStream.OpenDevice passes null |
-| SDL_SetAudioStreamGetCallback | function | - | - | Deferred: advanced callback interop |
-| SDL_SetAudioStreamPutCallback | function | - | - | Deferred: advanced callback interop |
-| SDL_GetAudioDeviceChannelMap | function | - | - | Deferred: channel remapping, uncommon |
-| SDL_GetAudioStreamInputChannelMap | function | - | - | Deferred: channel remapping, uncommon |
-| SDL_GetAudioStreamOutputChannelMap | function | - | - | Deferred: channel remapping, uncommon |
-| SDL_SetAudioStreamInputChannelMap | function | - | - | Deferred: channel remapping, uncommon |
-| SDL_SetAudioStreamOutputChannelMap | function | - | - | Deferred: channel remapping, uncommon |
-| SDL_LockAudioStream | function | - | - | Deferred: low-level locking |
-| SDL_UnlockAudioStream | function | - | - | Deferred: low-level locking |
-| SDL_IsAudioDevicePhysical | function | - | - | Deferred: query helper |
-| SDL_IsAudioDevicePlayback | function | - | - | Deferred: query helper |
-| SDL_BindAudioStreams | function | - | - | Deferred: multi-stream bind |
-| SDL_UnbindAudioStreams | function | - | - | Deferred: multi-stream bind |
+| SDL_LoadWAV_IO | function | - | - | Skipped: IOStream variant of SDL_LoadWAV; .NET reads files itself and calls SDL_LoadWAV (WavData.Load) — see skip comment in Audio.cs |
+| SDL_AudioPostmixCallback | callback | Audio.SDL_AudioPostmixCallback | AudioPostmixCallback | |
+| SDL_SetAudioPostmixCallback | function | Audio.SDL_SetAudioPostmixCallback | AudioDevice.SetPostmixCallback | |
+| SDL_AudioStreamDataCompleteCallback | callback | - | - | Skipped: only consumed by SDL_PutAudioStreamDataNoCopy, which is itself skipped |
+| SDL_PutAudioStreamDataNoCopy | function | - | - | Skipped: zero-copy put requires caller-owned buffer to outlive the stream plus a completion callback; the copying SDL_PutAudioStreamData (AudioStream.PutData) covers managed use — see skip comment in Audio.cs |
+| SDL_PutAudioStreamPlanarData | function | Audio.SDL_PutAudioStreamPlanarData | AudioStream.PutPlanarData | |
+| SDL_ConvertAudioSamples | function | Audio.SDL_ConvertAudioSamples | AudioSamples.Convert | |
+| SDL_MixAudio | function | Audio.SDL_MixAudio | AudioSamples.Mix | |
+| SDL_GetSilenceValueForFormat | function | Audio.SDL_GetSilenceValueForFormat | AudioFormat.GetSilenceValue | |
+| SDL_AudioStreamCallback | callback | Audio.SDL_AudioStreamCallback | AudioStreamDataCallback | |
+| SDL_SetAudioStreamGetCallback | function | Audio.SDL_SetAudioStreamGetCallback | AudioStream.SetGetCallback | |
+| SDL_SetAudioStreamPutCallback | function | Audio.SDL_SetAudioStreamPutCallback | AudioStream.SetPutCallback | |
+| SDL_GetAudioDeviceChannelMap | function | Audio.SDL_GetAudioDeviceChannelMap | AudioDevice.GetChannelMap | |
+| SDL_GetAudioStreamInputChannelMap | function | Audio.SDL_GetAudioStreamInputChannelMap | AudioStream.GetInputChannelMap | |
+| SDL_GetAudioStreamOutputChannelMap | function | Audio.SDL_GetAudioStreamOutputChannelMap | AudioStream.GetOutputChannelMap | |
+| SDL_SetAudioStreamInputChannelMap | function | Audio.SDL_SetAudioStreamInputChannelMap | AudioStream.SetInputChannelMap | |
+| SDL_SetAudioStreamOutputChannelMap | function | Audio.SDL_SetAudioStreamOutputChannelMap | AudioStream.SetOutputChannelMap | |
+| SDL_LockAudioStream | function | Audio.SDL_LockAudioStream | AudioStream.Lock | |
+| SDL_UnlockAudioStream | function | Audio.SDL_UnlockAudioStream | AudioStreamLock.Dispose | |
+| SDL_IsAudioDevicePhysical | function | Audio.SDL_IsAudioDevicePhysical | AudioDevice.IsPhysical | |
+| SDL_IsAudioDevicePlayback | function | Audio.SDL_IsAudioDevicePlayback | AudioDevice.IsPlayback | |
+| SDL_BindAudioStreams | function | Audio.SDL_BindAudioStreams | AudioDevice.Bind (multi) | |
+| SDL_UnbindAudioStreams | function | Audio.SDL_UnbindAudioStreams | AudioDevice.Unbind (multi) | |
 
 ## SDL_blendmode.h ✅
 
@@ -277,7 +277,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_Unsupported | macro | Error.SDL_Unsupported | - | macro — reimplemented as native helper; niche |
 | SDL_InvalidParamError | macro | Error.SDL_InvalidParamError | - | macro — reimplemented as native helper; niche |
 
-## SDL_events.h
+## SDL_events.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -288,61 +288,61 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_KeyboardDeviceEvent | struct | Events.SDL_KeyboardDeviceEvent | - | |
 | SDL_KeyboardEvent | struct | Events.SDL_KeyboardEvent | KeyEventArgs | |
 | SDL_TextEditingEvent | struct | Events.SDL_TextEditingEvent | - | |
-| SDL_TextEditingCandidatesEvent | struct | - | - | Deferred: IME candidate-list event |
+| SDL_TextEditingCandidatesEvent | struct | Events.SDL_TextEditingCandidatesEvent | - | Used internally by event dispatch |
 | SDL_TextInputEvent | struct | Events.SDL_TextInputEvent | TextInputEventArgs | |
 | SDL_MouseDeviceEvent | struct | Events.SDL_MouseDeviceEvent | - | |
 | SDL_MouseMotionEvent | struct | Events.SDL_MouseMotionEvent | MouseMotionEventArgs | |
 | SDL_MouseButtonEvent | struct | Events.SDL_MouseButtonEvent | MouseButtonEventArgs | |
 | SDL_MouseWheelEvent | struct | Events.SDL_MouseWheelEvent | MouseWheelEventArgs | |
-| SDL_JoyAxisEvent | struct | Events.SDL_JoyAxisEvent | - | Deferred managed wrapper |
-| SDL_JoyBallEvent | struct | Events.SDL_JoyBallEvent | - | Deferred managed wrapper |
-| SDL_JoyHatEvent | struct | Events.SDL_JoyHatEvent | - | Deferred managed wrapper |
-| SDL_JoyButtonEvent | struct | Events.SDL_JoyButtonEvent | - | Deferred managed wrapper |
-| SDL_JoyDeviceEvent | struct | Events.SDL_JoyDeviceEvent | - | Deferred managed wrapper |
-| SDL_JoyBatteryEvent | struct | Events.SDL_JoyBatteryEvent | - | Deferred managed wrapper |
-| SDL_GamepadAxisEvent | struct | Events.SDL_GamepadAxisEvent | - | Deferred managed wrapper |
-| SDL_GamepadButtonEvent | struct | Events.SDL_GamepadButtonEvent | - | Deferred managed wrapper |
-| SDL_GamepadDeviceEvent | struct | Events.SDL_GamepadDeviceEvent | - | Deferred managed wrapper |
-| SDL_GamepadTouchpadEvent | struct | Events.SDL_GamepadTouchpadEvent | - | Deferred managed wrapper |
-| SDL_GamepadSensorEvent | struct | Events.SDL_GamepadSensorEvent | - | Deferred managed wrapper |
-| SDL_TouchFingerEvent | struct | Events.SDL_TouchFingerEvent | - | Deferred managed wrapper |
-| SDL_PinchFingerEvent | struct | Events.SDL_PinchFingerEvent | - | Deferred managed wrapper |
-| SDL_PenProximityEvent | struct | Events.SDL_PenProximityEvent | - | Deferred managed wrapper |
-| SDL_PenMotionEvent | struct | Events.SDL_PenMotionEvent | - | Deferred managed wrapper |
-| SDL_PenTouchEvent | struct | Events.SDL_PenTouchEvent | - | Deferred managed wrapper |
-| SDL_PenButtonEvent | struct | Events.SDL_PenButtonEvent | - | Deferred managed wrapper |
-| SDL_PenAxisEvent | struct | Events.SDL_PenAxisEvent | - | Deferred managed wrapper |
-| SDL_DropEvent | struct | Events.SDL_DropEvent | - | Deferred managed wrapper |
-| SDL_ClipboardEvent | struct | Events.SDL_ClipboardEvent | - | Deferred managed wrapper |
-| SDL_SensorEvent | struct | Events.SDL_SensorEvent | - | Deferred managed wrapper |
+| SDL_JoyAxisEvent | struct | Events.SDL_JoyAxisEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_JoyBallEvent | struct | Events.SDL_JoyBallEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_JoyHatEvent | struct | Events.SDL_JoyHatEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_JoyButtonEvent | struct | Events.SDL_JoyButtonEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_JoyDeviceEvent | struct | Events.SDL_JoyDeviceEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_JoyBatteryEvent | struct | Events.SDL_JoyBatteryEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_GamepadAxisEvent | struct | Events.SDL_GamepadAxisEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_GamepadButtonEvent | struct | Events.SDL_GamepadButtonEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_GamepadDeviceEvent | struct | Events.SDL_GamepadDeviceEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_GamepadTouchpadEvent | struct | Events.SDL_GamepadTouchpadEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_GamepadSensorEvent | struct | Events.SDL_GamepadSensorEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_TouchFingerEvent | struct | Events.SDL_TouchFingerEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_PinchFingerEvent | struct | Events.SDL_PinchFingerEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_PenProximityEvent | struct | Events.SDL_PenProximityEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_PenMotionEvent | struct | Events.SDL_PenMotionEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_PenTouchEvent | struct | Events.SDL_PenTouchEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_PenButtonEvent | struct | Events.SDL_PenButtonEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_PenAxisEvent | struct | Events.SDL_PenAxisEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_DropEvent | struct | Events.SDL_DropEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_ClipboardEvent | struct | Events.SDL_ClipboardEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_SensorEvent | struct | Events.SDL_SensorEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
 | SDL_QuitEvent | struct | Events.SDL_QuitEvent | QuitEventArgs | |
-| SDL_UserEvent | struct | Events.SDL_UserEvent | - | Deferred managed wrapper |
-| SDL_RenderEvent | struct | Events.SDL_RenderEvent | - | Deferred managed wrapper |
+| SDL_UserEvent | struct | Events.SDL_UserEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_RenderEvent | struct | Events.SDL_RenderEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
 | SDL_Event | union | Events.SDL_Event | - | Used internally by event dispatch |
 | SDL_PumpEvents | function | Events.SDL_PumpEvents | Application.PumpEvents | |
 | SDL_PollEvent | function | Events.SDL_PollEvent | Application.DispatchEvents | Drives the typed event dispatch loop |
-| SDL_WaitEvent | function | Events.SDL_WaitEvent | - | Deferred managed wrapper |
-| SDL_WaitEventTimeout | function | Events.SDL_WaitEventTimeout | - | Deferred managed wrapper |
-| SDL_PushEvent | function | Events.SDL_PushEvent | - | Deferred managed wrapper |
-| SDL_HasEvent | function | Events.SDL_HasEvent | - | Deferred managed wrapper |
-| SDL_HasEvents | function | Events.SDL_HasEvents | - | Deferred managed wrapper |
-| SDL_FlushEvent | function | Events.SDL_FlushEvent | - | Deferred managed wrapper |
-| SDL_FlushEvents | function | Events.SDL_FlushEvents | - | Deferred managed wrapper |
-| SDL_SetEventEnabled | function | Events.SDL_SetEventEnabled | - | Deferred managed wrapper |
-| SDL_EventEnabled | function | Events.SDL_EventEnabled | - | Deferred managed wrapper |
-| SDL_RegisterEvents | function | Events.SDL_RegisterEvents | - | Deferred managed wrapper |
-| SDL_EventAction | enum | - | - | Deferred: needed by SDL_PeepEvents |
-| SDL_PeepEvents | function | - | - | Deferred: bulk queue add/peek/get (no callback) |
-| SDL_EventFilter | callback | - | - | Deferred: callback typedef for filter/watch APIs; see Application.RawEventFilter (RawEvent) for a pre-dispatch tap on the managed poll loop instead |
-| SDL_SetEventFilter | function | - | - | Deferred: callback interop |
-| SDL_GetEventFilter | function | - | - | Deferred: callback interop |
-| SDL_AddEventWatch | function | - | - | Deferred: callback interop |
-| SDL_RemoveEventWatch | function | - | - | Deferred: callback interop |
-| SDL_FilterEvents | function | - | - | Deferred: callback interop |
-| SDL_GetWindowFromEvent | function | - | - | Deferred: returns SDL_Window* |
-| SDL_GetEventDescription | function | - | - | Deferred: debug utility |
-| SDL_AudioDeviceEvent | struct | - | - | Deferred: audio event struct |
-| SDL_CameraDeviceEvent | struct | - | - | Deferred: camera event struct |
+| SDL_WaitEvent | function | Events.SDL_WaitEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_WaitEventTimeout | function | Events.SDL_WaitEventTimeout | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_PushEvent | function | Events.SDL_PushEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_HasEvent | function | Events.SDL_HasEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_HasEvents | function | Events.SDL_HasEvents | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_FlushEvent | function | Events.SDL_FlushEvent | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_FlushEvents | function | Events.SDL_FlushEvents | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_SetEventEnabled | function | Events.SDL_SetEventEnabled | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_EventEnabled | function | Events.SDL_EventEnabled | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_RegisterEvents | function | Events.SDL_RegisterEvents | - | Native struct bound; typed EventArgs not yet surfaced (added on demand) |
+| SDL_EventAction | enum | - | - | Skipped: only used by SDL_PeepEvents, which is skipped |
+| SDL_PeepEvents | function | - | - | Skipped: bulk add/peek/get on a caller-supplied SDL_Event array does not fit the transient-pointer RawEvent model and would need a second managed event representation; the queue is served by PollEvent/WaitEvent/PushEvent/Has*/Flush* — see skip comment in Events.cs |
+| SDL_EventFilter | callback | Events.SDL_EventFilter | RawEventPredicate / RawEventHandler | Managed delegates surfaced via SetEventFilter/AddEventWatch/FilterEvents |
+| SDL_SetEventFilter | function | Events.SDL_SetEventFilter | Application.SetEventFilter | |
+| SDL_GetEventFilter | function | - | - | Skipped: returns the currently-installed native filter pointer + userdata, only meaningful to whoever installed it; managed Application owns the single filter slot via SetEventFilter, so a getter would only expose an opaque native callback identity — see skip comment in Events.cs |
+| SDL_AddEventWatch | function | Events.SDL_AddEventWatch | Application.AddEventWatch | |
+| SDL_RemoveEventWatch | function | Events.SDL_RemoveEventWatch | Application.RemoveEventWatch | |
+| SDL_FilterEvents | function | Events.SDL_FilterEvents | Application.FilterEvents | |
+| SDL_GetWindowFromEvent | function | Events.SDL_GetWindowFromEvent | RawEvent.Window | |
+| SDL_GetEventDescription | function | Events.SDL_GetEventDescription | RawEvent.Description | |
+| SDL_AudioDeviceEvent | struct | Events.SDL_AudioDeviceEvent | - | Used internally by event dispatch |
+| SDL_CameraDeviceEvent | struct | Events.SDL_CameraDeviceEvent | - | Used internally by event dispatch |
 
 ## SDL_filesystem.h
 
