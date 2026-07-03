@@ -5,9 +5,45 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Skipped: SDL_TextInputType, SDL_Capitalization enums and SDL_StartTextInputWithProperties
-// (text input properties — deferred, can add later if needed).
-// Skipped: SDL_SetTextInputArea, SDL_GetTextInputArea (needs SDL_Rect pointer from Rect.cs).
+/// <summary>
+/// Text input type for SDL_PROP_TEXTINPUT_TYPE_NUMBER.
+/// </summary>
+public enum SDL_TextInputType
+{
+    /// <summary>The input is text.</summary>
+    SDL_TEXTINPUT_TYPE_TEXT,
+    /// <summary>The input is a person's name.</summary>
+    SDL_TEXTINPUT_TYPE_TEXT_NAME,
+    /// <summary>The input is an e-mail address.</summary>
+    SDL_TEXTINPUT_TYPE_TEXT_EMAIL,
+    /// <summary>The input is a username.</summary>
+    SDL_TEXTINPUT_TYPE_TEXT_USERNAME,
+    /// <summary>The input is a secure password that is hidden.</summary>
+    SDL_TEXTINPUT_TYPE_TEXT_PASSWORD_HIDDEN,
+    /// <summary>The input is a secure password that is visible.</summary>
+    SDL_TEXTINPUT_TYPE_TEXT_PASSWORD_VISIBLE,
+    /// <summary>The input is a number.</summary>
+    SDL_TEXTINPUT_TYPE_NUMBER,
+    /// <summary>The input is a secure PIN that is hidden.</summary>
+    SDL_TEXTINPUT_TYPE_NUMBER_PASSWORD_HIDDEN,
+    /// <summary>The input is a secure PIN that is visible.</summary>
+    SDL_TEXTINPUT_TYPE_NUMBER_PASSWORD_VISIBLE,
+}
+
+/// <summary>
+/// Auto capitalization type for SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER.
+/// </summary>
+public enum SDL_Capitalization
+{
+    /// <summary>No auto-capitalization will be done.</summary>
+    SDL_CAPITALIZE_NONE,
+    /// <summary>The first letter of sentences will be capitalized.</summary>
+    SDL_CAPITALIZE_SENTENCES,
+    /// <summary>The first letter of words will be capitalized.</summary>
+    SDL_CAPITALIZE_WORDS,
+    /// <summary>All letters will be capitalized.</summary>
+    SDL_CAPITALIZE_LETTERS,
+}
 
 /// <summary>
 /// Native bindings for SDL_keyboard.h.
@@ -91,6 +127,35 @@ public static partial class Keyboard
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_StopTextInput(SDL_Window* window);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_StartTextInputWithProperties")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_StartTextInputWithProperties(SDL_Window* window, SDL_PropertiesID props);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetTextInputArea")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetTextInputArea(SDL_Window* window, SDL_Rect* rect, int cursor);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetTextInputArea")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetTextInputArea(SDL_Window* window, SDL_Rect* rect, int* cursor);
+
+    /// <summary>Property: an SDL_TextInputType describing the text being input.</summary>
+    public const string SDL_PROP_TEXTINPUT_TYPE_NUMBER = "SDL.textinput.type";
+
+    /// <summary>Property: an SDL_Capitalization describing how text should be capitalized.</summary>
+    public const string SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER = "SDL.textinput.capitalization";
+
+    /// <summary>Property: true to enable auto completion and auto correction.</summary>
+    public const string SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN = "SDL.textinput.autocorrect";
+
+    /// <summary>Property: true if multiple lines of text are allowed.</summary>
+    public const string SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN = "SDL.textinput.multiline";
+
+    // Skipped: SDL_PROP_TEXTINPUT_ANDROID_INPUTTYPE_NUMBER (platform-specific).
 
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_ClearComposition")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
