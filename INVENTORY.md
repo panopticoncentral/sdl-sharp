@@ -473,79 +473,79 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_GPUCopyPass | opaque | Gpu.SDL_GPUCopyPass | GpuCopyPass | |
 | SDL_GPUFence | opaque | Gpu.SDL_GPUFence | GpuFence | |
 | SDL_GPUPrimitiveType | enum | Gpu.SDL_GPUPrimitiveType | GpuPrimitiveType | |
-| SDL_GPULoadOp | enum | Gpu.SDL_GPULoadOp | - | deferred — native struct field only |
-| SDL_GPUStoreOp | enum | Gpu.SDL_GPUStoreOp | - | deferred — native struct field only |
+| SDL_GPULoadOp | enum | Gpu.SDL_GPULoadOp | GpuLoadOp | |
+| SDL_GPUStoreOp | enum | Gpu.SDL_GPUStoreOp | GpuStoreOp | |
 | SDL_GPUIndexElementSize | enum | Gpu.SDL_GPUIndexElementSize | GpuIndexElementSize | |
 | SDL_GPUTextureFormat | enum | Gpu.SDL_GPUTextureFormat | GpuTextureFormat | |
 | SDL_GPUTextureType | enum | Gpu.SDL_GPUTextureType | GpuTextureType | |
 | SDL_GPUSampleCount | enum | Gpu.SDL_GPUSampleCount | GpuSampleCount | |
-| SDL_GPUCubeMapFace | enum | Gpu.SDL_GPUCubeMapFace | - | deferred |
-| SDL_GPUTransferBufferUsage | enum | Gpu.SDL_GPUTransferBufferUsage | - | deferred — native struct field only |
-| SDL_GPUShaderStage | enum | Gpu.SDL_GPUShaderStage | - | deferred — native struct field only |
-| SDL_GPUVertexElementFormat | enum | Gpu.SDL_GPUVertexElementFormat | - | deferred — native struct field only |
-| SDL_GPUVertexInputRate | enum | Gpu.SDL_GPUVertexInputRate | - | deferred — native struct field only |
-| SDL_GPUFillMode | enum | Gpu.SDL_GPUFillMode | - | deferred — native struct field only |
-| SDL_GPUCullMode | enum | Gpu.SDL_GPUCullMode | - | deferred — native struct field only |
-| SDL_GPUFrontFace | enum | Gpu.SDL_GPUFrontFace | - | deferred — native struct field only |
-| SDL_GPUCompareOp | enum | Gpu.SDL_GPUCompareOp | - | deferred — native struct field only |
-| SDL_GPUStencilOp | enum | Gpu.SDL_GPUStencilOp | - | deferred — native struct field only |
-| SDL_GPUBlendOp | enum | Gpu.SDL_GPUBlendOp | - | deferred — native struct field only |
-| SDL_GPUBlendFactor | enum | Gpu.SDL_GPUBlendFactor | - | deferred — native struct field only |
-| SDL_GPUFilter | enum | Gpu.SDL_GPUFilter | - | deferred — native struct field only |
-| SDL_GPUSamplerMipmapMode | enum | Gpu.SDL_GPUSamplerMipmapMode | - | deferred — native struct field only |
-| SDL_GPUSamplerAddressMode | enum | Gpu.SDL_GPUSamplerAddressMode | - | deferred — native struct field only |
+| SDL_GPUCubeMapFace | enum | Gpu.SDL_GPUCubeMapFace | GpuCubeMapFace | |
+| SDL_GPUTransferBufferUsage | enum | Gpu.SDL_GPUTransferBufferUsage | GpuTransferBufferUsage | |
+| SDL_GPUShaderStage | enum | Gpu.SDL_GPUShaderStage | GpuShaderStage | |
+| SDL_GPUVertexElementFormat | enum | Gpu.SDL_GPUVertexElementFormat | GpuVertexElementFormat | |
+| SDL_GPUVertexInputRate | enum | Gpu.SDL_GPUVertexInputRate | GpuVertexInputRate | |
+| SDL_GPUFillMode | enum | Gpu.SDL_GPUFillMode | GpuFillMode | |
+| SDL_GPUCullMode | enum | Gpu.SDL_GPUCullMode | GpuCullMode | |
+| SDL_GPUFrontFace | enum | Gpu.SDL_GPUFrontFace | GpuFrontFace | |
+| SDL_GPUCompareOp | enum | Gpu.SDL_GPUCompareOp | GpuCompareOp | |
+| SDL_GPUStencilOp | enum | Gpu.SDL_GPUStencilOp | GpuStencilOp | |
+| SDL_GPUBlendOp | enum | Gpu.SDL_GPUBlendOp | GpuBlendOp | |
+| SDL_GPUBlendFactor | enum | Gpu.SDL_GPUBlendFactor | GpuBlendFactor | |
+| SDL_GPUFilter | enum | Gpu.SDL_GPUFilter | GpuFilter | |
+| SDL_GPUSamplerMipmapMode | enum | Gpu.SDL_GPUSamplerMipmapMode | GpuSamplerMipmapMode | |
+| SDL_GPUSamplerAddressMode | enum | Gpu.SDL_GPUSamplerAddressMode | GpuSamplerAddressMode | |
 | SDL_GPUPresentMode | enum | Gpu.SDL_GPUPresentMode | GpuPresentMode | |
 | SDL_GPUSwapchainComposition | enum | Gpu.SDL_GPUSwapchainComposition | GpuSwapchainComposition | |
 | SDL_GPUTextureUsageFlags | flags | Gpu.SDL_GPUTextureUsageFlags | GpuTextureUsage | |
 | SDL_GPUBufferUsageFlags | flags | Gpu.SDL_GPUBufferUsageFlags | GpuBufferUsage | |
 | SDL_GPUShaderFormat | flags | Gpu.SDL_GPUShaderFormat | GpuShaderFormat | |
-| SDL_GPUColorComponentFlags | flags | Gpu.SDL_GPUColorComponentFlags | - | deferred — native struct field only |
-| SDL_GPUViewport | struct | Gpu.SDL_GPUViewport | - | deferred — exposed as native type in managed API |
-| SDL_GPUTextureTransferInfo | struct | Gpu.SDL_GPUTextureTransferInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUTransferBufferLocation | struct | Gpu.SDL_GPUTransferBufferLocation | - | deferred — exposed as native type in managed API |
-| SDL_GPUTextureLocation | struct | Gpu.SDL_GPUTextureLocation | - | deferred — exposed as native type in managed API |
-| SDL_GPUTextureRegion | struct | Gpu.SDL_GPUTextureRegion | - | deferred — exposed as native type in managed API |
-| SDL_GPUBlitRegion | struct | Gpu.SDL_GPUBlitRegion | - | deferred — native struct field only |
-| SDL_GPUBufferLocation | struct | Gpu.SDL_GPUBufferLocation | - | deferred — exposed as native type in managed API |
-| SDL_GPUBufferRegion | struct | Gpu.SDL_GPUBufferRegion | - | deferred — exposed as native type in managed API |
-| SDL_GPUIndirectDrawCommand | struct | Gpu.SDL_GPUIndirectDrawCommand | - | deferred — indirect buffer layout |
-| SDL_GPUIndexedIndirectDrawCommand | struct | Gpu.SDL_GPUIndexedIndirectDrawCommand | - | deferred — indirect buffer layout |
-| SDL_GPUIndirectDispatchCommand | struct | Gpu.SDL_GPUIndirectDispatchCommand | - | deferred — indirect buffer layout |
-| SDL_GPUSamplerCreateInfo | struct | Gpu.SDL_GPUSamplerCreateInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUVertexBufferDescription | struct | Gpu.SDL_GPUVertexBufferDescription | - | deferred — native struct field only |
-| SDL_GPUVertexAttribute | struct | Gpu.SDL_GPUVertexAttribute | - | deferred — native struct field only |
-| SDL_GPUVertexInputState | struct | Gpu.SDL_GPUVertexInputState | - | deferred — native struct field only |
-| SDL_GPUStencilOpState | struct | Gpu.SDL_GPUStencilOpState | - | deferred — native struct field only |
-| SDL_GPUColorTargetBlendState | struct | Gpu.SDL_GPUColorTargetBlendState | - | deferred — native struct field only |
-| SDL_GPUShaderCreateInfo | struct | Gpu.SDL_GPUShaderCreateInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUTextureCreateInfo | struct | Gpu.SDL_GPUTextureCreateInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUBufferCreateInfo | struct | Gpu.SDL_GPUBufferCreateInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUTransferBufferCreateInfo | struct | Gpu.SDL_GPUTransferBufferCreateInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPURasterizerState | struct | Gpu.SDL_GPURasterizerState | - | deferred — native struct field only |
-| SDL_GPUMultisampleState | struct | Gpu.SDL_GPUMultisampleState | - | deferred — native struct field only |
-| SDL_GPUDepthStencilState | struct | Gpu.SDL_GPUDepthStencilState | - | deferred — native struct field only |
-| SDL_GPUColorTargetDescription | struct | Gpu.SDL_GPUColorTargetDescription | - | deferred — native struct field only |
-| SDL_GPUGraphicsPipelineTargetInfo | struct | Gpu.SDL_GPUGraphicsPipelineTargetInfo | - | deferred — native struct field only |
-| SDL_GPUGraphicsPipelineCreateInfo | struct | Gpu.SDL_GPUGraphicsPipelineCreateInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUComputePipelineCreateInfo | struct | Gpu.SDL_GPUComputePipelineCreateInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUColorTargetInfo | struct | Gpu.SDL_GPUColorTargetInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUDepthStencilTargetInfo | struct | Gpu.SDL_GPUDepthStencilTargetInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUBlitInfo | struct | Gpu.SDL_GPUBlitInfo | - | deferred — exposed as native type in managed API |
-| SDL_GPUBufferBinding | struct | Gpu.SDL_GPUBufferBinding | - | deferred — exposed as native type in managed API |
-| SDL_GPUTextureSamplerBinding | struct | Gpu.SDL_GPUTextureSamplerBinding | - | deferred — exposed as native type in managed API |
-| SDL_GPUStorageBufferReadWriteBinding | struct | Gpu.SDL_GPUStorageBufferReadWriteBinding | - | deferred — exposed as native type in managed API |
-| SDL_GPUStorageTextureReadWriteBinding | struct | Gpu.SDL_GPUStorageTextureReadWriteBinding | - | deferred — exposed as native type in managed API |
+| SDL_GPUColorComponentFlags | flags | Gpu.SDL_GPUColorComponentFlags | GpuColorComponentFlags | |
+| SDL_GPUViewport | struct | Gpu.SDL_GPUViewport | GpuViewport | |
+| SDL_GPUTextureTransferInfo | struct | Gpu.SDL_GPUTextureTransferInfo | GpuTextureTransferInfo | |
+| SDL_GPUTransferBufferLocation | struct | Gpu.SDL_GPUTransferBufferLocation | GpuTransferBufferLocation | |
+| SDL_GPUTextureLocation | struct | Gpu.SDL_GPUTextureLocation | GpuTextureLocation | |
+| SDL_GPUTextureRegion | struct | Gpu.SDL_GPUTextureRegion | GpuTextureRegion | |
+| SDL_GPUBlitRegion | struct | Gpu.SDL_GPUBlitRegion | GpuBlitRegion | |
+| SDL_GPUBufferLocation | struct | Gpu.SDL_GPUBufferLocation | GpuBufferLocation | |
+| SDL_GPUBufferRegion | struct | Gpu.SDL_GPUBufferRegion | GpuBufferRegion | |
+| SDL_GPUIndirectDrawCommand | struct | Gpu.SDL_GPUIndirectDrawCommand | GpuIndirectDrawCommand | |
+| SDL_GPUIndexedIndirectDrawCommand | struct | Gpu.SDL_GPUIndexedIndirectDrawCommand | GpuIndexedIndirectDrawCommand | |
+| SDL_GPUIndirectDispatchCommand | struct | Gpu.SDL_GPUIndirectDispatchCommand | GpuIndirectDispatchCommand | |
+| SDL_GPUSamplerCreateInfo | struct | Gpu.SDL_GPUSamplerCreateInfo | GpuSamplerCreateInfo | |
+| SDL_GPUVertexBufferDescription | struct | Gpu.SDL_GPUVertexBufferDescription | GpuVertexBufferDescription | |
+| SDL_GPUVertexAttribute | struct | Gpu.SDL_GPUVertexAttribute | GpuVertexAttribute | |
+| SDL_GPUVertexInputState | struct | Gpu.SDL_GPUVertexInputState | GpuVertexInputState | |
+| SDL_GPUStencilOpState | struct | Gpu.SDL_GPUStencilOpState | GpuStencilOpState | |
+| SDL_GPUColorTargetBlendState | struct | Gpu.SDL_GPUColorTargetBlendState | GpuColorTargetBlendState | |
+| SDL_GPUShaderCreateInfo | struct | Gpu.SDL_GPUShaderCreateInfo | GpuShaderCreateInfo | |
+| SDL_GPUTextureCreateInfo | struct | Gpu.SDL_GPUTextureCreateInfo | GpuTextureCreateInfo | |
+| SDL_GPUBufferCreateInfo | struct | Gpu.SDL_GPUBufferCreateInfo | GpuBufferCreateInfo | |
+| SDL_GPUTransferBufferCreateInfo | struct | Gpu.SDL_GPUTransferBufferCreateInfo | GpuTransferBufferCreateInfo | |
+| SDL_GPURasterizerState | struct | Gpu.SDL_GPURasterizerState | GpuRasterizerState | |
+| SDL_GPUMultisampleState | struct | Gpu.SDL_GPUMultisampleState | GpuMultisampleState | |
+| SDL_GPUDepthStencilState | struct | Gpu.SDL_GPUDepthStencilState | GpuDepthStencilState | |
+| SDL_GPUColorTargetDescription | struct | Gpu.SDL_GPUColorTargetDescription | GpuColorTargetDescription | |
+| SDL_GPUGraphicsPipelineTargetInfo | struct | Gpu.SDL_GPUGraphicsPipelineTargetInfo | GpuGraphicsPipelineTargetInfo | |
+| SDL_GPUGraphicsPipelineCreateInfo | struct | Gpu.SDL_GPUGraphicsPipelineCreateInfo | GpuGraphicsPipelineCreateInfo | |
+| SDL_GPUComputePipelineCreateInfo | struct | Gpu.SDL_GPUComputePipelineCreateInfo | GpuComputePipelineCreateInfo | |
+| SDL_GPUColorTargetInfo | struct | Gpu.SDL_GPUColorTargetInfo | GpuColorTargetInfo | |
+| SDL_GPUDepthStencilTargetInfo | struct | Gpu.SDL_GPUDepthStencilTargetInfo | GpuDepthStencilTargetInfo | |
+| SDL_GPUBlitInfo | struct | Gpu.SDL_GPUBlitInfo | GpuBlitInfo | |
+| SDL_GPUBufferBinding | struct | Gpu.SDL_GPUBufferBinding | GpuBufferBinding | |
+| SDL_GPUTextureSamplerBinding | struct | Gpu.SDL_GPUTextureSamplerBinding | GpuTextureSamplerBinding | |
+| SDL_GPUStorageBufferReadWriteBinding | struct | Gpu.SDL_GPUStorageBufferReadWriteBinding | GpuStorageBufferReadWriteBinding | |
+| SDL_GPUStorageTextureReadWriteBinding | struct | Gpu.SDL_GPUStorageTextureReadWriteBinding | GpuStorageTextureReadWriteBinding | |
 | SDL_GPUVulkanOptions | struct | - | - | deferred: advanced Vulkan config (SDL 3.4), skip-commented in Native/Gpu.cs |
-| SDL_GPUSupportsShaderFormats | function | Gpu.SDL_GPUSupportsShaderFormats | - | deferred |
+| SDL_GPUSupportsShaderFormats | function | Gpu.SDL_GPUSupportsShaderFormats | GpuDevice.SupportsShaderFormats | |
 | SDL_CreateGPUDevice | function | Gpu.SDL_CreateGPUDevice | GpuDevice.Create | |
-| SDL_CreateGPUDeviceWithProperties | function | Gpu.SDL_CreateGPUDeviceWithProperties | - | deferred |
-| SDL_PROP_GPU_DEVICE_CREATE_* | macro (21) | - | - | deferred — property string constants for SDL_CreateGPUDeviceWithProperties |
+| SDL_CreateGPUDeviceWithProperties | function | Gpu.SDL_CreateGPUDeviceWithProperties | GpuDevice.Create(PropertyGroup) | |
+| SDL_PROP_GPU_DEVICE_CREATE_* | macro (21) | Gpu.SDL_PROP_GPU_DEVICE_CREATE_* | GpuDeviceProperties.* | |
 | SDL_DestroyGPUDevice | function | Gpu.SDL_DestroyGPUDevice | GpuDevice.Dispose | |
 | SDL_GetNumGPUDrivers | function | Gpu.SDL_GetNumGPUDrivers | GpuDevice.NumDrivers | |
 | SDL_GetGPUDriver | function | Gpu.SDL_GetGPUDriver | GpuDevice.GetDriver | |
 | SDL_GetGPUDeviceDriver | function | Gpu.SDL_GetGPUDeviceDriver | GpuDevice.Driver | |
 | SDL_GetGPUShaderFormats | function | Gpu.SDL_GetGPUShaderFormats | GpuDevice.ShaderFormats | |
-| SDL_GetGPUDeviceProperties | function | Gpu.SDL_GetGPUDeviceProperties | - | deferred |
+| SDL_GetGPUDeviceProperties | function | Gpu.SDL_GetGPUDeviceProperties | GpuDevice.Properties | |
 | SDL_PROP_GPU_DEVICE_*_STRING | macro (4) | Gpu.SDL_PROP_GPU_DEVICE_*_STRING | - | Property string constants |
 | SDL_CreateGPUComputePipeline | function | Gpu.SDL_CreateGPUComputePipeline | GpuDevice.CreateComputePipeline | |
 | SDL_CreateGPUGraphicsPipeline | function | Gpu.SDL_CreateGPUGraphicsPipeline | GpuDevice.CreateGraphicsPipeline | |
@@ -611,8 +611,8 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_EndGPUCopyPass | function | Gpu.SDL_EndGPUCopyPass | GpuCopyPass.End | |
 | SDL_GenerateMipmapsForGPUTexture | function | Gpu.SDL_GenerateMipmapsForGPUTexture | GpuCommandBuffer.GenerateMipmaps | |
 | SDL_BlitGPUTexture | function | Gpu.SDL_BlitGPUTexture | GpuCommandBuffer.Blit | |
-| SDL_WindowSupportsGPUSwapchainComposition | function | Gpu.SDL_WindowSupportsGPUSwapchainComposition | - | deferred |
-| SDL_WindowSupportsGPUPresentMode | function | Gpu.SDL_WindowSupportsGPUPresentMode | - | deferred |
+| SDL_WindowSupportsGPUSwapchainComposition | function | Gpu.SDL_WindowSupportsGPUSwapchainComposition | GpuDevice.WindowSupportsSwapchainComposition | |
+| SDL_WindowSupportsGPUPresentMode | function | Gpu.SDL_WindowSupportsGPUPresentMode | GpuDevice.WindowSupportsPresentMode | |
 | SDL_ClaimWindowForGPUDevice | function | Gpu.SDL_ClaimWindowForGPUDevice | GpuDevice.ClaimWindow | |
 | SDL_ReleaseWindowFromGPUDevice | function | Gpu.SDL_ReleaseWindowFromGPUDevice | GpuDevice.ReleaseWindow | |
 | SDL_SetGPUSwapchainParameters | function | Gpu.SDL_SetGPUSwapchainParameters | GpuDevice.SetSwapchainParameters | |
@@ -625,13 +625,13 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_SubmitGPUCommandBufferAndAcquireFence | function | Gpu.SDL_SubmitGPUCommandBufferAndAcquireFence | GpuCommandBuffer.SubmitAndAcquireFence | |
 | SDL_CancelGPUCommandBuffer | function | Gpu.SDL_CancelGPUCommandBuffer | GpuCommandBuffer.Cancel | |
 | SDL_WaitForGPUIdle | function | Gpu.SDL_WaitForGPUIdle | GpuDevice.WaitForIdle | |
-| SDL_WaitForGPUFences | function | Gpu.SDL_WaitForGPUFences | - | deferred |
+| SDL_WaitForGPUFences | function | Gpu.SDL_WaitForGPUFences | GpuFence.WaitAll / GpuFence.WaitAny | |
 | SDL_QueryGPUFence | function | Gpu.SDL_QueryGPUFence | GpuFence.IsSignaled | |
 | SDL_ReleaseGPUFence | function | Gpu.SDL_ReleaseGPUFence | GpuFence.Dispose | |
-| SDL_GPUTextureFormatTexelBlockSize | function | Gpu.SDL_GPUTextureFormatTexelBlockSize | - | deferred |
+| SDL_GPUTextureFormatTexelBlockSize | function | Gpu.SDL_GPUTextureFormatTexelBlockSize | GpuTextureFormatExtensions.TexelBlockSize | |
 | SDL_GPUTextureSupportsFormat | function | Gpu.SDL_GPUTextureSupportsFormat | GpuDevice.SupportsTextureFormat | |
 | SDL_GPUTextureSupportsSampleCount | function | Gpu.SDL_GPUTextureSupportsSampleCount | GpuDevice.SupportsSampleCount | |
-| SDL_CalculateGPUTextureFormatSize | function | Gpu.SDL_CalculateGPUTextureFormatSize | - | deferred |
+| SDL_CalculateGPUTextureFormatSize | function | Gpu.SDL_CalculateGPUTextureFormatSize | GpuTextureFormatExtensions.CalculateSize | |
 | SDL_GPUSupportsProperties | function | - | - | deferred: rarely needed |
 | SDL_GetPixelFormatFromGPUTextureFormat | function | - | - | deferred |
 | SDL_GetGPUTextureFormatFromPixelFormat | function | - | - | deferred |

@@ -368,7 +368,7 @@ functions (55%) across the 41 active headers; the 13 deferred-by-design headers
       false ✅ on SDL_gamepad.h (15/73 actual), SDL_joystick.h (18/58), and
       SDL_haptic.h (12/31); ~110 missing rows; wrong managed-wrapper names
       (e.g. `GpuFence.WaitAll` doesn't exist); false "Used internally" notes.
-- [ ] 7.2 GPU managed descriptor layer: the `Gpu*` classes expose ~57 public members
+- [x] 7.2 GPU managed descriptor layer: the `Gpu*` classes expose ~57 public members
       taking/returning `SdlSharp.Native` types (`SDL_GPUShaderCreateInfo`,
       `SDL_GPUColorTargetInfo*`, `out SDL_GPUTexture*`, …), violating the
       no-native-types rule. Design public record structs for the create-info /
