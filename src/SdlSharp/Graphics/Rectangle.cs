@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 using SdlSharp.Native;
 using static SdlSharp.Native.Rect;
 
@@ -6,6 +8,7 @@ namespace SdlSharp.Graphics;
 /// <summary>
 /// A rectangle with integer coordinates, origin at the upper left.
 /// </summary>
+[StructLayout(LayoutKind.Sequential)] // Layout must match SDL_Rect (x, y, w, h ints): spans of this type are reinterpret-cast to SDL_Rect*.
 public readonly record struct Rectangle(int X, int Y, int W, int H)
 {
     /// <summary>

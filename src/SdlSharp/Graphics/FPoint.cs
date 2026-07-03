@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 using SdlSharp.Native;
 
 namespace SdlSharp.Graphics;
@@ -5,6 +7,7 @@ namespace SdlSharp.Graphics;
 /// <summary>
 /// A point using floating point coordinates.
 /// </summary>
+[StructLayout(LayoutKind.Sequential)] // Layout must match SDL_FPoint (x, y floats): spans of this type are reinterpret-cast to SDL_FPoint*.
 public readonly record struct FPoint(float X, float Y)
 {
     /// <summary>

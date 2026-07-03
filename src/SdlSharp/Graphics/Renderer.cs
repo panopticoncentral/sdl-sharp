@@ -178,6 +178,15 @@ public sealed unsafe class Renderer : IDisposable
     /// <param name="device">The GPU device to use for rendering.</param>
     /// <param name="window">The window to create the renderer for.</param>
     /// <returns>A new renderer.</returns>
+    /// <remarks>
+    /// The three renderer factories serve different scenarios:
+    /// <see cref="Create(Window, string?)"/> picks a hardware rendering driver for a window (the
+    /// default choice); <see cref="CreateSoftware"/> rasterizes on the CPU into a
+    /// <see cref="Surface"/>, needing no window or GPU at all (useful for headless or offscreen
+    /// rendering); <see cref="CreateGpu"/> layers the 2D renderer on top of an existing
+    /// <see cref="GpuDevice"/>, so the same device can be shared between the 2D API and your own
+    /// GPU passes (see also <see cref="GetGpuDevice"/>).
+    /// </remarks>
     public static Renderer CreateGpu(GpuDevice device, Window window) =>
         new(Check(SDL_CreateGPURenderer(device.Handle, window.Handle)));
 
@@ -620,6 +629,7 @@ public sealed unsafe class Renderer : IDisposable
         fixed (Vertex* vPtr = vertices)
         fixed (int* iPtr = indices)
         {
+            // Vertex is [StructLayout(Sequential)] matching SDL_Vertex (position, color, tex_coord) — required for this cast to be safe.
             Check(SDL_RenderGeometry(Handle,
                 texture is { } t ? t.Handle : null,
                 (SDL_Vertex*)vPtr, vertices.Length,
@@ -632,14 +642,28 @@ public sealed unsafe class Renderer : IDisposable
     /// using a texture and indices into the vertex arrays.
     /// </summary>
     /// <param name="texture">The texture to use, or <c>null</c> for untextured geometry.</param>
-    /// <param name="xy">The vertex positions, as interleaved (x, y) pairs.</param>
-    /// <param name="xyStride">The byte stride between consecutive <paramref name="xy"/> pairs.</param>
+    /// <param name="xy">The vertex positions, as (x, y) float pairs.</param>
+    /// <param name="xyStride">The number of bytes between the start of one (x, y) pair and the start of the next.
+    /// For a tightly-packed array of positions this is <c>2 * sizeof(float)</c> (8).</param>
     /// <param name="colors">The vertex colors.</param>
-    /// <param name="colorStride">The byte stride between consecutive <paramref name="colors"/> entries.</param>
-    /// <param name="uv">The vertex texture coordinates, as interleaved (u, v) pairs.</param>
-    /// <param name="uvStride">The byte stride between consecutive <paramref name="uv"/> pairs.</param>
+    /// <param name="colorStride">The number of bytes between the start of one color and the start of the next.
+    /// For a tightly-packed array of colors this is <c>4 * sizeof(float)</c> (16).</param>
+    /// <param name="uv">The vertex texture coordinates, as normalized (u, v) float pairs.</param>
+    /// <param name="uvStride">The number of bytes between the start of one (u, v) pair and the start of the next.
+    /// For a tightly-packed array of texture coordinates this is <c>2 * sizeof(float)</c> (8).</param>
     /// <param name="vertexCount">The number of vertices.</param>
     /// <param name="indices">The indices into the vertex arrays, or an empty span for sequential rendering.</param>
+    /// <remarks>
+    /// The stride parameters allow the three attribute streams to point into a single interleaved
+    /// vertex buffer: pass spans starting at each attribute's first occurrence within the buffer and
+    /// set every stride to the size of your vertex struct. For example, for a vertex laid out as
+    /// (x, y, r, g, b, a, u, v) — 8 floats, 32 bytes — pass <paramref name="xy"/> starting at float
+    /// offset 0, <paramref name="uv"/> starting at float offset 6, <paramref name="colors"/> as the
+    /// slice starting at float offset 2 reinterpreted via
+    /// <see cref="System.Runtime.InteropServices.MemoryMarshal.Cast{TFrom,TTo}(ReadOnlySpan{TFrom})"/>,
+    /// and 32 for all three strides. For separate tightly-packed arrays, each stride is simply the
+    /// size of one element.
+    /// </remarks>
     public void GeometryRaw(Texture? texture, ReadOnlySpan<float> xy, int xyStride, ReadOnlySpan<FColor> colors,
         int colorStride, ReadOnlySpan<float> uv, int uvStride, int vertexCount, ReadOnlySpan<int> indices)
     {
@@ -648,6 +672,7 @@ public sealed unsafe class Renderer : IDisposable
         fixed (float* uvPtr = uv)
         fixed (int* indexPtr = indices)
         {
+            // FColor is [StructLayout(Sequential)] matching SDL_FColor (r, g, b, a floats) — required for this cast to be safe.
             Check(SDL_RenderGeometryRaw(Handle,
                 texture is { } t ? t.Handle : null,
                 xyPtr, xyStride,

@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 using SdlSharp.Native;
 
 namespace SdlSharp.Graphics;
@@ -5,6 +7,7 @@ namespace SdlSharp.Graphics;
 /// <summary>
 /// A color with 8-bit RGBA components.
 /// </summary>
+[StructLayout(LayoutKind.Sequential)] // Layout must match SDL_Color (r, g, b, a bytes): spans of this type are reinterpret-cast to SDL_Color*.
 public readonly record struct Color(byte R, byte G, byte B, byte A)
 {
     /// <summary>

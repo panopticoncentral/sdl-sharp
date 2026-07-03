@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 using SdlSharp.Native;
 using static SdlSharp.Native.Rect;
 
@@ -6,6 +8,7 @@ namespace SdlSharp.Graphics;
 /// <summary>
 /// A rectangle using floating point coordinates.
 /// </summary>
+[StructLayout(LayoutKind.Sequential)] // Layout must match SDL_FRect (x, y, w, h floats): spans of this type are reinterpret-cast to SDL_FRect*.
 public readonly record struct FRectangle(float X, float Y, float W, float H)
 {
     /// <summary>
