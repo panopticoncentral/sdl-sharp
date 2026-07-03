@@ -302,3 +302,251 @@ public enum GpuBufferUsage : uint
     /// <summary>Buffer can be written to in a compute shader.</summary>
     ComputeStorageWrite = (uint)SDL_GPUBufferUsageFlags.SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_WRITE,
 }
+
+/// <summary>
+/// How a render target is loaded at the beginning of a render pass.
+/// </summary>
+public enum GpuLoadOp
+{
+    Load = (int)SDL_GPULoadOp.SDL_GPU_LOADOP_LOAD,
+    Clear = (int)SDL_GPULoadOp.SDL_GPU_LOADOP_CLEAR,
+    DontCare = (int)SDL_GPULoadOp.SDL_GPU_LOADOP_DONT_CARE,
+}
+
+/// <summary>
+/// How a render target is stored at the end of a render pass.
+/// </summary>
+public enum GpuStoreOp
+{
+    Store = (int)SDL_GPUStoreOp.SDL_GPU_STOREOP_STORE,
+    DontCare = (int)SDL_GPUStoreOp.SDL_GPU_STOREOP_DONT_CARE,
+    Resolve = (int)SDL_GPUStoreOp.SDL_GPU_STOREOP_RESOLVE,
+    ResolveAndStore = (int)SDL_GPUStoreOp.SDL_GPU_STOREOP_RESOLVE_AND_STORE,
+}
+
+/// <summary>
+/// Shader pipeline stage.
+/// </summary>
+public enum GpuShaderStage
+{
+    Vertex = (int)SDL_GPUShaderStage.SDL_GPU_SHADERSTAGE_VERTEX,
+    Fragment = (int)SDL_GPUShaderStage.SDL_GPU_SHADERSTAGE_FRAGMENT,
+}
+
+/// <summary>
+/// Transfer buffer usage.
+/// </summary>
+public enum GpuTransferBufferUsage
+{
+    Upload = (int)SDL_GPUTransferBufferUsage.SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+    Download = (int)SDL_GPUTransferBufferUsage.SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD,
+}
+
+/// <summary>
+/// Cube map face index.
+/// </summary>
+public enum GpuCubeMapFace
+{
+    PositiveX = (int)SDL_GPUCubeMapFace.SDL_GPU_CUBEMAPFACE_POSITIVEX,
+    NegativeX = (int)SDL_GPUCubeMapFace.SDL_GPU_CUBEMAPFACE_NEGATIVEX,
+    PositiveY = (int)SDL_GPUCubeMapFace.SDL_GPU_CUBEMAPFACE_POSITIVEY,
+    NegativeY = (int)SDL_GPUCubeMapFace.SDL_GPU_CUBEMAPFACE_NEGATIVEY,
+    PositiveZ = (int)SDL_GPUCubeMapFace.SDL_GPU_CUBEMAPFACE_POSITIVEZ,
+    NegativeZ = (int)SDL_GPUCubeMapFace.SDL_GPU_CUBEMAPFACE_NEGATIVEZ,
+}
+
+/// <summary>
+/// Vertex element data format.
+/// </summary>
+public enum GpuVertexElementFormat
+{
+    Invalid = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_INVALID,
+
+    // 32-bit
+    Int = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_INT,
+    Int2 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_INT2,
+    Int3 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_INT3,
+    Int4 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_INT4,
+    Uint = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_UINT,
+    Uint2 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_UINT2,
+    Uint3 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_UINT3,
+    Uint4 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_UINT4,
+    Float = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_FLOAT,
+    Float2 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_FLOAT2,
+    Float3 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+    Float4 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
+
+    // 8-bit
+    Byte2 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_BYTE2,
+    Byte4 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_BYTE4,
+    Ubyte2 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_UBYTE2,
+    Ubyte4 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_UBYTE4,
+    Byte2Norm = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_BYTE2_NORM,
+    Byte4Norm = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_BYTE4_NORM,
+    Ubyte2Norm = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_UBYTE2_NORM,
+    Ubyte4Norm = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_UBYTE4_NORM,
+
+    // 16-bit
+    Short2 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_SHORT2,
+    Short4 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_SHORT4,
+    Ushort2 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_USHORT2,
+    Ushort4 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_USHORT4,
+    Short2Norm = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_SHORT2_NORM,
+    Short4Norm = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_SHORT4_NORM,
+    Ushort2Norm = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_USHORT2_NORM,
+    Ushort4Norm = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_USHORT4_NORM,
+
+    // Half float
+    Half2 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_HALF2,
+    Half4 = (int)SDL_GPUVertexElementFormat.SDL_GPU_VERTEXELEMENTFORMAT_HALF4,
+}
+
+/// <summary>
+/// Vertex input rate.
+/// </summary>
+public enum GpuVertexInputRate
+{
+    Vertex = (int)SDL_GPUVertexInputRate.SDL_GPU_VERTEXINPUTRATE_VERTEX,
+    Instance = (int)SDL_GPUVertexInputRate.SDL_GPU_VERTEXINPUTRATE_INSTANCE,
+}
+
+/// <summary>
+/// Polygon fill mode.
+/// </summary>
+public enum GpuFillMode
+{
+    Fill = (int)SDL_GPUFillMode.SDL_GPU_FILLMODE_FILL,
+    Line = (int)SDL_GPUFillMode.SDL_GPU_FILLMODE_LINE,
+}
+
+/// <summary>
+/// Face culling mode.
+/// </summary>
+public enum GpuCullMode
+{
+    None = (int)SDL_GPUCullMode.SDL_GPU_CULLMODE_NONE,
+    Front = (int)SDL_GPUCullMode.SDL_GPU_CULLMODE_FRONT,
+    Back = (int)SDL_GPUCullMode.SDL_GPU_CULLMODE_BACK,
+}
+
+/// <summary>
+/// Front face winding order.
+/// </summary>
+public enum GpuFrontFace
+{
+    CounterClockwise = (int)SDL_GPUFrontFace.SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE,
+    Clockwise = (int)SDL_GPUFrontFace.SDL_GPU_FRONTFACE_CLOCKWISE,
+}
+
+/// <summary>
+/// Comparison operator.
+/// </summary>
+public enum GpuCompareOp
+{
+    Invalid = (int)SDL_GPUCompareOp.SDL_GPU_COMPAREOP_INVALID,
+    Never = (int)SDL_GPUCompareOp.SDL_GPU_COMPAREOP_NEVER,
+    Less = (int)SDL_GPUCompareOp.SDL_GPU_COMPAREOP_LESS,
+    Equal = (int)SDL_GPUCompareOp.SDL_GPU_COMPAREOP_EQUAL,
+    LessOrEqual = (int)SDL_GPUCompareOp.SDL_GPU_COMPAREOP_LESS_OR_EQUAL,
+    Greater = (int)SDL_GPUCompareOp.SDL_GPU_COMPAREOP_GREATER,
+    NotEqual = (int)SDL_GPUCompareOp.SDL_GPU_COMPAREOP_NOT_EQUAL,
+    GreaterOrEqual = (int)SDL_GPUCompareOp.SDL_GPU_COMPAREOP_GREATER_OR_EQUAL,
+    Always = (int)SDL_GPUCompareOp.SDL_GPU_COMPAREOP_ALWAYS,
+}
+
+/// <summary>
+/// Stencil operation.
+/// </summary>
+public enum GpuStencilOp
+{
+    Invalid = (int)SDL_GPUStencilOp.SDL_GPU_STENCILOP_INVALID,
+    Keep = (int)SDL_GPUStencilOp.SDL_GPU_STENCILOP_KEEP,
+    Zero = (int)SDL_GPUStencilOp.SDL_GPU_STENCILOP_ZERO,
+    Replace = (int)SDL_GPUStencilOp.SDL_GPU_STENCILOP_REPLACE,
+    IncrementAndClamp = (int)SDL_GPUStencilOp.SDL_GPU_STENCILOP_INCREMENT_AND_CLAMP,
+    DecrementAndClamp = (int)SDL_GPUStencilOp.SDL_GPU_STENCILOP_DECREMENT_AND_CLAMP,
+    Invert = (int)SDL_GPUStencilOp.SDL_GPU_STENCILOP_INVERT,
+    IncrementAndWrap = (int)SDL_GPUStencilOp.SDL_GPU_STENCILOP_INCREMENT_AND_WRAP,
+    DecrementAndWrap = (int)SDL_GPUStencilOp.SDL_GPU_STENCILOP_DECREMENT_AND_WRAP,
+}
+
+/// <summary>
+/// Blend operation.
+/// </summary>
+public enum GpuBlendOp
+{
+    Invalid = (int)SDL_GPUBlendOp.SDL_GPU_BLENDOP_INVALID,
+    Add = (int)SDL_GPUBlendOp.SDL_GPU_BLENDOP_ADD,
+    Subtract = (int)SDL_GPUBlendOp.SDL_GPU_BLENDOP_SUBTRACT,
+    ReverseSubtract = (int)SDL_GPUBlendOp.SDL_GPU_BLENDOP_REVERSE_SUBTRACT,
+    Min = (int)SDL_GPUBlendOp.SDL_GPU_BLENDOP_MIN,
+    Max = (int)SDL_GPUBlendOp.SDL_GPU_BLENDOP_MAX,
+}
+
+/// <summary>
+/// Blend factor.
+/// </summary>
+public enum GpuBlendFactor
+{
+    Invalid = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_INVALID,
+    Zero = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_ZERO,
+    One = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_ONE,
+    SrcColor = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_SRC_COLOR,
+    OneMinusSrcColor = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_COLOR,
+    DstColor = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_DST_COLOR,
+    OneMinusDstColor = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_ONE_MINUS_DST_COLOR,
+    SrcAlpha = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_SRC_ALPHA,
+    OneMinusSrcAlpha = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+    DstAlpha = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_DST_ALPHA,
+    OneMinusDstAlpha = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_ONE_MINUS_DST_ALPHA,
+    ConstantColor = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_CONSTANT_COLOR,
+    OneMinusConstantColor = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_ONE_MINUS_CONSTANT_COLOR,
+    SrcAlphaSaturate = (int)SDL_GPUBlendFactor.SDL_GPU_BLENDFACTOR_SRC_ALPHA_SATURATE,
+}
+
+/// <summary>
+/// Texture filter mode.
+/// </summary>
+public enum GpuFilter
+{
+    Nearest = (int)SDL_GPUFilter.SDL_GPU_FILTER_NEAREST,
+    Linear = (int)SDL_GPUFilter.SDL_GPU_FILTER_LINEAR,
+}
+
+/// <summary>
+/// Mipmap filter mode.
+/// </summary>
+public enum GpuSamplerMipmapMode
+{
+    Nearest = (int)SDL_GPUSamplerMipmapMode.SDL_GPU_SAMPLERMIPMAPMODE_NEAREST,
+    Linear = (int)SDL_GPUSamplerMipmapMode.SDL_GPU_SAMPLERMIPMAPMODE_LINEAR,
+}
+
+/// <summary>
+/// Sampler address (wrap) mode.
+/// </summary>
+public enum GpuSamplerAddressMode
+{
+    Repeat = (int)SDL_GPUSamplerAddressMode.SDL_GPU_SAMPLERADDRESSMODE_REPEAT,
+    MirroredRepeat = (int)SDL_GPUSamplerAddressMode.SDL_GPU_SAMPLERADDRESSMODE_MIRRORED_REPEAT,
+    ClampToEdge = (int)SDL_GPUSamplerAddressMode.SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE,
+}
+
+/// <summary>
+/// Color component write mask flags.
+/// </summary>
+[Flags]
+public enum GpuColorComponentFlags : byte
+{
+    /// <summary>Red channel.</summary>
+    R = (byte)SDL_GPUColorComponentFlags.SDL_GPU_COLORCOMPONENT_R,
+
+    /// <summary>Green channel.</summary>
+    G = (byte)SDL_GPUColorComponentFlags.SDL_GPU_COLORCOMPONENT_G,
+
+    /// <summary>Blue channel.</summary>
+    B = (byte)SDL_GPUColorComponentFlags.SDL_GPU_COLORCOMPONENT_B,
+
+    /// <summary>Alpha channel.</summary>
+    A = (byte)SDL_GPUColorComponentFlags.SDL_GPU_COLORCOMPONENT_A,
+}
