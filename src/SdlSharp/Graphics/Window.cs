@@ -36,6 +36,8 @@ public sealed unsafe class Window : IDisposable
         _ownsHandle = ownsHandle;
     }
 
+    // --- Position constants ---
+
     /// <summary>
     /// A special position value indicating the window position is undefined.
     /// </summary>
@@ -45,6 +47,8 @@ public sealed unsafe class Window : IDisposable
     /// A special position value indicating the window should be centered.
     /// </summary>
     public const int CenteredPosition = SDL_WINDOWPOS_CENTERED;
+
+    // --- Creation / lookup ---
 
     /// <summary>
     /// Creates a new window with the specified title, dimensions, and flags.
@@ -117,6 +121,8 @@ public sealed unsafe class Window : IDisposable
         }
     }
 
+    // --- Video drivers ---
+
     /// <summary>
     /// Gets the number of video drivers compiled into SDL.
     /// </summary>
@@ -136,6 +142,8 @@ public sealed unsafe class Window : IDisposable
     public static string? CurrentVideoDriver =>
         Marshal.PtrToStringUTF8((nint)SDL_GetCurrentVideoDriver());
 
+    // --- Identity / flags / properties ---
+
     /// <summary>
     /// Gets the numeric ID of this window.
     /// </summary>
@@ -151,6 +159,8 @@ public sealed unsafe class Window : IDisposable
     /// Gets the current window flags.
     /// </summary>
     public WindowFlags Flags => (WindowFlags)SDL_GetWindowFlags(Handle);
+
+    // --- Title / position / size / opacity ---
 
     /// <summary>
     /// Gets or sets the title of the window.
@@ -244,6 +254,8 @@ public sealed unsafe class Window : IDisposable
     /// </summary>
     public float DisplayScale => SDL_GetWindowDisplayScale(Handle);
 
+    // --- Window state ---
+
     /// <summary>
     /// Shows the window.
     /// </summary>
@@ -280,6 +292,8 @@ public sealed unsafe class Window : IDisposable
     /// <param name="fullscreen">true for fullscreen, false for windowed.</param>
     public void SetFullscreen(bool fullscreen) => Check(SDL_SetWindowFullscreen(Handle, fullscreen));
 
+    // --- Appearance ---
+
     /// <summary>
     /// Sets whether the window has a border.
     /// </summary>
@@ -303,6 +317,8 @@ public sealed unsafe class Window : IDisposable
     /// </summary>
     /// <param name="operation">The flash operation to perform.</param>
     public void Flash(FlashOperation operation) => Check(SDL_FlashWindow(Handle, (SDL_FlashOperation)operation));
+
+    // --- Text input ---
 
     /// <summary>
     /// Starts accepting Unicode text input events in this window. Shows the
@@ -376,6 +392,8 @@ public sealed unsafe class Window : IDisposable
     /// </summary>
     public void ClearComposition() => Check(SDL_ClearComposition(Handle));
 
+    // --- Window surface ---
+
     /// <summary>
     /// Gets the SDL surface associated with the window for software rendering.
     /// The returned surface is owned by the window and must not be disposed.
@@ -434,6 +452,8 @@ public sealed unsafe class Window : IDisposable
         set => Check(SDL_SetWindowSurfaceVSync(Handle, value));
     }
 
+    // --- Display / fullscreen mode ---
+
     /// <summary>
     /// Gets the display associated with this window.
     /// </summary>
@@ -474,6 +494,8 @@ public sealed unsafe class Window : IDisposable
         var ptr = SDL_GetWindowFullscreenMode(Handle);
         return ptr == null ? null : DisplayMode.FromNative(ptr);
     }
+
+    // --- Grabs / mouse confinement ---
 
     /// <summary>
     /// Gets or sets whether the window's mouse input is grabbed (confined to the window).
@@ -518,6 +540,8 @@ public sealed unsafe class Window : IDisposable
         }
     }
 
+    // --- Layout ---
+
     /// <summary>
     /// Sets whether the window should always be above other windows.
     /// </summary>
@@ -557,6 +581,8 @@ public sealed unsafe class Window : IDisposable
     /// <param name="right">Receives the width of the right border.</param>
     public void GetBordersSize(out int top, out int left, out int bottom, out int right) =>
         Check(SDL_GetWindowBordersSize(Handle, out top, out left, out bottom, out right));
+
+    // --- Popups / parenting / modality / focus ---
 
     /// <summary>
     /// Creates a child popup window of this window.
@@ -604,6 +630,8 @@ public sealed unsafe class Window : IDisposable
     /// <param name="focusable">true if the window should accept keyboard focus.</param>
     public void SetFocusable(bool focusable) => Check(SDL_SetWindowFocusable(Handle, focusable));
 
+    // --- System menu / shape / pixel format / safe area ---
+
     /// <summary>
     /// Displays the system-level window menu at the given position, in window coordinates.
     /// </summary>
@@ -638,6 +666,8 @@ public sealed unsafe class Window : IDisposable
         }
     }
 
+    // --- Progress ---
+
     /// <summary>
     /// Gets or sets the state of the window's taskbar progress bar.
     /// </summary>
@@ -656,6 +686,8 @@ public sealed unsafe class Window : IDisposable
         set => Check(SDL_SetWindowProgressValue(Handle, value));
     }
 
+    // --- Hit testing ---
+
     /// <summary>
     /// Handles hit testing for custom window dragging and resizing.
     /// </summary>
@@ -670,7 +702,9 @@ public sealed unsafe class Window : IDisposable
     /// Sets or clears (<c>null</c>) the hit-test callback used for custom window dragging
     /// and resizing regions. Exceptions thrown by the handler are swallowed and
     /// treated as <see cref="HitTestResult.Normal"/> (they must not cross the
-    /// native boundary).
+    /// native boundary). The callback may fire frequently and at any time while
+    /// the user interacts with the window, so the handler should be fast and
+    /// avoid allocating.
     /// </summary>
     /// <param name="handler">The hit-test handler, or <c>null</c> to clear it.</param>
     public unsafe void SetHitTest(HitTestHandler? handler)
@@ -707,6 +741,8 @@ public sealed unsafe class Window : IDisposable
             return SDL_HitTestResult.SDL_HITTEST_NORMAL;
         }
     }
+
+    // --- Fill document (Emscripten) ---
 
     /// <summary>
     /// Requests that the window fill the browser document (Emscripten only; no-op /
