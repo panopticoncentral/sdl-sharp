@@ -569,9 +569,9 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_ReleaseGPUShader | function | Gpu.SDL_ReleaseGPUShader | GpuShader.Dispose | |
 | SDL_ReleaseGPUGraphicsPipeline | function | Gpu.SDL_ReleaseGPUGraphicsPipeline | GpuGraphicsPipeline.Dispose | |
 | SDL_AcquireGPUCommandBuffer | function | Gpu.SDL_AcquireGPUCommandBuffer | GpuDevice.AcquireCommandBuffer | |
-| SDL_PushGPUVertexUniformData | function | Gpu.SDL_PushGPUVertexUniformData | GpuCommandBuffer.PushVertexUniformData | |
-| SDL_PushGPUFragmentUniformData | function | Gpu.SDL_PushGPUFragmentUniformData | GpuCommandBuffer.PushFragmentUniformData | |
-| SDL_PushGPUComputeUniformData | function | Gpu.SDL_PushGPUComputeUniformData | GpuCommandBuffer.PushComputeUniformData | |
+| SDL_PushGPUVertexUniformData | function | Gpu.SDL_PushGPUVertexUniformData | GpuCommandBuffer.PushVertexUniformData | Generic `in T` and `ReadOnlySpan<byte>` overloads |
+| SDL_PushGPUFragmentUniformData | function | Gpu.SDL_PushGPUFragmentUniformData | GpuCommandBuffer.PushFragmentUniformData | Generic `in T` and `ReadOnlySpan<byte>` overloads |
+| SDL_PushGPUComputeUniformData | function | Gpu.SDL_PushGPUComputeUniformData | GpuCommandBuffer.PushComputeUniformData | Generic `in T` and `ReadOnlySpan<byte>` overloads |
 | SDL_BeginGPURenderPass | function | Gpu.SDL_BeginGPURenderPass | GpuCommandBuffer.BeginRenderPass | |
 | SDL_BindGPUGraphicsPipeline | function | Gpu.SDL_BindGPUGraphicsPipeline | GpuRenderPass.BindGraphicsPipeline | |
 | SDL_SetGPUViewport | function | Gpu.SDL_SetGPUViewport | GpuRenderPass.SetViewport | |
@@ -599,7 +599,7 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_DispatchGPUCompute | function | Gpu.SDL_DispatchGPUCompute | GpuComputePass.Dispatch | |
 | SDL_DispatchGPUComputeIndirect | function | Gpu.SDL_DispatchGPUComputeIndirect | GpuComputePass.DispatchIndirect | |
 | SDL_EndGPUComputePass | function | Gpu.SDL_EndGPUComputePass | GpuComputePass.End | |
-| SDL_MapGPUTransferBuffer | function | Gpu.SDL_MapGPUTransferBuffer | GpuTransferBuffer.Map | |
+| SDL_MapGPUTransferBuffer | function | Gpu.SDL_MapGPUTransferBuffer | GpuTransferBuffer.Map | Returns `Span<byte>` sized to the buffer's creation size |
 | SDL_UnmapGPUTransferBuffer | function | Gpu.SDL_UnmapGPUTransferBuffer | GpuTransferBuffer.Unmap | |
 | SDL_BeginGPUCopyPass | function | Gpu.SDL_BeginGPUCopyPass | GpuCommandBuffer.BeginCopyPass | |
 | SDL_UploadToGPUTexture | function | Gpu.SDL_UploadToGPUTexture | GpuCopyPass.UploadToTexture | |

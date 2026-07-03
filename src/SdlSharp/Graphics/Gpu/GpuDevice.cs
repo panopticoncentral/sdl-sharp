@@ -243,7 +243,7 @@ public sealed unsafe class GpuDevice : IDisposable
     public GpuTransferBuffer CreateTransferBuffer(in GpuTransferBufferCreateInfo createInfo)
     {
         var native = createInfo.ToNative();
-        return new GpuTransferBuffer(this, Check(SDL_CreateGPUTransferBuffer(Handle, &native)));
+        return new GpuTransferBuffer(this, Check(SDL_CreateGPUTransferBuffer(Handle, &native)), createInfo.Size);
     }
 
     /// <summary>
