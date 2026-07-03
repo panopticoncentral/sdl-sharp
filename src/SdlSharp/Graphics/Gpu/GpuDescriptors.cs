@@ -54,7 +54,15 @@ public readonly record struct GpuSamplerCreateInfo
     };
 }
 
-/// <summary>Texture creation parameters.</summary>
+/// <summary>
+/// Texture creation parameters.
+/// </summary>
+/// <remarks>
+/// The <see cref="LayerCountOrDepth"/> and <see cref="NumLevels"/> defaults of 1 and the
+/// <c>required</c>-member enforcement only apply when constructing with an object initializer
+/// (<c>new GpuTextureCreateInfo { ... }</c>). <c>default(GpuTextureCreateInfo)</c> zero-initializes
+/// every field and is not a valid value; SDL will report an error for the zero fields.
+/// </remarks>
 public readonly record struct GpuTextureCreateInfo
 {
     /// <summary>Creates texture creation info. <see cref="LayerCountOrDepth"/> and <see cref="NumLevels"/> default to 1.</summary>
@@ -167,7 +175,7 @@ public readonly record struct GpuComputePipelineCreateInfo
     public PropertyGroup? Props { get; init; }
 }
 
-/// <summary>A vertex buffer slot description for pipeline creation.</summary>
+/// <summary>A vertex buffer slot description for pipeline creation. <c>InstanceStepRate</c> is reserved for future use and must be left 0.</summary>
 public readonly record struct GpuVertexBufferDescription(uint Slot, uint Pitch, GpuVertexInputRate InputRate = GpuVertexInputRate.Vertex, uint InstanceStepRate = 0)
 {
     internal SDL_GPUVertexBufferDescription ToNative() =>
@@ -285,7 +293,12 @@ public readonly record struct GpuRasterizerState
     /// <summary>Whether depth clipping is enabled.</summary>
     public bool EnableDepthClip { get; init; }
 
-    /// <summary>Filled polygons, no culling, counter-clockwise front faces.</summary>
+    /// <summary>
+    /// Filled polygons, no culling, counter-clockwise front faces. Note that
+    /// <see cref="EnableDepthClip"/> is false, which enables depth clamping (SDL semantics:
+    /// true enables depth clip, false enables depth clamp); set <see cref="EnableDepthClip"/>
+    /// to true explicitly for standard depth clipping.
+    /// </summary>
     public static GpuRasterizerState Default => default;
 
     internal SDL_GPURasterizerState ToNative() => new()
@@ -306,9 +319,9 @@ public readonly record struct GpuMultisampleState
 {
     /// <summary>The sample count.</summary>
     public GpuSampleCount SampleCount { get; init; }
-    /// <summary>The sample mask, used when <see cref="EnableMask"/> is true.</summary>
+    /// <summary>Reserved for future use. Must be left 0.</summary>
     public uint SampleMask { get; init; }
-    /// <summary>Whether the sample mask is applied.</summary>
+    /// <summary>Reserved for future use. Must be left false.</summary>
     public bool EnableMask { get; init; }
     /// <summary>Whether alpha-to-coverage is enabled.</summary>
     public bool EnableAlphaToCoverage { get; init; }
