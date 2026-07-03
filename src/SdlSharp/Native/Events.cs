@@ -5,7 +5,9 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Skipped event structs: SDL_ScreenKeyboardEvent (SDL 3.4, niche).
+// Every SDL_events.h event struct is bound below. Payload-free event types (for
+// example SDL_EVENT_KEYMAP_CHANGED, SDL_EVENT_SCREEN_KEYBOARD_SHOWN/HIDDEN) carry
+// no dedicated struct — they arrive as SDL_CommonEvent.
 
 /// <summary>
 /// The types of events that can be delivered.
