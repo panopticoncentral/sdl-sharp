@@ -165,70 +165,142 @@ public sealed unsafe class Application : IDisposable
 
         while (SDL_PollEvent(&e))
         {
-            RawEventFilter?.Invoke(new RawEvent((EventType)e.type, (nint)(&e)));
-
-            switch ((Native.SDL_EventType)e.type)
+            if (DispatchOne(&e))
             {
-                case Native.SDL_EventType.SDL_EVENT_QUIT:
-                    gotQuit = true;
-                    Quit?.Invoke(new QuitEventArgs());
-                    break;
-
-                case Native.SDL_EventType.SDL_EVENT_KEY_DOWN:
-                case Native.SDL_EventType.SDL_EVENT_KEY_UP:
-                    var keyHandler = e.type == (uint)Native.SDL_EventType.SDL_EVENT_KEY_DOWN ? KeyDown : KeyUp;
-                    keyHandler?.Invoke(new KeyEventArgs(
-                        e.key.windowID.Value,
-                        (Scancode)e.key.scancode,
-                        (Keycode)e.key.key,
-                        (KeyModifiers)e.key.mod,
-                        e.key.down != 0,
-                        e.key.repeat != 0));
-                    break;
-
-                case Native.SDL_EventType.SDL_EVENT_TEXT_INPUT:
-                    TextInput?.Invoke(new TextInputEventArgs(
-                        e.text.windowID.Value,
-                        Marshal.PtrToStringUTF8((nint)e.text.text)));
-                    break;
-
-                case Native.SDL_EventType.SDL_EVENT_MOUSE_MOTION:
-                    MouseMotion?.Invoke(new MouseMotionEventArgs(
-                        e.motion.windowID.Value,
-                        e.motion.x, e.motion.y,
-                        e.motion.xrel, e.motion.yrel,
-                        e.motion.state));
-                    break;
-
-                case Native.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
-                case Native.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
-                    var btnHandler = e.type == (uint)Native.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN ? MouseButtonDown : MouseButtonUp;
-                    btnHandler?.Invoke(new MouseButtonEventArgs(
-                        e.button.windowID.Value,
-                        (MouseButton)e.button.button,
-                        e.button.down != 0,
-                        e.button.clicks,
-                        e.button.x, e.button.y));
-                    break;
-
-                case Native.SDL_EventType.SDL_EVENT_MOUSE_WHEEL:
-                    MouseWheel?.Invoke(new MouseWheelEventArgs(
-                        e.wheel.windowID.Value,
-                        e.wheel.x, e.wheel.y,
-                        e.wheel.mouse_x, e.wheel.mouse_y,
-                        (MouseWheelDirection)e.wheel.direction));
-                    break;
-
-                case >= Native.SDL_EventType.SDL_EVENT_WINDOW_FIRST and <= Native.SDL_EventType.SDL_EVENT_WINDOW_LAST:
-                    Window?.Invoke(new WindowEventArgs(
-                        e.window.windowID.Value,
-                        e.window.data1, e.window.data2));
-                    break;
+                gotQuit = true;
             }
         }
 
         return gotQuit;
     }
+
+    /// <summary>
+    /// Waits for the next event (up to an optional timeout), then dispatches it through
+    /// the same filter and typed-handler path as <see cref="DispatchEvents"/>.
+    /// Must be called on the main thread.
+    /// </summary>
+    /// <param name="timeoutMilliseconds">Maximum time to wait, or -1 to wait indefinitely.</param>
+    /// <returns>True if an event was dispatched, false if the wait timed out.</returns>
+    public static bool WaitDispatchEvent(int timeoutMilliseconds = -1)
+    {
+        Native.SDL_Event e;
+        var got = timeoutMilliseconds < 0
+            ? SDL_WaitEvent(&e)
+            : SDL_WaitEventTimeout(&e, timeoutMilliseconds);
+
+        if (!got) return false;
+
+        DispatchOne(&e);
+        return true;
+    }
+
+    private static bool DispatchOne(Native.SDL_Event* ep)
+    {
+        ref var e = ref *ep;
+        var gotQuit = false;
+
+        RawEventFilter?.Invoke(new RawEvent((EventType)e.type, (nint)ep));
+
+        switch ((Native.SDL_EventType)e.type)
+        {
+            case Native.SDL_EventType.SDL_EVENT_QUIT:
+                gotQuit = true;
+                Quit?.Invoke(new QuitEventArgs());
+                break;
+
+            case Native.SDL_EventType.SDL_EVENT_KEY_DOWN:
+            case Native.SDL_EventType.SDL_EVENT_KEY_UP:
+                var keyHandler = e.type == (uint)Native.SDL_EventType.SDL_EVENT_KEY_DOWN ? KeyDown : KeyUp;
+                keyHandler?.Invoke(new KeyEventArgs(
+                    e.key.windowID.Value,
+                    (Scancode)e.key.scancode,
+                    (Keycode)e.key.key,
+                    (KeyModifiers)e.key.mod,
+                    e.key.down != 0,
+                    e.key.repeat != 0));
+                break;
+
+            case Native.SDL_EventType.SDL_EVENT_TEXT_INPUT:
+                TextInput?.Invoke(new TextInputEventArgs(
+                    e.text.windowID.Value,
+                    Marshal.PtrToStringUTF8((nint)e.text.text)));
+                break;
+
+            case Native.SDL_EventType.SDL_EVENT_MOUSE_MOTION:
+                MouseMotion?.Invoke(new MouseMotionEventArgs(
+                    e.motion.windowID.Value,
+                    e.motion.x, e.motion.y,
+                    e.motion.xrel, e.motion.yrel,
+                    e.motion.state));
+                break;
+
+            case Native.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
+            case Native.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
+                var btnHandler = e.type == (uint)Native.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN ? MouseButtonDown : MouseButtonUp;
+                btnHandler?.Invoke(new MouseButtonEventArgs(
+                    e.button.windowID.Value,
+                    (MouseButton)e.button.button,
+                    e.button.down != 0,
+                    e.button.clicks,
+                    e.button.x, e.button.y));
+                break;
+
+            case Native.SDL_EventType.SDL_EVENT_MOUSE_WHEEL:
+                MouseWheel?.Invoke(new MouseWheelEventArgs(
+                    e.wheel.windowID.Value,
+                    e.wheel.x, e.wheel.y,
+                    e.wheel.mouse_x, e.wheel.mouse_y,
+                    (MouseWheelDirection)e.wheel.direction));
+                break;
+
+            case >= Native.SDL_EventType.SDL_EVENT_WINDOW_FIRST and <= Native.SDL_EventType.SDL_EVENT_WINDOW_LAST:
+                Window?.Invoke(new WindowEventArgs(
+                    e.window.windowID.Value,
+                    e.window.data1, e.window.data2));
+                break;
+
+            default:
+                DispatchExtended(ref e);
+                break;
+        }
+
+        return gotQuit;
+    }
+
+    // Filled in by Task 10 with the remaining typed event families.
+    private static void DispatchExtended(ref Native.SDL_Event e)
+    {
+    }
+
+    /// <summary>Gets whether at least one event of the given type is queued.</summary>
+    /// <param name="type">The event type.</param>
+    public static bool HasEvent(EventType type) => SDL_HasEvent((uint)type);
+
+    /// <summary>Gets whether at least one event in the inclusive type range is queued.</summary>
+    /// <param name="minType">The lowest event type.</param>
+    /// <param name="maxType">The highest event type.</param>
+    public static bool HasEvents(EventType minType, EventType maxType) =>
+        SDL_HasEvents((uint)minType, (uint)maxType);
+
+    /// <summary>Removes all queued events of the given type.</summary>
+    /// <param name="type">The event type to flush.</param>
+    public static void FlushEvent(EventType type) => SDL_FlushEvent((uint)type);
+
+    /// <summary>Removes all queued events in the inclusive type range.</summary>
+    /// <param name="minType">The lowest event type.</param>
+    /// <param name="maxType">The highest event type.</param>
+    public static void FlushEvents(EventType minType, EventType maxType) =>
+        SDL_FlushEvents((uint)minType, (uint)maxType);
+
+    /// <summary>Enables or disables processing of the given event type.</summary>
+    /// <param name="type">The event type.</param>
+    /// <param name="enabled">True to enable, false to disable.</param>
+    public static void SetEventEnabled(EventType type, bool enabled) =>
+        SDL_SetEventEnabled((uint)type, enabled);
+
+    /// <summary>Gets whether the given event type is currently enabled.</summary>
+    /// <param name="type">The event type.</param>
+    public static bool IsEventEnabled(EventType type) => SDL_EventEnabled((uint)type);
 
     /// <inheritdoc/>
     public void Dispose() => SDL_Quit();
