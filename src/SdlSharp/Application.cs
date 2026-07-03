@@ -110,13 +110,14 @@ public sealed unsafe class Application : IDisposable
     public static void PumpEvents() => Native.Events.SDL_PumpEvents();
 
     /// <summary>
-    /// Delegate for raw SDL event processing.
+    /// Handles a raw event before typed dispatch.
     /// </summary>
-    public unsafe delegate void RawEventHandler(Native.SDL_Event* e);
+    /// <param name="e">The raw event.</param>
+    public delegate void RawEventHandler(in RawEvent e);
 
     /// <summary>
-    /// Raised for each raw SDL event before typed dispatch.
-    /// Used by ImGui backend to process events.
+    /// Raised for every polled event before typed dispatch. The event's
+    /// <see cref="RawEvent.Pointer"/> is only valid during the callback.
     /// </summary>
     public static event RawEventHandler? RawEventFilter;
 
@@ -159,7 +160,7 @@ public sealed unsafe class Application : IDisposable
 
         while (SDL_PollEvent(&e))
         {
-            RawEventFilter?.Invoke(&e);
+            RawEventFilter?.Invoke(new RawEvent((EventType)e.type, (nint)(&e)));
 
             switch ((Native.SDL_EventType)e.type)
             {

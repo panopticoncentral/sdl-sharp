@@ -1,5 +1,6 @@
 using SdlSharp.Graphics;
 using SdlSharp.Graphics.Gpu;
+using SdlSharp.Input;
 using SdlSharp.Native;
 using static SdlSharp.ImGui.Native;
 
@@ -68,8 +69,8 @@ public static unsafe class ImGuiBackend
         IGSharp_ImplSDL3_Shutdown();
     }
 
-    private static void OnRawEvent(SDL_Event* e)
+    private static void OnRawEvent(in RawEvent e)
     {
-        IGSharp_ImplSDL3_ProcessEvent(e);
+        IGSharp_ImplSDL3_ProcessEvent((SDL_Event*)e.Pointer);
     }
 }
