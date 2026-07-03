@@ -210,7 +210,8 @@ public sealed unsafe class Application : IDisposable
                     MouseWheel?.Invoke(new MouseWheelEventArgs(
                         e.wheel.windowID.Value,
                         e.wheel.x, e.wheel.y,
-                        e.wheel.mouse_x, e.wheel.mouse_y));
+                        e.wheel.mouse_x, e.wheel.mouse_y,
+                        (MouseWheelDirection)e.wheel.direction));
                     break;
 
                 case >= Native.SDL_EventType.SDL_EVENT_WINDOW_FIRST and <= Native.SDL_EventType.SDL_EVENT_WINDOW_LAST:
