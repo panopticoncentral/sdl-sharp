@@ -1,7 +1,6 @@
+using SdlSharp.Native;
 using static SdlSharp.Native.Common;
 using static SdlSharp.Native.Video;
-
-using SDL_GLContextState = SdlSharp.Native.SDL_GLContextState;
 
 namespace SdlSharp.Graphics;
 
@@ -33,14 +32,20 @@ public sealed unsafe class GlContext : IDisposable
     }
 
     /// <summary>
-    /// Makes this context the current OpenGL context for the given window.
+    /// Makes this context the current OpenGL context for the given window. This is only
+    /// needed when switching contexts or windows — <see cref="Window.CreateGlContext"/>
+    /// already makes the new context current.
     /// </summary>
     /// <param name="window">The window to make this context current on.</param>
+    /// <seealso cref="Window.CreateGlContext"/>
+    /// <seealso cref="Window.GlSwap"/>
     public void MakeCurrent(Window window) => Check(SDL_GL_MakeCurrent(window.Handle, Handle));
 
     /// <summary>
     /// Gets the currently active OpenGL context, as a non-owning wrapper, or
-    /// <c>null</c> if no context is current.
+    /// <c>null</c> if no context is current. Each access returns a new non-owning
+    /// wrapper around the same underlying SDL context; the wrappers are not equal
+    /// to each other.
     /// </summary>
     public static GlContext? Current
     {
@@ -53,7 +58,9 @@ public sealed unsafe class GlContext : IDisposable
 
     /// <summary>
     /// Gets the window whose OpenGL context is current, as a non-owning wrapper, or
-    /// <c>null</c> if no context is current.
+    /// <c>null</c> if no context is current. Each access returns a new non-owning
+    /// wrapper around the same underlying SDL window; the wrappers are not equal
+    /// to each other.
     /// </summary>
     public static Window? CurrentWindow
     {

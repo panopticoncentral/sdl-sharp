@@ -13,18 +13,29 @@ public static unsafe class Gl
     /// is <c>null</c>. This should be called before creating any OpenGL windows.
     /// </summary>
     /// <param name="path">The platform-dependent library name, or <c>null</c> for the default.</param>
+    /// <seealso cref="UnloadLibrary"/>
     public static void LoadLibrary(string? path) => Check(SDL_GL_LoadLibrary(ToUtf8(path)));
 
     /// <summary>
     /// Unloads the OpenGL library previously loaded by <see cref="LoadLibrary"/>.
     /// </summary>
+    /// <seealso cref="LoadLibrary"/>
     public static void UnloadLibrary() => SDL_GL_UnloadLibrary();
 
     /// <summary>
-    /// Gets an OpenGL function by name. Returns <see cref="nint.Zero"/> if the function is not found.
+    /// Gets an OpenGL function by name. This is the function to hand to GL loader libraries
+    /// (e.g. as the get-proc-address callback for Silk.NET/OpenTK/glad-style loaders).
+    /// Call it only after a context has been created and made current: on Windows the
+    /// returned pointers are specific to the current GL context, and recreating the context
+    /// (or creating a second one) invalidates previously returned pointers. A non-null
+    /// return is not a guarantee the function is usable — on some platforms looking up a
+    /// function that does not exist returns a non-null pointer that is not safe to call, so
+    /// verify availability with <see cref="ExtensionSupported"/> (or the core GL version)
+    /// before calling the function.
     /// </summary>
     /// <param name="name">The name of the OpenGL function.</param>
     /// <returns>A pointer to the function, or <see cref="nint.Zero"/> if not found.</returns>
+    /// <seealso cref="ExtensionSupported"/>
     public static nint GetProcAddress(string name) => SDL_GL_GetProcAddress(ToUtf8(name));
 
     /// <summary>

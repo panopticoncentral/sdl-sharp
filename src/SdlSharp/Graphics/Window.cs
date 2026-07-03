@@ -110,7 +110,8 @@ public sealed unsafe class Window : IDisposable
 
     /// <summary>
     /// Gets the window that currently has an input grab (mouse or keyboard), as a
-    /// non-owning wrapper.
+    /// non-owning wrapper. Each access returns a new non-owning wrapper around the
+    /// same underlying SDL window; the wrappers are not equal to each other.
     /// </summary>
     public static Window? GrabbedWindow
     {
@@ -599,7 +600,8 @@ public sealed unsafe class Window : IDisposable
 
     /// <summary>
     /// Gets the parent of this window, as a non-owning wrapper, or <c>null</c> if this
-    /// window has no parent.
+    /// window has no parent. Each access returns a new non-owning wrapper around the
+    /// same underlying SDL window; the wrappers are not equal to each other.
     /// </summary>
     public Window? Parent
     {
@@ -754,10 +756,14 @@ public sealed unsafe class Window : IDisposable
     // --- OpenGL ---
 
     /// <summary>
-    /// Creates an OpenGL context for this window. The window must have been created with
-    /// the <see cref="WindowFlags.OpenGL"/> flag.
+    /// Creates an OpenGL context for this window and makes it current. The window must have
+    /// been created with the <see cref="WindowFlags.OpenGL"/> flag. Because the new context
+    /// is already current, <see cref="GlContext.MakeCurrent"/> is only needed when switching
+    /// between contexts or windows.
     /// </summary>
     /// <returns>A new OpenGL context. Dispose it when no longer needed.</returns>
+    /// <seealso cref="GlContext.MakeCurrent"/>
+    /// <seealso cref="GlSwap"/>
     public GlContext CreateGlContext() => new(Check(SDL_GL_CreateContext(Handle)));
 
     /// <summary>
@@ -765,6 +771,8 @@ public sealed unsafe class Window : IDisposable
     /// been created with the <see cref="WindowFlags.OpenGL"/> flag, and this window's OpenGL
     /// context must be current.
     /// </summary>
+    /// <seealso cref="CreateGlContext"/>
+    /// <seealso cref="GlContext.MakeCurrent"/>
     public void GlSwap() => Check(SDL_GL_SwapWindow(Handle));
 
     /// <inheritdoc/>
