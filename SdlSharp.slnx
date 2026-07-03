@@ -17,6 +17,7 @@
     <Project Path="Samples/GamepadDemo/GamepadDemo.csproj" />
     <Project Path="Samples/HapticDemo/HapticDemo.csproj" />
     <Project Path="Samples/InputInfo/InputInfo.csproj" />
+    <Project Path="Samples/SurfaceOps/SurfaceOps.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
