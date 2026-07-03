@@ -13,6 +13,8 @@ Console.WriteLine($"Gamepads: {Gamepad.GetDevices().Length}");
 Console.WriteLine($"Joysticks: {Joystick.GetDevices().Length}");
 
 // Mapping database: add a syntactically valid mapping for a fake device.
+// The GUID "f00dcafe" is deliberately made up — not a real device — so the
+// sample runs the same on any machine without depending on attached hardware.
 var added = Gamepad.AddMapping(
     "00000000f00dcafe0000000000000000,Phase8 Test Pad,a:b0,b:b1,back:b6,start:b7,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1");
 Console.WriteLine($"Mapping added as new: {added}");
