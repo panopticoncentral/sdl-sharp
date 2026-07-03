@@ -908,7 +908,7 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_TextInputActive | function | Keyboard.SDL_TextInputActive | Window.IsTextInputActive | |
 | SDL_StopTextInput | function | Keyboard.SDL_StopTextInput | Window.StopTextInput | |
 | SDL_ClearComposition | function | Keyboard.SDL_ClearComposition | Window.ClearComposition | |
-| SDL_SetTextInputArea | function | Keyboard.SDL_SetTextInputArea | Window.SetTextInputArea | |
+| SDL_SetTextInputArea | function | Keyboard.SDL_SetTextInputArea | Window.SetTextInputArea, Window.ClearTextInputArea | Clear variant passes NULL rect |
 | SDL_GetTextInputArea | function | Keyboard.SDL_GetTextInputArea | Window.GetTextInputArea | |
 | SDL_HasScreenKeyboardSupport | function | Keyboard.SDL_HasScreenKeyboardSupport | Keyboard.HasScreenKeyboardSupport | |
 | SDL_ScreenKeyboardShown | function | Keyboard.SDL_ScreenKeyboardShown | - | Deferred managed wrapper |

@@ -310,6 +310,12 @@ public sealed unsafe class Window : IDisposable
     }
 
     /// <summary>
+    /// Clears the area used for typing in this window, letting the IME
+    /// position candidate/composition windows wherever it chooses.
+    /// </summary>
+    public void ClearTextInputArea() => Check(SDL_SetTextInputArea(Handle, null, 0));
+
+    /// <summary>
     /// Gets the area used for typing in this window.
     /// </summary>
     /// <param name="cursorOffset">Receives the cursor X offset relative to the area's left edge.</param>
