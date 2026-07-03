@@ -132,7 +132,13 @@ public sealed unsafe class GpuCommandBuffer
     /// <summary>
     /// Acquires a swapchain texture for rendering to a window.
     /// Returns null when no texture is available this frame (too many frames in flight) — skip rendering.
-    /// The returned texture is owned by the swapchain; disposing it is a no-op.
+    /// The returned texture is owned by the swapchain; disposing it does not release the underlying texture.
+    /// The texture is valid only until this command buffer is submitted or canceled, must only be used
+    /// with this command buffer, and must not be retained across frames.
+    /// This method must be called from the thread that created the window.
+    /// Prefer <see cref="WaitAndAcquireSwapchainTexture"/> unless you are managing frame timing yourself:
+    /// acquiring without waiting can allocate many command buffers while the CPU outpaces the GPU,
+    /// causing unbounded memory growth.
     /// </summary>
     /// <param name="window">The window to acquire the swapchain texture from.</param>
     /// <param name="size">Receives the swapchain texture size.</param>
@@ -148,12 +154,15 @@ public sealed unsafe class GpuCommandBuffer
 
     /// <summary>
     /// Waits for and acquires a swapchain texture for rendering to a window.
-    /// Returns null when no texture is available — skip rendering.
-    /// The returned texture is owned by the swapchain; disposing it is a no-op.
+    /// Returns null when no texture is available (e.g. the window is minimized) — skip rendering.
+    /// The returned texture is owned by the swapchain; disposing it does not release the underlying texture.
+    /// The texture is valid only until this command buffer is submitted or canceled, must only be used
+    /// with this command buffer, and must not be retained across frames.
+    /// This method must be called from the thread that created the window.
     /// </summary>
     /// <param name="window">The window to acquire the swapchain texture from.</param>
     /// <param name="size">Receives the swapchain texture size.</param>
-    /// <returns>The swapchain texture, or null if not ready.</returns>
+    /// <returns>The swapchain texture, or null when no texture is available (e.g. the window is minimized).</returns>
     public GpuTexture? WaitAndAcquireSwapchainTexture(Window window, out Size size)
     {
         SDL_GPUTexture* tex;
