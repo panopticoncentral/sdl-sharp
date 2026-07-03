@@ -402,19 +402,19 @@ functions (55%) across the 41 active headers; the 13 deferred-by-design headers
 
 ### Phase 9: Graphics completion
 
-- [ ] 9.1 Video (48/114): fullscreen mode management (`SDL_GetFullscreenDisplayModes`,
+- [x] 9.1 Video (48/114): fullscreen mode management (`SDL_GetFullscreenDisplayModes`,
       `SDL_GetClosestFullscreenDisplayMode`, `SDL_Set/GetWindowFullscreenMode`);
       all 38 `SDL_PROP_WINDOW_CREATE_*` constants (properties-based `Window.Create`
       is unusable safely without them); then: `SDL_GetWindows`, system theme,
       display orientation/properties, mouse grab/confine, always-on-top, aspect
       ratio, `SDL_SyncWindow`, popup/modal windows, hit-test callback, screensaver,
       taskbar progress. Decision: wrap `SDL_GL_*` context functions (~10 fns).
-- [ ] 9.2 Surface (25/65): color key (3 fns), `SDL_Read/WriteSurfacePixel`(+Float),
+- [x] 9.2 Surface (25/65): color key (3 fns), `SDL_Read/WriteSurfacePixel`(+Float),
       `SDL_LoadPNG`/`SDL_SavePNG` (new in 3.4) + generic `SDL_LoadSurface`,
       `SDL_ScaleSurface`/`FlipSurface`/`RotateSurface`, `SDL_MapSurfaceRGB(A)`,
       palette trio (Palette class exists), `SDL_PremultiplySurfaceAlpha`,
       tiled/9-grid blits, `MustLock`/`Flags` on `Surface`.
-- [ ] 9.3 Render (70/102): `SDL_ConvertEventToRenderCoordinates` (deferral note
+- [x] 9.3 Render (70/102): `SDL_ConvertEventToRenderCoordinates` (deferral note
       stale — events are bound), `SDL_CreateTextureWithProperties` (HDR/native
       handles), managed `GeometryRaw`, YUV/NV texture updates,
       `SDL_LockTextureToSurface`, logical-presentation rect, safe area; decide on

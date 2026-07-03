@@ -1252,12 +1252,12 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_RectsEqualFloat | function | - | - | Inline: C# record struct equality |
 | SDL_RectsEqualEpsilon | function | - | FRectangle.Equals | Inline: reimplemented in C# |
 
-## SDL_render.h
+## SDL_render.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_SOFTWARE_RENDERER | macro | Render.SDL_SOFTWARE_RENDERER | - | String constant |
-| SDL_GPU_RENDERER | macro | Render.SDL_GPU_RENDERER | - | String constant |
+| SDL_SOFTWARE_RENDERER | macro | Render.SDL_SOFTWARE_RENDERER | Renderer.SoftwareRenderer | String constant |
+| SDL_GPU_RENDERER | macro | Render.SDL_GPU_RENDERER | Renderer.GpuRenderer | String constant |
 | SDL_Renderer | opaque | Render.SDL_Renderer | Renderer | |
 | SDL_Texture | struct | Render.SDL_Texture | Texture | |
 | SDL_Vertex | struct | Render.SDL_Vertex | Vertex | |
@@ -1268,37 +1268,37 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_GetRenderDriver | function | Render.SDL_GetRenderDriver | Renderer.GetDriver | |
 | SDL_CreateRenderer | function | Render.SDL_CreateRenderer | Renderer.Create | |
 | SDL_CreateRendererWithProperties | function | Render.SDL_CreateRendererWithProperties | Renderer.Create | |
-| SDL_PROP_RENDERER_CREATE_* | macro (15) | Render.SDL_PROP_RENDERER_CREATE_* | Renderer.PropCreate* | Property string constants |
+| SDL_PROP_RENDERER_CREATE_* | macro (15) | Render.SDL_PROP_RENDERER_CREATE_* | Renderer.PropCreate* | 15/15 exposed managed |
 | SDL_CreateWindowAndRenderer | function | Render.SDL_CreateWindowAndRenderer | Renderer.CreateWindowAndRenderer | |
-| SDL_CreateGPURenderer | function | - | - | Deferred: GPU renderer-specific |
-| SDL_GetGPURendererDevice | function | - | - | Deferred: GPU renderer-specific |
-| SDL_CreateSoftwareRenderer | function | - | - | Deferred |
+| SDL_CreateGPURenderer | function | Render.SDL_CreateGPURenderer | Renderer.CreateGpu | |
+| SDL_GetGPURendererDevice | function | Render.SDL_GetGPURendererDevice | Renderer.GetGpuDevice | Non-owning GpuDevice |
+| SDL_CreateSoftwareRenderer | function | Render.SDL_CreateSoftwareRenderer | Renderer.CreateSoftware | |
 | SDL_GetRenderer | function | Render.SDL_GetRenderer | Renderer.FromWindow | |
 | SDL_GetRenderWindow | function | Render.SDL_GetRenderWindow | Renderer.Window | |
 | SDL_GetRendererName | function | Render.SDL_GetRendererName | Renderer.Name | |
 | SDL_GetRendererProperties | function | Render.SDL_GetRendererProperties | Renderer.Properties | |
-| SDL_PROP_RENDERER_* | macro (25) | Render.SDL_PROP_RENDERER_* | Renderer.Prop* | Property string constants; 12 of 25 exposed managed (D3D/Vulkan interop pointers native-only, platform) |
+| SDL_PROP_RENDERER_* | macro (25) | Render.SDL_PROP_RENDERER_* | Renderer.Prop* | 25/25 exposed managed (property names are string keys; D3D/Vulkan/GPU interop values remain platform-typed at the point of use through PropertyGroup) |
 | SDL_GetRenderOutputSize | function | Render.SDL_GetRenderOutputSize | Renderer.OutputSize | |
 | SDL_GetCurrentRenderOutputSize | function | Render.SDL_GetCurrentRenderOutputSize | Renderer.CurrentOutputSize | |
 | SDL_CreateTexture | function | Render.SDL_CreateTexture | Renderer.CreateTexture | |
 | SDL_CreateTextureFromSurface | function | Render.SDL_CreateTextureFromSurface | Renderer.CreateTextureFromSurface | |
-| SDL_CreateTextureWithProperties | function | - | - | Deferred |
-| SDL_PROP_TEXTURE_CREATE_* | macro (29) | Render.SDL_PROP_TEXTURE_CREATE_* | Texture.PropCreate* | Property string constants; 8 of 29 exposed managed (native GPU handle props native-only, platform) |
+| SDL_CreateTextureWithProperties | function | Render.SDL_CreateTextureWithProperties | Renderer.CreateTexture(PropertyGroup) | |
+| SDL_PROP_TEXTURE_CREATE_* | macro (32) | Render.SDL_PROP_TEXTURE_CREATE_* | Texture.PropCreate* | 29/32 exposed managed; 3 new-in-3.4 GPU multi-plane texture creation props (U/V/UV) unbound, niche |
 | SDL_DestroyTexture | function | Render.SDL_DestroyTexture | Texture.Dispose | |
 | SDL_GetTextureSize | function | Render.SDL_GetTextureSize | Texture.Size | |
-| SDL_GetTextureProperties | function | - | - | Deferred |
-| SDL_PROP_TEXTURE_* | macro (30) | Render.SDL_PROP_TEXTURE_* | Texture.Prop* | Property string constants; 7 of 30 exposed managed (native GPU handle props native-only, platform) |
-| SDL_GetRendererFromTexture | function | - | - | Deferred |
-| SDL_SetTexturePalette | function | - | - | Deferred |
-| SDL_GetTexturePalette | function | - | - | Deferred |
+| SDL_GetTextureProperties | function | Render.SDL_GetTextureProperties | Texture.Properties | |
+| SDL_PROP_TEXTURE_* | macro (30) | Render.SDL_PROP_TEXTURE_* | Texture.Prop* | 30/30 exposed managed |
+| SDL_GetRendererFromTexture | function | Render.SDL_GetRendererFromTexture | Texture.GetRenderer | Non-owning Renderer |
+| SDL_SetTexturePalette | function | Render.SDL_SetTexturePalette | Texture.Palette (set) | |
+| SDL_GetTexturePalette | function | Render.SDL_GetTexturePalette | Texture.Palette (get) | |
 | SDL_SetTextureColorMod | function | Render.SDL_SetTextureColorMod | Texture.ColorMod | |
 | SDL_GetTextureColorMod | function | Render.SDL_GetTextureColorMod | Texture.ColorMod | |
-| SDL_SetTextureColorModFloat | function | - | - | Deferred: float variant |
-| SDL_GetTextureColorModFloat | function | - | - | Deferred: float variant |
+| SDL_SetTextureColorModFloat | function | Render.SDL_SetTextureColorModFloat | Texture.ColorModFloat (set) | |
+| SDL_GetTextureColorModFloat | function | Render.SDL_GetTextureColorModFloat | Texture.ColorModFloat (get) | |
 | SDL_SetTextureAlphaMod | function | Render.SDL_SetTextureAlphaMod | Texture.AlphaMod | |
 | SDL_GetTextureAlphaMod | function | Render.SDL_GetTextureAlphaMod | Texture.AlphaMod | |
-| SDL_SetTextureAlphaModFloat | function | - | - | Deferred: float variant |
-| SDL_GetTextureAlphaModFloat | function | - | - | Deferred: float variant |
+| SDL_SetTextureAlphaModFloat | function | Render.SDL_SetTextureAlphaModFloat | Texture.AlphaModFloat (set) | |
+| SDL_GetTextureAlphaModFloat | function | Render.SDL_GetTextureAlphaModFloat | Texture.AlphaModFloat (get) | |
 | SDL_SetTextureBlendMode | function | Render.SDL_SetTextureBlendMode | Texture.BlendMode | |
 | SDL_GetTextureBlendMode | function | Render.SDL_GetTextureBlendMode | Texture.BlendMode | |
 | SDL_SetTextureScaleMode | function | Render.SDL_SetTextureScaleMode | Texture.ScaleMode | |
@@ -1306,18 +1306,18 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_UpdateTexture | function | Render.SDL_UpdateTexture | Texture.Update | |
 | SDL_LockTexture | function | Render.SDL_LockTexture | Texture.Lock | |
 | SDL_UnlockTexture | function | Render.SDL_UnlockTexture | Texture.Unlock | |
-| SDL_UpdateYUVTexture | function | - | - | Deferred: YUV-specific |
-| SDL_UpdateNVTexture | function | - | - | Deferred: NV-specific |
-| SDL_LockTextureToSurface | function | - | - | Deferred |
+| SDL_UpdateYUVTexture | function | Render.SDL_UpdateYUVTexture | Texture.UpdateYuv | |
+| SDL_UpdateNVTexture | function | Render.SDL_UpdateNVTexture | Texture.UpdateNv | |
+| SDL_LockTextureToSurface | function | Render.SDL_LockTextureToSurface | Texture.LockToSurface | Non-owning Surface, freed by UnlockTexture |
 | SDL_SetRenderTarget | function | Render.SDL_SetRenderTarget | Renderer.Target | |
 | SDL_GetRenderTarget | function | Render.SDL_GetRenderTarget | Renderer.Target | |
 | SDL_SetRenderLogicalPresentation | function | Render.SDL_SetRenderLogicalPresentation | Renderer.SetLogicalPresentation | |
 | SDL_GetRenderLogicalPresentation | function | Render.SDL_GetRenderLogicalPresentation | Renderer.GetLogicalPresentation | |
-| SDL_GetRenderLogicalPresentationRect | function | - | - | Deferred |
+| SDL_GetRenderLogicalPresentationRect | function | Render.SDL_GetRenderLogicalPresentationRect | Renderer.GetLogicalPresentationRect | |
 | SDL_SetRenderViewport | function | Render.SDL_SetRenderViewport | Renderer.Viewport | |
 | SDL_GetRenderViewport | function | Render.SDL_GetRenderViewport | Renderer.Viewport | |
-| SDL_RenderViewportSet | function | - | - | Deferred |
-| SDL_GetRenderSafeArea | function | - | - | Deferred |
+| SDL_RenderViewportSet | function | Render.SDL_RenderViewportSet | Renderer.IsViewportSet | |
+| SDL_GetRenderSafeArea | function | Render.SDL_GetRenderSafeArea | Renderer.GetSafeArea | |
 | SDL_SetRenderClipRect | function | Render.SDL_SetRenderClipRect | Renderer.ClipRect | |
 | SDL_GetRenderClipRect | function | Render.SDL_GetRenderClipRect | Renderer.ClipRect | |
 | SDL_RenderClipEnabled | function | Render.SDL_RenderClipEnabled | Renderer.ClipEnabled | |
@@ -1327,8 +1327,8 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_SetRenderDrawColorFloat | function | Render.SDL_SetRenderDrawColorFloat | Renderer.DrawColorFloat | |
 | SDL_GetRenderDrawColor | function | Render.SDL_GetRenderDrawColor | Renderer.DrawColor | |
 | SDL_GetRenderDrawColorFloat | function | Render.SDL_GetRenderDrawColorFloat | Renderer.DrawColorFloat | |
-| SDL_SetRenderColorScale | function | - | - | Deferred |
-| SDL_GetRenderColorScale | function | - | - | Deferred |
+| SDL_SetRenderColorScale | function | Render.SDL_SetRenderColorScale | Renderer.ColorScale (set) | |
+| SDL_GetRenderColorScale | function | Render.SDL_GetRenderColorScale | Renderer.ColorScale (get) | |
 | SDL_SetRenderDrawBlendMode | function | Render.SDL_SetRenderDrawBlendMode | Renderer.DrawBlendMode | |
 | SDL_GetRenderDrawBlendMode | function | Render.SDL_GetRenderDrawBlendMode | Renderer.DrawBlendMode | |
 | SDL_RenderClear | function | Render.SDL_RenderClear | Renderer.Clear | |
@@ -1345,36 +1345,36 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_RenderTextureAffine | function | Render.SDL_RenderTextureAffine | Renderer.RenderTextureAffine | |
 | SDL_RenderTextureTiled | function | Render.SDL_RenderTextureTiled | Renderer.RenderTextureTiled | |
 | SDL_RenderTexture9Grid | function | Render.SDL_RenderTexture9Grid | Renderer.RenderTexture9Grid | |
-| SDL_RenderTexture9GridTiled | function | - | - | Deferred |
+| SDL_RenderTexture9GridTiled | function | Render.SDL_RenderTexture9GridTiled | Renderer.RenderTexture9GridTiled | New in SDL 3.4.0 |
 | SDL_RenderGeometry | function | Render.SDL_RenderGeometry | Renderer.RenderGeometry | |
-| SDL_RenderGeometryRaw | function | Render.SDL_RenderGeometryRaw | - | Deferred: managed wrapper missing (native binding only) |
+| SDL_RenderGeometryRaw | function | Render.SDL_RenderGeometryRaw | Renderer.GeometryRaw | int-index overload; spans pinned with fixed |
 | SDL_RenderReadPixels | function | Render.SDL_RenderReadPixels | Renderer.ReadPixels | |
 | SDL_RenderPresent | function | Render.SDL_RenderPresent | Renderer.Present | |
 | SDL_FlushRenderer | function | Render.SDL_FlushRenderer | Renderer.Flush | |
 | SDL_RenderCoordinatesFromWindow | function | Render.SDL_RenderCoordinatesFromWindow | Renderer.CoordinatesFromWindow | |
 | SDL_RenderCoordinatesToWindow | function | Render.SDL_RenderCoordinatesToWindow | Renderer.CoordinatesToWindow | |
-| SDL_ConvertEventToRenderCoordinates | function | - | - | Deferred |
+| SDL_ConvertEventToRenderCoordinates | function | Render.SDL_ConvertEventToRenderCoordinates | Renderer.ConvertEventToRenderCoordinates | Mutates the event in place; valid only during a RawEventFilter callback |
 | SDL_SetRenderVSync | function | Render.SDL_SetRenderVSync | Renderer.VSync | |
 | SDL_GetRenderVSync | function | Render.SDL_GetRenderVSync | Renderer.VSync | |
-| SDL_RENDERER_VSYNC_DISABLED | macro | - | - | Deferred: named constant for Renderer.VSync |
-| SDL_RENDERER_VSYNC_ADAPTIVE | macro | - | - | Deferred: named constant for Renderer.VSync |
+| SDL_RENDERER_VSYNC_DISABLED | macro | - | - | Niche: named constant for Renderer.VSync; int value 0 usable directly |
+| SDL_RENDERER_VSYNC_ADAPTIVE | macro | - | - | Niche: named constant for Renderer.VSync; int value -1 usable directly |
 | SDL_SetRenderTextureAddressMode | function | Render.SDL_SetRenderTextureAddressMode | Renderer.TextureAddressMode | |
 | SDL_GetRenderTextureAddressMode | function | Render.SDL_GetRenderTextureAddressMode | Renderer.TextureAddressMode | |
-| SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE | macro | - | - | Deferred: debug font glyph size constant |
+| SDL_DEBUG_TEXT_FONT_CHARACTER_SIZE | macro | - | - | Niche: debug font glyph size constant (value 8), not surfaced |
 | SDL_RenderDebugText | function | Render.SDL_RenderDebugText | Renderer.DrawDebugText | |
 | SDL_RenderDebugTextFormat | function | - | - | Variadic: printf-style, use DrawDebugText + C# formatting |
 | SDL_DestroyRenderer | function | Render.SDL_DestroyRenderer | Renderer.Dispose | |
 | SDL_GetRenderMetalLayer | function | - | - | Platform: Metal-specific |
 | SDL_GetRenderMetalCommandEncoder | function | - | - | Platform: Metal-specific |
 | SDL_AddVulkanRenderSemaphores | function | - | - | Platform: Vulkan-specific |
-| SDL_SetDefaultTextureScaleMode | function | - | - | Deferred |
-| SDL_GetDefaultTextureScaleMode | function | - | - | Deferred |
-| SDL_GPURenderStateCreateInfo | struct | - | - | Deferred: GPU renderer-specific |
-| SDL_GPURenderState | opaque | - | - | Deferred: GPU renderer-specific |
-| SDL_CreateGPURenderState | function | - | - | Deferred: GPU renderer-specific |
-| SDL_SetGPURenderStateFragmentUniforms | function | - | - | Deferred: GPU renderer-specific |
-| SDL_SetGPURenderState | function | - | - | Deferred: GPU renderer-specific |
-| SDL_DestroyGPURenderState | function | - | - | Deferred: GPU renderer-specific |
+| SDL_SetDefaultTextureScaleMode | function | Render.SDL_SetDefaultTextureScaleMode | Renderer.DefaultTextureScaleMode (set) | |
+| SDL_GetDefaultTextureScaleMode | function | Render.SDL_GetDefaultTextureScaleMode | Renderer.DefaultTextureScaleMode (get) | |
+| SDL_GPURenderStateCreateInfo | struct | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
+| SDL_GPURenderState | opaque | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
+| SDL_CreateGPURenderState | function | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
+| SDL_SetGPURenderStateFragmentUniforms | function | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
+| SDL_SetGPURenderState | function | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
+| SDL_DestroyGPURenderState | function | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
 
 ## SDL_scancode.h ✅
 
@@ -1469,13 +1469,13 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_GetStorageSpaceRemaining | function | - | - | Niche: console save-data quotas — .NET has DriveInfo.AvailableFreeSpace |
 | SDL_GlobStorageDirectory | function | - | - | .NET has Directory.GetFiles(pattern) |
 
-## SDL_surface.h
+## SDL_surface.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_SurfaceFlags | enum | Surface.SDL_SurfaceFlags | - | Deferred: expose Flags/MustLock on Surface |
-| SDL_SURFACE_* | macro (4) | Surface.SDL_SurfaceFlags | - | Flag bits bound as native enum members |
-| SDL_MUSTLOCK | macro | - | - | macro — deferred: expose as Surface.MustLock |
+| SDL_SurfaceFlags | enum | Surface.SDL_SurfaceFlags | SurfaceFlags | |
+| SDL_SURFACE_* | macro (4) | Surface.SDL_SurfaceFlags | SurfaceFlags | Flag bits bound as native + managed enum members |
+| SDL_MUSTLOCK | macro | - | Surface.MustLock | Macro, not an exported function; exposed as a managed property |
 | SDL_ScaleMode | enum | Surface.SDL_ScaleMode | ScaleMode | |
 | SDL_FlipMode | enum | Surface.SDL_FlipMode | FlipMode | |
 | SDL_Surface | struct | Surface.SDL_Surface | Surface | |
@@ -1483,21 +1483,36 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_CreateSurfaceFrom | function | Surface.SDL_CreateSurfaceFrom | Surface.CreateFrom | |
 | SDL_DestroySurface | function | Surface.SDL_DestroySurface | Surface.Dispose | |
 | SDL_GetSurfaceProperties | function | Surface.SDL_GetSurfaceProperties | Surface.Properties | |
-| SDL_PROP_SURFACE_* | macro (6) | - | - | Property string constants; deferred |
+| SDL_PROP_SURFACE_* | macro (6) | Surface.SDL_PROP_SURFACE_* | SurfaceProperties.* | 6/6 exposed managed |
 | SDL_SetSurfaceColorspace | function | Surface.SDL_SetSurfaceColorspace | Surface.Colorspace (set) | |
 | SDL_GetSurfaceColorspace | function | Surface.SDL_GetSurfaceColorspace | Surface.Colorspace (get) | |
+| SDL_CreateSurfacePalette | function | Surface.SDL_CreateSurfacePalette | Surface.CreatePalette | Surface-owned palette; non-owning Palette |
+| SDL_SetSurfacePalette | function | Surface.SDL_SetSurfacePalette | Surface.SetPalette | |
+| SDL_GetSurfacePalette | function | Surface.SDL_GetSurfacePalette | Surface.GetPalette | Non-owning; null when none |
+| SDL_AddSurfaceAlternateImage | function | Surface.SDL_AddSurfaceAlternateImage | Surface.AddAlternateImage | |
+| SDL_SurfaceHasAlternateImages | function | Surface.SDL_SurfaceHasAlternateImages | Surface.HasAlternateImages | |
+| SDL_GetSurfaceImages | function | Surface.SDL_GetSurfaceImages | Surface.GetImages | Non-owning wrappers; array freed via SDL_free |
+| SDL_RemoveSurfaceAlternateImages | function | Surface.SDL_RemoveSurfaceAlternateImages | Surface.RemoveAlternateImages | |
 | SDL_SetSurfaceColorMod | function | Surface.SDL_SetSurfaceColorMod | Surface.ColorMod (set) | |
 | SDL_GetSurfaceColorMod | function | Surface.SDL_GetSurfaceColorMod | Surface.ColorMod (get) | |
 | SDL_SetSurfaceAlphaMod | function | Surface.SDL_SetSurfaceAlphaMod | Surface.AlphaMod (set) | |
 | SDL_GetSurfaceAlphaMod | function | Surface.SDL_GetSurfaceAlphaMod | Surface.AlphaMod (get) | |
 | SDL_SetSurfaceBlendMode | function | Surface.SDL_SetSurfaceBlendMode | Surface.BlendMode (set) | |
 | SDL_GetSurfaceBlendMode | function | Surface.SDL_GetSurfaceBlendMode | Surface.BlendMode (get) | |
-| SDL_SetSurfaceClipRect | function | Surface.SDL_SetSurfaceClipRect | Surface.ClipRect (set) | |
+| SDL_SetSurfaceClipRect | function | Surface.SDL_SetSurfaceClipRect | Surface.ClipRect (set) | null clears; nullable rect overload |
 | SDL_GetSurfaceClipRect | function | Surface.SDL_GetSurfaceClipRect | Surface.ClipRect (get) | |
 | SDL_LockSurface | function | Surface.SDL_LockSurface | Surface.Lock | |
 | SDL_UnlockSurface | function | Surface.SDL_UnlockSurface | Surface.Unlock | |
+| SDL_LoadSurface_IO | function | - | - | .NET: needs SDL_IOStream, use .NET Stream/File APIs instead |
+| SDL_LoadSurface | function | Surface.SDL_LoadSurface | Surface.Load | |
+| SDL_LoadBMP_IO | function | - | - | .NET: needs SDL_IOStream, use .NET Stream/File APIs instead |
 | SDL_LoadBMP | function | Surface.SDL_LoadBMP | Surface.LoadBmp | |
+| SDL_SaveBMP_IO | function | - | - | .NET: needs SDL_IOStream, use .NET Stream/File APIs instead |
 | SDL_SaveBMP | function | Surface.SDL_SaveBMP | Surface.SaveBmp | |
+| SDL_LoadPNG_IO | function | - | - | .NET: needs SDL_IOStream, use .NET Stream/File APIs instead |
+| SDL_LoadPNG | function | Surface.SDL_LoadPNG | Surface.LoadPng | |
+| SDL_SavePNG_IO | function | - | - | .NET: needs SDL_IOStream, use .NET Stream/File APIs instead |
+| SDL_SavePNG | function | Surface.SDL_SavePNG | Surface.SavePng | |
 | SDL_FillSurfaceRect | function | Surface.SDL_FillSurfaceRect | Surface.FillRect | |
 | SDL_FillSurfaceRects | function | Surface.SDL_FillSurfaceRects | Surface.FillRects | |
 | SDL_BlitSurface | function | Surface.SDL_BlitSurface | Surface.Blit | |
@@ -1505,46 +1520,31 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_DuplicateSurface | function | Surface.SDL_DuplicateSurface | Surface.Duplicate | |
 | SDL_ConvertSurface | function | Surface.SDL_ConvertSurface | Surface.Convert | |
 | SDL_ClearSurface | function | Surface.SDL_ClearSurface | Surface.Clear | |
-| SDL_CreateSurfacePalette | function | - | - | Deferred: palette surface support |
-| SDL_SetSurfacePalette | function | - | - | Deferred: palette surface support |
-| SDL_GetSurfacePalette | function | - | - | Deferred: palette surface support |
-| SDL_AddSurfaceAlternateImage | function | - | - | Deferred: alternate image support |
-| SDL_SurfaceHasAlternateImages | function | - | - | Deferred: alternate image support |
-| SDL_GetSurfaceImages | function | - | - | Deferred: alternate image support |
-| SDL_RemoveSurfaceAlternateImages | function | - | - | Deferred: alternate image support |
-| SDL_LoadSurface_IO | function | - | - | Deferred: needs SDL_IOStream |
-| SDL_LoadSurface | function | - | - | Deferred |
-| SDL_LoadBMP_IO | function | - | - | Deferred: needs SDL_IOStream |
-| SDL_SaveBMP_IO | function | - | - | Deferred: needs SDL_IOStream |
-| SDL_LoadPNG_IO | function | - | - | Deferred: needs SDL_IOStream |
-| SDL_LoadPNG | function | - | - | Deferred |
-| SDL_SavePNG_IO | function | - | - | Deferred: needs SDL_IOStream |
-| SDL_SavePNG | function | - | - | Deferred |
-| SDL_SetSurfaceRLE | function | - | - | Deferred |
-| SDL_SurfaceHasRLE | function | - | - | Deferred |
-| SDL_SetSurfaceColorKey | function | - | - | Deferred |
-| SDL_SurfaceHasColorKey | function | - | - | Deferred |
-| SDL_GetSurfaceColorKey | function | - | - | Deferred |
-| SDL_FlipSurface | function | - | - | Deferred |
-| SDL_RotateSurface | function | - | - | Deferred |
-| SDL_ScaleSurface | function | - | - | Deferred |
-| SDL_ConvertSurfaceAndColorspace | function | - | - | Deferred |
-| SDL_ConvertPixels | function | - | - | Deferred |
-| SDL_ConvertPixelsAndColorspace | function | - | - | Deferred |
-| SDL_PremultiplyAlpha | function | - | - | Deferred |
-| SDL_PremultiplySurfaceAlpha | function | - | - | Deferred |
-| SDL_BlitSurfaceUnchecked | function | - | - | Deferred: unchecked variant |
-| SDL_BlitSurfaceUncheckedScaled | function | - | - | Deferred: unchecked variant |
-| SDL_StretchSurface | function | - | - | Deferred |
-| SDL_BlitSurfaceTiled | function | - | - | Deferred |
-| SDL_BlitSurfaceTiledWithScale | function | - | - | Deferred |
-| SDL_BlitSurface9Grid | function | - | - | Deferred |
-| SDL_MapSurfaceRGB | function | - | - | Deferred |
-| SDL_MapSurfaceRGBA | function | - | - | Deferred |
-| SDL_ReadSurfacePixel | function | - | - | Deferred |
-| SDL_ReadSurfacePixelFloat | function | - | - | Deferred |
-| SDL_WriteSurfacePixel | function | - | - | Deferred |
-| SDL_WriteSurfacePixelFloat | function | - | - | Deferred |
+| SDL_SetSurfaceRLE | function | Surface.SDL_SetSurfaceRLE | Surface.SetRle | |
+| SDL_SurfaceHasRLE | function | Surface.SDL_SurfaceHasRLE | Surface.HasRle | |
+| SDL_SetSurfaceColorKey | function | Surface.SDL_SetSurfaceColorKey | Surface.SetColorKey / Surface.ClearColorKey | Uint-mapped key, Color convenience overload |
+| SDL_SurfaceHasColorKey | function | Surface.SDL_SurfaceHasColorKey | Surface.HasColorKey | |
+| SDL_GetSurfaceColorKey | function | Surface.SDL_GetSurfaceColorKey | Surface.GetColorKey | Null when none; raw key, no reverse-unmap |
+| SDL_FlipSurface | function | Surface.SDL_FlipSurface | Surface.Flip | In place |
+| SDL_RotateSurface | function | Surface.SDL_RotateSurface | Surface.Rotate | New owning Surface; float-degree arbitrary rotation |
+| SDL_ScaleSurface | function | Surface.SDL_ScaleSurface | Surface.Scale | New owning Surface |
+| SDL_ConvertSurfaceAndColorspace | function | Surface.SDL_ConvertSurfaceAndColorspace | Surface.ConvertWithColorspace | |
+| SDL_ConvertPixels | function | - | - | Niche: operates on raw pixel buffers; Surface-based equivalents (Convert/ConvertWithColorspace, PremultiplyAlpha) cover the managed use cases |
+| SDL_ConvertPixelsAndColorspace | function | - | - | Niche: operates on raw pixel buffers; Surface-based equivalents (Convert/ConvertWithColorspace, PremultiplyAlpha) cover the managed use cases |
+| SDL_PremultiplyAlpha | function | - | - | Niche: operates on raw pixel buffers; Surface-based equivalents (Convert/ConvertWithColorspace, PremultiplyAlpha) cover the managed use cases |
+| SDL_PremultiplySurfaceAlpha | function | Surface.SDL_PremultiplySurfaceAlpha | Surface.PremultiplyAlpha | |
+| SDL_BlitSurfaceUnchecked | function | - | - | Niche/unsafe: no bounds clipping; checked Blit/BlitScaled cover the managed use cases |
+| SDL_BlitSurfaceUncheckedScaled | function | - | - | Niche/unsafe: no bounds clipping; checked Blit/BlitScaled cover the managed use cases |
+| SDL_StretchSurface | function | Surface.SDL_StretchSurface | Surface.Stretch | |
+| SDL_BlitSurfaceTiled | function | Surface.SDL_BlitSurfaceTiled | Surface.BlitTiled | |
+| SDL_BlitSurfaceTiledWithScale | function | Surface.SDL_BlitSurfaceTiledWithScale | Surface.BlitTiledWithScale | |
+| SDL_BlitSurface9Grid | function | Surface.SDL_BlitSurface9Grid | Surface.Blit9Grid | |
+| SDL_MapSurfaceRGB | function | Surface.SDL_MapSurfaceRGB | Surface.MapColorRgb | Alpha ignored |
+| SDL_MapSurfaceRGBA | function | Surface.SDL_MapSurfaceRGBA | Surface.MapColor | |
+| SDL_ReadSurfacePixel | function | Surface.SDL_ReadSurfacePixel | Surface.ReadPixel | |
+| SDL_ReadSurfacePixelFloat | function | Surface.SDL_ReadSurfacePixelFloat | Surface.ReadPixelFloat | |
+| SDL_WriteSurfacePixel | function | Surface.SDL_WriteSurfacePixel | Surface.WritePixel | |
+| SDL_WriteSurfacePixelFloat | function | Surface.SDL_WriteSurfacePixelFloat | Surface.WritePixelFloat | |
 
 ## SDL_system.h
 
@@ -1718,26 +1718,26 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_GetVersion | function | - | - | Deferred |
 | SDL_GetRevision | function | - | - | Deferred |
 
-## SDL_video.h
+## SDL_video.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
 | SDL_DisplayID | typedef | Video.SDL_DisplayID | - | Internal ID type |
 | SDL_WindowID | typedef | Video.SDL_WindowID | - | Internal ID type |
-| SDL_SystemTheme | enum | Video.SDL_SystemTheme | - | Deferred managed wrapper |
+| SDL_SystemTheme | enum | Video.SDL_SystemTheme | SystemTheme | |
 | SDL_DisplayModeData | struct | - | - | Opaque internal data of SDL_DisplayMode |
 | SDL_DisplayMode | struct | Video.SDL_DisplayMode | DisplayMode | |
-| SDL_DisplayOrientation | enum | Video.SDL_DisplayOrientation | - | Deferred managed wrapper |
+| SDL_DisplayOrientation | enum | Video.SDL_DisplayOrientation | DisplayOrientation | |
 | SDL_Window | opaque | Video.SDL_Window | Window | |
 | SDL_WindowFlags | typedef | Video.SDL_WindowFlags | WindowFlags | |
-| SDL_WINDOWPOS_UNDEFINED_MASK | macro | Video.SDL_WINDOWPOS_UNDEFINED_MASK | - | Deferred: per-display positioning |
-| SDL_WINDOWPOS_UNDEFINED_DISPLAY(X) | macro | - | - | Deferred: per-display positioning |
+| SDL_WINDOWPOS_UNDEFINED_MASK | macro | Video.SDL_WINDOWPOS_UNDEFINED_MASK | - | Niche: per-display positioning, not exposed |
+| SDL_WINDOWPOS_UNDEFINED_DISPLAY(X) | macro | - | - | Niche: per-display positioning, not exposed |
 | SDL_WINDOWPOS_UNDEFINED | macro | Video.SDL_WINDOWPOS_UNDEFINED | Window.UndefinedPosition | |
-| SDL_WINDOWPOS_ISUNDEFINED(X) | macro | - | - | Deferred: per-display positioning |
-| SDL_WINDOWPOS_CENTERED_MASK | macro | Video.SDL_WINDOWPOS_CENTERED_MASK | - | Deferred: per-display positioning |
-| SDL_WINDOWPOS_CENTERED_DISPLAY(X) | macro | - | - | Deferred: per-display positioning |
+| SDL_WINDOWPOS_ISUNDEFINED(X) | macro | - | - | Niche: per-display positioning, not exposed |
+| SDL_WINDOWPOS_CENTERED_MASK | macro | Video.SDL_WINDOWPOS_CENTERED_MASK | - | Niche: per-display positioning, not exposed |
+| SDL_WINDOWPOS_CENTERED_DISPLAY(X) | macro | - | - | Niche: per-display positioning, not exposed |
 | SDL_WINDOWPOS_CENTERED | macro | Video.SDL_WINDOWPOS_CENTERED | Window.CenteredPosition | |
-| SDL_WINDOWPOS_ISCENTERED(X) | macro | - | - | Deferred: per-display positioning |
+| SDL_WINDOWPOS_ISCENTERED(X) | macro | - | - | Niche: per-display positioning, not exposed |
 | SDL_FlashOperation | enum | Video.SDL_FlashOperation | FlashOperation | |
 | SDL_GetNumVideoDrivers | function | Video.SDL_GetNumVideoDrivers | Window.NumVideoDrivers | |
 | SDL_GetVideoDriver | function | Video.SDL_GetVideoDriver | Window.GetVideoDriver | |
@@ -1756,8 +1756,8 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_CreateWindow | function | Video.SDL_CreateWindow | Window.Create | |
 | SDL_CreateWindowWithProperties | function | Video.SDL_CreateWindowWithProperties | Window.Create | |
 | SDL_GetWindowID | function | Video.SDL_GetWindowID | Window.Id | |
-| SDL_GetWindowFromID | function | Video.SDL_GetWindowFromID | Window.FromId | |
-| SDL_GetWindowProperties | function | Video.SDL_GetWindowProperties | Window.Properties | |
+| SDL_GetWindowFromID | function | Video.SDL_GetWindowFromID | Window.FromId | Non-owning; null when not found |
+| SDL_GetWindowProperties | function | Video.SDL_GetWindowProperties | Window.Properties | Names in WindowProperties |
 | SDL_GetWindowFlags | function | Video.SDL_GetWindowFlags | Window.Flags | |
 | SDL_SetWindowTitle | function | Video.SDL_SetWindowTitle | Window.Title (set) | |
 | SDL_GetWindowTitle | function | Video.SDL_GetWindowTitle | Window.Title (get) | |
@@ -1787,88 +1787,88 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_UpdateWindowSurface | function | Video.SDL_UpdateWindowSurface | Window.UpdateSurface | |
 | SDL_DestroyWindowSurface | function | Video.SDL_DestroyWindowSurface | Window.DestroyWindowSurface | |
 | SDL_DestroyWindow | function | Video.SDL_DestroyWindow | Window.Dispose | |
-| SDL_GetSystemTheme | function | - | - | Deferred |
-| SDL_GetDisplayProperties | function | - | - | Deferred |
-| SDL_GetNaturalDisplayOrientation | function | - | - | Deferred |
-| SDL_GetCurrentDisplayOrientation | function | - | - | Deferred |
-| SDL_GetFullscreenDisplayModes | function | - | - | Deferred: fullscreen display mode management |
-| SDL_GetClosestFullscreenDisplayMode | function | - | - | Deferred: fullscreen display mode management |
-| SDL_SetWindowFullscreenMode | function | - | - | Deferred: fullscreen display mode management |
-| SDL_GetWindowFullscreenMode | function | - | - | Deferred: fullscreen display mode management |
-| SDL_GetDisplayForPoint | function | - | - | Deferred |
-| SDL_GetDisplayForRect | function | - | - | Deferred |
-| SDL_GetWindows | function | - | - | Deferred |
-| SDL_GetWindowPixelFormat | function | - | - | Deferred |
-| SDL_GetWindowICCProfile | function | - | - | Deferred: ICC profile |
-| SDL_CreatePopupWindow | function | - | - | Deferred: popup windows |
-| SDL_GetWindowParent | function | - | - | Deferred: popup windows |
-| SDL_GetWindowSafeArea | function | - | - | Deferred |
-| SDL_SetWindowAspectRatio | function | - | - | Deferred |
-| SDL_GetWindowAspectRatio | function | - | - | Deferred |
-| SDL_GetWindowBordersSize | function | - | - | Deferred |
-| SDL_SetWindowAlwaysOnTop | function | - | - | Deferred |
-| SDL_SetWindowFillDocument | function | - | - | Deferred; platform (Emscripten-only) |
-| SDL_SyncWindow | function | - | - | Deferred |
-| SDL_ShowWindowSystemMenu | function | - | - | Deferred |
-| SDL_SetWindowKeyboardGrab | function | - | - | Deferred: grab management |
-| SDL_SetWindowMouseGrab | function | - | - | Deferred: grab management |
-| SDL_GetWindowKeyboardGrab | function | - | - | Deferred: grab management |
-| SDL_GetWindowMouseGrab | function | - | - | Deferred: grab management |
-| SDL_GetGrabbedWindow | function | - | - | Deferred: grab management |
-| SDL_SetWindowMouseRect | function | - | - | Deferred: grab management |
-| SDL_GetWindowMouseRect | function | - | - | Deferred: grab management |
-| SDL_SetWindowParent | function | - | - | Deferred: modal windows |
-| SDL_SetWindowModal | function | - | - | Deferred: modal windows |
-| SDL_SetWindowFocusable | function | - | - | Deferred |
-| SDL_SetWindowHitTest | function | - | - | Deferred: hit test callback |
-| SDL_SetWindowShape | function | - | - | Deferred |
-| SDL_SetWindowProgressState | function | - | - | Deferred: progress state |
-| SDL_GetWindowProgressState | function | - | - | Deferred: progress state |
-| SDL_SetWindowProgressValue | function | - | - | Deferred: progress state |
-| SDL_GetWindowProgressValue | function | - | - | Deferred: progress state |
-| SDL_ScreenSaverEnabled | function | - | - | Deferred: screen saver |
-| SDL_EnableScreenSaver | function | - | - | Deferred: screen saver |
-| SDL_DisableScreenSaver | function | - | - | Deferred: screen saver |
-| SDL_WindowHasSurface | function | - | - | Deferred |
-| SDL_UpdateWindowSurfaceRects | function | - | - | Deferred |
-| SDL_SetWindowSurfaceVSync | function | - | - | Deferred: surface vsync |
-| SDL_GetWindowSurfaceVSync | function | - | - | Deferred: surface vsync |
-| SDL_GL_LoadLibrary | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_GetProcAddress | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_UnloadLibrary | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_ExtensionSupported | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_ResetAttributes | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_SetAttribute | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_GetAttribute | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_CreateContext | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_MakeCurrent | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_GetCurrentWindow | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_GetCurrentContext | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_SetSwapInterval | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_GetSwapInterval | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_SwapWindow | function | - | - | Deferred: all GL/EGL functions |
-| SDL_GL_DestroyContext | function | - | - | Deferred: all GL/EGL functions |
-| SDL_EGL_GetProcAddress | function | - | - | Deferred: all GL/EGL functions |
-| SDL_EGL_GetCurrentDisplay | function | - | - | Deferred: all GL/EGL functions |
-| SDL_EGL_GetCurrentConfig | function | - | - | Deferred: all GL/EGL functions |
-| SDL_EGL_GetWindowSurface | function | - | - | Deferred: all GL/EGL functions |
-| SDL_EGL_SetAttributeCallbacks | function | - | - | Deferred: all GL/EGL functions |
-| SDL_ProgressState | enum | - | - | Deferred: progress state |
-| SDL_GLContext | typedef | - | - | Deferred: GL types |
-| SDL_GLAttr | enum | - | - | Deferred: GL types |
-| SDL_GLProfile | typedef | - | - | Deferred: GL types (SDL_GL_CONTEXT_PROFILE_* constants) |
-| SDL_GLContextFlag | typedef | - | - | Deferred: GL types (SDL_GL_CONTEXT_*_FLAG constants) |
-| SDL_GLContextReleaseFlag | typedef | - | - | Deferred: GL types (SDL_GL_CONTEXT_RELEASE_BEHAVIOR_* constants) |
-| SDL_GLContextResetNotification | typedef | - | - | Deferred: GL types (SDL_GL_CONTEXT_RESET_* constants) |
-| SDL_EGLDisplay / SDL_EGLConfig / SDL_EGLSurface / SDL_EGLAttrib / SDL_EGLint | typedef (5) | - | - | Deferred: EGL types |
-| SDL_EGLAttribArrayCallback / SDL_EGLIntArrayCallback | callback (2) | - | - | Deferred: EGL attribute callbacks |
-| SDL_HitTestResult | enum | - | - | Deferred: hit test |
-| SDL_HitTest | callback | - | - | Deferred: hit test callback |
-| SDL_WINDOW_SURFACE_VSYNC_DISABLED / SDL_WINDOW_SURFACE_VSYNC_ADAPTIVE | macro (2) | - | - | Deferred: surface vsync |
-| SDL_PROP_GLOBAL_VIDEO_WAYLAND_WL_DISPLAY_POINTER | macro | - | - | Deferred: property string constant; platform |
-| SDL_PROP_DISPLAY_* | macro (4) | - | - | Deferred: property string constants |
-| SDL_PROP_WINDOW_CREATE_* | macro (38) | - | - | Deferred: property string constants |
-| SDL_PROP_WINDOW_* | macro (37) | - | - | Deferred: property string constants |
+| SDL_GetSystemTheme | function | Video.SDL_GetSystemTheme | Application.SystemTheme | |
+| SDL_GetDisplayProperties | function | Video.SDL_GetDisplayProperties | Display.Properties | Names in DisplayProperties |
+| SDL_GetNaturalDisplayOrientation | function | Video.SDL_GetNaturalDisplayOrientation | Display.NaturalOrientation | |
+| SDL_GetCurrentDisplayOrientation | function | Video.SDL_GetCurrentDisplayOrientation | Display.Orientation | |
+| SDL_GetFullscreenDisplayModes | function | Video.SDL_GetFullscreenDisplayModes | Display.GetFullscreenModes | Array freed via SDL_free |
+| SDL_GetClosestFullscreenDisplayMode | function | Video.SDL_GetClosestFullscreenDisplayMode | Display.GetClosestFullscreenMode | |
+| SDL_SetWindowFullscreenMode | function | Video.SDL_SetWindowFullscreenMode | Window.SetFullscreenMode | null clears to borderless fullscreen |
+| SDL_GetWindowFullscreenMode | function | Video.SDL_GetWindowFullscreenMode | Window.GetFullscreenMode | Null pointer -> null (windowed/borderless) |
+| SDL_GetDisplayForPoint | function | Video.SDL_GetDisplayForPoint | Display.GetForPoint | |
+| SDL_GetDisplayForRect | function | Video.SDL_GetDisplayForRect | Display.GetForRect | |
+| SDL_GetWindows | function | Video.SDL_GetWindows | Window.GetWindows | Non-owning wrappers; array freed via SDL_free |
+| SDL_GetWindowPixelFormat | function | Video.SDL_GetWindowPixelFormat | Window.PixelFormat | |
+| SDL_GetWindowICCProfile | function | - | - | Niche: raw ICC profile blob |
+| SDL_CreatePopupWindow | function | Video.SDL_CreatePopupWindow | Window.CreatePopup | Owning wrapper; parent-relative offset |
+| SDL_GetWindowParent | function | Video.SDL_GetWindowParent | Window.Parent | Non-owning; null when none |
+| SDL_GetWindowSafeArea | function | Video.SDL_GetWindowSafeArea | Window.SafeArea | |
+| SDL_SetWindowAspectRatio | function | Video.SDL_SetWindowAspectRatio | Window.SetAspectRatio | |
+| SDL_GetWindowAspectRatio | function | Video.SDL_GetWindowAspectRatio | Window.GetAspectRatio | |
+| SDL_GetWindowBordersSize | function | Video.SDL_GetWindowBordersSize | Window.GetBordersSize | Throws on platforms without border info |
+| SDL_SetWindowAlwaysOnTop | function | Video.SDL_SetWindowAlwaysOnTop | Window.SetAlwaysOnTop | |
+| SDL_SetWindowFillDocument | function | - | - | Platform: Emscripten-only |
+| SDL_SyncWindow | function | Video.SDL_SyncWindow | Window.Sync | Blocks until pending window state is applied |
+| SDL_ShowWindowSystemMenu | function | Video.SDL_ShowWindowSystemMenu | Window.ShowSystemMenu | |
+| SDL_SetWindowKeyboardGrab | function | Video.SDL_SetWindowKeyboardGrab | Window.KeyboardGrabbed (set) | |
+| SDL_SetWindowMouseGrab | function | Video.SDL_SetWindowMouseGrab | Window.MouseGrabbed (set) | |
+| SDL_GetWindowKeyboardGrab | function | Video.SDL_GetWindowKeyboardGrab | Window.KeyboardGrabbed (get) | |
+| SDL_GetWindowMouseGrab | function | Video.SDL_GetWindowMouseGrab | Window.MouseGrabbed (get) | |
+| SDL_GetGrabbedWindow | function | Video.SDL_GetGrabbedWindow | Window.GrabbedWindow | Non-owning; null when none |
+| SDL_SetWindowMouseRect | function | Video.SDL_SetWindowMouseRect | Window.MouseConfinementRect (set) | null clears |
+| SDL_GetWindowMouseRect | function | Video.SDL_GetWindowMouseRect | Window.MouseConfinementRect (get) | Null pointer -> null |
+| SDL_SetWindowParent | function | Video.SDL_SetWindowParent | Window.SetParent | null clears |
+| SDL_SetWindowModal | function | Video.SDL_SetWindowModal | Window.SetModal | Requires a parent window |
+| SDL_SetWindowFocusable | function | Video.SDL_SetWindowFocusable | Window.SetFocusable | |
+| SDL_SetWindowHitTest | function | Video.SDL_SetWindowHitTest | Window.SetHitTest | GCHandle + UnmanagedCallersOnly trampoline; exceptions swallowed to Normal |
+| SDL_SetWindowShape | function | Video.SDL_SetWindowShape | Window.SetShape | |
+| SDL_SetWindowProgressState | function | Video.SDL_SetWindowProgressState | Window.ProgressState (set) | |
+| SDL_GetWindowProgressState | function | Video.SDL_GetWindowProgressState | Window.ProgressState (get) | |
+| SDL_SetWindowProgressValue | function | Video.SDL_SetWindowProgressValue | Window.ProgressValue (set) | |
+| SDL_GetWindowProgressValue | function | Video.SDL_GetWindowProgressValue | Window.ProgressValue (get) | |
+| SDL_ScreenSaverEnabled | function | Video.SDL_ScreenSaverEnabled | ScreenSaver.Enabled (get) | |
+| SDL_EnableScreenSaver | function | Video.SDL_EnableScreenSaver | ScreenSaver.Enabled (set) | |
+| SDL_DisableScreenSaver | function | Video.SDL_DisableScreenSaver | ScreenSaver.Enabled (set) | |
+| SDL_WindowHasSurface | function | Video.SDL_WindowHasSurface | Window.HasSurface | |
+| SDL_UpdateWindowSurfaceRects | function | Video.SDL_UpdateWindowSurfaceRects | Window.UpdateSurfaceRects | |
+| SDL_SetWindowSurfaceVSync | function | Video.SDL_SetWindowSurfaceVSync | Window.SurfaceVSyncInterval (set) | |
+| SDL_GetWindowSurfaceVSync | function | Video.SDL_GetWindowSurfaceVSync | Window.SurfaceVSyncInterval (get) | |
+| SDL_GL_LoadLibrary | function | Video.SDL_GL_LoadLibrary | Gl.LoadLibrary | |
+| SDL_GL_GetProcAddress | function | Video.SDL_GL_GetProcAddress | Gl.GetProcAddress | Returns nint |
+| SDL_GL_UnloadLibrary | function | Video.SDL_GL_UnloadLibrary | Gl.UnloadLibrary | |
+| SDL_GL_ExtensionSupported | function | Video.SDL_GL_ExtensionSupported | Gl.ExtensionSupported | |
+| SDL_GL_ResetAttributes | function | Video.SDL_GL_ResetAttributes | Gl.ResetAttributes | |
+| SDL_GL_SetAttribute | function | Video.SDL_GL_SetAttribute | Gl.SetAttribute | |
+| SDL_GL_GetAttribute | function | Video.SDL_GL_GetAttribute | Gl.GetAttribute | |
+| SDL_GL_CreateContext | function | Video.SDL_GL_CreateContext | Window.CreateGlContext | Owning GlContext wrapper |
+| SDL_GL_MakeCurrent | function | Video.SDL_GL_MakeCurrent | GlContext.MakeCurrent | |
+| SDL_GL_GetCurrentWindow | function | Video.SDL_GL_GetCurrentWindow | GlContext.CurrentWindow | Non-owning; null when none current |
+| SDL_GL_GetCurrentContext | function | Video.SDL_GL_GetCurrentContext | GlContext.Current | Non-owning; null when none current |
+| SDL_GL_SetSwapInterval | function | Video.SDL_GL_SetSwapInterval | Gl.SwapInterval (set) | |
+| SDL_GL_GetSwapInterval | function | Video.SDL_GL_GetSwapInterval | Gl.SwapInterval (get) | |
+| SDL_GL_SwapWindow | function | Video.SDL_GL_SwapWindow | Window.GlSwap | |
+| SDL_GL_DestroyContext | function | Video.SDL_GL_DestroyContext | GlContext.Dispose | |
+| SDL_EGL_GetProcAddress | function | - | - | Platform: EGL/mobile-specific, not exposed |
+| SDL_EGL_GetCurrentDisplay | function | - | - | Platform: EGL/mobile-specific, not exposed |
+| SDL_EGL_GetCurrentConfig | function | - | - | Platform: EGL/mobile-specific, not exposed |
+| SDL_EGL_GetWindowSurface | function | - | - | Platform: EGL/mobile-specific, not exposed |
+| SDL_EGL_SetAttributeCallbacks | function | - | - | Platform: EGL/mobile-specific, not exposed |
+| SDL_ProgressState | enum | Video.SDL_ProgressState | ProgressState | |
+| SDL_GLContext | typedef | Video.SDL_GLContextState | GlContext | Opaque pointer struct marker (SDL_GLContextState) |
+| SDL_GLAttr | enum | Video.SDL_GLAttr | GlAttribute | |
+| SDL_GLProfile | typedef | Video.SDL_GLProfile | GlProfile | |
+| SDL_GLContextFlag | typedef | Video.SDL_GLContextFlag | GlContextFlags | [Flags] |
+| SDL_GLContextReleaseFlag | typedef | Video.SDL_GLContextReleaseFlag | GlContextReleaseBehavior | |
+| SDL_GLContextResetNotification | typedef | Video.SDL_GLContextResetNotification | GlContextResetNotification | |
+| SDL_EGLDisplay / SDL_EGLConfig / SDL_EGLSurface / SDL_EGLAttrib / SDL_EGLint | typedef (5) | - | - | Platform: EGL/mobile-specific, not exposed |
+| SDL_EGLAttribArrayCallback / SDL_EGLIntArrayCallback | callback (2) | - | - | Platform: EGL/mobile-specific, not exposed |
+| SDL_HitTestResult | enum | Video.SDL_HitTestResult | HitTestResult | |
+| SDL_HitTest | callback | Video.SDL_SetWindowHitTest (delegate* unmanaged param) | Window.HitTestHandler | GCHandle + UnmanagedCallersOnly trampoline |
+| SDL_WINDOW_SURFACE_VSYNC_DISABLED / SDL_WINDOW_SURFACE_VSYNC_ADAPTIVE | macro (2) | Video.SDL_WINDOW_SURFACE_VSYNC_DISABLED / SDL_WINDOW_SURFACE_VSYNC_ADAPTIVE | - | Named int constants; usable directly with Window.SurfaceVSyncInterval |
+| SDL_PROP_GLOBAL_VIDEO_WAYLAND_WL_DISPLAY_POINTER | macro | - | - | Niche: property string constant; platform |
+| SDL_PROP_DISPLAY_* | macro (4) | Video.SDL_PROP_DISPLAY_* | DisplayProperties.* | 4/4 exposed managed |
+| SDL_PROP_WINDOW_CREATE_* | macro (38) | Video.SDL_PROP_WINDOW_CREATE_* | WindowProperties.Create* | 38/38 exposed managed |
+| SDL_PROP_WINDOW_* | macro (37) | Video.SDL_PROP_WINDOW_* | WindowProperties.* | 37/37 exposed managed (post-create query names) |
 
 ## SDL_vulkan.h ✅
 
