@@ -65,7 +65,7 @@ public readonly record struct MouseButtonEventArgs(
 /// <param name="Y">Vertical scroll amount.</param>
 /// <param name="MouseX">Mouse X position.</param>
 /// <param name="MouseY">Mouse Y position.</param>
-/// <param name="Direction">The scroll direction. When <see cref="MouseWheelDirection.Flipped"/>, the scroll amounts are inverted relative to normal scrolling.</param>
+/// <param name="Direction">The scroll direction. When <see cref="MouseWheelDirection.Flipped"/>, the scroll amounts are inverted relative to normal scrolling. Multiply <see cref="X"/> and <see cref="Y"/> by -1 to normalize the values when the direction is <see cref="MouseWheelDirection.Flipped"/>.</param>
 public readonly record struct MouseWheelEventArgs(
     uint WindowId,
     float X, float Y,
