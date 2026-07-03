@@ -79,11 +79,13 @@ public static unsafe class Mouse
     /// <summary>
     /// Shows the mouse cursor.
     /// </summary>
+    /// <seealso cref="Cursor.Current"/>
     public static void ShowCursor() => Check(SDL_ShowCursor());
 
     /// <summary>
     /// Hides the mouse cursor.
     /// </summary>
+    /// <seealso cref="Cursor.Current"/>
     public static void HideCursor() => Check(SDL_HideCursor());
 
     /// <summary>

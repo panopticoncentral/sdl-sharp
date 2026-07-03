@@ -1,6 +1,8 @@
 using SdlSharp.Graphics;
 using static SdlSharp.Native.Common;
 using static SdlSharp.Native.Mouse;
+// Aliases instead of `using SdlSharp.Native;`, which would make `Surface` ambiguous (CS0104)
+// between SdlSharp.Graphics.Surface and the SdlSharp.Native.Surface binding class.
 using SDL_Cursor = SdlSharp.Native.SDL_Cursor;
 using SDL_SystemCursor = SdlSharp.Native.SDL_SystemCursor;
 
@@ -54,8 +56,10 @@ public sealed unsafe class Cursor : IDisposable
     /// <summary>
     /// Gets or sets the active cursor. The getter returns a non-owning wrapper
     /// (or null when no cursor is set). Setting null forces a cursor redraw,
-    /// mirroring SDL_SetCursor(NULL).
+    /// mirroring SDL_SetCursor(NULL). Setting null does not hide the cursor —
+    /// use <see cref="Mouse.HideCursor"/> for that.
     /// </summary>
+    /// <seealso cref="Mouse.HideCursor"/>
     public static Cursor? Current
     {
         get
