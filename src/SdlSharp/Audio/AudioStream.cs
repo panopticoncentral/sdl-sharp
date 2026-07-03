@@ -1,7 +1,21 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
 using static SdlSharp.Native.Audio;
 using static SdlSharp.Native.Common;
 
 namespace SdlSharp.Audio;
+
+/// <summary>
+/// A callback invoked when an audio stream needs more data (get) or has received
+/// data (put). It runs on SDL's audio thread — keep it fast, avoid allocation and
+/// blocking, and use <see cref="AudioStream.Lock"/> to guard shared state.
+/// Exceptions that escape the callback are swallowed.
+/// </summary>
+/// <param name="stream">The stream that triggered the callback.</param>
+/// <param name="additionalAmount">The amount, in bytes, of additional data the stream wants (get) or received (put); may be zero.</param>
+/// <param name="totalAmount">The total amount, in bytes, currently queued/requested.</param>
+public delegate void AudioStreamDataCallback(AudioStream stream, int additionalAmount, int totalAmount);
 
 /// <summary>
 /// A managed wrapper around an SDL audio stream (SDL_AudioStream).
@@ -10,6 +24,11 @@ namespace SdlSharp.Audio;
 public sealed unsafe class AudioStream : IDisposable
 {
     private readonly bool _ownsHandle;
+
+    private GCHandle _getCallbackHandle;
+    private GCHandle _putCallbackHandle;
+
+    private sealed record CallbackHolder(AudioStream Stream, AudioStreamDataCallback Callback);
 
     internal Native.SDL_AudioStream* Handle
     {
@@ -211,6 +230,182 @@ public sealed unsafe class AudioStream : IDisposable
     /// </summary>
     public bool IsDevicePaused => SDL_AudioStreamDevicePaused(Handle);
 
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static void DataCallback(void* userdata, Native.SDL_AudioStream* stream, int additionalAmount, int totalAmount)
+    {
+        try
+        {
+            var holder = (CallbackHolder)GCHandle.FromIntPtr((nint)userdata).Target!;
+            holder.Callback(holder.Stream, additionalAmount, totalAmount);
+        }
+        catch
+        {
+            // Must not cross the native boundary on the audio thread.
+        }
+    }
+
+    /// <summary>
+    /// Sets or clears (<c>null</c>) a callback that runs when the stream needs more data.
+    /// The callback runs on SDL's audio thread. Setting a new callback replaces any
+    /// previous one. See <see cref="AudioStreamDataCallback"/> for the threading contract.
+    /// </summary>
+    /// <param name="callback">The callback, or <c>null</c> to clear.</param>
+    public void SetGetCallback(AudioStreamDataCallback? callback) =>
+        SetCallback(callback, ref _getCallbackHandle, isGet: true);
+
+    /// <summary>
+    /// Sets or clears (<c>null</c>) a callback that runs after data has been added to the stream.
+    /// The callback runs on SDL's audio thread. Setting a new callback replaces any
+    /// previous one. See <see cref="AudioStreamDataCallback"/> for the threading contract.
+    /// </summary>
+    /// <param name="callback">The callback, or <c>null</c> to clear.</param>
+    public void SetPutCallback(AudioStreamDataCallback? callback) =>
+        SetCallback(callback, ref _putCallbackHandle, isGet: false);
+
+    private void SetCallback(AudioStreamDataCallback? callback, ref GCHandle slot, bool isGet)
+    {
+        var previous = slot;
+
+        if (callback == null)
+        {
+            if (isGet)
+            {
+                Check(SDL_SetAudioStreamGetCallback(Handle, null, null));
+            }
+            else
+            {
+                Check(SDL_SetAudioStreamPutCallback(Handle, null, null));
+            }
+
+            slot = default;
+        }
+        else
+        {
+            var newHandle = GCHandle.Alloc(new CallbackHolder(this, callback));
+            var ok = isGet
+                ? SDL_SetAudioStreamGetCallback(Handle, &DataCallback, (void*)GCHandle.ToIntPtr(newHandle))
+                : SDL_SetAudioStreamPutCallback(Handle, &DataCallback, (void*)GCHandle.ToIntPtr(newHandle));
+
+            if (!ok)
+            {
+                newHandle.Free();
+                throw new SdlException();
+            }
+
+            slot = newHandle;
+        }
+
+        if (previous.IsAllocated)
+        {
+            previous.Free();
+        }
+    }
+
+    /// <summary>
+    /// Locks the stream against its audio-thread callbacks and returns a scope that
+    /// unlocks on dispose. Use <c>using var _ = stream.Lock();</c> to guard access to
+    /// state shared with a get/put callback.
+    /// </summary>
+    /// <returns>A lock scope; dispose it to unlock.</returns>
+    public AudioStreamLock Lock()
+    {
+        Check(SDL_LockAudioStream(Handle));
+        return new AudioStreamLock(Handle);
+    }
+
+    /// <summary>
+    /// Gets the audio device this stream is currently bound to, or <c>null</c> if it is
+    /// unbound. The returned wrapper does not own the device; each access returns a new
+    /// wrapper and wrappers are not equal to each other.
+    /// </summary>
+    public AudioDevice? Device
+    {
+        get
+        {
+            var id = SDL_GetAudioStreamDevice(Handle);
+            return id.Value == 0 ? null : new AudioDevice(id, ownsHandle: false);
+        }
+    }
+
+    /// <summary>
+    /// Adds one buffer per channel of non-interleaved (planar) audio to the stream.
+    /// Each channel buffer holds <paramref name="numSamples"/> samples laid out per the
+    /// stream's source format.
+    /// </summary>
+    /// <param name="channels">One byte buffer per channel; all must be the same length.</param>
+    /// <param name="numSamples">The number of samples per channel.</param>
+    /// <exception cref="ArgumentException"><paramref name="channels"/> is empty.</exception>
+    public void PutPlanarData(byte[][] channels, int numSamples)
+    {
+        if (channels.Length == 0)
+        {
+            throw new ArgumentException("At least one channel is required.", nameof(channels));
+        }
+
+        var handles = new GCHandle[channels.Length];
+        var pointers = stackalloc void*[channels.Length];
+        try
+        {
+            for (var i = 0; i < channels.Length; i++)
+            {
+                handles[i] = GCHandle.Alloc(channels[i], GCHandleType.Pinned);
+                pointers[i] = (void*)handles[i].AddrOfPinnedObject();
+            }
+
+            Check(SDL_PutAudioStreamPlanarData(Handle, pointers, channels.Length, numSamples));
+        }
+        finally
+        {
+            foreach (var h in handles)
+            {
+                if (h.IsAllocated) h.Free();
+            }
+        }
+    }
+
+    /// <summary>Gets the current input channel map, or <c>null</c> for the default order.</summary>
+    /// <returns>The channel map array, or <c>null</c>.</returns>
+    public int[]? GetInputChannelMap() => ReadChannelMap(SDL_GetAudioStreamInputChannelMap(Handle, out var count), count);
+
+    /// <summary>Gets the current output channel map, or <c>null</c> for the default order.</summary>
+    /// <returns>The channel map array, or <c>null</c>.</returns>
+    public int[]? GetOutputChannelMap() => ReadChannelMap(SDL_GetAudioStreamOutputChannelMap(Handle, out var count), count);
+
+    /// <summary>Sets the input channel map, or passes <c>null</c> to reset to the default order.</summary>
+    /// <param name="map">The channel map, or <c>null</c> to reset.</param>
+    public void SetInputChannelMap(int[]? map) => SetChannelMap(map, input: true);
+
+    /// <summary>Sets the output channel map, or passes <c>null</c> to reset to the default order.</summary>
+    /// <param name="map">The channel map, or <c>null</c> to reset.</param>
+    public void SetOutputChannelMap(int[]? map) => SetChannelMap(map, input: false);
+
+    private void SetChannelMap(int[]? map, bool input)
+    {
+        fixed (int* ptr = map)
+        {
+            var count = map?.Length ?? 0;
+            var ok = input
+                ? SDL_SetAudioStreamInputChannelMap(Handle, ptr, count)
+                : SDL_SetAudioStreamOutputChannelMap(Handle, ptr, count);
+            Check(ok);
+        }
+    }
+
+    private static int[]? ReadChannelMap(int* map, int count)
+    {
+        if (map == null) return null;
+        try
+        {
+            var result = new int[count];
+            new ReadOnlySpan<int>(map, count).CopyTo(result);
+            return result;
+        }
+        finally
+        {
+            SDL_free(map);
+        }
+    }
+
     private static Native.SDL_AudioSpec ToNativeSpec(AudioSpec spec) =>
         new()
         {
@@ -230,5 +425,8 @@ public sealed unsafe class AudioStream : IDisposable
             SDL_DestroyAudioStream(_handle);
         }
         _handle = null;
+
+        if (_getCallbackHandle.IsAllocated) _getCallbackHandle.Free();
+        if (_putCallbackHandle.IsAllocated) _putCallbackHandle.Free();
     }
 }
