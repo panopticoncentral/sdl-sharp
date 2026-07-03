@@ -5,24 +5,15 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Deferred: virtual joystick (SDL_AttachVirtualJoystick, SDL_DetachVirtualJoystick, SDL_IsJoystickVirtual,
-// SDL_SetJoystickVirtual*, SDL_SendJoystickVirtualSensorData),
-// rumble (SDL_RumbleJoystick, SDL_RumbleJoystickTriggers),
-// LED (SDL_SetJoystickLED),
-// player index (SDL_SetJoystickPlayerIndex, SDL_GetJoystickPlayerIndex, SDL_GetJoystickPlayerIndexForID,
-// SDL_GetJoystickFromPlayerIndex),
-// presence/connection (SDL_HasJoystick, SDL_JoystickConnected),
-// event state (SDL_SetJoystickEventsEnabled, SDL_JoystickEventsEnabled),
-// trackballs (SDL_GetJoystickBall),
-// axis initial state (SDL_GetJoystickAxisInitialState),
-// device info getters (SDL_GetJoystickPath/Vendor/Product/ProductVersion + their ForID variants,
-// SDL_GetJoystickFirmwareVersion, SDL_GetJoystickSerial),
-// effects (SDL_SendJoystickEffect),
-// GUID (SDL_GetJoystickGUIDForID, SDL_GetJoystickGUID, SDL_GetJoystickGUIDInfo — needs SDL_GUID struct),
-// power (SDL_GetJoystickPowerInfo — needs SDL_PowerState from Events.cs),
-// properties (SDL_GetJoystickProperties, property constants),
-// locking (SDL_LockJoysticks, SDL_UnlockJoysticks),
-// constants (SDL_JOYSTICK_AXIS_MIN, SDL_JOYSTICK_AXIS_MAX).
+// Deferred: virtual joystick suite (SDL_AttachVirtualJoystick, SDL_DetachVirtualJoystick,
+// SDL_IsJoystickVirtual, SDL_SetJoystickVirtualAxis, SDL_SetJoystickVirtualBall,
+// SDL_SetJoystickVirtualButton, SDL_SetJoystickVirtualHat, SDL_SetJoystickVirtualTouchpad,
+// SDL_SendJoystickVirtualSensorData, SDL_VirtualJoystickDesc + its callbacks — apps that need
+// virtual/synthetic joysticks are a niche use case),
+// locking (SDL_LockJoysticks, SDL_UnlockJoysticks — thread-safety guards not needed by this
+// wrapper's usage model),
+// SDL_GetJoystickGUIDInfo (GUID decomposition — SdlGuid exposes the canonical string form instead),
+// SDL_GetJoystickAxisInitialState (rarely-needed initial-value query; can be added on request).
 
 /// <summary>
 /// Opaque joystick handle.
@@ -79,6 +70,15 @@ public static partial class Joystick
     public const byte SDL_HAT_RIGHTDOWN = SDL_HAT_RIGHT | SDL_HAT_DOWN;
     public const byte SDL_HAT_LEFTUP = SDL_HAT_LEFT | SDL_HAT_UP;
     public const byte SDL_HAT_LEFTDOWN = SDL_HAT_LEFT | SDL_HAT_DOWN;
+
+    public const string SDL_PROP_JOYSTICK_CAP_MONO_LED_BOOLEAN = "SDL.joystick.cap.mono_led";
+    public const string SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN = "SDL.joystick.cap.rgb_led";
+    public const string SDL_PROP_JOYSTICK_CAP_PLAYER_LED_BOOLEAN = "SDL.joystick.cap.player_led";
+    public const string SDL_PROP_JOYSTICK_CAP_RUMBLE_BOOLEAN = "SDL.joystick.cap.rumble";
+    public const string SDL_PROP_JOYSTICK_CAP_TRIGGER_RUMBLE_BOOLEAN = "SDL.joystick.cap.trigger_rumble";
+
+    public const short SDL_JOYSTICK_AXIS_MIN = -32768;
+    public const short SDL_JOYSTICK_AXIS_MAX = 32767;
 
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoysticks")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -152,4 +152,121 @@ public static partial class Joystick
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_UpdateJoysticks")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void SDL_UpdateJoysticks();
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_HasJoystick")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_HasJoystick();
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_JoystickConnected")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_JoystickConnected(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickGUID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_GUID SDL_GetJoystickGUID(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickGUIDForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial SDL_GUID SDL_GetJoystickGUIDForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickVendor")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial ushort SDL_GetJoystickVendor(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickVendorForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial ushort SDL_GetJoystickVendorForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickProduct")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial ushort SDL_GetJoystickProduct(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickProductForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial ushort SDL_GetJoystickProductForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickProductVersion")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial ushort SDL_GetJoystickProductVersion(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickProductVersionForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial ushort SDL_GetJoystickProductVersionForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickFirmwareVersion")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial ushort SDL_GetJoystickFirmwareVersion(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickSerial")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetJoystickSerial(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickPath")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetJoystickPath(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickPathForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetJoystickPathForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickProperties")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_PropertiesID SDL_GetJoystickProperties(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickPlayerIndex")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial int SDL_GetJoystickPlayerIndex(SDL_Joystick* joystick);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetJoystickPlayerIndex")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetJoystickPlayerIndex(SDL_Joystick* joystick, int player_index);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickPlayerIndexForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int SDL_GetJoystickPlayerIndexForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickFromPlayerIndex")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_Joystick* SDL_GetJoystickFromPlayerIndex(int player_index);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickPowerInfo")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_PowerState SDL_GetJoystickPowerInfo(SDL_Joystick* joystick, int* percent);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_RumbleJoystick")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_RumbleJoystick(SDL_Joystick* joystick, ushort low_frequency_rumble, ushort high_frequency_rumble, uint duration_ms);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_RumbleJoystickTriggers")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_RumbleJoystickTriggers(SDL_Joystick* joystick, ushort left_rumble, ushort right_rumble, uint duration_ms);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetJoystickLED")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetJoystickLED(SDL_Joystick* joystick, byte red, byte green, byte blue);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SendJoystickEffect")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SendJoystickEffect(SDL_Joystick* joystick, void* data, int size);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetJoystickEventsEnabled")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void SDL_SetJoystickEventsEnabled([MarshalAs(UnmanagedType.U1)] bool enabled);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_JoystickEventsEnabled")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_JoystickEventsEnabled();
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetJoystickBall")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetJoystickBall(SDL_Joystick* joystick, int ball, int* dx, int* dy);
 }
