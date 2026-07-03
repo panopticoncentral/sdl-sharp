@@ -16,6 +16,7 @@
     <Project Path="Samples/FileDialogDemo/FileDialogDemo.csproj" />
     <Project Path="Samples/GamepadDemo/GamepadDemo.csproj" />
     <Project Path="Samples/HapticDemo/HapticDemo.csproj" />
+    <Project Path="Samples/InputInfo/InputInfo.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
