@@ -5,16 +5,14 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Deferred: mapping management (SDL_AddGamepadMapping*, SDL_GetGamepadMapping*),
-// binding (SDL_GamepadBinding, SDL_GetGamepadBindings),
-// rumble (SDL_RumbleGamepad, SDL_RumbleGamepadTriggers),
-// LED (SDL_SetGamepadLED), player index (SDL_SetGamepadPlayerIndex),
-// sensors (SDL_GamepadHasSensor, SDL_SetGamepadSensorEnabled, SDL_GetGamepadSensorData),
-// touchpad detail (SDL_GetNumGamepadTouchpads, SDL_GetNumGamepadTouchpadFingers, SDL_GetGamepadTouchpadFinger),
-// Steam handle (SDL_GetGamepadSteamHandle),
-// power (SDL_GetGamepadPowerInfo),
-// properties (SDL_GetGamepadProperties, property constants),
-// string for button/axis (SDL_GetGamepadStringForButton, SDL_GetGamepadStringForAxis).
+// Deferred: SDL_AddGamepadMappingsFromIO (SDL_IOStream-based mapping load — project policy
+// favors the .NET-facing SDL_AddGamepadMappingsFromFile path over stream interop),
+// SDL_GetGamepadMappings (niche full-database enumerator; individual lookups are covered by
+// SDL_GetGamepadMapping/SDL_GetGamepadMappingForGUID/SDL_GetGamepadMappingForID),
+// SDL_GamepadBinding + SDL_GamepadBindingType + SDL_GetGamepadBindings (low-level binding
+// introspection; niche — mapping strings are the supported way to inspect/configure bindings),
+// SDL_GetGamepadAppleSFSymbolsNameForButton/Axis (Apple-specific SF Symbols glyph names, platform
+// niche).
 
 /// <summary>
 /// Opaque gamepad handle.
@@ -113,6 +111,14 @@ public enum SDL_GamepadAxis
 [SuppressMessage("Interoperability", "CA1401:P/Invokes should not be visible")]
 public static partial class Gamepad
 {
+    // The gamepad CAP properties are aliases of the joystick CAP properties (SDL_gamepad.h
+    // lines 813-817: #define SDL_PROP_GAMEPAD_CAP_*_BOOLEAN SDL_PROP_JOYSTICK_CAP_*_BOOLEAN).
+    public const string SDL_PROP_GAMEPAD_CAP_MONO_LED_BOOLEAN = Joystick.SDL_PROP_JOYSTICK_CAP_MONO_LED_BOOLEAN;
+    public const string SDL_PROP_GAMEPAD_CAP_RGB_LED_BOOLEAN = Joystick.SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN;
+    public const string SDL_PROP_GAMEPAD_CAP_PLAYER_LED_BOOLEAN = Joystick.SDL_PROP_JOYSTICK_CAP_PLAYER_LED_BOOLEAN;
+    public const string SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN = Joystick.SDL_PROP_JOYSTICK_CAP_RUMBLE_BOOLEAN;
+    public const string SDL_PROP_GAMEPAD_CAP_TRIGGER_RUMBLE_BOOLEAN = Joystick.SDL_PROP_JOYSTICK_CAP_TRIGGER_RUMBLE_BOOLEAN;
+
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepads")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static unsafe partial SDL_JoystickID* SDL_GetGamepads(int* count);
@@ -174,4 +180,236 @@ public static partial class Gamepad
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_UpdateGamepads")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void SDL_UpdateGamepads();
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_AddGamepadMapping")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int SDL_AddGamepadMapping(ReadOnlySpan<byte> mapping);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_AddGamepadMappingsFromFile")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int SDL_AddGamepadMappingsFromFile(ReadOnlySpan<byte> file);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_ReloadGamepadMappings")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_ReloadGamepadMappings();
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadMappingForGUID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetGamepadMappingForGUID(SDL_GUID guid); // caller frees via SDL_free
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadMapping")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetGamepadMapping(SDL_Gamepad* gamepad); // caller frees via SDL_free
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetGamepadMapping")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_SetGamepadMapping(SDL_JoystickID instance_id, ReadOnlySpan<byte> mapping);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadMappingForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetGamepadMappingForID(SDL_JoystickID instance_id); // caller frees via SDL_free
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_HasGamepad")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_HasGamepad();
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadPathForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetGamepadPathForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadPlayerIndexForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int SDL_GetGamepadPlayerIndexForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadGUIDForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial SDL_GUID SDL_GetGamepadGUIDForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadVendorForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial ushort SDL_GetGamepadVendorForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadProductForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial ushort SDL_GetGamepadProductForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadProductVersionForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial ushort SDL_GetGamepadProductVersionForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetRealGamepadTypeForID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial SDL_GamepadType SDL_GetRealGamepadTypeForID(SDL_JoystickID instance_id);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadFromPlayerIndex")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_Gamepad* SDL_GetGamepadFromPlayerIndex(int player_index);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadProperties")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_PropertiesID SDL_GetGamepadProperties(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadID")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_JoystickID SDL_GetGamepadID(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadPath")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetGamepadPath(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetRealGamepadType")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_GamepadType SDL_GetRealGamepadType(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadPlayerIndex")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial int SDL_GetGamepadPlayerIndex(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetGamepadPlayerIndex")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetGamepadPlayerIndex(SDL_Gamepad* gamepad, int player_index);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadVendor")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial ushort SDL_GetGamepadVendor(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadProduct")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial ushort SDL_GetGamepadProduct(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadProductVersion")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial ushort SDL_GetGamepadProductVersion(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadFirmwareVersion")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial ushort SDL_GetGamepadFirmwareVersion(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadSerial")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetGamepadSerial(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadSteamHandle")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial ulong SDL_GetGamepadSteamHandle(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadPowerInfo")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_PowerState SDL_GetGamepadPowerInfo(SDL_Gamepad* gamepad, int* percent);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GamepadConnected")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GamepadConnected(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetGamepadEventsEnabled")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void SDL_SetGamepadEventsEnabled([MarshalAs(UnmanagedType.U1)] bool enabled);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GamepadEventsEnabled")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_GamepadEventsEnabled();
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadTypeFromString")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial SDL_GamepadType SDL_GetGamepadTypeFromString(ReadOnlySpan<byte> str);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadStringForType")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetGamepadStringForType(SDL_GamepadType type); // SDL-owned, no free
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadAxisFromString")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial SDL_GamepadAxis SDL_GetGamepadAxisFromString(ReadOnlySpan<byte> str);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadStringForAxis")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetGamepadStringForAxis(SDL_GamepadAxis axis); // SDL-owned, no free
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GamepadHasAxis")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GamepadHasAxis(SDL_Gamepad* gamepad, SDL_GamepadAxis axis);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadButtonFromString")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial SDL_GamepadButton SDL_GetGamepadButtonFromString(ReadOnlySpan<byte> str);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadStringForButton")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial byte* SDL_GetGamepadStringForButton(SDL_GamepadButton button); // SDL-owned, no free
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GamepadHasButton")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GamepadHasButton(SDL_Gamepad* gamepad, SDL_GamepadButton button);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadButtonLabelForType")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial SDL_GamepadButtonLabel SDL_GetGamepadButtonLabelForType(SDL_GamepadType type, SDL_GamepadButton button);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetNumGamepadTouchpads")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial int SDL_GetNumGamepadTouchpads(SDL_Gamepad* gamepad);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetNumGamepadTouchpadFingers")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial int SDL_GetNumGamepadTouchpadFingers(SDL_Gamepad* gamepad, int touchpad);
+
+    // down is a C `bool *` out-param (1-byte stdbool ABI). No existing bool* precedent in
+    // Native/ to follow, so it is bound as byte*, matching the plan's explicit guidance; the
+    // managed layer converts (down = d != 0).
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadTouchpadFinger")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetGamepadTouchpadFinger(SDL_Gamepad* gamepad, int touchpad, int finger, byte* down, float* x, float* y, float* pressure);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GamepadHasSensor")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GamepadHasSensor(SDL_Gamepad* gamepad, SDL_SensorType type);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetGamepadSensorEnabled")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetGamepadSensorEnabled(SDL_Gamepad* gamepad, SDL_SensorType type, [MarshalAs(UnmanagedType.U1)] bool enabled);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GamepadSensorEnabled")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GamepadSensorEnabled(SDL_Gamepad* gamepad, SDL_SensorType type);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadSensorDataRate")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial float SDL_GetGamepadSensorDataRate(SDL_Gamepad* gamepad, SDL_SensorType type);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetGamepadSensorData")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GetGamepadSensorData(SDL_Gamepad* gamepad, SDL_SensorType type, float* data, int num_values);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_RumbleGamepad")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_RumbleGamepad(SDL_Gamepad* gamepad, ushort low_frequency_rumble, ushort high_frequency_rumble, uint duration_ms);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_RumbleGamepadTriggers")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_RumbleGamepadTriggers(SDL_Gamepad* gamepad, ushort left_rumble, ushort right_rumble, uint duration_ms);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetGamepadLED")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetGamepadLED(SDL_Gamepad* gamepad, byte red, byte green, byte blue);
+
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SendGamepadEffect")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SendGamepadEffect(SDL_Gamepad* gamepad, void* data, int size);
 }
