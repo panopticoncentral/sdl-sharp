@@ -5,17 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Deferred: SDL_LoadWAV_IO (needs SDL_IOStream), SDL_SetAudioPostmixCallback (advanced),
-// SDL_PutAudioStreamDataNoCopy (advanced zero-copy), SDL_PutAudioStreamPlanarData (planar layout),
-// SDL_ConvertAudioSamples (convenience, use AudioStream instead),
-// SDL_MixAudio (low-level mixing), SDL_GetSilenceValueForFormat (low-level),
-// SDL_SetAudioStreamGetCallback / SDL_SetAudioStreamPutCallback (advanced callbacks),
-// SDL_GetAudioDeviceChannelMap / SDL_GetAudioStreamInputChannelMap /
-// SDL_GetAudioStreamOutputChannelMap / SDL_SetAudioStreamInputChannelMap /
-// SDL_SetAudioStreamOutputChannelMap (channel remapping — uncommon),
-// SDL_LockAudioStream / SDL_UnlockAudioStream (low-level locking),
-// SDL_IsAudioDevicePhysical / SDL_IsAudioDevicePlayback (query helpers),
-// SDL_BindAudioStreams / SDL_UnbindAudioStreams (multi-stream bind).
+// Deferred: SDL_LoadWAV_IO (needs SDL_IOStream — see skip comment below),
+// SDL_PutAudioStreamDataNoCopy (advanced zero-copy — see skip comment below).
 
 /// <summary>
 /// Audio data format values.
@@ -40,6 +31,13 @@ public enum SDL_AudioFormat : ushort
     SDL_AUDIO_F32LE = 0x8120,
     /// <summary>32-bit floating point samples, big-endian.</summary>
     SDL_AUDIO_F32BE = 0x9120,
+
+    // Native byte-order aliases. SDL's header resolves these to the LE or BE
+    // variant by compile-time byte order; every platform the redist ships for
+    // (win-x64/arm64, osx, linux-x64/arm64) is little-endian.
+    SDL_AUDIO_S16 = SDL_AUDIO_S16LE,
+    SDL_AUDIO_S32 = SDL_AUDIO_S32LE,
+    SDL_AUDIO_F32 = SDL_AUDIO_F32LE,
 }
 
 /// <summary>
@@ -122,6 +120,23 @@ public static partial class Audio
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_GetAudioDeviceFormat(SDL_AudioDeviceID devid, SDL_AudioSpec* spec, int* sample_frames);
 
+    /// <summary>Get the current channel map of an audio device.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetAudioDeviceChannelMap")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial int* SDL_GetAudioDeviceChannelMap(SDL_AudioDeviceID devid, out int count);
+
+    /// <summary>Query whether an audio device ID is a physical (not logical) device.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_IsAudioDevicePhysical")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_IsAudioDevicePhysical(SDL_AudioDeviceID devid);
+
+    /// <summary>Query whether an audio device ID is a playback device.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_IsAudioDevicePlayback")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_IsAudioDevicePlayback(SDL_AudioDeviceID devid);
+
     // --- Device lifecycle ---
 
     /// <summary>Open a specific audio device.</summary>
@@ -165,6 +180,15 @@ public static partial class Audio
     [return: MarshalAs(UnmanagedType.U1)]
     public static partial bool SDL_SetAudioDeviceGain(SDL_AudioDeviceID devid, float gain);
 
+    /// <summary>Set a callback that runs with a device's final mixed audio just before playback.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetAudioPostmixCallback")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetAudioPostmixCallback(
+        SDL_AudioDeviceID devid,
+        delegate* unmanaged[Cdecl]<void*, SDL_AudioSpec*, float*, int, void> callback,
+        void* userdata);
+
     // --- Stream binding ---
 
     /// <summary>Bind a single audio stream to an audio device.</summary>
@@ -177,6 +201,17 @@ public static partial class Audio
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_UnbindAudioStream")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static unsafe partial void SDL_UnbindAudioStream(SDL_AudioStream* stream);
+
+    /// <summary>Bind a list of audio streams to an audio device.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_BindAudioStreams")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_BindAudioStreams(SDL_AudioDeviceID devid, SDL_AudioStream** streams, int num_streams);
+
+    /// <summary>Unbind a list of audio streams from their audio devices.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_UnbindAudioStreams")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial void SDL_UnbindAudioStreams(SDL_AudioStream** streams, int num_streams);
 
     /// <summary>Query an audio stream for its currently-bound device.</summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetAudioStreamDevice")]
@@ -241,6 +276,58 @@ public static partial class Audio
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_SetAudioStreamGain(SDL_AudioStream* stream, float gain);
 
+    /// <summary>Get the current input channel map of an audio stream.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetAudioStreamInputChannelMap")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial int* SDL_GetAudioStreamInputChannelMap(SDL_AudioStream* stream, out int count);
+
+    /// <summary>Get the current output channel map of an audio stream.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetAudioStreamOutputChannelMap")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial int* SDL_GetAudioStreamOutputChannelMap(SDL_AudioStream* stream, out int count);
+
+    /// <summary>Set the input channel map of an audio stream.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetAudioStreamInputChannelMap")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetAudioStreamInputChannelMap(SDL_AudioStream* stream, int* chmap, int count);
+
+    /// <summary>Set the output channel map of an audio stream.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetAudioStreamOutputChannelMap")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetAudioStreamOutputChannelMap(SDL_AudioStream* stream, int* chmap, int count);
+
+    /// <summary>Set a callback that runs when data is requested from an audio stream.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetAudioStreamGetCallback")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetAudioStreamGetCallback(
+        SDL_AudioStream* stream,
+        delegate* unmanaged[Cdecl]<void*, SDL_AudioStream*, int, int, void> callback,
+        void* userdata);
+
+    /// <summary>Set a callback that runs when data is added to an audio stream.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetAudioStreamPutCallback")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetAudioStreamPutCallback(
+        SDL_AudioStream* stream,
+        delegate* unmanaged[Cdecl]<void*, SDL_AudioStream*, int, int, void> callback,
+        void* userdata);
+
+    /// <summary>Lock an audio stream for serialized access.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_LockAudioStream")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_LockAudioStream(SDL_AudioStream* stream);
+
+    /// <summary>Unlock an audio stream for serialized access.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_UnlockAudioStream")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_UnlockAudioStream(SDL_AudioStream* stream);
+
     // --- Stream data ---
 
     /// <summary>Add data to the stream.</summary>
@@ -248,6 +335,18 @@ public static partial class Audio
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_PutAudioStreamData(SDL_AudioStream* stream, void* buf, int len);
+
+    // Skipped SDL_PutAudioStreamDataNoCopy: the zero-copy put requires the caller
+    // to keep the native buffer alive until an asynchronous completion callback
+    // fires, which is incompatible with managed memory without unbounded pinning.
+    // SDL_PutAudioStreamData / SDL_PutAudioStreamPlanarData cover the use case.
+
+    /// <summary>Add data to the stream, given non-interleaved (planar) channel buffers.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_PutAudioStreamPlanarData")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_PutAudioStreamPlanarData(
+        SDL_AudioStream* stream, void** channel_buffers, int num_channels, int num_samples);
 
     /// <summary>Get converted/resampled data from the stream.</summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetAudioStreamData")]
@@ -304,10 +403,34 @@ public static partial class Audio
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_LoadWAV(ReadOnlySpan<byte> path, SDL_AudioSpec* spec, byte** audio_buf, uint* audio_len);
 
+    // Skipped SDL_LoadWAV_IO: IO-stream variant of SDL_LoadWAV. .NET has its own
+    // stream abstractions; SDL_LoadWAV (path-based) is bound and covers the case.
+
     // --- Format info ---
 
     /// <summary>Get the human readable name of an audio format.</summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetAudioFormatName")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static unsafe partial byte* SDL_GetAudioFormatName(SDL_AudioFormat format);
+
+    /// <summary>Get the appropriate memset value for silence in a given audio format.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetSilenceValueForFormat")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int SDL_GetSilenceValueForFormat(SDL_AudioFormat format);
+
+    // --- Mixing and conversion ---
+
+    /// <summary>Mix audio data in a specified format.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_MixAudio")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_MixAudio(byte* dst, byte* src, SDL_AudioFormat format, uint len, float volume);
+
+    /// <summary>Convert samples from one format to another.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_ConvertAudioSamples")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_ConvertAudioSamples(
+        SDL_AudioSpec* src_spec, byte* src_data, int src_len,
+        SDL_AudioSpec* dst_spec, byte** dst_data, int* dst_len);
 }
