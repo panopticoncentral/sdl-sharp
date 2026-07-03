@@ -377,7 +377,7 @@ functions (55%) across the 41 active headers; the 13 deferred-by-design headers
       `SDL_CreateGPUDeviceWithProperties` + property constants, swapchain-support
       queries, texture-format size helpers). This is API design — do as its own
       focused session.
-- [ ] 7.3 No-native-types fixes elsewhere: `Application` raw event filter exposes
+- [x] 7.3 No-native-types fixes elsewhere: `Application` raw event filter exposes
       `Native.SDL_Event*`; text input flow (`SDL_StartTextInput` etc.) reachable
       only via native layer — make public, add `SDL_SetTextInputArea`/
       `SDL_GetTextInputArea`/`SDL_StartTextInputWithProperties` + `TextInputType`/

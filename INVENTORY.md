@@ -281,7 +281,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_EventType | enum | Events.SDL_EventType | - | Used internally by event dispatch |
+| SDL_EventType | enum | Events.SDL_EventType | EventType | |
 | SDL_CommonEvent | struct | Events.SDL_CommonEvent | - | |
 | SDL_DisplayEvent | struct | Events.SDL_DisplayEvent | - | |
 | SDL_WindowEvent | struct | Events.SDL_WindowEvent | WindowEventArgs | |
@@ -333,7 +333,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_RegisterEvents | function | Events.SDL_RegisterEvents | - | Deferred managed wrapper |
 | SDL_EventAction | enum | - | - | Deferred: needed by SDL_PeepEvents |
 | SDL_PeepEvents | function | - | - | Deferred: bulk queue add/peek/get (no callback) |
-| SDL_EventFilter | callback | - | - | Deferred: callback typedef for filter/watch APIs |
+| SDL_EventFilter | callback | - | - | Deferred: callback typedef for filter/watch APIs; see Application.RawEventFilter (RawEvent) for a pre-dispatch tap on the managed poll loop instead |
 | SDL_SetEventFilter | function | - | - | Deferred: callback interop |
 | SDL_GetEventFilter | function | - | - | Deferred: callback interop |
 | SDL_AddEventWatch | function | - | - | Deferred: callback interop |
@@ -903,19 +903,20 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_GetScancodeFromName | function | Keyboard.SDL_GetScancodeFromName | - | Deferred managed wrapper |
 | SDL_GetKeyName | function | Keyboard.SDL_GetKeyName | Keyboard.GetKeyName | |
 | SDL_GetKeyFromName | function | Keyboard.SDL_GetKeyFromName | - | Deferred managed wrapper |
-| SDL_StartTextInput | function | Keyboard.SDL_StartTextInput | - | Deferred managed wrapper |
-| SDL_StartTextInputWithProperties | function | - | - | Deferred: property-based variant |
-| SDL_TextInputActive | function | Keyboard.SDL_TextInputActive | - | Deferred managed wrapper |
-| SDL_StopTextInput | function | Keyboard.SDL_StopTextInput | - | Deferred managed wrapper |
-| SDL_ClearComposition | function | Keyboard.SDL_ClearComposition | - | Deferred managed wrapper |
-| SDL_SetTextInputArea | function | - | - | Deferred (SDL_Rect interop now available) |
-| SDL_GetTextInputArea | function | - | - | Deferred (SDL_Rect interop now available) |
+| SDL_StartTextInput | function | Keyboard.SDL_StartTextInput | Window.StartTextInput() | |
+| SDL_StartTextInputWithProperties | function | Keyboard.SDL_StartTextInputWithProperties | Window.StartTextInput(in TextInputProperties) | |
+| SDL_TextInputActive | function | Keyboard.SDL_TextInputActive | Window.IsTextInputActive | |
+| SDL_StopTextInput | function | Keyboard.SDL_StopTextInput | Window.StopTextInput | |
+| SDL_ClearComposition | function | Keyboard.SDL_ClearComposition | Window.ClearComposition | |
+| SDL_SetTextInputArea | function | Keyboard.SDL_SetTextInputArea | Window.SetTextInputArea | |
+| SDL_GetTextInputArea | function | Keyboard.SDL_GetTextInputArea | Window.GetTextInputArea | |
 | SDL_HasScreenKeyboardSupport | function | Keyboard.SDL_HasScreenKeyboardSupport | Keyboard.HasScreenKeyboardSupport | |
 | SDL_ScreenKeyboardShown | function | Keyboard.SDL_ScreenKeyboardShown | - | Deferred managed wrapper |
 | SDL_KeyboardID | typedef | - | - | Deferred |
-| SDL_TextInputType | enum | - | - | Deferred: text input properties |
-| SDL_Capitalization | enum | - | - | Deferred: text input properties |
-| SDL_PROP_TEXTINPUT_*_NUMBER/BOOLEAN | macro (5) | - | - | Property string constants; deferred with SDL_StartTextInputWithProperties |
+| SDL_TextInputType | enum | Keyboard.SDL_TextInputType | TextInputType | |
+| SDL_Capitalization | enum | Keyboard.SDL_Capitalization | Capitalization | |
+| SDL_PROP_TEXTINPUT_TYPE_NUMBER/CAPITALIZATION_NUMBER/AUTOCORRECT_BOOLEAN/MULTILINE_BOOLEAN | macro (4) | Keyboard.SDL_PROP_TEXTINPUT_* | TextInputProperties | |
+| SDL_PROP_TEXTINPUT_ANDROID_INPUTTYPE_NUMBER | macro | - | - | Deferred: platform-specific (Android) |
 
 ## SDL_keycode.h
 
@@ -1024,9 +1025,9 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
 | SDL_MouseID | typedef | - | - | Surfaced as raw `uint` in bindings |
-| SDL_Cursor | struct | Mouse.SDL_Cursor | - | Deferred managed wrapper |
-| SDL_SystemCursor | enum | Mouse.SDL_SystemCursor | - | Deferred managed wrapper |
-| SDL_MouseWheelDirection | enum | Mouse.SDL_MouseWheelDirection | - | Deferred managed wrapper |
+| SDL_Cursor | struct | Mouse.SDL_Cursor | Cursor | |
+| SDL_SystemCursor | enum | Mouse.SDL_SystemCursor | SystemCursor | |
+| SDL_MouseWheelDirection | enum | Mouse.SDL_MouseWheelDirection | MouseWheelDirection | |
 | SDL_CursorFrameInfo | struct | - | - | Niche: animated cursors only (SDL 3.4) |
 | SDL_MouseButtonFlags | typedef | - | - | Surfaced as raw `uint` bitmask |
 | SDL_MouseMotionTransformCallback | callback | - | - | Niche: only used by SDL_SetRelativeMouseTransform |
@@ -1049,12 +1050,12 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_SetWindowRelativeMouseMode | function | Mouse.SDL_SetWindowRelativeMouseMode | - | Deferred managed wrapper |
 | SDL_GetWindowRelativeMouseMode | function | Mouse.SDL_GetWindowRelativeMouseMode | - | Deferred managed wrapper |
 | SDL_CaptureMouse | function | Mouse.SDL_CaptureMouse | Mouse.Capture | |
-| SDL_CreateColorCursor | function | Mouse.SDL_CreateColorCursor | - | Deferred managed wrapper |
-| SDL_CreateSystemCursor | function | Mouse.SDL_CreateSystemCursor | - | Deferred managed wrapper |
-| SDL_SetCursor | function | Mouse.SDL_SetCursor | - | Deferred managed wrapper |
-| SDL_GetCursor | function | Mouse.SDL_GetCursor | - | Deferred managed wrapper |
-| SDL_GetDefaultCursor | function | Mouse.SDL_GetDefaultCursor | - | Deferred managed wrapper |
-| SDL_DestroyCursor | function | Mouse.SDL_DestroyCursor | - | Deferred managed wrapper |
+| SDL_CreateColorCursor | function | Mouse.SDL_CreateColorCursor | Cursor.CreateColor | |
+| SDL_CreateSystemCursor | function | Mouse.SDL_CreateSystemCursor | Cursor.CreateSystem | |
+| SDL_SetCursor | function | Mouse.SDL_SetCursor | Cursor.Current (setter) | |
+| SDL_GetCursor | function | Mouse.SDL_GetCursor | Cursor.Current (getter) | |
+| SDL_GetDefaultCursor | function | Mouse.SDL_GetDefaultCursor | Cursor.Default | |
+| SDL_DestroyCursor | function | Mouse.SDL_DestroyCursor | Cursor.Dispose | |
 | SDL_ShowCursor | function | Mouse.SDL_ShowCursor | Mouse.ShowCursor | |
 | SDL_HideCursor | function | Mouse.SDL_HideCursor | Mouse.HideCursor | |
 | SDL_CursorVisible | function | Mouse.SDL_CursorVisible | Mouse.IsCursorVisible | |
