@@ -5,12 +5,21 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Deferred to a later task (this file, OpenGL/EGL batch): all SDL_GL_* and SDL_EGL_* functions,
-// the SDL_GLContext/SDL_GLAttr/SDL_GLProfile/SDL_GLContextFlag/SDL_GLContextReleaseFlag/
-// SDL_GLContextResetNotification types.
+// Permanently skipped (5 SDL_EGL_* functions — EGL is a platform-specific windowing layer
+// used on Linux/embedded targets alongside desktop GL/GLES; no cross-platform managed surface
+// is planned for it):
+//   - SDL_EGL_GetProcAddress    — EGL entry point lookup, mirrors SDL_GL_GetProcAddress but
+//                                 for the EGL API itself rather than GL/GLES.
+//   - SDL_EGL_GetCurrentDisplay — returns the opaque EGLDisplay handle for the current context.
+//   - SDL_EGL_GetCurrentConfig  — returns the opaque EGLConfig handle for the current context.
+//   - SDL_EGL_GetWindowSurface  — returns the opaque EGLSurface handle for a window.
+//   - SDL_EGL_SetAttributeCallbacks — installs app callbacks that inject platform/surface/context
+//                                 EGL attribute arrays before SDL creates its own EGL context.
 //
 // Permanently skipped: SDL_GetWindowICCProfile (returns a raw ICC profile blob via SDL_free'd
 // void*/size_t out-param; niche colour-management use case with no natural high-level wrapper).
+//
+// Final accounting: 108 bound + 5 EGL skips + 1 ICC skip = 114 (header total).
 
 /// <summary>
 /// Opaque window handle.
@@ -202,6 +211,123 @@ public struct SDL_DisplayMode
     public int refresh_rate_denominator;
     /// <summary>Private internal data.</summary>
     public nint @internal;
+}
+
+/// <summary>
+/// Opaque OpenGL context state, pointed to by <c>SDL_GLContext</c>.
+/// </summary>
+public struct SDL_GLContextState;
+
+/// <summary>
+/// An enumeration of OpenGL configuration attributes.
+/// </summary>
+public enum SDL_GLAttr
+{
+    /// <summary>The minimum number of bits for the red channel of the color buffer; defaults to 8.</summary>
+    SDL_GL_RED_SIZE,
+    /// <summary>The minimum number of bits for the green channel of the color buffer; defaults to 8.</summary>
+    SDL_GL_GREEN_SIZE,
+    /// <summary>The minimum number of bits for the blue channel of the color buffer; defaults to 8.</summary>
+    SDL_GL_BLUE_SIZE,
+    /// <summary>The minimum number of bits for the alpha channel of the color buffer; defaults to 8.</summary>
+    SDL_GL_ALPHA_SIZE,
+    /// <summary>The minimum number of bits for frame buffer size; defaults to 0.</summary>
+    SDL_GL_BUFFER_SIZE,
+    /// <summary>Whether the output is single or double buffered; defaults to double buffering on.</summary>
+    SDL_GL_DOUBLEBUFFER,
+    /// <summary>The minimum number of bits in the depth buffer; defaults to 16.</summary>
+    SDL_GL_DEPTH_SIZE,
+    /// <summary>The minimum number of bits in the stencil buffer; defaults to 0.</summary>
+    SDL_GL_STENCIL_SIZE,
+    /// <summary>The minimum number of bits for the red channel of the accumulation buffer; defaults to 0.</summary>
+    SDL_GL_ACCUM_RED_SIZE,
+    /// <summary>The minimum number of bits for the green channel of the accumulation buffer; defaults to 0.</summary>
+    SDL_GL_ACCUM_GREEN_SIZE,
+    /// <summary>The minimum number of bits for the blue channel of the accumulation buffer; defaults to 0.</summary>
+    SDL_GL_ACCUM_BLUE_SIZE,
+    /// <summary>The minimum number of bits for the alpha channel of the accumulation buffer; defaults to 0.</summary>
+    SDL_GL_ACCUM_ALPHA_SIZE,
+    /// <summary>Whether the output is stereo 3D; defaults to off.</summary>
+    SDL_GL_STEREO,
+    /// <summary>The number of buffers used for multisample anti-aliasing; defaults to 0.</summary>
+    SDL_GL_MULTISAMPLEBUFFERS,
+    /// <summary>The number of samples used around the current pixel used for multisample anti-aliasing.</summary>
+    SDL_GL_MULTISAMPLESAMPLES,
+    /// <summary>Set to 1 to require hardware acceleration, set to 0 to force software rendering; defaults to allow either.</summary>
+    SDL_GL_ACCELERATED_VISUAL,
+    /// <summary>Not used (deprecated).</summary>
+    SDL_GL_RETAINED_BACKING,
+    /// <summary>OpenGL context major version.</summary>
+    SDL_GL_CONTEXT_MAJOR_VERSION,
+    /// <summary>OpenGL context minor version.</summary>
+    SDL_GL_CONTEXT_MINOR_VERSION,
+    /// <summary>Some combination of 0 or more of elements of the <see cref="SDL_GLContextFlag"/> enumeration; defaults to 0.</summary>
+    SDL_GL_CONTEXT_FLAGS,
+    /// <summary>Type of GL context (Core, Compatibility, ES). See <see cref="SDL_GLProfile"/>; default value depends on platform.</summary>
+    SDL_GL_CONTEXT_PROFILE_MASK,
+    /// <summary>OpenGL context sharing; defaults to 0.</summary>
+    SDL_GL_SHARE_WITH_CURRENT_CONTEXT,
+    /// <summary>Requests sRGB-capable visual if 1. Defaults to -1 ("don't care"). This is a request; GL drivers might not comply.</summary>
+    SDL_GL_FRAMEBUFFER_SRGB_CAPABLE,
+    /// <summary>Sets the context release behavior. See <see cref="SDL_GLContextReleaseFlag"/>; defaults to FLUSH.</summary>
+    SDL_GL_CONTEXT_RELEASE_BEHAVIOR,
+    /// <summary>Set context reset notification. See <see cref="SDL_GLContextResetNotification"/>; defaults to NO_NOTIFICATION.</summary>
+    SDL_GL_CONTEXT_RESET_NOTIFICATION,
+    /// <summary>Disable error checking for the context.</summary>
+    SDL_GL_CONTEXT_NO_ERROR,
+    SDL_GL_FLOATBUFFERS,
+    SDL_GL_EGL_PLATFORM,
+}
+
+/// <summary>
+/// Possible values to be set for the <c>SDL_GL_CONTEXT_PROFILE_MASK</c> attribute.
+/// </summary>
+public enum SDL_GLProfile : uint
+{
+    /// <summary>OpenGL Core Profile context.</summary>
+    SDL_GL_CONTEXT_PROFILE_CORE = 0x0001,
+    /// <summary>OpenGL Compatibility Profile context.</summary>
+    SDL_GL_CONTEXT_PROFILE_COMPATIBILITY = 0x0002,
+    /// <summary>GLX_CONTEXT_ES2_PROFILE_BIT_EXT.</summary>
+    SDL_GL_CONTEXT_PROFILE_ES = 0x0004,
+}
+
+/// <summary>
+/// Possible flags to be set for the <c>SDL_GL_CONTEXT_FLAGS</c> attribute.
+/// </summary>
+[Flags]
+public enum SDL_GLContextFlag : uint
+{
+    /// <summary>Create a debug context.</summary>
+    SDL_GL_CONTEXT_DEBUG_FLAG = 0x0001,
+    /// <summary>Create a forward-compatible context.</summary>
+    SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG = 0x0002,
+    /// <summary>Create a robust-access context.</summary>
+    SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG = 0x0004,
+    /// <summary>Create a context with reset isolation.</summary>
+    SDL_GL_CONTEXT_RESET_ISOLATION_FLAG = 0x0008,
+}
+
+/// <summary>
+/// Possible values to be set for the <c>SDL_GL_CONTEXT_RELEASE_BEHAVIOR</c> attribute.
+/// </summary>
+public enum SDL_GLContextReleaseFlag : uint
+{
+    /// <summary>The context is not flushed on release.</summary>
+    SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE = 0x0000,
+    /// <summary>The context is flushed on release.</summary>
+    SDL_GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH = 0x0001,
+}
+
+/// <summary>
+/// Possible values to be set for the <c>SDL_GL_CONTEXT_RESET_NOTIFICATION</c> attribute.
+/// </summary>
+public enum SDL_GLContextResetNotification : uint
+{
+    /// <summary>No reset notification.</summary>
+    SDL_GL_CONTEXT_RESET_NO_NOTIFICATION = 0x0000,
+    /// <summary>The context is lost on a GPU reset.</summary>
+    SDL_GL_CONTEXT_RESET_LOSE_CONTEXT = 0x0001,
 }
 
 /// <summary>
@@ -1132,4 +1258,122 @@ public static partial class Video
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetWindows")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static unsafe partial SDL_Window** SDL_GetWindows(out int count);
+
+    // --- OpenGL support ---
+
+    /// <summary>
+    /// Dynamically load an OpenGL library.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_LoadLibrary")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_GL_LoadLibrary(ReadOnlySpan<byte> path);
+
+    /// <summary>
+    /// Get an OpenGL function by name. Returned as a raw function pointer value
+    /// (<c>SDL_FunctionPointer</c> is <c>void (*)(void)</c>); the caller marshals it
+    /// to a delegate as needed.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_GetProcAddress")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial nint SDL_GL_GetProcAddress(ReadOnlySpan<byte> proc);
+
+    /// <summary>
+    /// Unload the OpenGL library previously loaded by SDL_GL_LoadLibrary().
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_UnloadLibrary")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void SDL_GL_UnloadLibrary();
+
+    /// <summary>
+    /// Check if an OpenGL extension is supported for the current context.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_ExtensionSupported")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_GL_ExtensionSupported(ReadOnlySpan<byte> extension);
+
+    /// <summary>
+    /// Reset all previously set OpenGL context attributes to their default values.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_ResetAttributes")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void SDL_GL_ResetAttributes();
+
+    /// <summary>
+    /// Set an OpenGL window attribute before window creation.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_SetAttribute")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_GL_SetAttribute(SDL_GLAttr attr, int value);
+
+    /// <summary>
+    /// Get the actual value for an attribute from the current context.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_GetAttribute")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GL_GetAttribute(SDL_GLAttr attr, int* value);
+
+    /// <summary>
+    /// Create an OpenGL context for an OpenGL window, and make it current.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_CreateContext")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_GLContextState* SDL_GL_CreateContext(SDL_Window* window);
+
+    /// <summary>
+    /// Set up an OpenGL context for rendering into an OpenGL window.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_MakeCurrent")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GL_MakeCurrent(SDL_Window* window, SDL_GLContextState* context);
+
+    /// <summary>
+    /// Get the currently active OpenGL window.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_GetCurrentWindow")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_Window* SDL_GL_GetCurrentWindow();
+
+    /// <summary>
+    /// Get the currently active OpenGL context.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_GetCurrentContext")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial SDL_GLContextState* SDL_GL_GetCurrentContext();
+
+    /// <summary>
+    /// Update a window with OpenGL rendering.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_SwapWindow")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GL_SwapWindow(SDL_Window* window);
+
+    /// <summary>
+    /// Set the swap interval for the current OpenGL context.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_SetSwapInterval")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static partial bool SDL_GL_SetSwapInterval(int interval);
+
+    /// <summary>
+    /// Get the swap interval for the current OpenGL context.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_GetSwapInterval")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GL_GetSwapInterval(int* interval);
+
+    /// <summary>
+    /// Delete an OpenGL context.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GL_DestroyContext")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_GL_DestroyContext(SDL_GLContextState* context);
 }
