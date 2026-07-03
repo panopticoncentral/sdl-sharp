@@ -1283,7 +1283,7 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_CreateTexture | function | Render.SDL_CreateTexture | Renderer.CreateTexture | |
 | SDL_CreateTextureFromSurface | function | Render.SDL_CreateTextureFromSurface | Renderer.CreateTextureFromSurface | |
 | SDL_CreateTextureWithProperties | function | Render.SDL_CreateTextureWithProperties | Renderer.CreateTexture(PropertyGroup) | |
-| SDL_PROP_TEXTURE_CREATE_* | macro (32) | Render.SDL_PROP_TEXTURE_CREATE_* | Texture.PropCreate* | 29/32 exposed managed; 3 new-in-3.4 GPU multi-plane texture creation props (U/V/UV) unbound, niche |
+| SDL_PROP_TEXTURE_CREATE_* | macro (29) | Render.SDL_PROP_TEXTURE_CREATE_* | Texture.PropCreate* | 29/29 exposed managed (header prose also mentions three GPU_TEXTURE_U/V/UV_NUMBER names with no corresponding #define — upstream doc artifact; the real defines are the _POINTER variants, all bound) |
 | SDL_DestroyTexture | function | Render.SDL_DestroyTexture | Texture.Dispose | |
 | SDL_GetTextureSize | function | Render.SDL_GetTextureSize | Texture.Size | |
 | SDL_GetTextureProperties | function | Render.SDL_GetTextureProperties | Texture.Properties | |

@@ -164,7 +164,7 @@ public sealed unsafe class Texture : IDisposable
     /// <summary>
     /// Gets the renderer that created this texture. The returned renderer is non-owning.
     /// </summary>
-    /// <returns>The owning renderer.</returns>
+    /// <returns>The renderer that created this texture (non-owning wrapper).</returns>
     public Renderer GetRenderer() => new(Check(SDL_GetRendererFromTexture(Handle)), ownsHandle: false);
 
     /// <summary>
