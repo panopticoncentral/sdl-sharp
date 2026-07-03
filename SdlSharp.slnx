@@ -19,6 +19,7 @@
     <Project Path="Samples/InputInfo/InputInfo.csproj" />
     <Project Path="Samples/SurfaceOps/SurfaceOps.csproj" />
     <Project Path="Samples/AudioOps/AudioOps.csproj" />
+    <Project Path="Samples/EventQueueOps/EventQueueOps.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
