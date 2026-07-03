@@ -10,11 +10,20 @@ public sealed unsafe class Palette : IDisposable
 {
     private readonly bool _ownsHandle;
 
-    internal Native.SDL_Palette* Handle { get; private set; }
+    internal Native.SDL_Palette* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private Native.SDL_Palette* _handle;
 
     internal Palette(Native.SDL_Palette* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -60,10 +69,10 @@ public sealed unsafe class Palette : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyPalette(Handle);
-            Handle = null;
+            SDL_DestroyPalette(_handle);
         }
+        _handle = null;
     }
 }

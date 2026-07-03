@@ -16,7 +16,16 @@ public sealed unsafe class GpuTexture : IDisposable
     /// <summary>
     /// The underlying native SDL_GPUTexture pointer.
     /// </summary>
-    internal SDL_GPUTexture* Handle { get; private set; }
+    internal SDL_GPUTexture* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_GPUTexture* _handle;
 
     /// <summary>
     /// Native handle value (pointer to the underlying SDL_GPUTexture).
@@ -28,7 +37,7 @@ public sealed unsafe class GpuTexture : IDisposable
     internal GpuTexture(GpuDevice device, SDL_GPUTexture* handle, bool ownsHandle = true)
     {
         _device = device;
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -41,10 +50,10 @@ public sealed unsafe class GpuTexture : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null && !_device.IsDisposed)
         {
-            SDL_ReleaseGPUTexture(_device.Handle, Handle);
+            SDL_ReleaseGPUTexture(_device.Handle, _handle);
         }
-        Handle = null;
+        _handle = null;
     }
 }

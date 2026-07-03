@@ -13,11 +13,20 @@ public sealed unsafe class Camera : IDisposable
 {
     private readonly bool _ownsHandle;
 
-    internal SDL_Camera* Handle { get; private set; }
+    internal SDL_Camera* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_Camera* _handle;
 
     internal Camera(SDL_Camera* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -148,10 +157,10 @@ public sealed unsafe class Camera : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_CloseCamera(Handle);
-            Handle = null;
+            SDL_CloseCamera(_handle);
         }
+        _handle = null;
     }
 }

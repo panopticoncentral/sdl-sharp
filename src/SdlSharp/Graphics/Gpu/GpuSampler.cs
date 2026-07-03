@@ -14,21 +14,30 @@ public sealed unsafe class GpuSampler : IDisposable
     /// <summary>
     /// The underlying native SDL_GPUSampler pointer.
     /// </summary>
-    internal SDL_GPUSampler* Handle { get; private set; }
+    internal SDL_GPUSampler* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_GPUSampler* _handle;
 
     internal GpuSampler(GpuDevice device, SDL_GPUSampler* handle)
     {
         _device = device;
-        Handle = handle;
+        _handle = handle;
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (Handle != null)
+        if (_handle != null && !_device.IsDisposed)
         {
-            SDL_ReleaseGPUSampler(_device.Handle, Handle);
-            Handle = null;
+            SDL_ReleaseGPUSampler(_device.Handle, _handle);
         }
+        _handle = null;
     }
 }

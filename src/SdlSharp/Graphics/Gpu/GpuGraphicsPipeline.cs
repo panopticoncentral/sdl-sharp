@@ -14,21 +14,30 @@ public sealed unsafe class GpuGraphicsPipeline : IDisposable
     /// <summary>
     /// The underlying native SDL_GPUGraphicsPipeline pointer.
     /// </summary>
-    internal SDL_GPUGraphicsPipeline* Handle { get; private set; }
+    internal SDL_GPUGraphicsPipeline* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_GPUGraphicsPipeline* _handle;
 
     internal GpuGraphicsPipeline(GpuDevice device, SDL_GPUGraphicsPipeline* handle)
     {
         _device = device;
-        Handle = handle;
+        _handle = handle;
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (Handle != null)
+        if (_handle != null && !_device.IsDisposed)
         {
-            SDL_ReleaseGPUGraphicsPipeline(_device.Handle, Handle);
-            Handle = null;
+            SDL_ReleaseGPUGraphicsPipeline(_device.Handle, _handle);
         }
+        _handle = null;
     }
 }

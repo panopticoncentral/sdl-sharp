@@ -12,11 +12,20 @@ public sealed unsafe class AudioDevice : IDisposable
 {
     private readonly bool _ownsHandle;
 
-    internal Native.SDL_AudioDeviceID Id { get; private set; }
+    internal Native.SDL_AudioDeviceID Id
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_id.Value == 0, this);
+            return _id;
+        }
+    }
+
+    private Native.SDL_AudioDeviceID _id;
 
     internal AudioDevice(Native.SDL_AudioDeviceID id, bool ownsHandle = true)
     {
-        Id = id;
+        _id = id;
         _ownsHandle = ownsHandle;
     }
 
@@ -177,10 +186,10 @@ public sealed unsafe class AudioDevice : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Id.Value != 0)
+        if (_ownsHandle && _id.Value != 0)
         {
-            SDL_CloseAudioDevice(Id);
-            Id = default;
+            SDL_CloseAudioDevice(_id);
         }
+        _id = default;
     }
 }

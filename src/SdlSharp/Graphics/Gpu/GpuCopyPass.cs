@@ -12,9 +12,18 @@ public sealed unsafe class GpuCopyPass
     /// <summary>
     /// The underlying native SDL_GPUCopyPass pointer.
     /// </summary>
-    internal SDL_GPUCopyPass* Handle { get; }
+    internal SDL_GPUCopyPass* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
 
-    internal GpuCopyPass(SDL_GPUCopyPass* handle) { Handle = handle; }
+    private SDL_GPUCopyPass* _handle;
+
+    internal GpuCopyPass(SDL_GPUCopyPass* handle) { _handle = handle; }
 
     /// <summary>
     /// Uploads data from a transfer buffer to a GPU texture.
@@ -99,5 +108,10 @@ public sealed unsafe class GpuCopyPass
     /// <summary>
     /// Ends the copy pass.
     /// </summary>
-    public void End() => SDL_EndGPUCopyPass(Handle);
+    public void End()
+    {
+        var handle = Handle;
+        _handle = null;
+        SDL_EndGPUCopyPass(handle);
+    }
 }

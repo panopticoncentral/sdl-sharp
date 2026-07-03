@@ -12,9 +12,18 @@ public sealed unsafe class GpuRenderPass
     /// <summary>
     /// The underlying native SDL_GPURenderPass pointer.
     /// </summary>
-    internal SDL_GPURenderPass* Handle { get; }
+    internal SDL_GPURenderPass* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
 
-    internal GpuRenderPass(SDL_GPURenderPass* handle) { Handle = handle; }
+    private SDL_GPURenderPass* _handle;
+
+    internal GpuRenderPass(SDL_GPURenderPass* handle) { _handle = handle; }
 
     /// <summary>
     /// Binds a graphics pipeline for subsequent draw commands.
@@ -197,5 +206,10 @@ public sealed unsafe class GpuRenderPass
     /// <summary>
     /// Ends the render pass.
     /// </summary>
-    public void End() => SDL_EndGPURenderPass(Handle);
+    public void End()
+    {
+        var handle = Handle;
+        _handle = null;
+        SDL_EndGPURenderPass(handle);
+    }
 }

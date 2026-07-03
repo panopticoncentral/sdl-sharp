@@ -14,12 +14,21 @@ public sealed unsafe class GpuTransferBuffer : IDisposable
     /// <summary>
     /// The underlying native SDL_GPUTransferBuffer pointer.
     /// </summary>
-    internal SDL_GPUTransferBuffer* Handle { get; private set; }
+    internal SDL_GPUTransferBuffer* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_GPUTransferBuffer* _handle;
 
     internal GpuTransferBuffer(GpuDevice device, SDL_GPUTransferBuffer* handle)
     {
         _device = device;
-        Handle = handle;
+        _handle = handle;
     }
 
     /// <summary>
@@ -37,10 +46,10 @@ public sealed unsafe class GpuTransferBuffer : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (Handle != null)
+        if (_handle != null && !_device.IsDisposed)
         {
-            SDL_ReleaseGPUTransferBuffer(_device.Handle, Handle);
-            Handle = null;
+            SDL_ReleaseGPUTransferBuffer(_device.Handle, _handle);
         }
+        _handle = null;
     }
 }

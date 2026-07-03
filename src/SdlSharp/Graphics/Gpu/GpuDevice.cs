@@ -14,9 +14,24 @@ public sealed unsafe class GpuDevice : IDisposable
     /// <summary>
     /// The underlying native SDL_GPUDevice pointer.
     /// </summary>
-    internal SDL_GPUDevice* Handle { get; private set; }
+    internal SDL_GPUDevice* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
 
-    private GpuDevice(SDL_GPUDevice* handle) { Handle = handle; }
+    private SDL_GPUDevice* _handle;
+
+    private GpuDevice(SDL_GPUDevice* handle) { _handle = handle; }
+
+    /// <summary>
+    /// Whether this device has been disposed. Lets dependent GPU resources skip
+    /// their native release when the device is already gone.
+    /// </summary>
+    internal bool IsDisposed => _handle == null;
 
     /// <summary>
     /// Creates a new GPU device with the specified shader format support.
@@ -323,10 +338,10 @@ public sealed unsafe class GpuDevice : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (Handle != null)
+        if (_handle != null)
         {
-            SDL_DestroyGPUDevice(Handle);
-            Handle = null;
+            SDL_DestroyGPUDevice(_handle);
         }
+        _handle = null;
     }
 }

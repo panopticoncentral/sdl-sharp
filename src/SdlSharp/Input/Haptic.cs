@@ -13,11 +13,20 @@ public sealed unsafe class Haptic : IDisposable
 {
     private readonly bool _ownsHandle;
 
-    internal Native.SDL_Haptic* Handle { get; private set; }
+    internal Native.SDL_Haptic* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private Native.SDL_Haptic* _handle;
 
     internal Haptic(Native.SDL_Haptic* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -76,10 +85,10 @@ public sealed unsafe class Haptic : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_CloseHaptic(Handle);
-            Handle = null;
+            SDL_CloseHaptic(_handle);
         }
+        _handle = null;
     }
 }

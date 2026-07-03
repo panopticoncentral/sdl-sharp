@@ -16,11 +16,20 @@ public sealed unsafe class Renderer : IDisposable
     /// <summary>
     /// The underlying native SDL_Renderer pointer.
     /// </summary>
-    internal SDL_Renderer* Handle { get; private set; }
+    internal SDL_Renderer* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_Renderer* _handle;
 
     internal Renderer(SDL_Renderer* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -716,10 +725,10 @@ public sealed unsafe class Renderer : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyRenderer(Handle);
-            Handle = null;
+            SDL_DestroyRenderer(_handle);
         }
+        _handle = null;
     }
 }

@@ -13,11 +13,20 @@ public sealed unsafe class Joystick : IDisposable
 {
     private readonly bool _ownsHandle;
 
-    internal Native.SDL_Joystick* Handle { get; private set; }
+    internal Native.SDL_Joystick* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private Native.SDL_Joystick* _handle;
 
     internal Joystick(Native.SDL_Joystick* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -89,10 +98,10 @@ public sealed unsafe class Joystick : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_CloseJoystick(Handle);
-            Handle = null;
+            SDL_CloseJoystick(_handle);
         }
+        _handle = null;
     }
 }

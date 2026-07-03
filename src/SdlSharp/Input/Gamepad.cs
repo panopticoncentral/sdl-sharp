@@ -13,11 +13,20 @@ public sealed unsafe class Gamepad : IDisposable
 {
     private readonly bool _ownsHandle;
 
-    internal Native.SDL_Gamepad* Handle { get; private set; }
+    internal Native.SDL_Gamepad* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private Native.SDL_Gamepad* _handle;
 
     internal Gamepad(Native.SDL_Gamepad* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -84,10 +93,10 @@ public sealed unsafe class Gamepad : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_CloseGamepad(Handle);
-            Handle = null;
+            SDL_CloseGamepad(_handle);
         }
+        _handle = null;
     }
 }

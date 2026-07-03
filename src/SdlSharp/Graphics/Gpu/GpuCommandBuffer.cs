@@ -15,12 +15,21 @@ public sealed unsafe class GpuCommandBuffer
     /// <summary>
     /// The underlying native SDL_GPUCommandBuffer pointer.
     /// </summary>
-    internal SDL_GPUCommandBuffer* Handle { get; }
+    internal SDL_GPUCommandBuffer* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_GPUCommandBuffer* _handle;
 
     internal GpuCommandBuffer(GpuDevice device, SDL_GPUCommandBuffer* handle)
     {
         _device = device;
-        Handle = handle;
+        _handle = handle;
     }
 
     /// <summary>
@@ -175,18 +184,33 @@ public sealed unsafe class GpuCommandBuffer
     /// <summary>
     /// Submits the command buffer for execution by the GPU.
     /// </summary>
-    public void Submit() => Check(SDL_SubmitGPUCommandBuffer(Handle));
+    public void Submit()
+    {
+        var handle = Handle;
+        _handle = null;
+        Check(SDL_SubmitGPUCommandBuffer(handle));
+    }
 
     /// <summary>
     /// Submits the command buffer and acquires a fence that is signaled when execution completes.
     /// </summary>
     /// <returns>A fence that will be signaled when the submitted work completes.</returns>
-    public GpuFence SubmitAndAcquireFence() => new(_device, Check(SDL_SubmitGPUCommandBufferAndAcquireFence(Handle)));
+    public GpuFence SubmitAndAcquireFence()
+    {
+        var handle = Handle;
+        _handle = null;
+        return new(_device, Check(SDL_SubmitGPUCommandBufferAndAcquireFence(handle)));
+    }
 
     /// <summary>
     /// Cancels the command buffer, discarding all recorded commands.
     /// </summary>
-    public void Cancel() => Check(SDL_CancelGPUCommandBuffer(Handle));
+    public void Cancel()
+    {
+        var handle = Handle;
+        _handle = null;
+        Check(SDL_CancelGPUCommandBuffer(handle));
+    }
 
     /// <summary>
     /// Inserts a debug label into the command buffer for GPU debugging tools.

@@ -12,9 +12,18 @@ public sealed unsafe class GpuComputePass
     /// <summary>
     /// The underlying native SDL_GPUComputePass pointer.
     /// </summary>
-    internal SDL_GPUComputePass* Handle { get; }
+    internal SDL_GPUComputePass* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
 
-    internal GpuComputePass(SDL_GPUComputePass* handle) { Handle = handle; }
+    private SDL_GPUComputePass* _handle;
+
+    internal GpuComputePass(SDL_GPUComputePass* handle) { _handle = handle; }
 
     /// <summary>
     /// Binds a compute pipeline for subsequent dispatch commands.
@@ -80,5 +89,10 @@ public sealed unsafe class GpuComputePass
     /// <summary>
     /// Ends the compute pass.
     /// </summary>
-    public void End() => SDL_EndGPUComputePass(Handle);
+    public void End()
+    {
+        var handle = Handle;
+        _handle = null;
+        SDL_EndGPUComputePass(handle);
+    }
 }

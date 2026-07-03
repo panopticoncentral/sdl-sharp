@@ -11,11 +11,20 @@ public sealed unsafe class AudioStream : IDisposable
 {
     private readonly bool _ownsHandle;
 
-    internal Native.SDL_AudioStream* Handle { get; private set; }
+    internal Native.SDL_AudioStream* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private Native.SDL_AudioStream* _handle;
 
     internal AudioStream(Native.SDL_AudioStream* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -216,10 +225,10 @@ public sealed unsafe class AudioStream : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyAudioStream(Handle);
-            Handle = null;
+            SDL_DestroyAudioStream(_handle);
         }
+        _handle = null;
     }
 }

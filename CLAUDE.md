@@ -23,6 +23,7 @@ Follow these patterns when adding new wrappers.
 - **XML docs required**: every public type and member gets a `///` doc comment (`GenerateDocumentationFile` is on; CS1591 must stay at zero)
 - **`Common.ToUtf8(string?)`** converts `string?` to null-terminated UTF-8 `byte[]?` for passing to native layer (null input → null → null pointer)
 - **Handle wrappers**: `sealed unsafe class` with `IDisposable`, raw pointer `Handle` property, `_ownsHandle` flag
+- **Use-after-dispose guard**: the internal `Handle`/`Id` getter is backed by a private field and throws via `ObjectDisposedException.ThrowIf(_handle == null, this)`; `Dispose()` reads the field directly, destroys only when owning, and always nulls the field (double-dispose safe). GPU resources skip their native release when `_device.IsDisposed`. Objects invalidated by lifecycle calls rather than `Dispose` (`GpuCommandBuffer.Submit`/`Cancel`, pass `End()`) consume the handle the same way.
 - **Error checking**: `Common.Check(bool)`, `Common.Check<T>(T*)`, `Common.CheckId(uint)` → throw `SdlException`
 - **Value types**: `readonly record struct` (Color, Point, Rectangle, etc.)
 - **Event args**: `readonly record struct` (not classes) to avoid GC pressure
@@ -70,11 +71,21 @@ namespace SdlSharp.Graphics;
 public sealed unsafe class Window : IDisposable
 {
     private readonly bool _ownsHandle;
-    internal SDL_Window* Handle { get; private set; }
+
+    internal SDL_Window* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_Window* _handle;
 
     internal Window(SDL_Window* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -83,11 +94,11 @@ public sealed unsafe class Window : IDisposable
 
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyWindow(Handle);
-            Handle = null;
+            SDL_DestroyWindow(_handle);
         }
+        _handle = null;
     }
 }
 ```

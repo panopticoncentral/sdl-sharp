@@ -15,12 +15,21 @@ public sealed unsafe class GpuFence : IDisposable
     /// <summary>
     /// The underlying native SDL_GPUFence pointer.
     /// </summary>
-    internal SDL_GPUFence* Handle { get; private set; }
+    internal SDL_GPUFence* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_GPUFence* _handle;
 
     internal GpuFence(GpuDevice device, SDL_GPUFence* handle)
     {
         _device = device;
-        Handle = handle;
+        _handle = handle;
     }
 
     /// <summary>
@@ -54,10 +63,10 @@ public sealed unsafe class GpuFence : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (Handle != null)
+        if (_handle != null && !_device.IsDisposed)
         {
-            SDL_ReleaseGPUFence(_device.Handle, Handle);
-            Handle = null;
+            SDL_ReleaseGPUFence(_device.Handle, _handle);
         }
+        _handle = null;
     }
 }

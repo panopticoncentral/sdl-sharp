@@ -16,11 +16,20 @@ public sealed unsafe class Window : IDisposable
     /// <summary>
     /// The underlying native SDL_Window pointer.
     /// </summary>
-    internal SDL_Window* Handle { get; private set; }
+    internal SDL_Window* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_Window* _handle;
 
     internal Window(SDL_Window* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -282,10 +291,10 @@ public sealed unsafe class Window : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyWindow(Handle);
-            Handle = null;
+            SDL_DestroyWindow(_handle);
         }
+        _handle = null;
     }
 }

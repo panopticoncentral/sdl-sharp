@@ -15,12 +15,21 @@ public sealed unsafe class GpuBuffer : IDisposable
     /// <summary>
     /// The underlying native SDL_GPUBuffer pointer.
     /// </summary>
-    internal SDL_GPUBuffer* Handle { get; private set; }
+    internal SDL_GPUBuffer* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_GPUBuffer* _handle;
 
     internal GpuBuffer(GpuDevice device, SDL_GPUBuffer* handle)
     {
         _device = device;
-        Handle = handle;
+        _handle = handle;
     }
 
     /// <summary>
@@ -32,10 +41,10 @@ public sealed unsafe class GpuBuffer : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (Handle != null)
+        if (_handle != null && !_device.IsDisposed)
         {
-            SDL_ReleaseGPUBuffer(_device.Handle, Handle);
-            Handle = null;
+            SDL_ReleaseGPUBuffer(_device.Handle, _handle);
         }
+        _handle = null;
     }
 }

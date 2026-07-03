@@ -13,11 +13,20 @@ public sealed unsafe class Sensor : IDisposable
 {
     private readonly bool _ownsHandle;
 
-    internal Native.SDL_Sensor* Handle { get; private set; }
+    internal Native.SDL_Sensor* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private Native.SDL_Sensor* _handle;
 
     internal Sensor(Native.SDL_Sensor* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -79,10 +88,10 @@ public sealed unsafe class Sensor : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_CloseSensor(Handle);
-            Handle = null;
+            SDL_CloseSensor(_handle);
         }
+        _handle = null;
     }
 }

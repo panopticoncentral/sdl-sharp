@@ -14,7 +14,16 @@ public sealed unsafe class Texture : IDisposable
     /// <summary>
     /// The underlying native SDL_Texture pointer.
     /// </summary>
-    internal SDL_Texture* Handle { get; private set; }
+    internal SDL_Texture* Handle
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_handle == null, this);
+            return _handle;
+        }
+    }
+
+    private SDL_Texture* _handle;
 
     // --- Create property names ---
 
@@ -54,7 +63,7 @@ public sealed unsafe class Texture : IDisposable
 
     internal Texture(SDL_Texture* handle, bool ownsHandle = true)
     {
-        Handle = handle;
+        _handle = handle;
         _ownsHandle = ownsHandle;
     }
 
@@ -185,10 +194,10 @@ public sealed unsafe class Texture : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && Handle != null)
+        if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyTexture(Handle);
-            Handle = null;
+            SDL_DestroyTexture(_handle);
         }
+        _handle = null;
     }
 }

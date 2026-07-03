@@ -17,11 +17,20 @@ public sealed unsafe class PropertyGroup : IDisposable
     /// <summary>
     /// The underlying SDL properties ID.
     /// </summary>
-    internal SDL_PropertiesID Id { get; private set; }
+    internal SDL_PropertiesID Id
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_id.Value == 0, this);
+            return _id;
+        }
+    }
+
+    private SDL_PropertiesID _id;
 
     internal PropertyGroup(SDL_PropertiesID id, bool ownsHandle = true)
     {
-        Id = id;
+        _id = id;
         _ownsHandle = ownsHandle;
     }
 
@@ -150,8 +159,10 @@ public sealed unsafe class PropertyGroup : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (!_ownsHandle || Id.Value == 0) return;
-        SDL_DestroyProperties(Id);
-        Id = default;
+        if (_ownsHandle && _id.Value != 0)
+        {
+            SDL_DestroyProperties(_id);
+        }
+        _id = default;
     }
 }
