@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using SdlSharp.Input;
@@ -73,6 +74,47 @@ public sealed unsafe class Window : IDisposable
     {
         var ptr = SDL_GetWindowFromID(new SDL_WindowID(id));
         return ptr == null ? null : new Window(ptr, ownsHandle: false);
+    }
+
+    /// <summary>
+    /// Gets all currently valid windows, as non-owning wrappers.
+    /// </summary>
+    /// <returns>An array of windows.</returns>
+    public static Window[] GetWindows()
+    {
+        var ptr = SDL_GetWindows(out var count);
+        if (ptr == null)
+        {
+            throw new SdlException();
+        }
+
+        try
+        {
+            var windows = new Window[count];
+            for (var i = 0; i < count; i++)
+            {
+                windows[i] = new Window(ptr[i], ownsHandle: false);
+            }
+
+            return windows;
+        }
+        finally
+        {
+            SDL_free(ptr);
+        }
+    }
+
+    /// <summary>
+    /// Gets the window that currently has an input grab (mouse or keyboard), as a
+    /// non-owning wrapper.
+    /// </summary>
+    public static Window? GrabbedWindow
+    {
+        get
+        {
+            var ptr = SDL_GetGrabbedWindow();
+            return ptr == null ? null : new Window(ptr, ownsHandle: false);
+        }
     }
 
     /// <summary>
@@ -348,9 +390,49 @@ public sealed unsafe class Window : IDisposable
     public void UpdateSurface() => Check(SDL_UpdateWindowSurface(Handle));
 
     /// <summary>
+    /// Copies areas of the window surface to the screen.
+    /// </summary>
+    /// <param name="rects">The areas to copy, in window coordinates.</param>
+    public unsafe void UpdateSurfaceRects(ReadOnlySpan<Rectangle> rects)
+    {
+        Span<SDL_Rect> native = stackalloc SDL_Rect[rects.Length];
+        for (var i = 0; i < rects.Length; i++)
+        {
+            native[i] = rects[i].ToNative();
+        }
+
+        fixed (SDL_Rect* ptr = native)
+        {
+            Check(SDL_UpdateWindowSurfaceRects(Handle, ptr, rects.Length));
+        }
+    }
+
+    /// <summary>
     /// Destroys the surface associated with the window.
     /// </summary>
     public void DestroyWindowSurface() => Check(SDL_DestroyWindowSurface(Handle));
+
+    /// <summary>
+    /// Gets whether the window has an associated SDL surface for software rendering.
+    /// </summary>
+    public bool HasSurface => SDL_WindowHasSurface(Handle);
+
+    /// <summary>
+    /// Gets or sets the vertical refresh sync interval for the window surface. 0
+    /// disables vsync (the default), 1 synchronizes with every vertical refresh,
+    /// 2 with every second vertical refresh, etc.; -1 requests adaptive vsync
+    /// (late swap tearing), which is not supported by every driver and will throw
+    /// if unsupported. Not every value is supported by every driver.
+    /// </summary>
+    public int SurfaceVSyncInterval
+    {
+        get
+        {
+            Check(SDL_GetWindowSurfaceVSync(Handle, out var vsync));
+            return vsync;
+        }
+        set => Check(SDL_SetWindowSurfaceVSync(Handle, value));
+    }
 
     /// <summary>
     /// Gets the display associated with this window.
@@ -362,9 +444,286 @@ public sealed unsafe class Window : IDisposable
         return new Display(CheckId(id.Value));
     }
 
+    /// <summary>
+    /// Sets the display mode to use when this window is visible at fullscreen. Pass
+    /// <c>null</c> for borderless fullscreen desktop mode, or a mode returned by
+    /// <see cref="Display.GetFullscreenModes"/> to set an exclusive fullscreen mode.
+    /// On some windowing systems this request is asynchronous; call <see cref="Sync"/>
+    /// to block until the change has taken effect.
+    /// </summary>
+    /// <param name="mode">The display mode to use, or <c>null</c> for borderless fullscreen desktop mode.</param>
+    public unsafe void SetFullscreenMode(DisplayMode? mode)
+    {
+        if (mode == null)
+        {
+            Check(SDL_SetWindowFullscreenMode(Handle, null));
+            return;
+        }
+
+        var native = mode.Value.ToNative();
+        Check(SDL_SetWindowFullscreenMode(Handle, &native));
+    }
+
+    /// <summary>
+    /// Gets the display mode to use when this window is visible at fullscreen, or
+    /// <c>null</c> for borderless fullscreen desktop mode.
+    /// </summary>
+    /// <returns>The exclusive fullscreen display mode, or <c>null</c>.</returns>
+    public unsafe DisplayMode? GetFullscreenMode()
+    {
+        var ptr = SDL_GetWindowFullscreenMode(Handle);
+        return ptr == null ? null : DisplayMode.FromNative(ptr);
+    }
+
+    /// <summary>
+    /// Gets or sets whether the window's mouse input is grabbed (confined to the window).
+    /// </summary>
+    public bool MouseGrabbed
+    {
+        get => SDL_GetWindowMouseGrab(Handle);
+        set => Check(SDL_SetWindowMouseGrab(Handle, value));
+    }
+
+    /// <summary>
+    /// Gets or sets whether the window's keyboard input is grabbed.
+    /// </summary>
+    public bool KeyboardGrabbed
+    {
+        get => SDL_GetWindowKeyboardGrab(Handle);
+        set => Check(SDL_SetWindowKeyboardGrab(Handle, value));
+    }
+
+    /// <summary>
+    /// Gets or sets the rectangle, in window coordinates, that confines the cursor
+    /// while it is over this window. The getter returns <c>null</c> when no
+    /// confinement rectangle is set; setting <c>null</c> clears it.
+    /// </summary>
+    public unsafe Rectangle? MouseConfinementRect
+    {
+        get
+        {
+            var ptr = SDL_GetWindowMouseRect(Handle);
+            return ptr == null ? null : Rectangle.FromNative(*ptr);
+        }
+        set
+        {
+            if (value == null)
+            {
+                Check(SDL_SetWindowMouseRect(Handle, null));
+                return;
+            }
+
+            var native = value.Value.ToNative();
+            Check(SDL_SetWindowMouseRect(Handle, &native));
+        }
+    }
+
+    /// <summary>
+    /// Sets whether the window should always be above other windows.
+    /// </summary>
+    /// <param name="onTop">true to keep the window above others, false otherwise.</param>
+    public void SetAlwaysOnTop(bool onTop) => Check(SDL_SetWindowAlwaysOnTop(Handle, onTop));
+
+    /// <summary>
+    /// Requests that the window's aspect ratio be constrained.
+    /// </summary>
+    /// <param name="minAspect">The minimum aspect ratio (width / height), or 0.0f for no limit.</param>
+    /// <param name="maxAspect">The maximum aspect ratio (width / height), or 0.0f for no limit.</param>
+    public void SetAspectRatio(float minAspect, float maxAspect) =>
+        Check(SDL_SetWindowAspectRatio(Handle, minAspect, maxAspect));
+
+    /// <summary>
+    /// Gets the window's requested aspect ratio constraints.
+    /// </summary>
+    /// <param name="minAspect">Receives the minimum aspect ratio, or 0.0f if unconstrained.</param>
+    /// <param name="maxAspect">Receives the maximum aspect ratio, or 0.0f if unconstrained.</param>
+    public void GetAspectRatio(out float minAspect, out float maxAspect) =>
+        Check(SDL_GetWindowAspectRatio(Handle, out minAspect, out maxAspect));
+
+    /// <summary>
+    /// Blocks until any pending window state requested via other methods (position,
+    /// size, fullscreen mode, etc.) has been finalized by the windowing system.
+    /// </summary>
+    public void Sync() => Check(SDL_SyncWindow(Handle));
+
+    /// <summary>
+    /// Gets the size of a window's borders (decorations) around the client area.
+    /// This may fail on some platforms (e.g. when the window has not yet been made
+    /// visible), throwing <see cref="SdlException"/>.
+    /// </summary>
+    /// <param name="top">Receives the height of the top border.</param>
+    /// <param name="left">Receives the width of the left border.</param>
+    /// <param name="bottom">Receives the height of the bottom border.</param>
+    /// <param name="right">Receives the width of the right border.</param>
+    public void GetBordersSize(out int top, out int left, out int bottom, out int right) =>
+        Check(SDL_GetWindowBordersSize(Handle, out top, out left, out bottom, out right));
+
+    /// <summary>
+    /// Creates a child popup window of this window.
+    /// </summary>
+    /// <param name="offsetX">The x position of the popup window relative to the origin of this window.</param>
+    /// <param name="offsetY">The y position of the popup window relative to the origin of this window.</param>
+    /// <param name="w">The width of the popup window.</param>
+    /// <param name="h">The height of the popup window.</param>
+    /// <param name="flags">Window creation flags; must include <see cref="WindowFlags.Tooltip"/> or
+    /// <see cref="WindowFlags.PopupMenu"/>.</param>
+    /// <returns>A new owning window wrapper for the popup.</returns>
+    public Window CreatePopup(int offsetX, int offsetY, int w, int h, WindowFlags flags) =>
+        new(Check(SDL_CreatePopupWindow(Handle, offsetX, offsetY, w, h, (SDL_WindowFlags)flags)));
+
+    /// <summary>
+    /// Gets the parent of this window, as a non-owning wrapper, or <c>null</c> if this
+    /// window has no parent.
+    /// </summary>
+    public Window? Parent
+    {
+        get
+        {
+            var ptr = SDL_GetWindowParent(Handle);
+            return ptr == null ? null : new Window(ptr, ownsHandle: false);
+        }
+    }
+
+    /// <summary>
+    /// Sets the parent of this window. Pass <c>null</c> to clear the parent, making
+    /// this a toplevel window.
+    /// </summary>
+    /// <param name="parent">The new parent window, or <c>null</c>.</param>
+    public void SetParent(Window? parent) => Check(SDL_SetWindowParent(Handle, parent?.Handle));
+
+    /// <summary>
+    /// Toggles the modal state of the window. The window must currently have a
+    /// parent (see <see cref="SetParent"/>) or this call will fail.
+    /// </summary>
+    /// <param name="modal">true to make the window modal, false otherwise.</param>
+    public void SetModal(bool modal) => Check(SDL_SetWindowModal(Handle, modal));
+
+    /// <summary>
+    /// Sets whether the window may receive keyboard focus.
+    /// </summary>
+    /// <param name="focusable">true if the window should accept keyboard focus.</param>
+    public void SetFocusable(bool focusable) => Check(SDL_SetWindowFocusable(Handle, focusable));
+
+    /// <summary>
+    /// Displays the system-level window menu at the given position, in window coordinates.
+    /// </summary>
+    /// <param name="x">The x position, relative to the window.</param>
+    /// <param name="y">The y position, relative to the window.</param>
+    public void ShowSystemMenu(int x, int y) => Check(SDL_ShowWindowSystemMenu(Handle, x, y));
+
+    /// <summary>
+    /// Sets the shape of a transparent window from a surface, whose alpha channel
+    /// determines the window's shape. The window must have been created with
+    /// <see cref="WindowFlags.Transparent"/>. The shape is copied, so the surface may
+    /// be disposed afterwards. This is an expensive operation and should be used sparingly.
+    /// </summary>
+    /// <param name="shape">The surface representing the shape of the window.</param>
+    public void SetShape(Surface shape) => Check(SDL_SetWindowShape(Handle, shape.Handle));
+
+    /// <summary>
+    /// Gets the raw pixel format associated with the window.
+    /// </summary>
+    public PixelFormat PixelFormat => (PixelFormat)SDL_GetWindowPixelFormat(Handle);
+
+    /// <summary>
+    /// Gets the safe area for this window, in window coordinates, accounting for
+    /// screen notches, camera cutouts, etc. that may obscure part of the window.
+    /// </summary>
+    public Rectangle SafeArea
+    {
+        get
+        {
+            Check(SDL_GetWindowSafeArea(Handle, out var rect));
+            return Rectangle.FromNative(rect);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the state of the window's taskbar progress bar.
+    /// </summary>
+    public ProgressState ProgressState
+    {
+        get => (ProgressState)SDL_GetWindowProgressState(Handle);
+        set => Check(SDL_SetWindowProgressState(Handle, (SDL_ProgressState)value));
+    }
+
+    /// <summary>
+    /// Gets or sets the value of the window's taskbar progress bar, from 0.0f to 1.0f.
+    /// </summary>
+    public float ProgressValue
+    {
+        get => SDL_GetWindowProgressValue(Handle);
+        set => Check(SDL_SetWindowProgressValue(Handle, value));
+    }
+
+    /// <summary>
+    /// Handles hit testing for custom window dragging and resizing.
+    /// </summary>
+    /// <param name="window">The window being tested.</param>
+    /// <param name="area">The point being tested, in window coordinates.</param>
+    /// <returns>The hit test result for the point.</returns>
+    public delegate HitTestResult HitTestHandler(Window window, Point area);
+
+    private GCHandle _hitTestHandle;
+
+    /// <summary>
+    /// Sets or clears (<c>null</c>) the hit-test callback used for custom window dragging
+    /// and resizing regions. Exceptions thrown by the handler are swallowed and
+    /// treated as <see cref="HitTestResult.Normal"/> (they must not cross the
+    /// native boundary).
+    /// </summary>
+    /// <param name="handler">The hit-test handler, or <c>null</c> to clear it.</param>
+    public unsafe void SetHitTest(HitTestHandler? handler)
+    {
+        if (_hitTestHandle.IsAllocated)
+        {
+            _hitTestHandle.Free();
+            _hitTestHandle = default;
+        }
+
+        if (handler == null)
+        {
+            Check(SDL_SetWindowHitTest(Handle, null, null));
+            return;
+        }
+
+        var holder = new HitTestHolder(this, handler);
+        _hitTestHandle = GCHandle.Alloc(holder);
+        Check(SDL_SetWindowHitTest(Handle, &HitTestCallback, (void*)GCHandle.ToIntPtr(_hitTestHandle)));
+    }
+
+    private sealed record HitTestHolder(Window Window, HitTestHandler Handler);
+
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static SDL_HitTestResult HitTestCallback(SDL_Window* win, SDL_Point* area, void* userdata)
+    {
+        try
+        {
+            var holder = (HitTestHolder)GCHandle.FromIntPtr((nint)userdata).Target!;
+            return (SDL_HitTestResult)holder.Handler(holder.Window, Point.FromNative(*area));
+        }
+        catch
+        {
+            return SDL_HitTestResult.SDL_HITTEST_NORMAL;
+        }
+    }
+
+    /// <summary>
+    /// Requests that the window fill the browser document (Emscripten only; no-op /
+    /// throws on other platforms).
+    /// </summary>
+    /// <param name="fill">true to fill the document, false to restore the window's set size.</param>
+    public void SetFillDocument(bool fill) => Check(SDL_SetWindowFillDocument(Handle, fill));
+
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (_hitTestHandle.IsAllocated)
+        {
+            _hitTestHandle.Free();
+            _hitTestHandle = default;
+        }
+
         if (_ownsHandle && _handle != null)
         {
             SDL_DestroyWindow(_handle);

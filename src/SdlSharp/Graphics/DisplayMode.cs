@@ -28,10 +28,9 @@ public readonly record struct DisplayMode(
     /// <summary>
     /// Converts this mode to its native representation. The native struct's
     /// internal driver data pointer is left null; modes intended for
-    /// exclusive-fullscreen matching (e.g. via a window's fullscreen mode
-    /// setter) should originate from <see cref="Display.GetFullscreenModes"/>
-    /// rather than being constructed by hand, so SDL can match them against a
-    /// real mode.
+    /// exclusive-fullscreen matching (e.g. via <see cref="Window.SetFullscreenMode"/>)
+    /// should originate from <see cref="Display.GetFullscreenModes"/> rather than
+    /// being constructed by hand, so SDL can match them against a real mode.
     /// </summary>
     internal SDL_DisplayMode ToNative() =>
         new()
