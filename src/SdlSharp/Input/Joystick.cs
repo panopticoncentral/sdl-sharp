@@ -36,11 +36,12 @@ public sealed unsafe class Joystick : IDisposable
         new(Check(SDL_OpenJoystick(new Native.SDL_JoystickID(id))));
 
     /// <summary>Gets the instance IDs of all connected joysticks.</summary>
+    /// <exception cref="SdlException">The joystick list could not be retrieved.</exception>
     public static uint[] GetDevices()
     {
         int count;
         var ids = SDL_GetJoysticks(&count);
-        if (ids == null) return [];
+        if (ids == null) throw new SdlException();
         try
         {
             var result = new uint[count];

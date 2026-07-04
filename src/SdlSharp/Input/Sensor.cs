@@ -46,11 +46,12 @@ public sealed unsafe class Sensor : IDisposable
         new(Check(SDL_GetSensorFromID(id)), ownsHandle: false);
 
     /// <summary>Gets the instance IDs of all connected sensors.</summary>
+    /// <exception cref="SdlException">The sensor list could not be retrieved.</exception>
     public static uint[] GetDevices()
     {
         int count;
         var ids = SDL_GetSensors(&count);
-        if (ids == null) return [];
+        if (ids == null) throw new SdlException();
         try
         {
             var result = new uint[count];

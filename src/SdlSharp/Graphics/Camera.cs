@@ -55,10 +55,11 @@ public sealed unsafe class Camera : IDisposable
     }
 
     /// <summary>Gets the instance IDs of all connected cameras.</summary>
+    /// <exception cref="SdlException">The camera list could not be retrieved.</exception>
     public static uint[] GetDevices()
     {
         var ids = SDL_GetCameras(out var count);
-        if (ids == null) return [];
+        if (ids == null) throw new SdlException();
         try
         {
             var result = new uint[count];
@@ -81,10 +82,11 @@ public sealed unsafe class Camera : IDisposable
         (CameraPosition)SDL_GetCameraPosition(new SDL_CameraID(id));
 
     /// <summary>Gets the supported formats for a camera by instance ID.</summary>
+    /// <exception cref="SdlException">The format list could not be retrieved.</exception>
     public static CameraSpec[] GetSupportedFormats(uint id)
     {
         var specs = SDL_GetCameraSupportedFormats(new SDL_CameraID(id), out var count);
-        if (specs == null) return [];
+        if (specs == null) throw new SdlException();
         try
         {
             var result = new CameraSpec[count];

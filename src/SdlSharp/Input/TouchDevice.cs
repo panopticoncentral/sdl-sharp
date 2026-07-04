@@ -22,11 +22,12 @@ public static unsafe class TouchDevice
     public const ulong MouseTouchDeviceId = ulong.MaxValue;
 
     /// <summary>Gets the IDs of all connected touch devices.</summary>
+    /// <exception cref="SdlException">The touch device list could not be retrieved.</exception>
     public static ulong[] GetDevices()
     {
         int count;
         var ids = SDL_GetTouchDevices(&count);
-        if (ids == null) return [];
+        if (ids == null) throw new SdlException();
         try
         {
             var result = new ulong[count];
@@ -49,11 +50,12 @@ public static unsafe class TouchDevice
         (TouchDeviceType)SDL_GetTouchDeviceType(id);
 
     /// <summary>Gets all active fingers on a touch device.</summary>
+    /// <exception cref="SdlException">The finger list could not be retrieved.</exception>
     public static Finger[] GetFingers(ulong id)
     {
         int count;
         var fingers = SDL_GetTouchFingers(id, &count);
-        if (fingers == null) return [];
+        if (fingers == null) throw new SdlException();
         try
         {
             var result = new Finger[count];

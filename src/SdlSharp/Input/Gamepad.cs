@@ -36,11 +36,12 @@ public sealed unsafe class Gamepad : IDisposable
         new(Check(SDL_OpenGamepad(new Native.SDL_JoystickID(id))));
 
     /// <summary>Gets the joystick instance IDs of all connected gamepads.</summary>
+    /// <exception cref="SdlException">The gamepad list could not be retrieved.</exception>
     public static uint[] GetDevices()
     {
         int count;
         var ids = SDL_GetGamepads(&count);
-        if (ids == null) return [];
+        if (ids == null) throw new SdlException();
         try
         {
             var result = new uint[count];
