@@ -21,6 +21,7 @@
     <Project Path="Samples/AudioOps/AudioOps.csproj" />
     <Project Path="Samples/EventQueueOps/EventQueueOps.csproj" />
     <Project Path="Samples/MiscOps/MiscOps.csproj" />
+    <Project Path="Samples/TrayDemo/TrayDemo.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
