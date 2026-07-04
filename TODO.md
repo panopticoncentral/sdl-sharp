@@ -355,6 +355,12 @@ MouseSource, DataType, Key (140-value enum: keyboard, gamepad, mouse aliases, mo
 
 ## Phases 7–11: SDL3 Surface Completion (planned 2026-07-02)
 
+**✅ COMPLETE 2026-07-03** — all five phases landed. Final close-out documented
+the fully-deferred headers in `src/SdlSharp/Native/Deferred.cs`, settled every
+remaining "deferred" rationale in INVENTORY.md, and verified per-header set-diff
+accounting (SDL_haptic.h 31/31, SDL_tray.h 23/23, SDL_version.h 2/2; every other
+remainder is skip-commented in its native binding file).
+
 Based on a full per-symbol audit of all 54 tracked SDL 3.4.2 headers against the
 native bindings, managed wrappers, and INVENTORY.md claims. Audit data (every
 missing symbol with importance rating, every INVENTORY.md discrepancy):
@@ -364,7 +370,9 @@ functions (55%) across the 41 active headers; the 13 deferred-by-design headers
 
 ### Phase 7: Truth and rules (no new SDL surface)
 
-- [ ] 7.1 Regenerate INVENTORY.md: 164 discrepancies across 43 headers, including
+- [x] 7.1 Regenerate INVENTORY.md (completed incrementally across phases 8–11;
+      final sweep in the phase-11 close-out settled every remaining rationale):
+      164 discrepancies across 43 headers, including
       false ✅ on SDL_gamepad.h (15/73 actual), SDL_joystick.h (18/58), and
       SDL_haptic.h (12/31); ~110 missing rows; wrong managed-wrapper names
       (e.g. `GpuFence.WaitAll` doesn't exist); false "Used internally" notes.
@@ -437,20 +445,25 @@ functions (55%) across the 41 active headers; the 13 deferred-by-design headers
 
 ### Phase 11: Decisions + small headers
 
-- [ ] 11.1 Haptic full effect system (decision: wrap) — `SDL_HapticEffect`
+- [x] 11.1 Haptic full effect system (decision: wrap) — `SDL_HapticEffect`
       explicit-layout union, 19 effect functions, `SDL_HAPTIC_*` constants;
       short-term: `Haptic.Id`, `SDL_IsJoystickHaptic`, gain/features/stop-all.
-- [ ] 11.2 Tray (decision: wrap) — 23 functions, one callback; Native/Tray.cs +
+- [x] 11.2 Tray (decision: wrap) — 23 functions, one callback; Native/Tray.cs +
       `Tray`/`TrayMenu`/`TrayEntry` handle classes. No .NET equivalent exists.
-- [ ] 11.3 Small items: `Native/Version.cs` + `Sdl.Version`/`Sdl.Revision`;
+- [x] 11.3 Small items: `Native/Version.cs` + `Sdl.Version`/`Sdl.Revision`;
       `HintPriority` enum + `SdlHints.Set` overload; full `SDL_ShowMessageBox`
       (multi-button + support structs); `PropertyGroup` pointer get/set;
       `CameraPermissionState` enum; `Sensor.Id`/`FromId`/`StandardGravity`;
       `SDL_TOUCH_MOUSEID`/`SDL_MOUSE_TOUCHID` public constants;
       `SystemInfo.CreateDirectory` (or delete binding);
       `SDL_IsTablet`/`SDL_IsTV`/`SDL_GetSandbox`; `SdlLog` emit methods via
-      fixed-format `SDL_LogMessage`.
-- [ ] 11.4 Document skips per CLAUDE.md convention (native-file comments):
+      fixed-format `SDL_LogMessage`. *Outcome change:* the `SdlLog` emit item was
+      resolved as a **documented skip** per the ABI contingency — even a
+      fixed-`"%s"` `SDL_LogMessage` call is not portably callable through
+      fixed-signature P/Invoke (Apple arm64 passes variadic args on the stack;
+      verified garbage bytes), so `SdlLog` has no emit methods and the whole
+      emit family carries a skip comment in `Native/Log.cs`.
+- [x] 11.4 Document skips per CLAUDE.md convention (native-file comments):
       hidapi, metal, vulkan, and fully-deferred headers lacking a native file
-      to carry the comment.
+      to carry the comment — all documented in `src/SdlSharp/Native/Deferred.cs`.
 

@@ -4,8 +4,9 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 
 - **Native Wrapper**: Qualified name in the `SdlSharp.Native` namespace (e.g. `Pixels.SDL_GetMasksForPixelFormat`).
 - **Managed Wrapper**: Qualified name of the public C# API (e.g. `PixelFormatExtensions.GetMasks`).
-- **Notes**: Why an unwrapped API is skipped: *deferred* = planned but not yet done, *inline* = SDL_FORCE_INLINE (not exported), *variadic* = C va_list/printf-style, *.NET* = .NET has a built-in equivalent, *platform* = platform-specific API, *niche* = rarely needed.
-- **"-"**: Not yet wrapped.
+- **Notes**: Why an unwrapped API is skipped: *inline* = SDL_FORCE_INLINE (not exported), *variadic* = C va_list/printf-style, *.NET* = .NET has a built-in equivalent, *platform* = platform-specific API, *niche* = rarely needed, *own-design* = needs its own API design pass rather than a mechanical binding.
+- **"-"**: Not wrapped (the Notes column gives the settled reason).
+- **Fully deferred headers**: headers with no binding file at all (asyncio, atomic, bits/endian/intrin, egl/opengl\*/metal/vulkan, hidapi, iostream, loadso, main(+impl), mutex, platform(+defines), process, stdinc, storage, test\*, thread) carry their per-header rationale in `src/SdlSharp/Native/Deferred.cs`.
 
 ---
 
@@ -184,7 +185,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_BlendFactor | enum | BlendMode.SDL_BlendFactor | BlendFactor | |
 | SDL_ComposeCustomBlendMode | function | BlendMode.SDL_ComposeCustomBlendMode | BlendModeExtensions.Compose | |
 
-## SDL_camera.h
+## SDL_camera.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -192,7 +193,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_Camera | opaque | Camera.SDL_Camera | Camera | |
 | SDL_CameraSpec | struct | Camera.SDL_CameraSpec | CameraSpec | |
 | SDL_CameraPosition | enum | Camera.SDL_CameraPosition | CameraPosition | |
-| SDL_CameraPermissionState | enum | - | - | deferred — SDL_GetCameraPermissionState bound as raw int |
+| SDL_CameraPermissionState | enum | - | CameraPermissionState | Native binding returns the raw int; managed enum types it |
 | SDL_GetNumCameraDrivers | function | Camera.SDL_GetNumCameraDrivers | Camera.GetDrivers | |
 | SDL_GetCameraDriver | function | Camera.SDL_GetCameraDriver | Camera.GetDrivers | |
 | SDL_GetCurrentCameraDriver | function | Camera.SDL_GetCurrentCameraDriver | Camera.GetCurrentDriver | |
@@ -201,8 +202,8 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_GetCameraName | function | Camera.SDL_GetCameraName | Camera.GetName | |
 | SDL_GetCameraPosition | function | Camera.SDL_GetCameraPosition | Camera.GetPosition | |
 | SDL_OpenCamera | function | Camera.SDL_OpenCamera | Camera.Open | |
-| SDL_GetCameraPermissionState | function | Camera.SDL_GetCameraPermissionState | Camera.PermissionState | returns untyped int; typed CameraPermissionState enum deferred |
-| SDL_GetCameraID | function | Camera.SDL_GetCameraID | - | deferred — binding unused, no Camera.Id property |
+| SDL_GetCameraPermissionState | function | Camera.SDL_GetCameraPermissionState | Camera.PermissionState | Typed via CameraPermissionState |
+| SDL_GetCameraID | function | Camera.SDL_GetCameraID | Camera.Id | |
 | SDL_GetCameraProperties | function | Camera.SDL_GetCameraProperties | Camera.Properties | |
 | SDL_GetCameraFormat | function | Camera.SDL_GetCameraFormat | Camera.Format | |
 | SDL_AcquireCameraFrame | function | Camera.SDL_AcquireCameraFrame | Camera.AcquireFrame | |
@@ -216,9 +217,9 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_SetClipboardText | function | Clipboard.SDL_SetClipboardText | Clipboard.Text (set) | |
 | SDL_GetClipboardText | function | Clipboard.SDL_GetClipboardText | Clipboard.Text (get) | |
 | SDL_HasClipboardText | function | Clipboard.SDL_HasClipboardText | Clipboard.HasText | |
-| SDL_SetPrimarySelectionText | function | - | - | Deferred: X11 primary selection, platform-specific niche |
-| SDL_GetPrimarySelectionText | function | - | - | Deferred: X11 primary selection, platform-specific niche |
-| SDL_HasPrimarySelectionText | function | - | - | Deferred: X11 primary selection, platform-specific niche |
+| SDL_SetPrimarySelectionText | function | - | - | Platform: X11 primary selection — niche outside X11 desktops |
+| SDL_GetPrimarySelectionText | function | - | - | Platform: X11 primary selection — niche outside X11 desktops |
+| SDL_HasPrimarySelectionText | function | - | - | Platform: X11 primary selection — niche outside X11 desktops |
 | SDL_ClipboardDataCallback | callback | Clipboard.SDL_ClipboardDataCallback | Clipboard.ClipboardDataProvider | |
 | SDL_ClipboardCleanupCallback | callback | Clipboard.SDL_ClipboardCleanupCallback | (internal) | |
 | SDL_SetClipboardData | function | Clipboard.SDL_SetClipboardData | Clipboard.SetData | |
@@ -261,9 +262,9 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_ShowOpenFileDialog | function | Dialog.SDL_ShowOpenFileDialog | FileDialog.OpenFile / FileDialog.OpenFileAsync | |
 | SDL_ShowSaveFileDialog | function | Dialog.SDL_ShowSaveFileDialog | FileDialog.SaveFile / FileDialog.SaveFileAsync | |
 | SDL_ShowOpenFolderDialog | function | Dialog.SDL_ShowOpenFolderDialog | FileDialog.OpenFolder / FileDialog.OpenFolderAsync | |
-| SDL_ShowFileDialogWithProperties | function | - | - | Deferred: property-based variant, rarely needed |
+| SDL_ShowFileDialogWithProperties | function | - | - | niche: property-based variant of the typed Open/Save/OpenFolder calls |
 | SDL_DialogFileCallback | callback | Dialog.SDL_ShowOpenFileDialog (function pointer) | FileDialog.DialogCallback (internal) | Surfaced as `Action<DialogResult>` |
-| SDL_PROP_FILE_DIALOG_* | macro (8) | - | - | Property string constants — deferred with SDL_ShowFileDialogWithProperties |
+| SDL_PROP_FILE_DIALOG_* | macro (8) | - | - | Property string constants — niche, only meaningful with the skipped SDL_ShowFileDialogWithProperties |
 
 ## SDL_error.h ✅
 
@@ -344,7 +345,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_AudioDeviceEvent | struct | Events.SDL_AudioDeviceEvent | - | Used internally by event dispatch |
 | SDL_CameraDeviceEvent | struct | Events.SDL_CameraDeviceEvent | - | Used internally by event dispatch |
 
-## SDL_filesystem.h
+## SDL_filesystem.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -352,7 +353,7 @@ Cross-reference of SDL 3.4.2 headers with SdlSharp native bindings and managed w
 | SDL_GetBasePath | function | FileSystem.SDL_GetBasePath | SystemInfo.BasePath | |
 | SDL_GetPrefPath | function | FileSystem.SDL_GetPrefPath | SystemInfo.GetPrefPath | |
 | SDL_GetUserFolder | function | FileSystem.SDL_GetUserFolder | SystemInfo.GetUserFolder | |
-| SDL_CreateDirectory | function | FileSystem.SDL_CreateDirectory | - | Deferred managed wrapper |
+| SDL_CreateDirectory | function | FileSystem.SDL_CreateDirectory | SystemInfo.CreateDirectory | |
 | SDL_GetCurrentDirectory | function | FileSystem.SDL_GetCurrentDirectory | SystemInfo.GetCurrentDirectory | |
 | SDL_EnumerationResult | enum | - | - | only used by SDL_EnumerateDirectory — .NET has Directory.EnumerateFileSystemEntries |
 | SDL_EnumerateDirectoryCallback | callback | - | - | only used by SDL_EnumerateDirectory — .NET has Directory.EnumerateFileSystemEntries |
@@ -535,7 +536,7 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_GPUTextureSamplerBinding | struct | Gpu.SDL_GPUTextureSamplerBinding | GpuTextureSamplerBinding | |
 | SDL_GPUStorageBufferReadWriteBinding | struct | Gpu.SDL_GPUStorageBufferReadWriteBinding | GpuStorageBufferReadWriteBinding | |
 | SDL_GPUStorageTextureReadWriteBinding | struct | Gpu.SDL_GPUStorageTextureReadWriteBinding | GpuStorageTextureReadWriteBinding | |
-| SDL_GPUVulkanOptions | struct | - | - | deferred: advanced Vulkan config (SDL 3.4), skip-commented in Native/Gpu.cs |
+| SDL_GPUVulkanOptions | struct | - | - | niche: advanced Vulkan-specific configuration (SDL 3.4) — skip-commented in Native/Gpu.cs |
 | SDL_GPUSupportsShaderFormats | function | Gpu.SDL_GPUSupportsShaderFormats | GpuDevice.SupportsShaderFormats | |
 | SDL_CreateGPUDevice | function | Gpu.SDL_CreateGPUDevice | GpuDevice.Create | |
 | SDL_CreateGPUDeviceWithProperties | function | Gpu.SDL_CreateGPUDeviceWithProperties | GpuDevice.Create(PropertyGroup) | |
@@ -632,9 +633,9 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_GPUTextureSupportsFormat | function | Gpu.SDL_GPUTextureSupportsFormat | GpuDevice.SupportsTextureFormat | |
 | SDL_GPUTextureSupportsSampleCount | function | Gpu.SDL_GPUTextureSupportsSampleCount | GpuDevice.SupportsSampleCount | |
 | SDL_CalculateGPUTextureFormatSize | function | Gpu.SDL_CalculateGPUTextureFormatSize | GpuTextureFormatExtensions.CalculateSize | |
-| SDL_GPUSupportsProperties | function | - | - | deferred: rarely needed |
-| SDL_GetPixelFormatFromGPUTextureFormat | function | - | - | deferred |
-| SDL_GetGPUTextureFormatFromPixelFormat | function | - | - | deferred |
+| SDL_GPUSupportsProperties | function | - | - | niche: property-based capability probe — the enum-based SDL_GPUSupportsShaderFormats is bound; skip-commented in Native/Gpu.cs |
+| SDL_GetPixelFormatFromGPUTextureFormat | function | - | - | niche: 2D-render ↔ GPU pixel-format conversion helper (SDL 3.4) — skip-commented in Native/Gpu.cs |
+| SDL_GetGPUTextureFormatFromPixelFormat | function | - | - | niche: 2D-render ↔ GPU pixel-format conversion helper (SDL 3.4) — skip-commented in Native/Gpu.cs |
 | SDL_GDKSuspendGPU | function | - | - | Platform: Xbox GDK only |
 | SDL_GDKResumeGPU | function | - | - | Platform: Xbox GDK only |
 
@@ -646,55 +647,55 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_GUIDToString | function | Guid.SDL_GUIDToString | SdlGuid.ToString | |
 | SDL_StringToGUID | function | Guid.SDL_StringToGUID | SdlGuid.Parse | |
 
-## SDL_haptic.h
+## SDL_haptic.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
 | SDL_HapticID | typedef | Haptic.SDL_HapticID | - | Internal ID type |
 | SDL_Haptic | struct | Haptic.SDL_Haptic | Haptic | |
-| SDL_HAPTIC_INFINITY | constant | - | - | Deferred: "repeat forever" length/iterations value |
-| SDL_HapticEffectType | typedef | - | - | Deferred: complex effect struct union system |
-| SDL_HAPTIC_CONSTANT … SDL_HAPTIC_CUSTOM (13 effect-type flag bits) | constant | - | - | Deferred: complex effect struct union system |
+| SDL_HAPTIC_INFINITY | constant | Haptic.SDL_HAPTIC_INFINITY | HapticEffect.Infinity | "repeat forever" length/iterations value |
+| SDL_HapticEffectType | typedef | - | - | Raw ushort field in the native structs; managed HapticWaveform / HapticConditionKind enums select the type |
+| SDL_HAPTIC_CONSTANT … SDL_HAPTIC_CUSTOM (13 effect-type flag bits) | constant | Haptic.SDL_HAPTIC_CONSTANT … Haptic.SDL_HAPTIC_CUSTOM | HapticFeatures / HapticWaveform / HapticConditionKind | Effect-type bits double as capability bits in HapticFeatures |
 | SDL_HAPTIC_RESERVED1/2/3 | constant | - | - | internal — reserved for future use |
-| SDL_HAPTIC_GAIN / AUTOCENTER / STATUS / PAUSE (4 feature bits) | constant | - | - | Deferred: device-capability bits for SDL_GetHapticFeatures |
-| SDL_HapticDirectionType | typedef | - | - | Deferred: complex effect struct union system |
-| SDL_HAPTIC_POLAR / CARTESIAN / SPHERICAL / STEERING_AXIS (4 direction encodings) | constant | - | - | Deferred: complex effect struct union system |
-| SDL_HapticEffectID | typedef | - | - | Deferred: effect handle used by the effect system |
-| SDL_HapticDirection | struct | - | - | Deferred: complex effect struct union system |
-| SDL_HapticConstant | struct | - | - | Deferred: complex effect struct union system |
-| SDL_HapticPeriodic | struct | - | - | Deferred: complex effect struct union system |
-| SDL_HapticCondition | struct | - | - | Deferred: complex effect struct union system |
-| SDL_HapticRamp | struct | - | - | Deferred: complex effect struct union system |
-| SDL_HapticLeftRight | struct | - | - | Deferred: complex effect struct union system |
-| SDL_HapticCustom | struct | - | - | Deferred: complex effect struct union system |
-| SDL_HapticEffect | union | - | - | Deferred: complex union with ~10 effect structs |
+| SDL_HAPTIC_GAIN / AUTOCENTER / STATUS / PAUSE (4 feature bits) | constant | Haptic.SDL_HAPTIC_GAIN … Haptic.SDL_HAPTIC_PAUSE | HapticFeatures.Gain/Autocenter/Status/Pause | |
+| SDL_HapticDirectionType | typedef | - | - | Raw byte field in the native struct; managed HapticDirectionType enum |
+| SDL_HAPTIC_POLAR / CARTESIAN / SPHERICAL / STEERING_AXIS (4 direction encodings) | constant | Haptic.SDL_HAPTIC_POLAR … Haptic.SDL_HAPTIC_STEERING_AXIS | HapticDirectionType | |
+| SDL_HapticEffectID | typedef | Haptic.SDL_HapticEffectID | - | Internal effect handle carried by HapticEffect |
+| SDL_HapticDirection | struct | Haptic.SDL_HapticDirection | HapticDirection | |
+| SDL_HapticConstant | struct | Haptic.SDL_HapticConstant | HapticConstantEffect | |
+| SDL_HapticPeriodic | struct | Haptic.SDL_HapticPeriodic | HapticPeriodicEffect | |
+| SDL_HapticCondition | struct | Haptic.SDL_HapticCondition | HapticConditionEffect | |
+| SDL_HapticRamp | struct | Haptic.SDL_HapticRamp | HapticRampEffect | |
+| SDL_HapticLeftRight | struct | Haptic.SDL_HapticLeftRight | HapticLeftRightEffect | |
+| SDL_HapticCustom | struct | Haptic.SDL_HapticCustom | HapticCustomEffect | |
+| SDL_HapticEffect | union | Haptic.SDL_HapticEffect | - | Explicit-layout union; the managed per-type records convert via ToNative |
 | SDL_GetHaptics | function | Haptic.SDL_GetHaptics | Haptic.GetDevices | |
 | SDL_GetHapticNameForID | function | Haptic.SDL_GetHapticNameForID | Haptic.GetName | |
 | SDL_OpenHaptic | function | Haptic.SDL_OpenHaptic | Haptic.Open | |
-| SDL_GetHapticFromID | function | - | - | Deferred: lookup of already-open device by instance ID |
-| SDL_GetHapticID | function | Haptic.SDL_GetHapticID | - | Deferred: binding exists but no managed Haptic.Id property |
+| SDL_GetHapticFromID | function | Haptic.SDL_GetHapticFromID | Haptic.FromId | Non-owning wrapper |
+| SDL_GetHapticID | function | Haptic.SDL_GetHapticID | Haptic.Id | |
 | SDL_GetHapticName | function | Haptic.SDL_GetHapticName | Haptic.Name | |
-| SDL_IsMouseHaptic | function | - | - | Deferred: pre-open capability check (haptic mice rare) |
+| SDL_IsMouseHaptic | function | Haptic.SDL_IsMouseHaptic | Haptic.IsMouseHaptic | |
 | SDL_OpenHapticFromMouse | function | Haptic.SDL_OpenHapticFromMouse | Haptic.OpenFromMouse | |
-| SDL_IsJoystickHaptic | function | - | - | Deferred: pre-open capability check for enumeration UIs |
+| SDL_IsJoystickHaptic | function | Haptic.SDL_IsJoystickHaptic | Joystick.IsHaptic | |
 | SDL_OpenHapticFromJoystick | function | Haptic.SDL_OpenHapticFromJoystick | Haptic.OpenFromJoystick | |
 | SDL_CloseHaptic | function | Haptic.SDL_CloseHaptic | Haptic.Dispose | |
-| SDL_GetMaxHapticEffects | function | - | - | Deferred: full effect system |
-| SDL_GetMaxHapticEffectsPlaying | function | - | - | Deferred: full effect system |
-| SDL_GetHapticFeatures | function | - | - | Deferred: full effect system |
-| SDL_GetNumHapticAxes | function | - | - | Deferred: full effect system |
-| SDL_HapticEffectSupported | function | - | - | Deferred: full effect system |
-| SDL_CreateHapticEffect | function | - | - | Deferred: full effect system |
-| SDL_UpdateHapticEffect | function | - | - | Deferred: full effect system |
-| SDL_RunHapticEffect | function | - | - | Deferred: full effect system |
-| SDL_StopHapticEffect | function | - | - | Deferred: full effect system |
-| SDL_DestroyHapticEffect | function | - | - | Deferred: full effect system |
-| SDL_GetHapticEffectStatus | function | - | - | Deferred: full effect system |
-| SDL_SetHapticGain | function | - | - | Deferred: full effect system |
-| SDL_SetHapticAutocenter | function | - | - | Deferred: full effect system |
-| SDL_PauseHaptic | function | - | - | Deferred: full effect system |
-| SDL_ResumeHaptic | function | - | - | Deferred: full effect system |
-| SDL_StopHapticEffects | function | - | - | Deferred: full effect system |
+| SDL_GetMaxHapticEffects | function | Haptic.SDL_GetMaxHapticEffects | Haptic.MaxEffects | |
+| SDL_GetMaxHapticEffectsPlaying | function | Haptic.SDL_GetMaxHapticEffectsPlaying | Haptic.MaxEffectsPlaying | |
+| SDL_GetHapticFeatures | function | Haptic.SDL_GetHapticFeatures | Haptic.Features | |
+| SDL_GetNumHapticAxes | function | Haptic.SDL_GetNumHapticAxes | Haptic.NumAxes | |
+| SDL_HapticEffectSupported | function | Haptic.SDL_HapticEffectSupported | Haptic.SupportsEffect | Per-effect-type overloads |
+| SDL_CreateHapticEffect | function | Haptic.SDL_CreateHapticEffect | Haptic.CreateEffect | Per-effect-type overloads |
+| SDL_UpdateHapticEffect | function | Haptic.SDL_UpdateHapticEffect | HapticEffect.Update | Per-effect-type overloads |
+| SDL_RunHapticEffect | function | Haptic.SDL_RunHapticEffect | HapticEffect.Run | |
+| SDL_StopHapticEffect | function | Haptic.SDL_StopHapticEffect | HapticEffect.Stop | |
+| SDL_DestroyHapticEffect | function | Haptic.SDL_DestroyHapticEffect | HapticEffect.Dispose | |
+| SDL_GetHapticEffectStatus | function | Haptic.SDL_GetHapticEffectStatus | HapticEffect.IsRunning | |
+| SDL_SetHapticGain | function | Haptic.SDL_SetHapticGain | Haptic.SetGain | |
+| SDL_SetHapticAutocenter | function | Haptic.SDL_SetHapticAutocenter | Haptic.SetAutocenter | |
+| SDL_PauseHaptic | function | Haptic.SDL_PauseHaptic | Haptic.Pause | |
+| SDL_ResumeHaptic | function | Haptic.SDL_ResumeHaptic | Haptic.Resume | |
+| SDL_StopHapticEffects | function | Haptic.SDL_StopHapticEffects | Haptic.StopAllEffects | |
 | SDL_HapticRumbleSupported | function | Haptic.SDL_HapticRumbleSupported | Haptic.RumbleSupported | |
 | SDL_InitHapticRumble | function | Haptic.SDL_InitHapticRumble | Haptic.InitRumble | |
 | SDL_PlayHapticRumble | function | Haptic.SDL_PlayHapticRumble | Haptic.PlayRumble | |
@@ -732,20 +733,20 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_hid_get_report_descriptor | function | - | - | Niche: low-level HID |
 | SDL_hid_ble_scan | function | - | - | Platform: iOS/tvOS BLE scan for Steam Controllers; niche low-level HID |
 
-## SDL_hints.h
+## SDL_hints.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_HintPriority | enum | Hints.SDL_HintPriority | - | deferred: no public HintPriority enum |
-| SDL_SetHintWithPriority | function | Hints.SDL_SetHintWithPriority | - | deferred: no managed priority overload |
+| SDL_HintPriority | enum | Hints.SDL_HintPriority | HintPriority | |
+| SDL_SetHintWithPriority | function | Hints.SDL_SetHintWithPriority | SdlHints.Set (priority overload) | |
 | SDL_SetHint | function | Hints.SDL_SetHint | SdlHints.Set | |
 | SDL_ResetHint | function | Hints.SDL_ResetHint | SdlHints.Reset | |
 | SDL_ResetHints | function | Hints.SDL_ResetHints | SdlHints.ResetAll | |
 | SDL_GetHint | function | Hints.SDL_GetHint | SdlHints.Get | |
 | SDL_GetHintBoolean | function | Hints.SDL_GetHintBoolean | SdlHints.GetBoolean | |
-| SDL_HintCallback | callback | - | - | Deferred: callback-based hint watching |
-| SDL_AddHintCallback | function | - | - | Deferred: callback-based hint watching |
-| SDL_RemoveHintCallback | function | - | - | Deferred: callback-based hint watching |
+| SDL_HintCallback | callback | - | - | niche: callback-based hint-change notification — skip comment in Native/Hints.cs |
+| SDL_AddHintCallback | function | - | - | niche: callback-based hint-change notification — skip comment in Native/Hints.cs |
+| SDL_RemoveHintCallback | function | - | - | niche: callback-based hint-change notification — skip comment in Native/Hints.cs |
 | SDL_HINT_* | macro (261) | - | - | String constants passed via SdlHints.Set/Get |
 
 ## SDL_init.h ✅
@@ -783,16 +784,16 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_IOStream | struct | - | - | Deferred: needed by *_IO loaders (SDL_LoadWAV_IO, SDL_LoadBMP_IO, etc.) |
-| SDL_IOStreamInterface | struct | - | - | Deferred: callback vtable for SDL_OpenIO |
+| SDL_IOStream | struct | - | - | .NET has System.IO — header fully deferred (see Native/Deferred.cs); the *_IO loader variants are skip-commented per consuming header |
+| SDL_IOStreamInterface | struct | - | - | .NET has System.IO — callback vtable only needed by the skipped SDL_OpenIO |
 | SDL_IOStatus | enum | - | - | .NET has System.IO |
 | SDL_IOWhence | enum | - | - | .NET has System.IO.SeekOrigin |
 | SDL_IOFromFile | function | - | - | .NET has FileStream |
-| SDL_IOFromMem | function | - | - | Deferred: memory-buffer bridge for *_IO loaders |
-| SDL_IOFromConstMem | function | - | - | Deferred: read-only memory bridge for *_IO loaders |
+| SDL_IOFromMem | function | - | - | .NET has MemoryStream/UnmanagedMemoryStream; only useful with the skipped *_IO loaders |
+| SDL_IOFromConstMem | function | - | - | .NET has MemoryStream/UnmanagedMemoryStream; only useful with the skipped *_IO loaders |
 | SDL_IOFromDynamicMem | function | - | - | .NET has MemoryStream |
-| SDL_OpenIO | function | - | - | Deferred: bridge from System.IO.Stream to SDL_IOStream |
-| SDL_CloseIO | function | - | - | Deferred: companion to SDL_OpenIO/SDL_IOFrom* |
+| SDL_OpenIO | function | - | - | .NET has System.IO — no Stream→SDL_IOStream bridge by design (see Native/Deferred.cs) |
+| SDL_CloseIO | function | - | - | .NET has System.IO — companion to the skipped SDL_OpenIO/SDL_IOFrom* |
 | SDL_GetIOProperties | function | - | - | niche |
 | SDL_GetIOStatus | function | - | - | .NET has Stream error/EOF semantics |
 | SDL_GetIOSize | function | - | - | .NET has Stream.Length |
@@ -889,20 +890,20 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
 | SDL_HasKeyboard | function | Keyboard.SDL_HasKeyboard | Keyboard.HasKeyboard | |
-| SDL_GetKeyboards | function | Keyboard.SDL_GetKeyboards | - | Deferred managed wrapper |
-| SDL_GetKeyboardNameForID | function | Keyboard.SDL_GetKeyboardNameForID | - | Deferred managed wrapper |
-| SDL_GetKeyboardFocus | function | Keyboard.SDL_GetKeyboardFocus | - | Deferred managed wrapper |
-| SDL_GetKeyboardState | function | Keyboard.SDL_GetKeyboardState | Keyboard.IsKeyPressed | Per-key query only; full key-state span deferred |
+| SDL_GetKeyboards | function | Keyboard.SDL_GetKeyboards | - | niche: per-device keyboard enumeration — events carry the keyboard ID; bound natively |
+| SDL_GetKeyboardNameForID | function | Keyboard.SDL_GetKeyboardNameForID | - | niche: per-device keyboard enumeration — events carry the keyboard ID; bound natively |
+| SDL_GetKeyboardFocus | function | Keyboard.SDL_GetKeyboardFocus | - | niche: focus query — window focus events cover this; bound natively |
+| SDL_GetKeyboardState | function | Keyboard.SDL_GetKeyboardState | Keyboard.IsKeyPressed | Per-key query; a full key-state span view is niche — IsKeyPressed covers polling |
 | SDL_ResetKeyboard | function | Keyboard.SDL_ResetKeyboard | Keyboard.Reset | |
 | SDL_GetModState | function | Keyboard.SDL_GetModState | Keyboard.ModState | |
 | SDL_SetModState | function | Keyboard.SDL_SetModState | Keyboard.SetModState | |
 | SDL_GetKeyFromScancode | function | Keyboard.SDL_GetKeyFromScancode | Keyboard.GetKeyFromScancode | |
-| SDL_GetScancodeFromKey | function | Keyboard.SDL_GetScancodeFromKey | - | Deferred managed wrapper |
-| SDL_SetScancodeName | function | Keyboard.SDL_SetScancodeName | - | Deferred managed wrapper |
+| SDL_GetScancodeFromKey | function | Keyboard.SDL_GetScancodeFromKey | - | niche: reverse key→scancode lookup; GetKeyFromScancode covers the common direction; bound natively |
+| SDL_SetScancodeName | function | Keyboard.SDL_SetScancodeName | - | niche: overriding SDL's scancode names; bound natively |
 | SDL_GetScancodeName | function | Keyboard.SDL_GetScancodeName | Keyboard.GetScancodeName | |
-| SDL_GetScancodeFromName | function | Keyboard.SDL_GetScancodeFromName | - | Deferred managed wrapper |
+| SDL_GetScancodeFromName | function | Keyboard.SDL_GetScancodeFromName | - | niche: name→scancode lookup (e.g. key-binding files); bound natively |
 | SDL_GetKeyName | function | Keyboard.SDL_GetKeyName | Keyboard.GetKeyName | |
-| SDL_GetKeyFromName | function | Keyboard.SDL_GetKeyFromName | - | Deferred managed wrapper |
+| SDL_GetKeyFromName | function | Keyboard.SDL_GetKeyFromName | - | niche: name→keycode lookup (e.g. key-binding files); bound natively |
 | SDL_StartTextInput | function | Keyboard.SDL_StartTextInput | Window.StartTextInput() | |
 | SDL_StartTextInputWithProperties | function | Keyboard.SDL_StartTextInputWithProperties | Window.StartTextInput(in TextInputProperties) | |
 | SDL_TextInputActive | function | Keyboard.SDL_TextInputActive | Window.IsTextInputActive | |
@@ -911,12 +912,12 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_SetTextInputArea | function | Keyboard.SDL_SetTextInputArea | Window.SetTextInputArea, Window.ClearTextInputArea | Clear variant passes NULL rect |
 | SDL_GetTextInputArea | function | Keyboard.SDL_GetTextInputArea | Window.GetTextInputArea | |
 | SDL_HasScreenKeyboardSupport | function | Keyboard.SDL_HasScreenKeyboardSupport | Keyboard.HasScreenKeyboardSupport | |
-| SDL_ScreenKeyboardShown | function | Keyboard.SDL_ScreenKeyboardShown | - | Deferred managed wrapper |
-| SDL_KeyboardID | typedef | - | - | Deferred |
+| SDL_ScreenKeyboardShown | function | Keyboard.SDL_ScreenKeyboardShown | - | niche: on-screen keyboard visibility query (mobile); bound natively |
+| SDL_KeyboardID | typedef | - | - | Internal ID type — surfaced as raw uint |
 | SDL_TextInputType | enum | Keyboard.SDL_TextInputType | TextInputType | |
 | SDL_Capitalization | enum | Keyboard.SDL_Capitalization | Capitalization | |
 | SDL_PROP_TEXTINPUT_TYPE_NUMBER/CAPITALIZATION_NUMBER/AUTOCORRECT_BOOLEAN/MULTILINE_BOOLEAN | macro (4) | Keyboard.SDL_PROP_TEXTINPUT_* | TextInputProperties | |
-| SDL_PROP_TEXTINPUT_ANDROID_INPUTTYPE_NUMBER | macro | - | - | Deferred: platform-specific (Android) |
+| SDL_PROP_TEXTINPUT_ANDROID_INPUTTYPE_NUMBER | macro | - | - | Platform: Android-specific |
 
 ## SDL_keycode.h ✅
 
@@ -944,7 +945,13 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_Locale | struct | Locale.SDL_Locale | LocaleInfo | |
 | SDL_GetPreferredLocales | function | Locale.SDL_GetPreferredLocales | LocaleInfo.GetPreferred | |
 
-## SDL_log.h
+## SDL_log.h ✅
+
+The printf-style emit family is a documented skip (see Native/Log.cs): C varargs
+are not portably callable through fixed-signature P/Invoke — on Apple arm64
+variadic arguments pass on the stack while fixed-signature P/Invoke passes
+registers (verified experimentally: SDL received garbage bytes). Use .NET
+logging, and bridge SDL's own output via SdlLog.SetOutputFunction.
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -959,15 +966,15 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_SetLogOutputFunction | function | Log.SDL_SetLogOutputFunction | SdlLog.SetOutputFunction | |
 | SDL_GetLogOutputFunction | function | - | - | niche: function pointer retrieval, rarely needed |
 | SDL_GetDefaultLogOutputFunction | function | - | - | niche: only for callback-chaining to default sink |
-| SDL_Log | function | - | - | Variadic: printf-style, format in C# instead |
-| SDL_LogTrace | function | - | - | Variadic: printf-style |
-| SDL_LogVerbose | function | - | - | Variadic: printf-style |
-| SDL_LogDebug | function | - | - | Variadic: printf-style |
-| SDL_LogInfo | function | - | - | Variadic: printf-style |
-| SDL_LogWarn | function | - | - | Variadic: printf-style |
-| SDL_LogError | function | - | - | Variadic: printf-style |
-| SDL_LogCritical | function | - | - | Variadic: printf-style |
-| SDL_LogMessage | function | - | - | deferred: variadic, but bindable via fixed "%s" format; only way to emit into SDL's log stream |
+| SDL_Log | function | - | - | Variadic: documented skip (varargs ABI — see header note and Native/Log.cs) |
+| SDL_LogTrace | function | - | - | Variadic: documented skip (varargs ABI) |
+| SDL_LogVerbose | function | - | - | Variadic: documented skip (varargs ABI) |
+| SDL_LogDebug | function | - | - | Variadic: documented skip (varargs ABI) |
+| SDL_LogInfo | function | - | - | Variadic: documented skip (varargs ABI) |
+| SDL_LogWarn | function | - | - | Variadic: documented skip (varargs ABI) |
+| SDL_LogError | function | - | - | Variadic: documented skip (varargs ABI) |
+| SDL_LogCritical | function | - | - | Variadic: documented skip (varargs ABI) |
+| SDL_LogMessage | function | - | - | Variadic: documented skip — even a fixed "%s" call is not portable (Apple arm64 passes variadic args on the stack, P/Invoke passes registers; verified garbage bytes), so SdlLog has no emit methods |
 | SDL_LogMessageV | function | - | - | Variadic: va_list variant, not callable from C# |
 
 ## SDL_main.h ✅
@@ -984,7 +991,7 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_UnregisterApp | function | - | - | Platform: Windows-specific |
 | SDL_GDKSuspendComplete | function | - | - | Platform: Xbox GDK only |
 
-## SDL_messagebox.h
+## SDL_messagebox.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -992,18 +999,18 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_MESSAGEBOX_ERROR | enum value | MessageBox.SDL_MessageBoxFlags.SDL_MESSAGEBOX_ERROR | MessageBoxType.Error | |
 | SDL_MESSAGEBOX_WARNING | enum value | MessageBox.SDL_MessageBoxFlags.SDL_MESSAGEBOX_WARNING | MessageBoxType.Warning | |
 | SDL_MESSAGEBOX_INFORMATION | enum value | MessageBox.SDL_MessageBoxFlags.SDL_MESSAGEBOX_INFORMATION | MessageBoxType.Information | |
-| SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT | enum value | MessageBox.SDL_MessageBoxFlags.SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT | - | Deferred: only meaningful with SDL_ShowMessageBox |
-| SDL_MESSAGEBOX_BUTTONS_RIGHT_TO_LEFT | enum value | MessageBox.SDL_MessageBoxFlags.SDL_MESSAGEBOX_BUTTONS_RIGHT_TO_LEFT | - | Deferred: only meaningful with SDL_ShowMessageBox |
+| SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT | enum value | MessageBox.SDL_MessageBoxFlags.SDL_MESSAGEBOX_BUTTONS_LEFT_TO_RIGHT | - | niche: explicit layout-order override — MessageBox.Show lays buttons out in array order |
+| SDL_MESSAGEBOX_BUTTONS_RIGHT_TO_LEFT | enum value | MessageBox.SDL_MessageBoxFlags.SDL_MESSAGEBOX_BUTTONS_RIGHT_TO_LEFT | - | niche: explicit layout-order override — MessageBox.Show lays buttons out in array order |
 | SDL_ShowSimpleMessageBox | function | MessageBox.SDL_ShowSimpleMessageBox | MessageBox.Show | |
-| SDL_ShowMessageBox | function | - | - | Deferred: complex struct hierarchy for custom buttons/colors |
-| SDL_MessageBoxButtonFlags | typedef | - | - | Deferred: custom messagebox |
-| SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | macro | - | - | Deferred: custom messagebox |
-| SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT | macro | - | - | Deferred: custom messagebox |
-| SDL_MessageBoxButtonData | struct | - | - | Deferred: custom messagebox |
-| SDL_MessageBoxColor | struct | - | - | Deferred: custom messagebox |
-| SDL_MessageBoxColorType | enum | - | - | Deferred: custom messagebox |
-| SDL_MessageBoxColorScheme | struct | - | - | Deferred: custom messagebox |
-| SDL_MessageBoxData | struct | - | - | Deferred: custom messagebox |
+| SDL_ShowMessageBox | function | MessageBox.SDL_ShowMessageBox | MessageBox.Show (multi-button overload) | Returns the pressed MessageBoxButton.Id |
+| SDL_MessageBoxButtonFlags | typedef | - | MessageBoxButton.IsReturnDefault/IsEscapeDefault | Surfaced as bools on MessageBoxButton |
+| SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | macro | MessageBox.SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT | MessageBoxButton.IsReturnDefault | |
+| SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT | macro | MessageBox.SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT | MessageBoxButton.IsEscapeDefault | |
+| SDL_MessageBoxButtonData | struct | MessageBox.SDL_MessageBoxButtonData | MessageBoxButton | |
+| SDL_MessageBoxColor | struct | MessageBox.SDL_MessageBoxColor | - | Converted from Color inside MessageBox.Show |
+| SDL_MessageBoxColorType | enum | - | - | Not bound — the native SDL_MessageBoxColorScheme uses named fields instead of the enum-indexed array |
+| SDL_MessageBoxColorScheme | struct | MessageBox.SDL_MessageBoxColorScheme | MessageBoxColorScheme | |
+| SDL_MessageBoxData | struct | MessageBox.SDL_MessageBoxData | - | Assembled internally by MessageBox.Show |
 
 ## SDL_metal.h ✅
 
@@ -1039,16 +1046,16 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_BUTTON_MASK | macro | - | Mouse.IsButtonPressed | Macro; mask math reimplemented |
 | SDL_BUTTON_LMASK/MMASK/RMASK/X1MASK/X2MASK | macro (5) | - | - | Macro; use Mouse.IsButtonPressed |
 | SDL_HasMouse | function | Mouse.SDL_HasMouse | Mouse.HasMouse | |
-| SDL_GetMice | function | Mouse.SDL_GetMice | - | Deferred managed wrapper |
-| SDL_GetMouseNameForID | function | Mouse.SDL_GetMouseNameForID | - | Deferred managed wrapper |
-| SDL_GetMouseFocus | function | Mouse.SDL_GetMouseFocus | - | Deferred managed wrapper |
+| SDL_GetMice | function | Mouse.SDL_GetMice | - | niche: per-device mouse enumeration — events carry the mouse ID; bound natively |
+| SDL_GetMouseNameForID | function | Mouse.SDL_GetMouseNameForID | - | niche: per-device mouse enumeration — events carry the mouse ID; bound natively |
+| SDL_GetMouseFocus | function | Mouse.SDL_GetMouseFocus | - | niche: focus query — window enter/leave events cover this; bound natively |
 | SDL_GetMouseState | function | Mouse.SDL_GetMouseState | Mouse.GetState | |
 | SDL_GetGlobalMouseState | function | Mouse.SDL_GetGlobalMouseState | Mouse.GetGlobalState | |
 | SDL_GetRelativeMouseState | function | Mouse.SDL_GetRelativeMouseState | Mouse.GetRelativeState | |
 | SDL_WarpMouseInWindow | function | Mouse.SDL_WarpMouseInWindow | Mouse.WarpInWindow | |
 | SDL_WarpMouseGlobal | function | Mouse.SDL_WarpMouseGlobal | Mouse.WarpGlobal | |
-| SDL_SetWindowRelativeMouseMode | function | Mouse.SDL_SetWindowRelativeMouseMode | - | Deferred managed wrapper |
-| SDL_GetWindowRelativeMouseMode | function | Mouse.SDL_GetWindowRelativeMouseMode | - | Deferred managed wrapper |
+| SDL_SetWindowRelativeMouseMode | function | Mouse.SDL_SetWindowRelativeMouseMode | - | niche: per-window relative mode; Capture/warp/hide plus GetRelativeState cover the wrapper's input model; bound natively |
+| SDL_GetWindowRelativeMouseMode | function | Mouse.SDL_GetWindowRelativeMouseMode | - | niche: per-window relative mode; bound natively |
 | SDL_CaptureMouse | function | Mouse.SDL_CaptureMouse | Mouse.Capture | |
 | SDL_CreateColorCursor | function | Mouse.SDL_CreateColorCursor | Cursor.CreateColor | |
 | SDL_CreateSystemCursor | function | Mouse.SDL_CreateSystemCursor | Cursor.CreateSystem | |
@@ -1112,8 +1119,8 @@ Enum values omitted for brevity — all values are wrapped 1:1 between native an
 | SDL_PenDeviceType | enum | Pen.SDL_PenDeviceType | PenDeviceType | |
 | SDL_PenInputFlags | typedef | - | PenInput | Raw uint constants natively |
 | SDL_PEN_INPUT_* | macro (8) | Pen.SDL_PEN_INPUT_* | PenInput | |
-| SDL_PEN_MOUSEID | macro | Mouse.SDL_PEN_MOUSEID | - | deferred — sentinel for pen-simulated mouse events; bound in Mouse native class |
-| SDL_PEN_TOUCHID | macro | Pen.SDL_PEN_TOUCHID | - | deferred — sentinel for pen-simulated touch events |
+| SDL_PEN_MOUSEID | macro | Mouse.SDL_PEN_MOUSEID | - | niche: sentinel ID for pen-simulated mouse events; bound natively (Mouse native class) |
+| SDL_PEN_TOUCHID | macro | Pen.SDL_PEN_TOUCHID | - | niche: sentinel ID for pen-simulated touch events; bound natively |
 | SDL_GetPenDeviceType | function | Pen.SDL_GetPenDeviceType | PenDevice.GetType | |
 
 ## SDL_pixels.h ✅
@@ -1194,7 +1201,7 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_WaitProcess | function | - | - | .NET has Process.WaitForExit |
 | SDL_DestroyProcess | function | - | - | .NET has Process.Dispose |
 
-## SDL_properties.h
+## SDL_properties.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -1208,14 +1215,14 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_UnlockProperties | function | Properties.SDL_UnlockProperties | PropertyGroup.Unlock | |
 | SDL_CleanupPropertyCallback | callback | - | - | niche — only used by SDL_SetPointerPropertyWithCleanup, which is skipped |
 | SDL_SetPointerPropertyWithCleanup | function | - | - | niche — cleanup-callback pointer variant; managed lifetimes handled by GC/IDisposable |
-| SDL_SetPointerProperty | function | - | - | deferred — needed for create-with-properties interop (e.g. external window handles, pixel buffers) |
+| SDL_SetPointerProperty | function | Properties.SDL_SetPointerProperty | PropertyGroup.SetPointer | |
 | SDL_SetStringProperty | function | Properties.SDL_SetStringProperty | PropertyGroup.SetString | |
 | SDL_SetNumberProperty | function | Properties.SDL_SetNumberProperty | PropertyGroup.SetNumber | |
 | SDL_SetFloatProperty | function | Properties.SDL_SetFloatProperty | PropertyGroup.SetFloat | |
 | SDL_SetBooleanProperty | function | Properties.SDL_SetBooleanProperty | PropertyGroup.SetBoolean | |
 | SDL_HasProperty | function | Properties.SDL_HasProperty | PropertyGroup.Has | |
 | SDL_GetPropertyType | function | Properties.SDL_GetPropertyType | PropertyGroup.GetPropertyType | |
-| SDL_GetPointerProperty | function | Properties.SDL_GetPointerProperty | - | deferred — managed IntPtr-returning PropertyGroup.GetPointer pending |
+| SDL_GetPointerProperty | function | Properties.SDL_GetPointerProperty | PropertyGroup.GetPointer | |
 | SDL_GetStringProperty | function | Properties.SDL_GetStringProperty | PropertyGroup.GetString | |
 | SDL_GetNumberProperty | function | Properties.SDL_GetNumberProperty | PropertyGroup.GetNumber | |
 | SDL_GetFloatProperty | function | Properties.SDL_GetFloatProperty | PropertyGroup.GetFloat | |
@@ -1369,12 +1376,12 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_AddVulkanRenderSemaphores | function | - | - | Platform: Vulkan-specific |
 | SDL_SetDefaultTextureScaleMode | function | Render.SDL_SetDefaultTextureScaleMode | Renderer.DefaultTextureScaleMode (set) | |
 | SDL_GetDefaultTextureScaleMode | function | Render.SDL_GetDefaultTextureScaleMode | Renderer.DefaultTextureScaleMode (get) | |
-| SDL_GPURenderStateCreateInfo | struct | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
-| SDL_GPURenderState | opaque | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
-| SDL_CreateGPURenderState | function | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
-| SDL_SetGPURenderStateFragmentUniforms | function | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
-| SDL_SetGPURenderState | function | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
-| SDL_DestroyGPURenderState | function | - | - | Deferred: GPU renderer-specific; own-design surface tying into SdlSharp.Graphics.Gpu, not part of this pass |
+| SDL_GPURenderStateCreateInfo | struct | - | - | own-design: custom-shader injection into the 2D GPU render path needs a design pass tying into SdlSharp.Graphics.Gpu — skip comment in Native/Render.cs |
+| SDL_GPURenderState | opaque | - | - | own-design: GPU render-state group — skip comment in Native/Render.cs |
+| SDL_CreateGPURenderState | function | - | - | own-design: GPU render-state group — skip comment in Native/Render.cs |
+| SDL_SetGPURenderStateFragmentUniforms | function | - | - | own-design: GPU render-state group — skip comment in Native/Render.cs |
+| SDL_SetGPURenderState | function | - | - | own-design: GPU render-state group — skip comment in Native/Render.cs |
+| SDL_DestroyGPURenderState | function | - | - | own-design: GPU render-state group — skip comment in Native/Render.cs |
 
 ## SDL_scancode.h ✅
 
@@ -1382,25 +1389,25 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 |---|---|---|---|---|
 | SDL_Scancode | enum (249 values) | Scancode.SDL_Scancode | Scancode | Full parity: native enum has 249 members (LOCKING* values commented out upstream, not counted); managed `Scancode` enum covers all 249, verified by set-diff of native member names against managed cast targets |
 
-## SDL_sensor.h
+## SDL_sensor.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
 | SDL_Sensor | struct | Sensor.SDL_Sensor | Sensor | |
 | SDL_SensorID | typedef | - | - | Mapped to plain uint in bindings and managed API |
 | SDL_SensorType | enum | Sensor.SDL_SensorType | SensorType | |
-| SDL_STANDARD_GRAVITY | macro | Sensor.SDL_STANDARD_GRAVITY | - | deferred — public constant pending |
+| SDL_STANDARD_GRAVITY | macro | Sensor.SDL_STANDARD_GRAVITY | Sensor.StandardGravity | |
 | SDL_GetSensors | function | Sensor.SDL_GetSensors | Sensor.GetDevices | |
 | SDL_GetSensorNameForID | function | Sensor.SDL_GetSensorNameForID | Sensor.GetName | |
 | SDL_GetSensorTypeForID | function | Sensor.SDL_GetSensorTypeForID | Sensor.GetType | |
-| SDL_GetSensorNonPortableTypeForID | function | Sensor.SDL_GetSensorNonPortableTypeForID | - | Deferred |
+| SDL_GetSensorNonPortableTypeForID | function | Sensor.SDL_GetSensorNonPortableTypeForID | - | niche: pre-open non-portable type query — Sensor.NonPortableType covers open devices; bound natively |
 | SDL_OpenSensor | function | Sensor.SDL_OpenSensor | Sensor.Open | |
-| SDL_GetSensorFromID | function | Sensor.SDL_GetSensorFromID | - | Deferred |
+| SDL_GetSensorFromID | function | Sensor.SDL_GetSensorFromID | Sensor.FromId | |
 | SDL_GetSensorProperties | function | Sensor.SDL_GetSensorProperties | Sensor.Properties | |
 | SDL_GetSensorName | function | Sensor.SDL_GetSensorName | Sensor.Name | |
 | SDL_GetSensorType | function | Sensor.SDL_GetSensorType | Sensor.Type | |
 | SDL_GetSensorNonPortableType | function | Sensor.SDL_GetSensorNonPortableType | Sensor.NonPortableType | |
-| SDL_GetSensorID | function | Sensor.SDL_GetSensorID | - | deferred — bound but no Sensor.Id property yet |
+| SDL_GetSensorID | function | Sensor.SDL_GetSensorID | Sensor.Id | |
 | SDL_GetSensorData | function | Sensor.SDL_GetSensorData | Sensor.GetData | |
 | SDL_CloseSensor | function | Sensor.SDL_CloseSensor | Sensor.Dispose | |
 | SDL_UpdateSensors | function | Sensor.SDL_UpdateSensors | Sensor.Update | |
@@ -1413,15 +1420,15 @@ Pixel format and colorspace enum values omitted — all wrapped 1:1 between nati
 | SDL_Time / SDL_MAX_TIME / SDL_MIN_TIME | typedef | - | - | .NET — represented as `long` (see Native/Time.cs); long.MaxValue/MinValue |
 | SDL_MAX_SINT8 ... SDL_MIN_UINT64 / SDL_FLT_EPSILON / SDL_PI_D / SDL_PI_F / SDL_INVALID_UNICODE_CODEPOINT | constant | - | - | .NET — T.MaxValue, float.Epsilon, Math.PI, Rune.ReplacementChar |
 | SDL_FOURCC / SDL_arraysize / SDL_stack_alloc / SDL_min / SDL_max / SDL_clamp / SDL_zero(p/a) | macro | - | - | macro — .NET equivalents (Math.Clamp, stackalloc, default) |
-| SDL_malloc / SDL_calloc / SDL_realloc | function | - | - | deferred — needed for buffers SDL later frees with its own allocator (e.g. clipboard provider data); Marshal.AllocHGlobal is not a safe substitute |
+| SDL_malloc / SDL_calloc / SDL_realloc | function | - | - | own-design — only needed if a wrapper ever hands SDL ownership of a caller-allocated buffer (none does today); Marshal.AllocHGlobal would not be a safe substitute then |
 | SDL_free | function | Common.SDL_free | - | internal — used by managed wrappers to free SDL-owned returns |
 | SDL_aligned_alloc / SDL_aligned_free | function | - | - | .NET — NativeMemory.AlignedAlloc |
 | SDL_SetMemoryFunctions / SDL_GetMemoryFunctions / SDL_GetOriginalMemoryFunctions / SDL_GetNumAllocations | function | - | - | niche — replacing SDL's allocator with managed callbacks is a perf/GC hazard |
 | SDL_malloc_func / SDL_calloc_func / SDL_realloc_func / SDL_free_func | callback | - | - | niche — only needed for allocator hooks |
-| SDL_Environment | struct | - | - | deferred — opaque handle for SDL's environment API |
-| SDL_GetEnvironment | function | - | - | deferred — only reliable way to influence SDL env-based behavior at runtime |
-| SDL_CreateEnvironment / SDL_DestroyEnvironment | function | - | - | deferred — standalone environment objects (for SDL_CreateProcessWithProperties) |
-| SDL_GetEnvironmentVariable / SDL_GetEnvironmentVariables / SDL_SetEnvironmentVariable / SDL_UnsetEnvironmentVariable | function | - | - | deferred — with SDL_GetEnvironment |
+| SDL_Environment | struct | - | - | niche — SDL-side environment manipulation; .NET has System.Environment, and hints cover SDL's supported runtime knobs |
+| SDL_GetEnvironment | function | - | - | niche — SDL-side environment manipulation; hints cover SDL's supported runtime knobs |
+| SDL_CreateEnvironment / SDL_DestroyEnvironment | function | - | - | niche — standalone environment objects only matter to the skipped SDL_CreateProcessWithProperties (SDL_process.h is fully deferred) |
+| SDL_GetEnvironmentVariable / SDL_GetEnvironmentVariables / SDL_SetEnvironmentVariable / SDL_UnsetEnvironmentVariable | function | - | - | niche — skipped with the SDL_Environment API; .NET has System.Environment |
 | SDL_getenv | function | - | - | .NET — Environment.GetEnvironmentVariable |
 | SDL_getenv_unsafe / SDL_setenv_unsafe / SDL_unsetenv_unsafe | function | - | - | niche — thread-unsafe libc variants; SDL_Environment API preferred |
 | SDL_qsort / SDL_qsort_r / SDL_bsearch / SDL_bsearch_r | function | - | - | .NET — Array.Sort/MemoryExtensions |
@@ -1546,7 +1553,11 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_WriteSurfacePixel | function | Surface.SDL_WriteSurfacePixel | Surface.WritePixel | |
 | SDL_WriteSurfacePixelFloat | function | Surface.SDL_WriteSurfacePixelFloat | Surface.WritePixelFloat | |
 
-## SDL_system.h
+## SDL_system.h ✅
+
+Only the three cross-platform queries (and the SDL_Sandbox enum) are bound; the
+rest of the header is platform-specific interop — see the skip comment in
+Native/SdlSystem.cs.
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -1577,10 +1588,10 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_RequestAndroidPermission | function | - | - | Platform: Android-specific |
 | SDL_ShowAndroidToast | function | - | - | Platform: Android-specific |
 | SDL_SendAndroidMessage | function | - | - | Platform: Android-specific |
-| SDL_IsTablet | function | - | - | deferred — cross-platform device-type query |
-| SDL_IsTV | function | - | - | deferred — cross-platform TV-device query |
-| SDL_Sandbox | enum | - | - | deferred — return type of SDL_GetSandbox |
-| SDL_GetSandbox | function | - | - | deferred — cross-platform sandbox detection |
+| SDL_IsTablet | function | SdlSystem.SDL_IsTablet | SystemInfo.IsTablet | |
+| SDL_IsTV | function | SdlSystem.SDL_IsTV | SystemInfo.IsTV | |
+| SDL_Sandbox | enum | SdlSystem.SDL_Sandbox | SandboxEnvironment | |
+| SDL_GetSandbox | function | SdlSystem.SDL_GetSandbox | SystemInfo.Sandbox | |
 | SDL_OnApplication* | function (7) | - | - | Platform: lifecycle callbacks |
 | SDL_GetGDKTaskQueue | function | - | - | Platform: Xbox GDK only |
 | SDL_GetGDKDefaultUser | function | - | - | Platform: Xbox GDK only |
@@ -1649,7 +1660,7 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_AddTimerNS | function | - | - | .NET has System.Threading.Timer / System.Timers.Timer (documented skip in Timer.cs) |
 | SDL_RemoveTimer | function | - | - | .NET has System.Threading.Timer / System.Timers.Timer (documented skip in Timer.cs) |
 
-## SDL_touch.h
+## SDL_touch.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -1657,52 +1668,52 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_FingerID | typedef | - | - | Raw ulong in bindings; managed Finger.Id is long |
 | SDL_TouchDeviceType | enum | Touch.SDL_TouchDeviceType | TouchDeviceType | |
 | SDL_Finger | struct | Touch.SDL_Finger | Finger | |
-| SDL_TOUCH_MOUSEID | macro | Mouse.SDL_TOUCH_MOUSEID | - | Deferred managed constant |
-| SDL_MOUSE_TOUCHID | macro | Touch.SDL_MOUSE_TOUCHID | - | Deferred managed constant |
+| SDL_TOUCH_MOUSEID | macro | Mouse.SDL_TOUCH_MOUSEID | TouchDevice.MouseId | |
+| SDL_MOUSE_TOUCHID | macro | Touch.SDL_MOUSE_TOUCHID | TouchDevice.MouseTouchDeviceId | |
 | SDL_GetTouchDevices | function | Touch.SDL_GetTouchDevices | TouchDevice.GetDevices | |
 | SDL_GetTouchDeviceName | function | Touch.SDL_GetTouchDeviceName | TouchDevice.GetName | |
 | SDL_GetTouchDeviceType | function | Touch.SDL_GetTouchDeviceType | TouchDevice.GetType | |
 | SDL_GetTouchFingers | function | Touch.SDL_GetTouchFingers | TouchDevice.GetFingers | |
 
-## SDL_tray.h
+## SDL_tray.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
-| SDL_Tray | opaque | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_TrayMenu | opaque | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_TrayEntry | opaque | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_TrayEntryFlags | typedef | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_TRAYENTRY_BUTTON | constant | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_TRAYENTRY_CHECKBOX | constant | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_TRAYENTRY_SUBMENU | constant | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_TRAYENTRY_DISABLED | constant | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_TRAYENTRY_CHECKED | constant | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_TrayCallback | callback | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_CreateTray | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_SetTrayIcon | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_SetTrayTooltip | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_CreateTrayMenu | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_CreateTraySubmenu | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_GetTrayMenu | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_GetTraySubmenu | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_GetTrayEntries | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_RemoveTrayEntry | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_InsertTrayEntryAt | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_SetTrayEntryLabel | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_GetTrayEntryLabel | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_SetTrayEntryChecked | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_GetTrayEntryChecked | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_SetTrayEntryEnabled | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_GetTrayEntryEnabled | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_SetTrayEntryCallback | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_ClickTrayEntry | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_DestroyTray | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_GetTrayEntryParent | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_GetTrayMenuParentEntry | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_GetTrayMenuParentTray | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
-| SDL_UpdateTrays | function | - | - | deferred — wrap planned (TODO.md Phase 11.2) |
+| SDL_Tray | opaque | Tray.SDL_Tray | Tray | |
+| SDL_TrayMenu | opaque | Tray.SDL_TrayMenu | TrayMenu | View over tray-owned state |
+| SDL_TrayEntry | opaque | Tray.SDL_TrayEntry | TrayEntry | View over tray-owned state |
+| SDL_TrayEntryFlags | typedef | Tray.SDL_TRAYENTRY_* (uint constants) | TrayEntryFlags | |
+| SDL_TRAYENTRY_BUTTON | constant | Tray.SDL_TRAYENTRY_BUTTON | TrayEntryFlags.Button | |
+| SDL_TRAYENTRY_CHECKBOX | constant | Tray.SDL_TRAYENTRY_CHECKBOX | TrayEntryFlags.Checkbox | |
+| SDL_TRAYENTRY_SUBMENU | constant | Tray.SDL_TRAYENTRY_SUBMENU | TrayEntryFlags.Submenu | |
+| SDL_TRAYENTRY_DISABLED | constant | Tray.SDL_TRAYENTRY_DISABLED | TrayEntryFlags.Disabled | |
+| SDL_TRAYENTRY_CHECKED | constant | Tray.SDL_TRAYENTRY_CHECKED | TrayEntryFlags.Checked | |
+| SDL_TrayCallback | callback | Tray.SDL_SetTrayEntryCallback (function pointer) | TrayEntry.SetCallback (Action&lt;TrayEntry&gt;) | GCHandle registry per tray |
+| SDL_CreateTray | function | Tray.SDL_CreateTray | Tray.Create | |
+| SDL_SetTrayIcon | function | Tray.SDL_SetTrayIcon | Tray.SetIcon | |
+| SDL_SetTrayTooltip | function | Tray.SDL_SetTrayTooltip | Tray.SetTooltip | |
+| SDL_CreateTrayMenu | function | Tray.SDL_CreateTrayMenu | Tray.CreateMenu | |
+| SDL_CreateTraySubmenu | function | Tray.SDL_CreateTraySubmenu | TrayEntry.CreateSubmenu | |
+| SDL_GetTrayMenu | function | Tray.SDL_GetTrayMenu | Tray.Menu | Null when no menu was created |
+| SDL_GetTraySubmenu | function | Tray.SDL_GetTraySubmenu | TrayEntry.Submenu | Null for non-submenu entries |
+| SDL_GetTrayEntries | function | Tray.SDL_GetTrayEntries | TrayMenu.Entries | Snapshot array |
+| SDL_RemoveTrayEntry | function | Tray.SDL_RemoveTrayEntry | TrayEntry.Remove | |
+| SDL_InsertTrayEntryAt | function | Tray.SDL_InsertTrayEntryAt | TrayMenu.InsertEntry | Null label inserts a separator |
+| SDL_SetTrayEntryLabel | function | Tray.SDL_SetTrayEntryLabel | TrayEntry.Label (set) | |
+| SDL_GetTrayEntryLabel | function | Tray.SDL_GetTrayEntryLabel | TrayEntry.Label (get) | |
+| SDL_SetTrayEntryChecked | function | Tray.SDL_SetTrayEntryChecked | TrayEntry.IsChecked (set) | |
+| SDL_GetTrayEntryChecked | function | Tray.SDL_GetTrayEntryChecked | TrayEntry.IsChecked (get) | |
+| SDL_SetTrayEntryEnabled | function | Tray.SDL_SetTrayEntryEnabled | TrayEntry.IsEnabled (set) | |
+| SDL_GetTrayEntryEnabled | function | Tray.SDL_GetTrayEntryEnabled | TrayEntry.IsEnabled (get) | |
+| SDL_SetTrayEntryCallback | function | Tray.SDL_SetTrayEntryCallback | TrayEntry.SetCallback | |
+| SDL_ClickTrayEntry | function | Tray.SDL_ClickTrayEntry | TrayEntry.Click | |
+| SDL_DestroyTray | function | Tray.SDL_DestroyTray | Tray.Dispose | |
+| SDL_GetTrayEntryParent | function | Tray.SDL_GetTrayEntryParent | TrayEntry.Parent | |
+| SDL_GetTrayMenuParentEntry | function | Tray.SDL_GetTrayMenuParentEntry | TrayMenu.ParentEntry | Null for a tray root menu |
+| SDL_GetTrayMenuParentTray | function | Tray.SDL_GetTrayMenuParentTray | TrayMenu.ParentTray | Null for a submenu |
+| SDL_UpdateTrays | function | Tray.SDL_UpdateTrays | Tray.Update | |
 
-## SDL_version.h
+## SDL_version.h ✅
 
 | SDL Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
@@ -1715,8 +1726,8 @@ Entire header skipped by design — .NET's `System.IO` covers desktop filesystem
 | SDL_VERSIONNUM_MICRO | macro | - | - | macro — decodes SDL_GetVersion result |
 | SDL_VERSION | macro | - | - | macro — compile-time header version |
 | SDL_VERSION_ATLEAST | macro | - | - | macro — compile-time version check |
-| SDL_GetVersion | function | - | - | Deferred |
-| SDL_GetRevision | function | - | - | Deferred |
+| SDL_GetVersion | function | Version.SDL_GetVersion | Sdl.Version | Decoded to System.Version |
+| SDL_GetRevision | function | Version.SDL_GetRevision | Sdl.Revision | |
 
 ## SDL_video.h ✅
 

@@ -7,7 +7,9 @@ namespace SdlSharp.Native;
 
 // Deferred: SDL_GDKSuspendGPU/SDL_GDKResumeGPU (Xbox GDK only),
 // SDL_GPUVulkanOptions (advanced Vulkan-specific configuration),
-// SDL_GPUSupportsProperties (rarely needed vs SDL_GPUSupportsShaderFormats).
+// SDL_GPUSupportsProperties (rarely needed vs SDL_GPUSupportsShaderFormats),
+// SDL_GetPixelFormatFromGPUTextureFormat / SDL_GetGPUTextureFormatFromPixelFormat
+// (niche 2D-render <-> GPU pixel-format conversion helpers, SDL 3.4).
 
 // ──────────────────────────────────────────────────────────────
 //  Opaque types

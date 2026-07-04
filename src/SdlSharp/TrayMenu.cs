@@ -66,6 +66,6 @@ public sealed unsafe class TrayMenu
         }
     }
 
-    /// <summary>Gets the tray this menu ultimately belongs to.</summary>
-    public Tray ParentTray => _tray;
+    /// <summary>Gets the tray this menu is the root menu of, or null when this menu is a submenu.</summary>
+    public Tray? ParentTray => SDL_GetTrayMenuParentTray(Menu) == null ? null : _tray;
 }
