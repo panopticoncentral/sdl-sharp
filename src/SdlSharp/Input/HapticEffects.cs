@@ -369,6 +369,11 @@ public readonly record struct HapticCustomEffect(
             throw new ArgumentException("Data length must be a positive multiple of the channel count.");
         }
 
+        if (Data.Length / Channels > ushort.MaxValue)
+        {
+            throw new ArgumentException($"Too many samples per channel ({Data.Length / Channels}); the maximum is {ushort.MaxValue}.");
+        }
+
         return new Native.SDL_HapticEffect
         {
             custom = new Native.SDL_HapticCustom
