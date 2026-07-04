@@ -49,7 +49,7 @@ public sealed unsafe class Tray : IDisposable
     /// <param name="tooltip">The new tooltip, or null to remove it.</param>
     public void SetTooltip(string? tooltip) => SDL_SetTrayTooltip(Handle, ToUtf8(tooltip));
 
-    /// <summary>Creates (or replaces) the tray's root menu.</summary>
+    /// <summary>Creates the tray's root menu. Call at most once per tray (SDL contract).</summary>
     public TrayMenu CreateMenu() => new(Check(SDL_CreateTrayMenu(Handle)), this);
 
     /// <summary>Gets the tray's root menu, or null if none was created.</summary>

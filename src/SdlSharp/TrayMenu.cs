@@ -34,17 +34,9 @@ public sealed unsafe class TrayMenu
     /// <param name="index">Position to insert at, or -1 to append.</param>
     /// <param name="label">The entry label, or null for a separator.</param>
     /// <param name="flags">Entry kind and initial state (ignored for separators).</param>
-    /// <returns>The new entry, or null when a separator was inserted and SDL returned none.</returns>
-    public TrayEntry? InsertEntry(int index, string? label, TrayEntryFlags flags = TrayEntryFlags.Button)
-    {
-        var entry = SDL_InsertTrayEntryAt(Menu, index, ToUtf8(label), (uint)flags);
-        if (entry == null && label != null)
-        {
-            throw new SdlException();
-        }
-
-        return entry == null ? null : new TrayEntry(entry, _tray);
-    }
+    /// <returns>The new entry (separators included; SDL returns an entry for every successful insert).</returns>
+    public TrayEntry InsertEntry(int index, string? label, TrayEntryFlags flags = TrayEntryFlags.Button) =>
+        new(Check(SDL_InsertTrayEntryAt(Menu, index, ToUtf8(label), (uint)flags)), _tray);
 
     /// <summary>Gets a snapshot of the menu's entries.</summary>
     public TrayEntry[] Entries
