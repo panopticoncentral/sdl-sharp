@@ -4,6 +4,7 @@ using static SdlSharp.Native.CpuInfo;
 using static SdlSharp.Native.FileSystem;
 using static SdlSharp.Native.Common;
 using static SdlSharp.Native.Misc;
+using static SdlSharp.Native.SdlSystem;
 
 namespace SdlSharp;
 
@@ -111,4 +112,19 @@ public static unsafe class SystemInfo
     /// <param name="url">The URL to open.</param>
     public static void OpenUrl(string url) =>
         Check(SDL_OpenURL(ToUtf8(url)));
+
+    /// <summary>
+    /// Creates a directory (and any missing parents). Succeeds if it already exists.
+    /// </summary>
+    /// <param name="path">The directory path.</param>
+    public static void CreateDirectory(string path) => Check(SDL_CreateDirectory(ToUtf8(path)));
+
+    /// <summary>Gets whether the device is a tablet.</summary>
+    public static bool IsTablet => SDL_IsTablet();
+
+    /// <summary>Gets whether the device is a TV.</summary>
+    public static bool IsTV => SDL_IsTV();
+
+    /// <summary>Gets the sandbox environment the process runs in, if any.</summary>
+    public static SandboxEnvironment Sandbox => (SandboxEnvironment)SDL_GetSandbox();
 }

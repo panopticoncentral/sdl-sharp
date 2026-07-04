@@ -20,6 +20,16 @@ public static unsafe class SdlHints
         SDL_SetHint(ToUtf8(name), ToUtf8(value));
 
     /// <summary>
+    /// Sets a hint with a specific priority. Higher-priority values override lower ones.
+    /// </summary>
+    /// <param name="name">The hint name.</param>
+    /// <param name="value">The value to set.</param>
+    /// <param name="priority">The priority to set it with.</param>
+    /// <returns>True if the hint was set.</returns>
+    public static bool Set(string name, string value, HintPriority priority) =>
+        SDL_SetHintWithPriority(ToUtf8(name), ToUtf8(value), (Native.SDL_HintPriority)priority);
+
+    /// <summary>
     /// Gets the value of a hint.
     /// </summary>
     /// <param name="name">The hint name.</param>
