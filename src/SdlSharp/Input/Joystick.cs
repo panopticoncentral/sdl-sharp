@@ -254,6 +254,9 @@ public sealed unsafe class Joystick : IDisposable
     /// <summary>Gets whether joystick events are enabled.</summary>
     public static bool EventsEnabled => SDL_JoystickEventsEnabled();
 
+    /// <summary>Gets whether this joystick has haptic (force feedback) capabilities.</summary>
+    public bool IsHaptic => Native.Haptic.SDL_IsJoystickHaptic(Handle);
+
     /// <summary>Minimum value a joystick axis reports.</summary>
     public const short AxisMin = Native.Joystick.SDL_JOYSTICK_AXIS_MIN;
 
