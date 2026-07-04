@@ -123,8 +123,14 @@ public sealed unsafe class Camera : IDisposable
         }
     }
 
-    /// <summary>Gets the permission state of this camera. 0 = pending, 1 = approved, -1 = denied.</summary>
-    public int PermissionState => SDL_GetCameraPermissionState(Handle);
+    /// <summary>
+    /// Gets whether the user has approved camera access. Poll while
+    /// <see cref="CameraPermissionState.Waiting"/>; frames arrive only after approval.
+    /// </summary>
+    public CameraPermissionState PermissionState => (CameraPermissionState)SDL_GetCameraPermissionState(Handle);
+
+    /// <summary>Gets the instance ID of this camera.</summary>
+    public uint Id => SDL_GetCameraID(Handle).Value;
 
     /// <summary>Gets the properties associated with this camera.</summary>
     public PropertyGroup Properties =>

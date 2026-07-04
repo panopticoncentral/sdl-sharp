@@ -30,9 +30,20 @@ public sealed unsafe class Sensor : IDisposable
         _ownsHandle = ownsHandle;
     }
 
+    /// <summary>A constant for gravity in m/s², for use with accelerometer data.</summary>
+    public const float StandardGravity = 9.80665f;
+
     /// <summary>Opens a sensor by instance ID.</summary>
     public static Sensor Open(uint id) =>
         new(Check(SDL_OpenSensor(id)));
+
+    /// <summary>
+    /// Gets an opened sensor by instance ID. The returned wrapper does not own the
+    /// sensor; each access returns a new wrapper and wrappers are not equal to each other.
+    /// </summary>
+    /// <param name="id">The sensor instance ID.</param>
+    public static Sensor FromId(uint id) =>
+        new(Check(SDL_GetSensorFromID(id)), ownsHandle: false);
 
     /// <summary>Gets the instance IDs of all connected sensors.</summary>
     public static uint[] GetDevices()
@@ -69,6 +80,9 @@ public sealed unsafe class Sensor : IDisposable
 
     /// <summary>Gets the non-portable type of this sensor.</summary>
     public int NonPortableType => SDL_GetSensorNonPortableType(Handle);
+
+    /// <summary>Gets the instance ID of this sensor.</summary>
+    public uint Id => SDL_GetSensorID(Handle);
 
     /// <summary>Gets the current sensor data.</summary>
     /// <param name="data">A span to receive the sensor data values.</param>

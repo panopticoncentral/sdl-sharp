@@ -87,6 +87,14 @@ public sealed unsafe class PropertyGroup : IDisposable
         Check(SDL_SetBooleanProperty(Id, ToUtf8(name), value));
 
     /// <summary>
+    /// Sets a pointer-valued property. The caller owns whatever the pointer references.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="value">The pointer value, or 0 to clear.</param>
+    public void SetPointer(string name, nint value) =>
+        Check(SDL_SetPointerProperty(Id, ToUtf8(name), (void*)value));
+
+    /// <summary>
     /// Returns whether a property exists.
     /// </summary>
     public bool Has(string name) => SDL_HasProperty(Id, ToUtf8(name));
@@ -95,6 +103,14 @@ public sealed unsafe class PropertyGroup : IDisposable
     /// Gets the type of a property.
     /// </summary>
     public PropertyType GetPropertyType(string name) => (PropertyType)SDL_GetPropertyType(Id, ToUtf8(name));
+
+    /// <summary>
+    /// Gets a pointer-valued property.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="defaultValue">Value returned when the property is unset.</param>
+    public nint GetPointer(string name, nint defaultValue = 0) =>
+        (nint)SDL_GetPointerProperty(Id, ToUtf8(name), (void*)defaultValue);
 
     /// <summary>
     /// Gets a string property.

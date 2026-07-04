@@ -78,8 +78,17 @@ public static partial class Properties
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void SDL_UnlockProperties(SDL_PropertiesID props);
 
-    // Skipped: SDL_SetPointerPropertyWithCleanup, SDL_SetPointerProperty — setting raw
-    // pointers is not useful from managed code; reading them via SDL_GetPointerProperty suffices.
+    // Skipped: SDL_SetPointerPropertyWithCleanup — its cleanup callback ties native
+    // lifetime management to managed state; use SetPointerProperty and manage
+    // lifetime on the managed side instead.
+
+    /// <summary>
+    /// Set a pointer property in a group of properties.
+    /// </summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_SetPointerProperty")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    [return: MarshalAs(UnmanagedType.U1)]
+    public static unsafe partial bool SDL_SetPointerProperty(SDL_PropertiesID props, ReadOnlySpan<byte> name, void* value);
 
     /// <summary>
     /// Set a string property in a group of properties.

@@ -11,6 +11,16 @@ namespace SdlSharp.Input;
 /// </summary>
 public static unsafe class TouchDevice
 {
+    /// <summary>
+    /// The mouse instance ID carried by mouse events that SDL synthesized from touch input.
+    /// </summary>
+    public const uint MouseId = uint.MaxValue;
+
+    /// <summary>
+    /// The touch device ID carried by touch events that SDL synthesized from mouse input.
+    /// </summary>
+    public const ulong MouseTouchDeviceId = ulong.MaxValue;
+
     /// <summary>Gets the IDs of all connected touch devices.</summary>
     public static ulong[] GetDevices()
     {
