@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace SdlSharp.Native;
 
-// Deferred: SDL_Log, SDL_LogTrace, SDL_LogVerbose, SDL_LogDebug, SDL_LogInfo,
-// SDL_LogWarn, SDL_LogError, SDL_LogCritical, SDL_LogMessage, SDL_LogMessageV
-// (variadic printf-style functions — not compatible with LibraryImport).
-// Use SDL_SetLogOutputFunction callback to capture SDL log output instead.
+// Skipped SDL_LogMessage / SDL_Log / SDL_Log<Priority> emit functions: C-variadic,
+// not portably callable from .NET (on Apple arm64 variadic args use the stack,
+// fixed-signature P/Invoke uses registers). Use .NET logging and bridge SDL's own
+// output via SDL_SetLogOutputFunction.
 // Also deferred: SDL_GetDefaultLogOutputFunction, SDL_GetLogOutputFunction
 // (function pointer retrieval — rarely needed).
 
