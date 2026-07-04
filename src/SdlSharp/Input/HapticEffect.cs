@@ -6,7 +6,10 @@ namespace SdlSharp.Input;
 /// <summary>
 /// A haptic effect uploaded to a device. Created via <see cref="Haptic.CreateEffect(in HapticConstantEffect)"/>
 /// and overloads. Dispose to free the effect slot; effects become invalid when the
-/// owning <see cref="Haptic"/> device is disposed.
+/// owning <see cref="Haptic"/> device is disposed. When the effect was created through
+/// a non-owning wrapper (see <see cref="Haptic.FromId"/>), dispose the effect before
+/// that wrapper — disposing after skips the native release and leaves the device's
+/// effect slot occupied until the device itself is closed.
 /// </summary>
 public sealed unsafe class HapticEffect : IDisposable
 {

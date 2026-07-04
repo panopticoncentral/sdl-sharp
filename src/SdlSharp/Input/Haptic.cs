@@ -90,7 +90,10 @@ public sealed unsafe class Haptic : IDisposable
     /// <summary>
     /// Gets an existing opened haptic device by instance ID. The returned wrapper does
     /// not own the device; each access returns a new wrapper and wrappers are not equal
-    /// to each other.
+    /// to each other. Dispose any <see cref="HapticEffect"/> created through this wrapper
+    /// BEFORE disposing the wrapper itself — once the wrapper is disposed, its effects
+    /// skip the native release and their device slots stay occupied until the device
+    /// is closed by its real owner.
     /// </summary>
     /// <param name="id">The haptic instance ID.</param>
     public static Haptic FromId(uint id) =>
