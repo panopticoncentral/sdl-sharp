@@ -92,10 +92,11 @@ public sealed unsafe class AudioDevice : IDisposable
     /// <summary>
     /// Gets the names and IDs of currently connected playback devices.
     /// </summary>
+    /// <exception cref="SdlException">The device list could not be retrieved (an empty array is the no-devices result).</exception>
     public static (uint Id, string? Name)[] GetPlaybackDevices()
     {
         var ids = SDL_GetAudioPlaybackDevices(out var count);
-        if (ids == null) return [];
+        if (ids == null) throw new SdlException();
         try
         {
             return GetDeviceInfos(ids, count);
@@ -109,10 +110,11 @@ public sealed unsafe class AudioDevice : IDisposable
     /// <summary>
     /// Gets the names and IDs of currently connected recording devices.
     /// </summary>
+    /// <exception cref="SdlException">The device list could not be retrieved (an empty array is the no-devices result).</exception>
     public static (uint Id, string? Name)[] GetRecordingDevices()
     {
         var ids = SDL_GetAudioRecordingDevices(out var count);
-        if (ids == null) return [];
+        if (ids == null) throw new SdlException();
         try
         {
             return GetDeviceInfos(ids, count);

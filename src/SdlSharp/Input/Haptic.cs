@@ -43,10 +43,11 @@ public sealed unsafe class Haptic : IDisposable
         new(Check(SDL_OpenHapticFromJoystick(joystick.Handle)));
 
     /// <summary>Gets the instance IDs of all connected haptic devices.</summary>
+    /// <exception cref="SdlException">The device list could not be retrieved (an empty array is the no-devices result).</exception>
     public static uint[] GetDevices()
     {
         var ids = SDL_GetHaptics(out var count);
-        if (ids == null) return [];
+        if (ids == null) throw new SdlException();
         try
         {
             var result = new uint[count];
