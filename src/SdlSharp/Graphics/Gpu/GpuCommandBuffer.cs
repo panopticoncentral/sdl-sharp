@@ -122,6 +122,20 @@ public sealed unsafe class GpuCommandBuffer
     }
 
     /// <summary>
+    /// Pushes uniform data for a vertex shader slot.
+    /// </summary>
+    /// <typeparam name="T">The unmanaged element type of the uniform data.</typeparam>
+    /// <param name="slot">The uniform buffer slot index.</param>
+    /// <param name="data">The uniform data values.</param>
+    public void PushVertexUniformData<T>(uint slot, ReadOnlySpan<T> data) where T : unmanaged
+    {
+        fixed (T* p = data)
+        {
+            SDL_PushGPUVertexUniformData(Handle, slot, p, (uint)data.Length * (uint)sizeof(T));
+        }
+    }
+
+    /// <summary>
     /// Pushes uniform data for a fragment shader slot.
     /// </summary>
     /// <typeparam name="T">The unmanaged type of the uniform data.</typeparam>
@@ -149,6 +163,20 @@ public sealed unsafe class GpuCommandBuffer
     }
 
     /// <summary>
+    /// Pushes uniform data for a fragment shader slot.
+    /// </summary>
+    /// <typeparam name="T">The unmanaged element type of the uniform data.</typeparam>
+    /// <param name="slot">The uniform buffer slot index.</param>
+    /// <param name="data">The uniform data values.</param>
+    public void PushFragmentUniformData<T>(uint slot, ReadOnlySpan<T> data) where T : unmanaged
+    {
+        fixed (T* p = data)
+        {
+            SDL_PushGPUFragmentUniformData(Handle, slot, p, (uint)data.Length * (uint)sizeof(T));
+        }
+    }
+
+    /// <summary>
     /// Pushes uniform data for a compute shader slot.
     /// </summary>
     /// <typeparam name="T">The unmanaged type of the uniform data.</typeparam>
@@ -172,6 +200,20 @@ public sealed unsafe class GpuCommandBuffer
         fixed (byte* p = data)
         {
             SDL_PushGPUComputeUniformData(Handle, slot, p, (uint)data.Length);
+        }
+    }
+
+    /// <summary>
+    /// Pushes uniform data for a compute shader slot.
+    /// </summary>
+    /// <typeparam name="T">The unmanaged element type of the uniform data.</typeparam>
+    /// <param name="slot">The uniform buffer slot index.</param>
+    /// <param name="data">The uniform data values.</param>
+    public void PushComputeUniformData<T>(uint slot, ReadOnlySpan<T> data) where T : unmanaged
+    {
+        fixed (T* p = data)
+        {
+            SDL_PushGPUComputeUniformData(Handle, slot, p, (uint)data.Length * (uint)sizeof(T));
         }
     }
 
