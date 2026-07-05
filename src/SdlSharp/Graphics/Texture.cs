@@ -316,6 +316,28 @@ public sealed unsafe class Texture : IDisposable
     }
 
     /// <summary>
+    /// Updates the given texture rectangle with new pixel data.
+    /// </summary>
+    /// <param name="rect">The area to update, or <c>null</c> to update the entire texture.</param>
+    /// <param name="pixels">The raw pixel data bytes.</param>
+    /// <param name="pitch">The number of bytes in a row of pixel data, including padding between lines.</param>
+    public void Update(Rectangle? rect, ReadOnlySpan<byte> pixels, int pitch)
+    {
+        fixed (byte* pixelsPtr = pixels)
+        {
+            if (rect is { } r)
+            {
+                var native = r.ToNative();
+                Check(SDL_UpdateTexture(Handle, &native, pixelsPtr, pitch));
+            }
+            else
+            {
+                Check(SDL_UpdateTexture(Handle, null, pixelsPtr, pitch));
+            }
+        }
+    }
+
+    /// <summary>
     /// Updates a rectangle within a planar YV12 or IYUV texture with new pixel data.
     /// </summary>
     /// <param name="rect">The area to update, or <c>null</c> to update the entire texture.</param>
@@ -387,6 +409,28 @@ public sealed unsafe class Texture : IDisposable
         {
             Check(SDL_LockTexture(Handle, null, out var p, out pitch));
             pixels = (nint)p;
+        }
+    }
+
+    /// <summary>
+    /// Locks a portion of the texture for write-only pixel access, exposing the locked
+    /// pixels as a span. The span is valid only until <see cref="Unlock"/> is called.
+    /// </summary>
+    /// <param name="rect">The area to lock, or <c>null</c> for the entire texture.</param>
+    /// <param name="pitch">On return, the pitch of the locked pixels.</param>
+    /// <returns>A span over the locked pixels, covering pitch × height bytes of the locked area.</returns>
+    public Span<byte> Lock(Rectangle? rect, out int pitch)
+    {
+        if (rect is { } r)
+        {
+            var native = r.ToNative();
+            Check(SDL_LockTexture(Handle, &native, out var p, out pitch));
+            return new((void*)p, pitch * r.H);
+        }
+        else
+        {
+            Check(SDL_LockTexture(Handle, null, out var p, out pitch));
+            return new((void*)p, pitch * Height);
         }
     }
 
