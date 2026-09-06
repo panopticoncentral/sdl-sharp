@@ -60,6 +60,21 @@ public static unsafe class ImGuiBackend
     }
 
     /// <summary>
+    /// Renders prepared draw data using a custom pipeline compatible with the active
+    /// render pass and ImGui's vertex/shader inputs. Null selects the default pipeline.
+    /// </summary>
+    /// <param name="drawData">The prepared draw data.</param>
+    /// <param name="commandBuffer">The GPU command buffer.</param>
+    /// <param name="renderPass">The active render pass.</param>
+    /// <param name="pipeline">The custom pipeline, or null for the backend default.</param>
+    public static void RenderDrawData(DrawData drawData, GpuCommandBuffer commandBuffer,
+        GpuRenderPass renderPass, GpuGraphicsPipeline? pipeline)
+    {
+        IGSharp_ImplSDLGPU3_RenderDrawDataWithPipeline(drawData.Handle, commandBuffer.Handle,
+            renderPass.Handle, pipeline is null ? null : pipeline.Handle);
+    }
+
+    /// <summary>
     /// Shuts down both backends and unhooks the event filter.
     /// </summary>
     public static void Shutdown()

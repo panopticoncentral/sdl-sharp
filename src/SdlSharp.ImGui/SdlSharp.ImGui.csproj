@@ -21,11 +21,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="SdlSharp.ImGui.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../SdlSharp/SdlSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImguiSharp.Redist" Version="0.3.0-preview.1" />
+    <PackageReference Include="ImguiSharp.Redist" Version="0.3.0-preview.2" />
   </ItemGroup>
 
 </Project>

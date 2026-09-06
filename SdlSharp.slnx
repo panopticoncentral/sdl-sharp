@@ -23,6 +23,9 @@
     <Project Path="Samples/MiscOps/MiscOps.csproj" />
     <Project Path="Samples/TrayDemo/TrayDemo.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SdlSharp.ImGui.Tests/SdlSharp.ImGui.Tests.csproj" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="TODO.md" />
     <File Path="INVENTORY.md" />

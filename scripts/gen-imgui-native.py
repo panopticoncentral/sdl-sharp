@@ -144,7 +144,7 @@ namespace SdlSharp.ImGui;
 /// <summary>
 /// Native P/Invoke bindings for the imgui_sharp C wrapper library,
 /// including the SDL3 platform backend and SDL_GPU renderer backend.
-/// GENERATED from imgui_sharp.h by gen_native.py — edit the generator, not this file
+/// GENERATED from imgui_sharp.h by scripts/gen-imgui-native.py — edit the generator, not this file
 /// (except the hand-written backend section at the bottom).
 /// </summary>
 internal static unsafe partial class Native

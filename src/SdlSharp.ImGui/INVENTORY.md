@@ -865,7 +865,8 @@ ImDrawList is exposed as a `readonly struct DrawList` wrapping the native pointe
 | IdxBuffer.Data | field | Native.IGSharp_DrawList_GetIdxBufferData | - | internal — renderer-backend concern |
 | VtxBuffer.Size | field | Native.IGSharp_DrawList_GetVtxBufferSize | DrawList.VtxBufferSize | |
 | VtxBuffer.Data | field | Native.IGSharp_DrawList_GetVtxBufferData | - | internal — renderer-backend concern |
-| (constructor) | function | Native.IGSharp_DrawList_Create | - | niche — opaque shared-data |
+| (constructor) | function | Native.IGSharp_DrawList_Create | StandaloneDrawList.Create | Owned initialized list |
+| ResetForNewFrame | function | Native.IGSharp_DrawList_ResetForNewFrame | StandaloneDrawList.ResetForNewFrame | Reuse after starting a frame |
 | (destructor) | function | Native.IGSharp_DrawList_Destroy | ClonedDrawList.Dispose | Used to free CloneOutput result |
 
 ## ImDrawData API
@@ -1354,3 +1355,5 @@ All flag/enum types are wrapped as public C# enums in `SdlSharp.ImGui` namespace
 | ImGui_ImplSDLGPU3_NewFrame | function | Native.IGSharp_ImplSDLGPU3_NewFrame | ImGuiBackend.NewFrame | |
 | ImGui_ImplSDLGPU3_PrepareDrawData | function | Native.IGSharp_ImplSDLGPU3_PrepareDrawData | ImGuiBackend.PrepareDrawData | Takes DrawData |
 | ImGui_ImplSDLGPU3_RenderDrawData | function | Native.IGSharp_ImplSDLGPU3_RenderDrawData | ImGuiBackend.RenderDrawData | Takes DrawData |
+
+Custom SDL_GPU pipelines: `Native.IGSharp_ImplSDLGPU3_RenderDrawDataWithPipeline` is exposed through the four-argument `ImGuiBackend.RenderDrawData` overload.

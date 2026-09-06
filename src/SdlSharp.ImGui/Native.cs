@@ -3086,6 +3086,10 @@ internal static unsafe partial class Native
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial IGSharp_DrawList* IGSharp_DrawList_Create(IGSharp_DrawListSharedData* shared_data); // ImDrawListSharedData*
 
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_DrawList_ResetForNewFrame")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_DrawList_ResetForNewFrame(IGSharp_DrawList* draw_list);
+
     [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_DrawList_Destroy")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void IGSharp_DrawList_Destroy(IGSharp_DrawList* draw_list);
@@ -4192,4 +4196,8 @@ internal static unsafe partial class Native
     [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDLGPU3_RenderDrawData")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void IGSharp_ImplSDLGPU3_RenderDrawData(void* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass);
+
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_ImplSDLGPU3_RenderDrawDataWithPipeline")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void IGSharp_ImplSDLGPU3_RenderDrawDataWithPipeline(void* draw_data, SDL_GPUCommandBuffer* command_buffer, SDL_GPURenderPass* render_pass, SDL_GPUGraphicsPipeline* pipeline);
 }
