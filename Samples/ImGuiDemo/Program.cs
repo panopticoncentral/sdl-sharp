@@ -33,7 +33,7 @@ unsafe
     ImGui.StyleColorsDark();
 
     // Initialize backends
-    ImGuiBackend.Init(window, device, swapFormat);
+    using var backend = ImGuiBackend.Init(window, device, swapFormat);
 
     var showDemo = true;
     var showCSharpDemo = true;
@@ -41,7 +41,7 @@ unsafe
     while (!Application.DispatchEvents())
     {
         // Start ImGui frame
-        ImGuiBackend.NewFrame();
+        backend.NewFrame();
 
         // Show the native and ported demo windows side-by-side.
         if (showDemo) ImGui.ShowDemoWindow(ref showDemo);
@@ -57,7 +57,7 @@ unsafe
         if (cmdBuf.WaitAndAcquireSwapchainTexture(window, out _) is { } swapTex)
         {
             // Upload vertex/index buffers BEFORE starting the render pass
-            ImGuiBackend.PrepareDrawData(drawData, cmdBuf);
+            backend.PrepareDrawData(drawData, cmdBuf);
 
             var colorTarget = new GpuColorTargetInfo
             {
@@ -70,7 +70,7 @@ unsafe
             var renderPass = cmdBuf.BeginRenderPass(colorTarget);
 
             // Render ImGui draw commands inside the render pass
-            ImGuiBackend.RenderDrawData(drawData, cmdBuf, renderPass);
+            backend.RenderDrawData(drawData, cmdBuf, renderPass);
 
             renderPass.End();
         }
@@ -79,5 +79,4 @@ unsafe
     }
 
     device.WaitForIdle();
-    ImGuiBackend.Shutdown();
 }

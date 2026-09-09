@@ -781,10 +781,9 @@ internal static unsafe partial class DemoWindow
                 ImGui.Text($"({root_node.Childs.Count} root nodes)");
                 ImGui.SetNextItemWidth(-FltMin);
                 ImGui.SetNextItemShortcut(Key.ModCtrl | Key.F, InputFlags.Tooltip);
-                // PORT GAP: ImGuiTextFilter::InputBuf is not exposed by the wrapper, so we cannot
-                // use InputTextWithHint(..., ImGuiInputTextFlags_EscapeClearsAll) + Filter.Build()
-                // like upstream. TextFilter.Draw() provides the same filtering behavior.
-                Filter.Draw("##Filter");
+                var filterText = Filter.Text;
+                if (ImGui.InputTextWithHint("##Filter", "incl,-incl", ref filterText, InputTextFlags.EscapeClearsAll))
+                    Filter.Text = filterText;
                 ImGui.PopItemFlag();
 
                 if (ImGui.BeginTable("##list", 1, TableFlags.RowBg))

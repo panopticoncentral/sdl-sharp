@@ -63,8 +63,7 @@ internal static unsafe partial class DemoWindow
                     ImGui.Text("Mouse pos: <INVALID>");
                 ImGui.Text($"Mouse delta: ({Io.MouseDelta.X:0.##}, {Io.MouseDelta.Y:0.##})");
                 ImGui.Text("Mouse down:");
-                // PORT GAP: io.MouseDownDuration[] is not exposed by the wrapper — display buttons without duration.
-                for (int i = 0; i < 5; i++) if (ImGui.IsMouseDown((MouseButton)i)) { ImGui.SameLine(); ImGui.Text($"b{i}"); }
+                for (int i = 0; i < 5; i++) if (ImGui.IsMouseDown((MouseButton)i)) { ImGui.SameLine(); ImGui.Text($"b{i} ({Io.GetMouseDownDuration((MouseButton)i):0.00} secs)"); }
                 ImGui.Text($"Mouse wheel: {Io.MouseWheel:0.0}");
                 ImGui.Text("Mouse clicked count:");
                 for (int i = 0; i < 5; i++)
@@ -86,8 +85,11 @@ internal static unsafe partial class DemoWindow
                 }
                 ImGui.Text($"Keys mods: {(Io.KeyCtrl ? "CTRL " : "")}{(Io.KeyShift ? "SHIFT " : "")}{(Io.KeyAlt ? "ALT " : "")}{(Io.KeySuper ? "SUPER " : "")}");
                 ImGui.Text("Chars queue:");
-                // PORT GAP: io.InputQueueCharacters is not exposed by the wrapper — queue contents not shown.
-                ImGui.SameLine(); ImGui.TextDisabled("(io.InputQueueCharacters not exposed by wrapper)");
+                foreach (var c in Io.InputQueueCharacters)
+                {
+                    ImGui.SameLine();
+                    ImGui.Text($"'{c}' ({(int)c})");
+                }
 
                 ImGui.TreePop();
             }
@@ -107,7 +109,7 @@ internal static unsafe partial class DemoWindow
             {
                 // DEMO MARKER: Inputs & Focus/Outputs
                 ImGui.Text($"io.WantCaptureMouse: {(Io.WantCaptureMouse ? 1 : 0)}");
-                // PORT GAP: io.WantCaptureMouseUnlessPopupClose is not exposed by the wrapper.
+                ImGui.Text($"io.WantCaptureMouseUnlessPopupClose: {(Io.WantCaptureMouseUnlessPopupClose ? 1 : 0)}");
                 ImGui.Text($"io.WantCaptureKeyboard: {(Io.WantCaptureKeyboard ? 1 : 0)}");
                 ImGui.Text($"io.WantTextInput: {(Io.WantTextInput ? 1 : 0)}");
                 ImGui.Text($"io.WantSetMousePos: {(Io.WantSetMousePos ? 1 : 0)}");
@@ -326,10 +328,7 @@ internal static unsafe partial class DemoWindow
                 if (ImGui.IsItemActive())
                 {
                     // Draw a line between the button and the mouse cursor.
-                    // (io.MouseClickedPos[0] is not exposed by the wrapper; reconstruct it from
-                    // the zero-threshold drag delta: clicked_pos == mouse_pos - drag_delta.)
-                    Vec2 raw_delta = ImGui.GetMouseDragDelta(MouseButton.Left, 0.0f);
-                    var clicked_pos = new Vec2(Io.MousePos.X - raw_delta.X, Io.MousePos.Y - raw_delta.Y);
+                    var clicked_pos = Io.GetMouseClickedPosition(MouseButton.Left);
                     ImGui.GetForegroundDrawList().AddLine(clicked_pos, Io.MousePos, ImGui.GetColorU32(Col.Button), 4.0f);
                 }
 

@@ -703,22 +703,20 @@ internal static unsafe partial class DemoWindow
             ImGui.CheckboxFlags("ImGuiInputTextFlags_ReadOnly", ref _dataInputFlags, (int)InputTextFlags.ReadOnly);
             ImGui.CheckboxFlags("ImGuiInputTextFlags_ParseEmptyRefVal", ref _dataInputFlags, (int)InputTextFlags.ParseEmptyRefVal);
             ImGui.CheckboxFlags("ImGuiInputTextFlags_DisplayEmptyRefVal", ref _dataInputFlags, (int)InputTextFlags.DisplayEmptyRefVal);
-            // PORT GAP: ImGui.Input<T> always passes a step pointer to the native InputScalar, so a
-            // step of 0 shows inert +/- buttons instead of hiding them like the C++ NULL step does.
             var step = _dataInputsStep;
             var inputFlags = (InputTextFlags)_dataInputFlags;
-            ImGui.Input("input s8", ref _dataS8V, step ? s8One : default, default, "%d", inputFlags);
-            ImGui.Input("input u8", ref _dataU8V, step ? u8One : default, default, "%u", inputFlags);
-            ImGui.Input("input s16", ref _dataS16V, step ? s16One : default, default, "%d", inputFlags);
-            ImGui.Input("input u16", ref _dataU16V, step ? u16One : default, default, "%u", inputFlags);
-            ImGui.Input("input s32", ref _dataS32V, step ? s32One : default, default, "%d", inputFlags);
-            ImGui.Input("input s32 hex", ref _dataS32V, step ? s32One : default, default, "%04X", inputFlags);
-            ImGui.Input("input u32", ref _dataU32V, step ? u32One : default, default, "%u", inputFlags);
-            ImGui.Input("input u32 hex", ref _dataU32V, step ? u32One : default, default, "%08X", inputFlags);
-            ImGui.Input("input s64", ref _dataS64V, step ? s64One : default, default, null, inputFlags);
-            ImGui.Input("input u64", ref _dataU64V, step ? u64One : default, default, null, inputFlags);
-            ImGui.Input("input float", ref _dataF32V, step ? f32One : default, default, null, inputFlags);
-            ImGui.Input("input double", ref _dataF64V, step ? f64One : default, default, null, inputFlags);
+            ImGui.Input("input s8", ref _dataS8V, step ? s8One : null, null, "%d", inputFlags);
+            ImGui.Input("input u8", ref _dataU8V, step ? u8One : null, null, "%u", inputFlags);
+            ImGui.Input("input s16", ref _dataS16V, step ? s16One : null, null, "%d", inputFlags);
+            ImGui.Input("input u16", ref _dataU16V, step ? u16One : null, null, "%u", inputFlags);
+            ImGui.Input("input s32", ref _dataS32V, step ? s32One : null, null, "%d", inputFlags);
+            ImGui.Input("input s32 hex", ref _dataS32V, step ? s32One : null, null, "%04X", inputFlags);
+            ImGui.Input("input u32", ref _dataU32V, step ? u32One : null, null, "%u", inputFlags);
+            ImGui.Input("input u32 hex", ref _dataU32V, step ? u32One : null, null, "%08X", inputFlags);
+            ImGui.Input("input s64", ref _dataS64V, step ? s64One : null, null, null, inputFlags);
+            ImGui.Input("input u64", ref _dataU64V, step ? u64One : null, null, null, inputFlags);
+            ImGui.Input("input float", ref _dataF32V, step ? f32One : null, null, null, inputFlags);
+            ImGui.Input("input double", ref _dataF64V, step ? f64One : null, null, null, inputFlags);
 
             ImGui.TreePop();
         }
@@ -953,23 +951,73 @@ internal static unsafe partial class DemoWindow
     // [SECTION] DemoWindowWidgetsFonts()
     //-----------------------------------------------------------------------------
 
+    private static bool _fontsShowPreview = true;
+
     private static void DemoWindowWidgetsFonts()
     {
         if (ImGui.TreeNode("Fonts"))
         {
             // DEMO MARKER: Widgets/Fonts
-            // PORT GAP: ImGui::ShowFontAtlas() is not wrapped. Approximate it with the wrapper's
-            // FontAtlas/Font introspection instead.
             var atlas = ImGui.GetFontAtlas();
+
+            var backendFlags = (int)Io.BackendFlags;
+            ImGui.BeginDisabled();
+            ImGui.CheckboxFlags("io.BackendFlags: RendererHasTextures", ref backendFlags,
+                (int)BackendFlags.RendererHasTextures);
+            ImGui.EndDisabled();
+            ImGui.ShowFontSelector("Font");
+
+            var fontSizeBase = Style.FontSizeBase;
+            if (ImGui.DragFloat("FontSizeBase", ref fontSizeBase, 0.2f, 5.0f, 100.0f, "%.0f"))
+                Style.FontSizeBase = fontSizeBase;
+            ImGui.SameLine(0.0f, 0.0f);
+            ImGui.Text($" (out {ImGui.GetFontSize():F2})");
+            ImGui.SameLine();
+            HelpMarker("This scales fonts only. General scaling will come later.");
+
+            var fontScaleMain = Style.FontScaleMain;
+            if (ImGui.DragFloat("FontScaleMain", ref fontScaleMain, 0.02f, 0.5f, 4.0f))
+                Style.FontScaleMain = fontScaleMain;
+            var fontScaleDpi = Style.FontScaleDpi;
+            if (ImGui.DragFloat("FontScaleDpi", ref fontScaleDpi, 0.02f, 0.5f, 4.0f))
+                ImGui.SetFontScaleDpi(fontScaleDpi);
+
+            if (!atlas.RendererHasTextures)
+            {
+                ImGui.BulletText("Warning: Font scaling will NOT be smooth, because\nRendererHasTextures is not set!");
+                ImGui.BulletText("For instructions, see:");
+                ImGui.SameLine();
+                ImGui.TextLinkOpenURL("docs/BACKENDS.md", "https://github.com/ocornut/imgui/blob/master/docs/BACKENDS.md");
+            }
+            ImGui.BulletText("Load a nice font for better results!");
+            ImGui.BulletText("Please submit feedback:");
+            ImGui.SameLine();
+            ImGui.TextLinkOpenURL("#8465", "https://github.com/ocornut/imgui/issues/8465");
+            ImGui.BulletText("Read FAQ for more details:");
+            ImGui.SameLine();
+            ImGui.TextLinkOpenURL("dearimgui.com/faq", "https://www.dearimgui.com/faq/");
+
+            ImGui.SeparatorText("Font List");
+            ImGui.Checkbox("Show font preview", ref _fontsShowPreview);
+            if (ImGui.TreeNode("Loader", $"Loader: '{atlas.FontLoaderName ?? "NULL"}'"))
+            {
+                ImGui.BulletText($"Flags: 0x{atlas.FontLoaderFlags:X8}");
+                ImGui.BulletText($"Dynamic texture updates: {(atlas.RendererHasTextures ? "supported" : "unavailable")}");
+                ImGui.TreePop();
+            }
+
             for (var i = 0; i < atlas.FontCount; i++)
             {
                 var font = atlas.GetFont(i);
                 ImGui.PushID(i);
                 if (ImGui.TreeNode("Font", $"Font \"{font.DebugName}\""))
                 {
-                    ImGui.PushFont(font);
-                    ImGui.Text("The quick brown fox jumps over the lazy dog");
-                    ImGui.PopFont();
+                    if (_fontsShowPreview)
+                    {
+                        ImGui.PushFont(font);
+                        ImGui.Text("The quick brown fox jumps over the lazy dog");
+                        ImGui.PopFont();
+                    }
                     ImGui.BulletText($"Loaded: {(font.IsLoaded ? 1 : 0)}");
                     ImGui.BulletText($"Fallback character: '{font.FallbackChar}' (U+{(int)font.FallbackChar:X4})");
                     ImGui.BulletText($"Ellipsis character: '{font.EllipsisChar}' (U+{(int)font.EllipsisChar:X4})");
@@ -980,9 +1028,25 @@ internal static unsafe partial class DemoWindow
                 }
                 ImGui.PopID();
             }
+
+            ImGui.SeparatorText("Font Atlas");
+            if (ImGui.Button("Compact"))
+                atlas.CompactCache();
+            ImGui.SetItemTooltip("Discard unused baked glyphs and sizes.");
+
             var texData = atlas.GetTexData();
             if (texData.IsValid)
-                ImGui.BulletText($"Atlas texture: {texData.Width}x{texData.Height} pixels ({texData.Format}), loader: {atlas.FontLoaderName}");
+            {
+                ImGui.Text($"Texture: {texData.Width}x{texData.Height} pixels");
+                if (ImGui.TreeNode("Texture", $"Texture #{texData.UniqueId:D3} ({texData.Width}x{texData.Height} pixels)"))
+                {
+                    ImGui.Text($"Status = {texData.Status}, Format = {texData.Format}, UseColors = {(texData.UseColors ? 1 : 0)}");
+                    ImGui.Text($"Texture ID = 0x{texData.TextureId:X}, RefCount = {texData.RefCount}, UnusedFrames = {texData.UnusedFrames}");
+                    if (texData.TextureId != 0 && texData.Width > 0 && texData.Height > 0)
+                        ImGui.Image(texData.TextureId, texData.Width, texData.Height);
+                    ImGui.TreePop();
+                }
+            }
             // FIXME-NEWATLAS: Provide a demo to add/create a procedural font?
             ImGui.TreePop();
         }

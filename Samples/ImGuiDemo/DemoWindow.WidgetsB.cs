@@ -725,7 +725,6 @@ internal static unsafe partial class DemoWindow
     // The Multi-Select (trees) demo shares the ExampleTreeNode type and creators with the
     // Property Editor example (DemoWindow.ExamplesA.cs), like upstream shares them via
     // ImGuiDemoWindowData.DemoTree. The UID->node map below supports selection lookups.
-    static ExampleTreeNode? s_msel_demo_tree;
     static readonly Dictionary<long, ExampleTreeNode> s_msel_tree_node_by_uid = new();
 
     private static void MselIndexTreeNodes(ExampleTreeNode node)
@@ -759,10 +758,6 @@ internal static unsafe partial class DemoWindow
     // "Multi-Select (multiple scopes)"
     static readonly SelectionBasicStorage[] s_msel_scopes_selections = { new(), new(), new() };
     static int s_msel_scopes_flags = (int)(MultiSelectFlags.ScopeRect | MultiSelectFlags.ClearOnEscape);// | MultiSelectFlags.ClearOnClickVoid;
-    // "Multi-Select (tiled assets browser)"
-    // PORT NOTE: upstream stores this on ImGuiDemoWindowData.ShowAppAssetsBrowser; the assets
-    // browser example app is not part of this port, so the checkbox only tracks local state.
-    static bool s_msel_show_app_assets_browser;
     // "Multi-Select (trees)"
     static readonly SelectionBasicStorage s_msel_trees_selection = new();
     // "Multi-Select (advanced)"
@@ -782,8 +777,6 @@ internal static unsafe partial class DemoWindow
 
     private static void DemoWindowWidgetsSelectionAndMultiSelect(DemoWindowData data)
     {
-        _ = data; // Upstream uses demo_data->ShowAppAssetsBrowser / demo_data->DemoTree; see PORT NOTEs above.
-
         if (ImGui.TreeNode("Selection State & Multi-Select"))
         {
             // DEMO MARKER: Widgets/Selection State & Multi-Select
@@ -1111,7 +1104,7 @@ internal static unsafe partial class DemoWindow
             // See ShowExampleAppAssetsBrowser()
             if (ImGui.TreeNode("Multi-Select (tiled assets browser)"))
             {
-                ImGui.Checkbox("Assets Browser", ref s_msel_show_app_assets_browser);
+                ImGui.Checkbox("Assets Browser", ref data.ShowAppAssetsBrowser);
                 ImGui.Text("(also access from 'Examples->Assets Browser' in menu)");
                 ImGui.TreePop();
             }
@@ -1136,16 +1129,17 @@ internal static unsafe partial class DemoWindow
                     "Future versions will try to simplify and formalize some of this.");
 
                 SelectionBasicStorage selection = s_msel_trees_selection;
-                if (s_msel_demo_tree == null) // Create tree once
+                if (data.DemoTree == null) // Create tree once
                 {
-                    s_msel_demo_tree = ExampleTree_CreateDemoTree();
-                    MselIndexTreeNodes(s_msel_demo_tree);
+                    data.DemoTree = ExampleTree_CreateDemoTree();
                 }
+                if (s_msel_tree_node_by_uid.Count == 0)
+                    MselIndexTreeNodes(data.DemoTree);
                 ImGui.Text($"Selection size: {selection.Size}");
 
                 if (ImGui.BeginChild("##Tree", -float.Epsilon, ImGui.GetFontSize() * 20, ChildFlags.FrameStyle | ChildFlags.ResizeY))
                 {
-                    ExampleTreeNode tree = s_msel_demo_tree;
+                    ExampleTreeNode tree = data.DemoTree;
                     MultiSelectFlags msFlags = MultiSelectFlags.ClearOnEscape | MultiSelectFlags.BoxSelect2d;
                     MultiSelectIO msIo = ImGui.BeginMultiSelect(msFlags, selection.Size, -1);
                     TreeApplySelectionRequests(msIo, tree, selection);
@@ -1434,9 +1428,7 @@ internal static unsafe partial class DemoWindow
         {
             foreach (ExampleTreeNode child in node.Childs)
                 unselectedCount += TreeCloseAndUnselectChildNodes(child, selection, depth + 1);
-            // PORT GAP: ImGui.TreeNodeSetOpen is not wrapped; upstream calls
-            // ImGui::TreeNodeSetOpen(node->UID, false) here to force-close child nodes.
-            // Without it, children keep their previous open state when the parent is re-opened.
+            ImGui.TreeNodeSetOpen((uint)node.UID, false);
         }
 
         // Select root node if any of its child was selected, otherwise unselect

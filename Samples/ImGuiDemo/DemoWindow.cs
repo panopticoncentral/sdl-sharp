@@ -169,8 +169,7 @@ internal static unsafe partial class DemoWindow
         // Menu Bar
         DemoWindowMenuBar(demo_data);
 
-        // PORT GAP: IMGUI_VERSION_NUM is not exposed by the wrapper; only the version string is shown.
-        ImGui.Text($"dear imgui says hello! ({ImGui.GetVersion()})");
+        ImGui.Text($"dear imgui says hello! ({ImGui.GetVersion()} #{ImGui.GetVersionNumber()})");
         ImGui.Spacing();
 
         if (ImGui.CollapsingHeader("Help"))
