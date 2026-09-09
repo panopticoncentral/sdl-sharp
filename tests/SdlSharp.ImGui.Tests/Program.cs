@@ -17,14 +17,55 @@ if (args.Length == 1)
 }
 NativeLibrary.GetExport(library, "IGSharp_DrawList_ResetForNewFrame");
 NativeLibrary.GetExport(library, "IGSharp_ImplSDLGPU3_RenderDrawDataWithPipeline");
+if (args.Length == 1)
+    NativeLibrary.GetExport(library, "IGSharp_GetVersionNumber");
 
 unsafe
 {
     using var context = Context.Create(); // Also checks managed/native struct sizes.
+    Check(ImGui.GetVersionNumber() > 0, "Native ImGui version number was not exposed");
     Io.DisplaySize = new Vec2(640, 480);
+    Io.SetIniFilename("context-a.ini");
+    using (var otherContext = Context.Create())
+    {
+        Check(otherContext.IsCurrent, "Context.Create did not make the new context current");
+        Io.SetIniFilename("context-b.ini");
+        context.MakeCurrent();
+        var contextAFilename = Marshal.PtrToStringUTF8((nint)IGSharp_GetIO()->IniFilename);
+        Check(contextAFilename == "context-a.ini",
+            $"INI filename storage leaked across contexts: {contextAFilename ?? "<null>"}");
+        otherContext.MakeCurrent();
+    }
+    context.MakeCurrent();
     Io.SetIniFilename(null);
+
+    ExpectArgumentException(() => ImGui.DragFloat4("short", new float[3]));
+    ExpectArgumentException(() => ImGui.ColorPicker4("short", new float[4], new float[3]));
+
+    Font font;
+    using (var config = new FontConfig())
+    {
+        config.GlyphRanges = [0x20, 0x7e];
+        using (var temporaryContext = Context.Create())
+            ImGui.GetFontAtlas().AddDefaultBitmapFont(config);
+        context.MakeCurrent();
+        font = ImGui.GetFontAtlas().AddDefaultBitmapFont(config);
+    }
+    Check(font.GetFontBaked(13).FindGlyph('A').IsValid,
+        "Disposing FontConfig invalidated atlas-owned glyph ranges");
+
+    using (var filter = new TextFilter("include"))
+    {
+        Check(filter.Text == "include" && filter.PassFilter("include this"), "TextFilter initial text was not applied");
+        filter.Text = "-exclude";
+        Check(!filter.PassFilter("exclude this"), "TextFilter text replacement was not rebuilt");
+    }
+
     Io.BackendFlags |= BackendFlags.RendererHasTextures;
     IGSharp_NewFrame(); // Headless setup: no SDL window or GPU backend.
+    ImGui.Begin("callback tests");
+    ExpectTestException(() => ImGui.PlotLines("throwing plot", _ => throw new TestException(), 1));
+    ImGui.End();
     using var owner = StandaloneDrawList.Create();
     var list = owner.List;
     Check(IGSharp_DrawList_GetCmdBufferSize(list.Handle) == 1, "Missing initial draw command");
@@ -49,7 +90,7 @@ unsafe
     ExpectDisposed(() => owner.ResetForNewFrame());
     ExpectDisposed(() => { _ = owner.List; });
 }
-Console.WriteLine($"PASS: managed layout validation, drawing, cloning, frame reuse, disposal, and new exports ({path})");
+Console.WriteLine($"PASS: layouts, context isolation, span guards, callbacks, font lifetimes, drawing, cloning, reuse, disposal, and exports ({path})");
 // Keep the library loaded until process exit: generated P/Invokes cache its entry points.
 
 static void Draw(DrawList list)
@@ -68,3 +109,19 @@ static void ExpectDisposed(Action action)
     catch (ObjectDisposedException) { return; }
     throw new InvalidOperationException("Disposed owner remained usable");
 }
+
+static void ExpectArgumentException(Action action)
+{
+    try { action(); }
+    catch (ArgumentException) { return; }
+    throw new InvalidOperationException("Invalid span length was accepted");
+}
+
+static void ExpectTestException(Action action)
+{
+    try { action(); }
+    catch (TestException) { return; }
+    throw new InvalidOperationException("Managed callback exception was not rethrown");
+}
+
+sealed class TestException : Exception;

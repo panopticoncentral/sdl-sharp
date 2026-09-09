@@ -6,86 +6,92 @@ using static SdlSharp.ImGui.Native;
 
 namespace SdlSharp.ImGui;
 
-/// <summary>
-/// Manages the Dear ImGui SDL3 platform and SDL_GPU renderer backends.
-/// </summary>
-public static unsafe class ImGuiBackend
+/// <summary>Owns the Dear ImGui SDL3 platform and SDL_GPU renderer backends.</summary>
+public sealed unsafe class ImGuiBackend : IDisposable
 {
-    /// <summary>
-    /// Initializes both the SDL3 platform backend and the SDL_GPU renderer backend.
-    /// </summary>
-    /// <param name="window">The SDL window.</param>
-    /// <param name="device">The GPU device.</param>
-    /// <param name="colorTargetFormat">The swapchain color format. Use <see cref="GpuDevice.GetSwapchainTextureFormat"/>.</param>
-    /// <param name="msaaSamples">MSAA sample count (default 1 = no MSAA).</param>
-    public static void Init(Window window, GpuDevice device, GpuTextureFormat colorTargetFormat, GpuSampleCount msaaSamples = GpuSampleCount.One)
-    {
-        IGSharp_ImplSDL3_InitForSDLGPU(window.Handle);
-        IGSharp_ImplSDLGPU3_Init(device.Handle, (int)colorTargetFormat, (int)msaaSamples);
+    private static readonly object Sync = new();
+    private static ImGuiBackend? _active;
+    private bool _disposed;
 
-        // Hook into Application's raw event filter so ImGui processes events
-        Application.RawEventFilter += OnRawEvent;
+    private ImGuiBackend() { }
+
+    /// <summary>Initializes both backends. Dispose the returned object before its window, device, or context.</summary>
+    public static ImGuiBackend Init(Window window, GpuDevice device, GpuTextureFormat colorTargetFormat,
+        GpuSampleCount msaaSamples = GpuSampleCount.One)
+    {
+        lock (Sync)
+        {
+            if (_active is not null)
+                throw new InvalidOperationException("An ImGui SDL/GPU backend is already initialized.");
+
+            if (!IGSharp_ImplSDL3_InitForSDLGPU(window.Handle))
+                throw new InvalidOperationException("Failed to initialize the Dear ImGui SDL3 platform backend.");
+
+            if (!IGSharp_ImplSDLGPU3_Init(device.Handle, (int)colorTargetFormat, (int)msaaSamples))
+            {
+                IGSharp_ImplSDL3_Shutdown();
+                throw new InvalidOperationException("Failed to initialize the Dear ImGui SDL_GPU renderer backend.");
+            }
+
+            var backend = new ImGuiBackend();
+            Application.RawEventFilter += backend.OnRawEvent;
+            _active = backend;
+            return backend;
+        }
     }
 
-    /// <summary>
-    /// Starts a new ImGui frame. Call once per frame before submitting ImGui commands.
-    /// </summary>
-    public static void NewFrame()
+    /// <summary>Starts a new ImGui frame.</summary>
+    public void NewFrame()
     {
+        ThrowIfDisposed();
         IGSharp_ImplSDLGPU3_NewFrame();
         IGSharp_ImplSDL3_NewFrame();
         IGSharp_NewFrame();
     }
 
-    /// <summary>
-    /// Uploads vertex/index buffers to the GPU. Must be called BEFORE <see cref="GpuCommandBuffer.BeginRenderPass(in GpuColorTargetInfo)"/>.
-    /// </summary>
-    /// <param name="drawData">The draw data from <see cref="ImGui.GetDrawData"/>.</param>
-    /// <param name="commandBuffer">The GPU command buffer.</param>
-    public static void PrepareDrawData(DrawData drawData, GpuCommandBuffer commandBuffer)
+    /// <summary>Uploads vertex/index buffers before beginning the render pass.</summary>
+    public void PrepareDrawData(DrawData drawData, GpuCommandBuffer commandBuffer)
     {
+        ThrowIfDisposed();
         IGSharp_ImplSDLGPU3_PrepareDrawData(drawData.Handle, commandBuffer.Handle);
     }
 
-    /// <summary>
-    /// Renders ImGui draw data into the active render pass. Must be called AFTER <see cref="PrepareDrawData"/>
-    /// and inside an active render pass.
-    /// </summary>
-    /// <param name="drawData">The draw data from <see cref="ImGui.GetDrawData"/>.</param>
-    /// <param name="commandBuffer">The GPU command buffer.</param>
-    /// <param name="renderPass">The active GPU render pass.</param>
-    public static void RenderDrawData(DrawData drawData, GpuCommandBuffer commandBuffer, GpuRenderPass renderPass)
+    /// <summary>Renders prepared draw data inside the active render pass.</summary>
+    public void RenderDrawData(DrawData drawData, GpuCommandBuffer commandBuffer, GpuRenderPass renderPass)
     {
+        ThrowIfDisposed();
         IGSharp_ImplSDLGPU3_RenderDrawData(drawData.Handle, commandBuffer.Handle, renderPass.Handle);
     }
 
-    /// <summary>
-    /// Renders prepared draw data using a custom pipeline compatible with the active
-    /// render pass and ImGui's vertex/shader inputs. Null selects the default pipeline.
-    /// </summary>
-    /// <param name="drawData">The prepared draw data.</param>
-    /// <param name="commandBuffer">The GPU command buffer.</param>
-    /// <param name="renderPass">The active render pass.</param>
-    /// <param name="pipeline">The custom pipeline, or null for the backend default.</param>
-    public static void RenderDrawData(DrawData drawData, GpuCommandBuffer commandBuffer,
+    /// <summary>Renders prepared draw data with an optional custom pipeline.</summary>
+    public void RenderDrawData(DrawData drawData, GpuCommandBuffer commandBuffer,
         GpuRenderPass renderPass, GpuGraphicsPipeline? pipeline)
     {
+        ThrowIfDisposed();
         IGSharp_ImplSDLGPU3_RenderDrawDataWithPipeline(drawData.Handle, commandBuffer.Handle,
             renderPass.Handle, pipeline is null ? null : pipeline.Handle);
     }
 
-    /// <summary>
-    /// Shuts down both backends and unhooks the event filter.
-    /// </summary>
-    public static void Shutdown()
+    /// <summary>Shuts down both backends and unhooks the event filter.</summary>
+    public void Dispose()
     {
-        Application.RawEventFilter -= OnRawEvent;
-        IGSharp_ImplSDLGPU3_Shutdown();
-        IGSharp_ImplSDL3_Shutdown();
+        lock (Sync)
+        {
+            if (_disposed) return;
+            Application.RawEventFilter -= OnRawEvent;
+            IGSharp_ImplSDLGPU3_Shutdown();
+            IGSharp_ImplSDL3_Shutdown();
+            _disposed = true;
+            if (ReferenceEquals(_active, this))
+                _active = null;
+        }
     }
 
-    private static void OnRawEvent(in RawEvent e)
+    private void OnRawEvent(in RawEvent e)
     {
-        IGSharp_ImplSDL3_ProcessEvent((SDL_Event*)e.Pointer);
+        if (!_disposed)
+            IGSharp_ImplSDL3_ProcessEvent((SDL_Event*)e.Pointer);
     }
+
+    private void ThrowIfDisposed() => ObjectDisposedException.ThrowIf(_disposed, this);
 }

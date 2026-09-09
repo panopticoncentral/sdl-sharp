@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static SdlSharp.ImGui.Native;
@@ -26,25 +27,11 @@ public readonly record struct PlatformImeData(
 public delegate void ImeDataHandler(Viewport viewport, in PlatformImeData data);
 
 /// <summary>
-/// Accessors for the global ImGui <c>ImGuiPlatformIO</c> struct — optional platform/renderer
-/// handler overrides (clipboard, open-in-shell, IME) and renderer capabilities.
-/// Handler registration is global (per-process): the handlers apply to the current ImGui
-/// context and any context that shares this platform IO.
+/// Accessors for the current context's <c>ImGuiPlatformIO</c> struct.
 /// </summary>
 public static unsafe class PlatformIO
 {
-    // Managed handler storage. Registration is static/global: the native callbacks
-    // receive the ImGui context pointer, but since these handlers are process-global
-    // in this wrapper we ignore it for lookup.
-    private static Func<string?>? _getClipboardText;
-    private static Action<string?>? _setClipboardText;
-    private static Func<string, bool>? _openInShell;
-    private static ImeDataHandler? _imeDataHandler;
-
-    // Persistent unmanaged UTF-8 buffer for the clipboard get-handler. ImGui consumes the
-    // returned pointer after the callback returns, so it must outlive the call; we keep it
-    // alive until the next get-call (which reallocates it) or until handlers are cleared.
-    private static IntPtr _clipboardTextBuffer;
+    private static readonly ConcurrentDictionary<nint, HandlerState> Handlers = new();
 
     // --- Renderer capabilities ---
 
@@ -92,11 +79,7 @@ public static unsafe class PlatformIO
     public static void ClearPlatformHandlers()
     {
         IGSharp_PlatformIO_ClearPlatformHandlers(IGSharp_GetPlatformIO());
-        _getClipboardText = null;
-        _setClipboardText = null;
-        _openInShell = null;
-        _imeDataHandler = null;
-        FreeClipboardTextBuffer();
+        ReleaseContext((nint)IGSharp_GetCurrentContext());
     }
 
     /// <summary>
@@ -118,8 +101,9 @@ public static unsafe class PlatformIO
     public static void SetClipboardHandlers(Func<string?>? getText, Action<string?>? setText)
     {
         var pio = IGSharp_GetPlatformIO();
-        _getClipboardText = getText;
-        _setClipboardText = setText;
+        var state = GetCurrentState();
+        state.GetClipboardText = getText;
+        state.SetClipboardText = setText;
 
         delegate* unmanaged[Cdecl]<IGSharp_Context*, byte*> getFn = null;
         if (getText != null)
@@ -139,29 +123,57 @@ public static unsafe class PlatformIO
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static byte* GetClipboardTextThunk(IGSharp_Context* context)
     {
-        var text = _getClipboardText?.Invoke();
-
-        // ImGui uses the returned pointer after the callback returns, so hand back a
-        // persistent unmanaged copy; the previous copy is released on each new request.
-        FreeClipboardTextBuffer();
-        if (text == null)
+        if (!Handlers.TryGetValue((nint)context, out var state)) return null;
+        try
         {
+            var text = state.GetClipboardText?.Invoke();
+            state.FreeClipboardTextBuffer();
+            if (text == null) return null;
+            state.ClipboardTextBuffer = Marshal.StringToCoTaskMemUTF8(text);
+            return (byte*)state.ClipboardTextBuffer;
+        }
+        catch (Exception ex)
+        {
+            ImGui.ReportUnhandledCallbackException(ex);
             return null;
         }
-        _clipboardTextBuffer = Marshal.StringToCoTaskMemUTF8(text);
-        return (byte*)_clipboardTextBuffer;
     }
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void SetClipboardTextThunk(IGSharp_Context* context, byte* text)
-        => _setClipboardText?.Invoke(Marshal.PtrToStringUTF8((nint)text));
-
-    private static void FreeClipboardTextBuffer()
     {
-        if (_clipboardTextBuffer != IntPtr.Zero)
+        if (!Handlers.TryGetValue((nint)context, out var state)) return;
+        try { state.SetClipboardText?.Invoke(Marshal.PtrToStringUTF8((nint)text)); }
+        catch (Exception ex) { ImGui.ReportUnhandledCallbackException(ex); }
+    }
+
+    internal static void ReleaseContext(nint context)
+    {
+        if (Handlers.TryRemove(context, out var state))
+            state.FreeClipboardTextBuffer();
+    }
+
+    private static HandlerState GetCurrentState()
+    {
+        var context = (nint)IGSharp_GetCurrentContext();
+        if (context == 0)
+            throw new InvalidOperationException("No current ImGui context.");
+        return Handlers.GetOrAdd(context, static _ => new HandlerState());
+    }
+
+    private sealed class HandlerState
+    {
+        public Func<string?>? GetClipboardText;
+        public Action<string?>? SetClipboardText;
+        public Func<string, bool>? OpenInShell;
+        public ImeDataHandler? ImeDataHandler;
+        public IntPtr ClipboardTextBuffer;
+
+        public void FreeClipboardTextBuffer()
         {
-            Marshal.FreeCoTaskMem(_clipboardTextBuffer);
-            _clipboardTextBuffer = IntPtr.Zero;
+            if (ClipboardTextBuffer == IntPtr.Zero) return;
+            Marshal.FreeCoTaskMem(ClipboardTextBuffer);
+            ClipboardTextBuffer = IntPtr.Zero;
         }
     }
 
@@ -174,7 +186,7 @@ public static unsafe class PlatformIO
     /// </summary>
     public static void SetOpenInShellHandler(Func<string, bool>? handler)
     {
-        _openInShell = handler;
+        GetCurrentState().OpenInShell = handler;
         delegate* unmanaged[Cdecl]<IGSharp_Context*, byte*, byte> fn = null;
         if (handler != null)
         {
@@ -186,12 +198,13 @@ public static unsafe class PlatformIO
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static byte OpenInShellThunk(IGSharp_Context* context, byte* path)
     {
-        var handler = _openInShell;
-        if (handler == null)
+        if (!Handlers.TryGetValue((nint)context, out var state) || state.OpenInShell == null) return 0;
+        try { return state.OpenInShell(Marshal.PtrToStringUTF8((nint)path) ?? string.Empty) ? (byte)1 : (byte)0; }
+        catch (Exception ex)
         {
+            ImGui.ReportUnhandledCallbackException(ex);
             return 0;
         }
-        return handler(Marshal.PtrToStringUTF8((nint)path) ?? string.Empty) ? (byte)1 : (byte)0;
     }
 
     // --- IME override ---
@@ -203,7 +216,7 @@ public static unsafe class PlatformIO
     /// </summary>
     public static void SetImeDataHandler(ImeDataHandler? handler)
     {
-        _imeDataHandler = handler;
+        GetCurrentState().ImeDataHandler = handler;
         delegate* unmanaged[Cdecl]<IGSharp_Context*, IGSharp_Viewport*, IGSharp_PlatformImeData*, void> fn = null;
         if (handler != null)
         {
@@ -215,17 +228,17 @@ public static unsafe class PlatformIO
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void SetImeDataThunk(IGSharp_Context* context, IGSharp_Viewport* viewport, IGSharp_PlatformImeData* data)
     {
-        var handler = _imeDataHandler;
-        if (handler == null || data == null)
+        if (!Handlers.TryGetValue((nint)context, out var state) || state.ImeDataHandler == null || data == null) return;
+        try
         {
-            return;
+            var imeData = new PlatformImeData(
+                data->WantVisible,
+                data->WantTextInput,
+                new Vec2(data->InputPos.X, data->InputPos.Y),
+                data->InputLineHeight,
+                data->ViewportId);
+            state.ImeDataHandler(new Viewport(viewport), in imeData);
         }
-        var imeData = new PlatformImeData(
-            data->WantVisible,
-            data->WantTextInput,
-            new Vec2(data->InputPos.X, data->InputPos.Y),
-            data->InputLineHeight,
-            data->ViewportId);
-        handler(new Viewport(viewport), in imeData);
+        catch (Exception ex) { ImGui.ReportUnhandledCallbackException(ex); }
     }
 }

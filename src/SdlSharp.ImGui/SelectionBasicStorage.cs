@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using static SdlSharp.ImGui.Native;
 
@@ -18,7 +19,7 @@ public delegate uint SelectionIndexToStorageId(int index);
 /// </summary>
 public sealed unsafe class SelectionBasicStorage : IDisposable
 {
-    private static readonly ConcurrentDictionary<nint, SelectionIndexToStorageId> _adapters = new();
+    private static readonly ConcurrentDictionary<nint, AdapterState> _adapters = new();
 
     private IGSharp_SelectionBasicStorage* _handle;
 
@@ -33,6 +34,7 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
     {
         ThrowIfDisposed();
         IGSharp_SelectionBasicStorage_ApplyRequests(_handle, io.Handle);
+        ThrowAdapterException();
     }
 
     /// <summary>Returns true if the item with the given storage ID is selected.</summary>
@@ -91,7 +93,9 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
     public uint GetStorageIdFromIndex(int index)
     {
         ThrowIfDisposed();
-        return IGSharp_SelectionBasicStorage_GetStorageIdFromIndex(_handle, index);
+        var result = IGSharp_SelectionBasicStorage_GetStorageIdFromIndex(_handle, index);
+        ThrowAdapterException();
+        return result;
     }
 
     /// <summary>Number of selected items.</summary>
@@ -148,7 +152,7 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
         }
         else
         {
-            _adapters[(nint)_handle] = adapter;
+            _adapters[(nint)_handle] = new AdapterState(adapter);
             IGSharp_SelectionBasicStorage_SetAdapterIndexToStorageId(_handle, &IndexToStorageIdThunk);
         }
     }
@@ -156,9 +160,14 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static uint IndexToStorageIdThunk(IGSharp_SelectionBasicStorage* self, int index)
     {
-        // Fall back to the default id == index mapping if the registration vanished
-        // (never throw across the native boundary).
-        return _adapters.TryGetValue((nint)self, out var adapter) ? adapter(index) : (uint)index;
+        if (!_adapters.TryGetValue((nint)self, out var state))
+            return (uint)index;
+        try { return state.Adapter(index); }
+        catch (Exception ex)
+        {
+            state.Capture(ex);
+            return (uint)index;
+        }
     }
 
     /// <summary>Releases the unmanaged selection storage.</summary>
@@ -175,5 +184,23 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
     private void ThrowIfDisposed()
     {
         if (_handle == null) throw new ObjectDisposedException(nameof(SelectionBasicStorage));
+    }
+
+    private void ThrowAdapterException()
+    {
+        if (_adapters.TryGetValue((nint)_handle, out var state))
+            state.ThrowIfFailed();
+    }
+
+    private sealed class AdapterState(SelectionIndexToStorageId adapter)
+    {
+        private ExceptionDispatchInfo? _exception;
+        public SelectionIndexToStorageId Adapter { get; } = adapter;
+        public void Capture(Exception exception) => _exception ??= ExceptionDispatchInfo.Capture(exception);
+        public void ThrowIfFailed()
+        {
+            var exception = Interlocked.Exchange(ref _exception, null);
+            exception?.Throw();
+        }
     }
 }

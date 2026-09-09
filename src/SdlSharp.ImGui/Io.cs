@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using static SdlSharp.Native.Common;
 using static SdlSharp.ImGui.Native;
@@ -10,8 +11,7 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public static unsafe class Io
 {
-    // Keeps the unmanaged UTF-8 copy of the ini filename alive; ImGui stores the raw pointer.
-    private static IntPtr _iniFilename;
+    private static readonly ConcurrentDictionary<nint, nint> IniFilenames = new();
 
     // --- Display ---
 
@@ -56,6 +56,35 @@ public static unsafe class Io
     /// <summary>Horizontal mouse wheel delta.</summary>
     public static float MouseWheelHorizontal => IGSharp_GetIO()->MouseWheelH;
 
+    /// <summary>Seconds the mouse button has been held, or -1 when it is up.</summary>
+    public static float GetMouseDownDuration(MouseButton button)
+    {
+        var index = (int)button;
+        if ((uint)index >= 5) throw new ArgumentOutOfRangeException(nameof(button));
+        return IGSharp_GetIO()->MouseDownDuration[index];
+    }
+
+    /// <summary>Mouse position where the most recent click for this button began.</summary>
+    public static Vec2 GetMouseClickedPosition(MouseButton button)
+    {
+        var index = (int)button;
+        if ((uint)index >= 5) throw new ArgumentOutOfRangeException(nameof(button));
+        var position = IGSharp_GetIO()->MouseClickedPos[index];
+        return new Vec2(position.X, position.Y);
+    }
+
+    /// <summary>Unicode input characters queued for the current frame.</summary>
+    public static string InputQueueCharacters
+    {
+        get
+        {
+            var io = IGSharp_GetIO();
+            return io->InputQueueCharacters_Data == null || io->InputQueueCharacters_Size == 0
+                ? string.Empty
+                : new string((char*)io->InputQueueCharacters_Data, 0, io->InputQueueCharacters_Size);
+        }
+    }
+
     /// <summary>True if Ctrl is held this frame.</summary>
     public static bool KeyCtrl => IGSharp_GetIO()->KeyCtrl;
 
@@ -72,6 +101,9 @@ public static unsafe class Io
 
     /// <summary>True if ImGui wants to capture mouse input (the backend should not also act on it).</summary>
     public static bool WantCaptureMouse => IGSharp_GetIO()->WantCaptureMouse;
+
+    /// <summary>Capture intent excluding the click that closes a popup.</summary>
+    public static bool WantCaptureMouseUnlessPopupClose => IGSharp_GetIO()->WantCaptureMouseUnlessPopupClose;
 
     /// <summary>True if ImGui wants to capture keyboard input.</summary>
     public static bool WantCaptureKeyboard => IGSharp_GetIO()->WantCaptureKeyboard;
@@ -119,15 +151,23 @@ public static unsafe class Io
     /// <summary>Sets the filename for saving/loading window layout. Pass null to disable persistence.</summary>
     public static void SetIniFilename(string? filename)
     {
-        // ImGui stores the pointer (it does not copy the string), so keep the
-        // unmanaged copy alive until it is replaced by a subsequent call.
+        var context = (nint)IGSharp_GetCurrentContext();
+        if (context == 0)
+            throw new InvalidOperationException("No current ImGui context.");
         var ptr = Marshal.StringToCoTaskMemUTF8(filename);
         IGSharp_GetIO()->IniFilename = (byte*)ptr;
-        if (_iniFilename != IntPtr.Zero)
-        {
-            Marshal.FreeCoTaskMem(_iniFilename);
-        }
-        _iniFilename = ptr;
+        if (IniFilenames.TryGetValue(context, out var previous) && previous != 0)
+            Marshal.FreeCoTaskMem(previous);
+        if (ptr == IntPtr.Zero)
+            IniFilenames.TryRemove(context, out _);
+        else
+            IniFilenames[context] = ptr;
+    }
+
+    internal static void ReleaseContext(nint context)
+    {
+        if (IniFilenames.TryRemove(context, out var filename) && filename != 0)
+            Marshal.FreeCoTaskMem(filename);
     }
 
     // --- Metrics (read-only) ---

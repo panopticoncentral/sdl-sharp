@@ -8,18 +8,15 @@ namespace SdlSharp.ImGui;
 /// Configuration for adding a font to a <see cref="FontAtlas"/>. Create one, set the desired
 /// properties, then pass it to the <c>FontAtlas.AddFont*</c> methods.
 /// <para>
-/// The atlas copies the configuration when a font is added, so the same <see cref="FontConfig"/>
-/// can be reused (and re-tweaked) across multiple <c>AddFont*</c> calls. However, glyph range data
-/// set via <see cref="GlyphRanges"/> / <see cref="GlyphExcludeRanges"/> is referenced by pointer
-/// for the lifetime of the font — when those are set, keep this object undisposed while fonts
-/// created from it are still in the atlas.
+/// Each font added to an atlas receives its own copy of the glyph ranges, so the same
+/// <see cref="FontConfig"/> can be disposed, reused, or changed afterward, including across contexts.
 /// </para>
 /// </summary>
 public sealed unsafe class FontConfig : IDisposable
 {
     private IGSharp_FontConfig* _handle;
-    private ushort* _glyphRanges;        // unmanaged copy owned by this object
-    private ushort* _glyphExcludeRanges; // unmanaged copy owned by this object
+    private ushort* _glyphRanges;
+    private ushort* _glyphExcludeRanges;
 
     /// <summary>Creates a new font configuration with ImGui's defaults.</summary>
     public FontConfig() => _handle = IGSharp_FontConfig_Create();
@@ -88,9 +85,7 @@ public sealed unsafe class FontConfig : IDisposable
     /// <summary>
     /// Restricts the glyphs loaded from this font to the given ranges: pairs of inclusive
     /// (first, last) codepoints (e.g. <c>[0x0020, 0x00FF]</c> for Basic Latin + Latin Supplement).
-    /// The setter copies the data into unmanaged memory owned by this <see cref="FontConfig"/>;
-    /// because the atlas references that memory for the font's lifetime, do not dispose this object
-    /// (or reassign this property) while fonts loaded with these ranges are still in use.
+    /// The setter copies the data. Each added font receives an independent context-owned copy.
     /// Set an empty span to clear (load all available glyphs). Default empty.
     /// </summary>
     public ReadOnlySpan<ushort> GlyphRanges
@@ -110,7 +105,7 @@ public sealed unsafe class FontConfig : IDisposable
     /// <summary>
     /// Ranges of codepoints to exclude from this font source — pairs of inclusive (first, last)
     /// codepoints. Useful in <see cref="MergeMode"/> when merged fonts have overlapping glyphs.
-    /// Same lifetime rules as <see cref="GlyphRanges"/>. Default empty.
+    /// Each added font receives an independent context-owned copy. Default empty.
     /// </summary>
     public ReadOnlySpan<ushort> GlyphExcludeRanges
     {
@@ -201,8 +196,8 @@ public sealed unsafe class FontConfig : IDisposable
     }
 
     /// <summary>
-    /// Releases the unmanaged configuration and any glyph range copies. Do not dispose while fonts
-    /// loaded with <see cref="GlyphRanges"/>/<see cref="GlyphExcludeRanges"/> set are still in use.
+    /// Releases the unmanaged configuration and its source range copies. Fonts already added to
+    /// atlases retain their own copies.
     /// </summary>
     public void Dispose()
     {
@@ -228,6 +223,33 @@ public sealed unsafe class FontConfig : IDisposable
         if (_handle == null) throw new ObjectDisposedException(nameof(FontConfig));
     }
 
+    internal AddScope PrepareForAdd(IGSharp_FontAtlas* atlas)
+    {
+        ThrowIfDisposed();
+        var glyphRanges = CopyRanges(RangesFromPointer(_glyphRanges));
+        var glyphExcludeRanges = CopyRanges(RangesFromPointer(_glyphExcludeRanges));
+        if (!Context.AdoptFontRange(atlas, glyphRanges) || !Context.AdoptFontRange(atlas, glyphExcludeRanges))
+        {
+            if (glyphRanges != null) IGSharp_MemFree(glyphRanges);
+            if (glyphExcludeRanges != null) IGSharp_MemFree(glyphExcludeRanges);
+            throw new InvalidOperationException("The font atlas is not owned by a managed ImGui context.");
+        }
+        IGSharp_FontConfig_SetGlyphRanges(_handle, glyphRanges);
+        IGSharp_FontConfig_SetGlyphExcludeRanges(_handle, glyphExcludeRanges);
+        return new AddScope(this);
+    }
+
+    internal readonly ref struct AddScope(FontConfig config)
+    {
+        public IGSharp_FontConfig* Handle => config._handle;
+
+        public void Dispose()
+        {
+            IGSharp_FontConfig_SetGlyphRanges(config._handle, config._glyphRanges);
+            IGSharp_FontConfig_SetGlyphExcludeRanges(config._handle, config._glyphExcludeRanges);
+        }
+    }
+
     /// <summary>Wraps a zero-terminated list of (first, last) codepoint pairs as a span (terminator excluded).</summary>
     internal static ReadOnlySpan<ushort> RangesFromPointer(ushort* ranges)
     {
@@ -238,7 +260,7 @@ public sealed unsafe class FontConfig : IDisposable
     }
 
     /// <summary>Copies range pairs into a zero-terminated ImGui-allocated buffer (null for empty input).</summary>
-    private static ushort* CopyRanges(ReadOnlySpan<ushort> value)
+    internal static ushort* CopyRanges(ReadOnlySpan<ushort> value)
     {
         if (value.IsEmpty) return null;
         if (value.Length % 2 != 0)

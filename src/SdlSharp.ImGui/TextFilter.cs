@@ -17,21 +17,42 @@ namespace SdlSharp.ImGui;
 public sealed unsafe class TextFilter : IDisposable
 {
     private IGSharp_TextFilter* _handle;
+    private string _text;
 
     /// <summary>Creates a new text filter, optionally pre-populated with a filter expression.</summary>
     public TextFilter(string? defaultFilter = null)
     {
-        _handle = IGSharp_TextFilter_New(ToUtf8(defaultFilter));
+        _text = defaultFilter ?? string.Empty;
+        _handle = IGSharp_TextFilter_New(ToUtf8(_text));
+    }
+
+    /// <summary>The current filter expression.</summary>
+    public string Text
+    {
+        get { ThrowIfDisposed(); return _text; }
+        set
+        {
+            ThrowIfDisposed();
+            value ??= string.Empty;
+            if (value == _text) return;
+            IGSharp_TextFilter_Delete(_handle);
+            _text = value;
+            _handle = IGSharp_TextFilter_New(ToUtf8(_text));
+        }
     }
 
     /// <summary>
     /// Draws the filter input box. Returns true when the filter text changed.
     /// <paramref name="width"/> of 0 uses the default width.
     /// </summary>
-    public bool Draw(string label = "Filter (inc,-exc)", float width = 0f)
+    public bool Draw(string label = "Filter (inc,-exc)", float width = 0f, InputTextFlags flags = InputTextFlags.None)
     {
         ThrowIfDisposed();
-        return IGSharp_TextFilter_Draw(_handle, ToUtf8(label), width);
+        if (width != 0) ImGui.SetNextItemWidth(width);
+        var text = _text;
+        if (!ImGui.InputText(label, ref text, flags)) return false;
+        Text = text;
+        return true;
     }
 
     /// <summary>Returns true if <paramref name="text"/> passes the current filter.</summary>
@@ -52,7 +73,7 @@ public sealed unsafe class TextFilter : IDisposable
     public void Clear()
     {
         ThrowIfDisposed();
-        IGSharp_TextFilter_Clear(_handle);
+        Text = string.Empty;
     }
 
     /// <summary>True if the filter is non-empty (i.e. filtering is happening).</summary>
@@ -72,6 +93,7 @@ public sealed unsafe class TextFilter : IDisposable
         {
             IGSharp_TextFilter_Delete(_handle);
             _handle = null;
+            _text = string.Empty;
         }
     }
 

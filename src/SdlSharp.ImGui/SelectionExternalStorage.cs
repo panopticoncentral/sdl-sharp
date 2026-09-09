@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using static SdlSharp.ImGui.Native;
 
@@ -19,7 +20,7 @@ public delegate void SelectionSetItemSelected(int index, bool selected);
 /// </summary>
 public sealed unsafe class SelectionExternalStorage : IDisposable
 {
-    private static readonly ConcurrentDictionary<nint, SelectionSetItemSelected> _adapters = new();
+    private static readonly ConcurrentDictionary<nint, AdapterState> _adapters = new();
 
     private IGSharp_SelectionExternalStorage* _handle;
 
@@ -38,6 +39,8 @@ public sealed unsafe class SelectionExternalStorage : IDisposable
     {
         ThrowIfDisposed();
         IGSharp_SelectionExternalStorage_ApplyRequests(_handle, io.Handle);
+        if (_adapters.TryGetValue((nint)_handle, out var state))
+            state.ThrowIfFailed();
     }
 
     /// <summary>Opaque user data pointer, available for your own use.</summary>
@@ -70,7 +73,7 @@ public sealed unsafe class SelectionExternalStorage : IDisposable
         }
         else
         {
-            _adapters[(nint)_handle] = adapter;
+            _adapters[(nint)_handle] = new AdapterState(adapter);
             IGSharp_SelectionExternalStorage_SetAdapterSetItemSelected(_handle, &SetItemSelectedThunk);
         }
     }
@@ -78,9 +81,9 @@ public sealed unsafe class SelectionExternalStorage : IDisposable
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void SetItemSelectedThunk(IGSharp_SelectionExternalStorage* self, int index, byte selected)
     {
-        // Never throw across the native boundary; silently ignore a vanished registration.
-        if (_adapters.TryGetValue((nint)self, out var adapter))
-            adapter(index, selected != 0);
+        if (!_adapters.TryGetValue((nint)self, out var state)) return;
+        try { state.Adapter(index, selected != 0); }
+        catch (Exception ex) { state.Capture(ex); }
     }
 
     /// <summary>Releases the unmanaged selection storage.</summary>
@@ -97,5 +100,17 @@ public sealed unsafe class SelectionExternalStorage : IDisposable
     private void ThrowIfDisposed()
     {
         if (_handle == null) throw new ObjectDisposedException(nameof(SelectionExternalStorage));
+    }
+
+    private sealed class AdapterState(SelectionSetItemSelected adapter)
+    {
+        private ExceptionDispatchInfo? _exception;
+        public SelectionSetItemSelected Adapter { get; } = adapter;
+        public void Capture(Exception exception) => _exception ??= ExceptionDispatchInfo.Capture(exception);
+        public void ThrowIfFailed()
+        {
+            var exception = Interlocked.Exchange(ref _exception, null);
+            exception?.Throw();
+        }
     }
 }

@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using SdlSharp.Graphics.Gpu;
 using static SdlSharp.Native.Common;
@@ -12,6 +14,11 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public static unsafe class ImGui
 {
+    private static readonly Lazy<int> VersionNumber = new(LoadVersionNumber);
+
+    /// <summary>Raised when a persistent native callback catches an exception that cannot be rethrown at its call site.</summary>
+    public static event Action<Exception>? UnhandledCallbackException;
+
     // --- Lifecycle ---
 
     /// <summary>Finalizes the frame and generates draw data.</summary>
@@ -26,6 +33,30 @@ public static unsafe class ImGui
     /// <summary>Gets the ImGui version string.</summary>
     public static string? GetVersion() => Marshal.PtrToStringUTF8((nint)IGSharp_GetVersion());
 
+    /// <summary>Gets the ImGui numeric version used to compile the native shim.</summary>
+    public static int GetVersionNumber() => VersionNumber.Value;
+
+    private static int LoadVersionNumber()
+    {
+        try
+        {
+            return IGSharp_GetVersionNumber();
+        }
+        catch (EntryPointNotFoundException)
+        {
+            // ImguiSharp.Redist releases before 0.3.0-preview.3 do not export
+            // IMGUI_VERSION_NUM. Derive the same value from "1.xx.y ..." so
+            // applications can update the managed package before the redist.
+            var text = GetVersion();
+            var suffix = text?.IndexOf(' ') ?? -1;
+            if (suffix >= 0)
+                text = text![..suffix];
+            if (Version.TryParse(text, out var version))
+                return checked(version.Major * 10_000 + version.Minor * 100 + Math.Max(version.Build, 0));
+            throw new InvalidOperationException($"Could not parse the native ImGui version '{text ?? "<null>"}'.");
+        }
+    }
+
     // --- IO ---
 
     /// <summary>Returns true if ImGui wants to capture mouse input.</summary>
@@ -36,20 +67,6 @@ public static unsafe class ImGui
 
     /// <summary>Gets the current frame rate as computed by ImGui.</summary>
     public static float Framerate => IGSharp_GetIO()->Framerate;
-
-    // ImGui stores the io.IniFilename pointer without copying, so the UTF-8 string must
-    // stay valid until it is replaced (or the process exits). Kept in unmanaged memory.
-    private static nint _iniFilenamePtr;
-
-    /// <summary>Sets the INI filename for saving/loading layout. Pass null to disable.</summary>
-    public static void SetIniFilename(string? filename)
-    {
-        var newPtr = filename == null ? 0 : Marshal.StringToCoTaskMemUTF8(filename);
-        IGSharp_GetIO()->IniFilename = (byte*)newPtr;
-        if (_iniFilenamePtr != 0)
-            Marshal.FreeCoTaskMem(_iniFilenamePtr);
-        _iniFilenamePtr = newPtr;
-    }
 
     // --- Demo / Styles ---
 
@@ -165,17 +182,17 @@ public static unsafe class ImGui
     public static bool IsWindowHovered(HoveredFlags flags = HoveredFlags.None) => IGSharp_IsWindowHovered((int)flags);
 
     /// <summary>Gets the current window position in screen coordinates.</summary>
-    public static (float X, float Y) GetWindowPos()
+    public static Vec2 GetWindowPos()
     {
         var v = IGSharp_GetWindowPos();
-        return (v.X, v.Y);
+        return new Vec2(v.X, v.Y);
     }
 
     /// <summary>Gets the current window size.</summary>
-    public static (float Width, float Height) GetWindowSize()
+    public static Vec2 GetWindowSize()
     {
         var v = IGSharp_GetWindowSize();
-        return (v.X, v.Y);
+        return new Vec2(v.X, v.Y);
     }
 
     /// <summary>Gets the current window width.</summary>
@@ -188,9 +205,17 @@ public static unsafe class ImGui
     public static void SetNextWindowPos(float x, float y, Cond cond = Cond.None, float pivotX = 0, float pivotY = 0)
         => IGSharp_SetNextWindowPos(new IGSharp_Vec2(x, y), (int)cond, new IGSharp_Vec2(pivotX, pivotY));
 
+    /// <summary>Sets the position of the next window.</summary>
+    public static void SetNextWindowPos(Vec2 position, Cond cond = Cond.None, Vec2 pivot = default)
+        => IGSharp_SetNextWindowPos(new IGSharp_Vec2(position.X, position.Y), (int)cond, new IGSharp_Vec2(pivot.X, pivot.Y));
+
     /// <summary>Sets the size of the next window.</summary>
     public static void SetNextWindowSize(float width, float height, Cond cond = Cond.None)
         => IGSharp_SetNextWindowSize(new IGSharp_Vec2(width, height), (int)cond);
+
+    /// <summary>Sets the size of the next window.</summary>
+    public static void SetNextWindowSize(Vec2 size, Cond cond = Cond.None)
+        => IGSharp_SetNextWindowSize(new IGSharp_Vec2(size.X, size.Y), (int)cond);
 
     /// <summary>Sets the collapsed state of the next window.</summary>
     public static void SetNextWindowCollapsed(bool collapsed, Cond cond = Cond.None)
@@ -220,6 +245,9 @@ public static unsafe class ImGui
     /// <summary>Adds an invisible dummy item of the given size (useful for spacing and layout).</summary>
     public static void Dummy(float width, float height) => IGSharp_Dummy(new IGSharp_Vec2(width, height));
 
+    /// <summary>Adds an invisible dummy item of the given size.</summary>
+    public static void Dummy(Vec2 size) => IGSharp_Dummy(new IGSharp_Vec2(size.X, size.Y));
+
     /// <summary>Begins a group.</summary>
     public static void BeginGroup() => IGSharp_BeginGroup();
 
@@ -227,14 +255,17 @@ public static unsafe class ImGui
     public static void EndGroup() => IGSharp_EndGroup();
 
     /// <summary>Gets the cursor position in local window coordinates.</summary>
-    public static (float X, float Y) GetCursorPos()
+    public static Vec2 GetCursorPos()
     {
         var v = IGSharp_GetCursorPos();
-        return (v.X, v.Y);
+        return new Vec2(v.X, v.Y);
     }
 
     /// <summary>Sets the cursor position in local window coordinates.</summary>
     public static void SetCursorPos(float x, float y) => IGSharp_SetCursorPos(new IGSharp_Vec2(x, y));
+
+    /// <summary>Sets the cursor position in local window coordinates.</summary>
+    public static void SetCursorPos(Vec2 position) => IGSharp_SetCursorPos(new IGSharp_Vec2(position.X, position.Y));
 
     /// <summary>Gets the cursor X position in local window coordinates.</summary>
     public static float GetCursorPosX() => IGSharp_GetCursorPosX();
@@ -249,27 +280,30 @@ public static unsafe class ImGui
     public static void SetCursorPosY(float localY) => IGSharp_SetCursorPosY(localY);
 
     /// <summary>Gets the initial cursor position in local window coordinates (top-left of the content region).</summary>
-    public static (float X, float Y) GetCursorStartPos()
+    public static Vec2 GetCursorStartPos()
     {
         var v = IGSharp_GetCursorStartPos();
-        return (v.X, v.Y);
+        return new Vec2(v.X, v.Y);
     }
 
     /// <summary>Gets the cursor position in screen coordinates.</summary>
-    public static (float X, float Y) GetCursorScreenPos()
+    public static Vec2 GetCursorScreenPos()
     {
         var v = IGSharp_GetCursorScreenPos();
-        return (v.X, v.Y);
+        return new Vec2(v.X, v.Y);
     }
 
     /// <summary>Sets the cursor position in screen coordinates.</summary>
     public static void SetCursorScreenPos(float x, float y) => IGSharp_SetCursorScreenPos(new IGSharp_Vec2(x, y));
 
+    /// <summary>Sets the cursor position in screen coordinates.</summary>
+    public static void SetCursorScreenPos(Vec2 position) => IGSharp_SetCursorScreenPos(new IGSharp_Vec2(position.X, position.Y));
+
     /// <summary>Gets the available content region size for the current layout.</summary>
-    public static (float Width, float Height) GetContentRegionAvail()
+    public static Vec2 GetContentRegionAvail()
     {
         var v = IGSharp_GetContentRegionAvail();
-        return (v.X, v.Y);
+        return new Vec2(v.X, v.Y);
     }
 
     /// <summary>Aligns text so its baseline matches framed-widget baselines on the current line.</summary>
@@ -430,6 +464,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 2-component float drag slider. The span must contain at least 2 elements.</summary>
     public static bool DragFloat2(string label, Span<float> v, float speed = 1f, float min = 0, float max = 0, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 2, nameof(v));
         fixed (float* p = v)
             return IGSharp_DragFloat2(ToUtf8(label), p, speed, min, max, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
     }
@@ -437,6 +472,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 3-component float drag slider. The span must contain at least 3 elements.</summary>
     public static bool DragFloat3(string label, Span<float> v, float speed = 1f, float min = 0, float max = 0, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 3, nameof(v));
         fixed (float* p = v)
             return IGSharp_DragFloat3(ToUtf8(label), p, speed, min, max, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
     }
@@ -444,6 +480,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 4-component float drag slider. The span must contain at least 4 elements.</summary>
     public static bool DragFloat4(string label, Span<float> v, float speed = 1f, float min = 0, float max = 0, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 4, nameof(v));
         fixed (float* p = v)
             return IGSharp_DragFloat4(ToUtf8(label), p, speed, min, max, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
     }
@@ -458,6 +495,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 2-component int drag slider. The span must contain at least 2 elements.</summary>
     public static bool DragInt2(string label, Span<int> v, float speed = 1f, int min = 0, int max = 0, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 2, nameof(v));
         fixed (int* p = v)
             return IGSharp_DragInt2(ToUtf8(label), p, speed, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, (int)flags);
     }
@@ -465,6 +503,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 3-component int drag slider. The span must contain at least 3 elements.</summary>
     public static bool DragInt3(string label, Span<int> v, float speed = 1f, int min = 0, int max = 0, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 3, nameof(v));
         fixed (int* p = v)
             return IGSharp_DragInt3(ToUtf8(label), p, speed, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, (int)flags);
     }
@@ -472,6 +511,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 4-component int drag slider. The span must contain at least 4 elements.</summary>
     public static bool DragInt4(string label, Span<int> v, float speed = 1f, int min = 0, int max = 0, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 4, nameof(v));
         fixed (int* p = v)
             return IGSharp_DragInt4(ToUtf8(label), p, speed, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, (int)flags);
     }
@@ -551,19 +591,25 @@ public static unsafe class ImGui
     }
 
     /// <summary>Generic input widget for any unmanaged numeric type, with optional step buttons.</summary>
-    public static bool Input<T>(string label, ref T v, T step = default, T stepFast = default, string? format = null, InputTextFlags flags = InputTextFlags.None) where T : unmanaged
+    public static bool Input<T>(string label, ref T v, T? step = null, T? stepFast = null, string? format = null, InputTextFlags flags = InputTextFlags.None) where T : unmanaged
     {
         var dataType = DataTypeOf<T>();
+        var stepValue = step.GetValueOrDefault();
+        var stepFastValue = stepFast.GetValueOrDefault();
         fixed (T* p = &v)
-            return IGSharp_InputScalar(ToUtf8(label), dataType, p, &step, &stepFast, format != null ? ToUtf8(format) : default, (int)flags);
+            return IGSharp_InputScalar(ToUtf8(label), dataType, p, step.HasValue ? &stepValue : null,
+                stepFast.HasValue ? &stepFastValue : null, format != null ? ToUtf8(format) : default, (int)flags);
     }
 
     /// <summary>Generic N-component input widget.</summary>
-    public static bool Input<T>(string label, Span<T> values, T step = default, T stepFast = default, string? format = null, InputTextFlags flags = InputTextFlags.None) where T : unmanaged
+    public static bool Input<T>(string label, Span<T> values, T? step = null, T? stepFast = null, string? format = null, InputTextFlags flags = InputTextFlags.None) where T : unmanaged
     {
         var dataType = DataTypeOf<T>();
+        var stepValue = step.GetValueOrDefault();
+        var stepFastValue = stepFast.GetValueOrDefault();
         fixed (T* p = values)
-            return IGSharp_InputScalarN(ToUtf8(label), dataType, p, values.Length, &step, &stepFast, format != null ? ToUtf8(format) : default, (int)flags);
+            return IGSharp_InputScalarN(ToUtf8(label), dataType, p, values.Length, step.HasValue ? &stepValue : null,
+                stepFast.HasValue ? &stepFastValue : null, format != null ? ToUtf8(format) : default, (int)flags);
     }
 
     private static int DataTypeOf<T>() where T : unmanaged
@@ -584,6 +630,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 2-component float slider. The span must contain at least 2 elements.</summary>
     public static bool SliderFloat2(string label, Span<float> v, float min, float max, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 2, nameof(v));
         fixed (float* p = v)
             return IGSharp_SliderFloat2(ToUtf8(label), p, min, max, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
     }
@@ -591,6 +638,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 3-component float slider. The span must contain at least 3 elements.</summary>
     public static bool SliderFloat3(string label, Span<float> v, float min, float max, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 3, nameof(v));
         fixed (float* p = v)
             return IGSharp_SliderFloat3(ToUtf8(label), p, min, max, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
     }
@@ -598,6 +646,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 4-component float slider. The span must contain at least 4 elements.</summary>
     public static bool SliderFloat4(string label, Span<float> v, float min, float max, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 4, nameof(v));
         fixed (float* p = v)
             return IGSharp_SliderFloat4(ToUtf8(label), p, min, max, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
     }
@@ -605,6 +654,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 2-component int slider. The span must contain at least 2 elements.</summary>
     public static bool SliderInt2(string label, Span<int> v, int min, int max, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 2, nameof(v));
         fixed (int* p = v)
             return IGSharp_SliderInt2(ToUtf8(label), p, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, (int)flags);
     }
@@ -612,6 +662,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 3-component int slider. The span must contain at least 3 elements.</summary>
     public static bool SliderInt3(string label, Span<int> v, int min, int max, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 3, nameof(v));
         fixed (int* p = v)
             return IGSharp_SliderInt3(ToUtf8(label), p, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, (int)flags);
     }
@@ -619,6 +670,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 4-component int slider. The span must contain at least 4 elements.</summary>
     public static bool SliderInt4(string label, Span<int> v, int min, int max, string? format = null, SliderFlags flags = SliderFlags.None)
     {
+        RequireLength(v, 4, nameof(v));
         fixed (int* p = v)
             return IGSharp_SliderInt4(ToUtf8(label), p, min, max, format != null ? ToUtf8(format) : DefaultIntFormat, (int)flags);
     }
@@ -672,11 +724,16 @@ public static unsafe class ImGui
     /// <summary>Creates a single-line text input with a callback. See <see cref="InputTextCallback"/> and <see cref="InputTextFlags"/>.</summary>
     public static bool InputText(string label, Span<byte> buf, InputTextFlags flags, InputTextCallback callback)
     {
-        var handle = GCHandle.Alloc(callback);
+        var state = new CallbackState<InputTextCallback>(callback);
+        var handle = GCHandle.Alloc(state);
         try
         {
             fixed (byte* p = buf)
-                return IGSharp_InputTextEx(ToUtf8(label), p, (nuint)buf.Length, (int)flags, &InputTextCallbackThunk, (void*)GCHandle.ToIntPtr(handle));
+            {
+                var result = IGSharp_InputTextEx(ToUtf8(label), p, (nuint)buf.Length, (int)flags, &InputTextCallbackThunk, (void*)GCHandle.ToIntPtr(handle));
+                state.ThrowIfFailed();
+                return result;
+            }
         }
         finally { handle.Free(); }
     }
@@ -684,11 +741,16 @@ public static unsafe class ImGui
     /// <summary>Creates a multi-line text input with a callback.</summary>
     public static bool InputTextMultiline(string label, Span<byte> buf, float width, float height, InputTextFlags flags, InputTextCallback callback)
     {
-        var handle = GCHandle.Alloc(callback);
+        var state = new CallbackState<InputTextCallback>(callback);
+        var handle = GCHandle.Alloc(state);
         try
         {
             fixed (byte* p = buf)
-                return IGSharp_InputTextMultilineEx(ToUtf8(label), p, (nuint)buf.Length, new IGSharp_Vec2(width, height), (int)flags, &InputTextCallbackThunk, (void*)GCHandle.ToIntPtr(handle));
+            {
+                var result = IGSharp_InputTextMultilineEx(ToUtf8(label), p, (nuint)buf.Length, new IGSharp_Vec2(width, height), (int)flags, &InputTextCallbackThunk, (void*)GCHandle.ToIntPtr(handle));
+                state.ThrowIfFailed();
+                return result;
+            }
         }
         finally { handle.Free(); }
     }
@@ -696,11 +758,16 @@ public static unsafe class ImGui
     /// <summary>Creates a single-line text input with a hint and callback.</summary>
     public static bool InputTextWithHint(string label, string hint, Span<byte> buf, InputTextFlags flags, InputTextCallback callback)
     {
-        var handle = GCHandle.Alloc(callback);
+        var state = new CallbackState<InputTextCallback>(callback);
+        var handle = GCHandle.Alloc(state);
         try
         {
             fixed (byte* p = buf)
-                return IGSharp_InputTextWithHintEx(ToUtf8(label), ToUtf8(hint), p, (nuint)buf.Length, (int)flags, &InputTextCallbackThunk, (void*)GCHandle.ToIntPtr(handle));
+            {
+                var result = IGSharp_InputTextWithHintEx(ToUtf8(label), ToUtf8(hint), p, (nuint)buf.Length, (int)flags, &InputTextCallbackThunk, (void*)GCHandle.ToIntPtr(handle));
+                state.ThrowIfFailed();
+                return result;
+            }
         }
         finally { handle.Free(); }
     }
@@ -717,7 +784,9 @@ public static unsafe class ImGui
         try
         {
             var augmented = (int)flags | (int)InputTextFlags.CallbackResize;
-            if (IGSharp_InputTextEx(ToUtf8(label), state.Ptr, (nuint)state.Size, augmented, &GrowingInputCallback, (void*)GCHandle.ToIntPtr(stateHandle)))
+            var changed = IGSharp_InputTextEx(ToUtf8(label), state.Ptr, (nuint)state.Size, augmented, &GrowingInputCallback, (void*)GCHandle.ToIntPtr(stateHandle));
+            state.ThrowIfFailed();
+            if (changed)
             {
                 value = state.ReadString();
                 return true;
@@ -735,7 +804,9 @@ public static unsafe class ImGui
         try
         {
             var augmented = (int)flags | (int)InputTextFlags.CallbackResize;
-            if (IGSharp_InputTextMultilineEx(ToUtf8(label), state.Ptr, (nuint)state.Size, new IGSharp_Vec2(width, height), augmented, &GrowingInputCallback, (void*)GCHandle.ToIntPtr(stateHandle)))
+            var changed = IGSharp_InputTextMultilineEx(ToUtf8(label), state.Ptr, (nuint)state.Size, new IGSharp_Vec2(width, height), augmented, &GrowingInputCallback, (void*)GCHandle.ToIntPtr(stateHandle));
+            state.ThrowIfFailed();
+            if (changed)
             {
                 value = state.ReadString();
                 return true;
@@ -753,7 +824,9 @@ public static unsafe class ImGui
         try
         {
             var augmented = (int)flags | (int)InputTextFlags.CallbackResize;
-            if (IGSharp_InputTextWithHintEx(ToUtf8(label), ToUtf8(hint), state.Ptr, (nuint)state.Size, augmented, &GrowingInputCallback, (void*)GCHandle.ToIntPtr(stateHandle)))
+            var changed = IGSharp_InputTextWithHintEx(ToUtf8(label), ToUtf8(hint), state.Ptr, (nuint)state.Size, augmented, &GrowingInputCallback, (void*)GCHandle.ToIntPtr(stateHandle));
+            state.ThrowIfFailed();
+            if (changed)
             {
                 value = state.ReadString();
                 return true;
@@ -766,14 +839,23 @@ public static unsafe class ImGui
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static int GrowingInputCallback(IGSharp_InputTextCallbackData* data)
     {
-        if (IGSharp_InputTextCallbackData_GetEventFlag(data) == (int)InputTextFlags.CallbackResize)
+        try
+        {
+            if (IGSharp_InputTextCallbackData_GetEventFlag(data) == (int)InputTextFlags.CallbackResize)
+            {
+                var userData = IGSharp_InputTextCallbackData_GetUserData(data);
+                var handle = GCHandle.FromIntPtr((nint)userData);
+                var state = (GrowingInputState)handle.Target!;
+                var newSize = IGSharp_InputTextCallbackData_GetBufSize(data);
+                state.Resize(newSize);
+                IGSharp_InputTextCallbackData_ResizeBuf(data, state.Ptr, state.Size);
+            }
+        }
+        catch (Exception ex)
         {
             var userData = IGSharp_InputTextCallbackData_GetUserData(data);
             var handle = GCHandle.FromIntPtr((nint)userData);
-            var state = (GrowingInputState)handle.Target!;
-            var newSize = IGSharp_InputTextCallbackData_GetBufSize(data);
-            state.Resize(newSize);
-            IGSharp_InputTextCallbackData_ResizeBuf(data, state.Ptr, state.Size);
+            ((GrowingInputState)handle.Target!).Capture(ex);
         }
         return 0;
     }
@@ -781,6 +863,7 @@ public static unsafe class ImGui
     private sealed class GrowingInputState : IDisposable
     {
         private nint _ptr;
+        private ExceptionDispatchInfo? _exception;
 
         public byte* Ptr => (byte*)_ptr;
         public int Size { get; private set; }
@@ -810,6 +893,10 @@ public static unsafe class ImGui
             return System.Text.Encoding.UTF8.GetString(span[..len]);
         }
 
+        public void Capture(Exception exception) => _exception ??= ExceptionDispatchInfo.Capture(exception);
+
+        public void ThrowIfFailed() => _exception?.Throw();
+
         public void Dispose()
         {
             if (_ptr != 0)
@@ -825,8 +912,13 @@ public static unsafe class ImGui
     {
         var userData = IGSharp_InputTextCallbackData_GetUserData(data);
         var handle = GCHandle.FromIntPtr((nint)userData);
-        var callback = (InputTextCallback)handle.Target!;
-        return callback(new InputTextCallbackData(data));
+        var state = (CallbackState<InputTextCallback>)handle.Target!;
+        try { return state.Callback(new InputTextCallbackData(data)); }
+        catch (Exception ex)
+        {
+            state.Capture(ex);
+            return 0;
+        }
     }
 
 
@@ -840,6 +932,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 2-component float input. The span must contain at least 2 elements.</summary>
     public static bool InputFloat2(string label, Span<float> v, string? format = null, InputTextFlags flags = InputTextFlags.None)
     {
+        RequireLength(v, 2, nameof(v));
         fixed (float* p = v)
             return IGSharp_InputFloat2(ToUtf8(label), p, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
     }
@@ -847,6 +940,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 3-component float input. The span must contain at least 3 elements.</summary>
     public static bool InputFloat3(string label, Span<float> v, string? format = null, InputTextFlags flags = InputTextFlags.None)
     {
+        RequireLength(v, 3, nameof(v));
         fixed (float* p = v)
             return IGSharp_InputFloat3(ToUtf8(label), p, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
     }
@@ -854,6 +948,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 4-component float input. The span must contain at least 4 elements.</summary>
     public static bool InputFloat4(string label, Span<float> v, string? format = null, InputTextFlags flags = InputTextFlags.None)
     {
+        RequireLength(v, 4, nameof(v));
         fixed (float* p = v)
             return IGSharp_InputFloat4(ToUtf8(label), p, format != null ? ToUtf8(format) : DefaultFloatFormat, (int)flags);
     }
@@ -868,6 +963,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 2-component int input. The span must contain at least 2 elements.</summary>
     public static bool InputInt2(string label, Span<int> v, InputTextFlags flags = InputTextFlags.None)
     {
+        RequireLength(v, 2, nameof(v));
         fixed (int* p = v)
             return IGSharp_InputInt2(ToUtf8(label), p, (int)flags);
     }
@@ -875,6 +971,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 3-component int input. The span must contain at least 3 elements.</summary>
     public static bool InputInt3(string label, Span<int> v, InputTextFlags flags = InputTextFlags.None)
     {
+        RequireLength(v, 3, nameof(v));
         fixed (int* p = v)
             return IGSharp_InputInt3(ToUtf8(label), p, (int)flags);
     }
@@ -882,6 +979,7 @@ public static unsafe class ImGui
     /// <summary>Creates a 4-component int input. The span must contain at least 4 elements.</summary>
     public static bool InputInt4(string label, Span<int> v, InputTextFlags flags = InputTextFlags.None)
     {
+        RequireLength(v, 4, nameof(v));
         fixed (int* p = v)
             return IGSharp_InputInt4(ToUtf8(label), p, (int)flags);
     }
@@ -910,24 +1008,29 @@ public static unsafe class ImGui
     /// <summary>Creates a color editor for 4 floats (RGBA). The span must contain at least 4 elements.</summary>
     public static bool ColorEdit4(string label, Span<float> rgba, ColorEditFlags flags = ColorEditFlags.None)
     {
+        RequireLength(rgba, 4, nameof(rgba));
         fixed (float* p = rgba) return IGSharp_ColorEdit4(ToUtf8(label), p, (int)flags);
     }
 
     /// <summary>Creates a color picker for 3 floats (RGB). The span must contain at least 3 elements.</summary>
     public static bool ColorPicker3(string label, Span<float> rgb, ColorEditFlags flags = ColorEditFlags.None)
     {
+        RequireLength(rgb, 3, nameof(rgb));
         fixed (float* p = rgb) return IGSharp_ColorPicker3(ToUtf8(label), p, (int)flags);
     }
 
     /// <summary>Creates a color picker for 4 floats (RGBA). The span must contain at least 4 elements.</summary>
     public static bool ColorPicker4(string label, Span<float> rgba, ColorEditFlags flags = ColorEditFlags.None)
     {
+        RequireLength(rgba, 4, nameof(rgba));
         fixed (float* p = rgba) return IGSharp_ColorPicker4(ToUtf8(label), p, (int)flags, null);
     }
 
     /// <summary>Creates a color picker for 4 floats (RGBA) with a reference color. Both spans must contain at least 4 elements.</summary>
     public static bool ColorPicker4(string label, Span<float> rgba, ReadOnlySpan<float> refColor, ColorEditFlags flags = ColorEditFlags.None)
     {
+        RequireLength(rgba, 4, nameof(rgba));
+        RequireLength(refColor, 4, nameof(refColor));
         fixed (float* p = rgba)
         fixed (float* r = refColor)
             return IGSharp_ColorPicker4(ToUtf8(label), p, (int)flags, r);
@@ -1007,10 +1110,12 @@ public static unsafe class ImGui
     /// <summary>Plots a line graph with values supplied by a callback (useful for sparse or computed data).</summary>
     public static void PlotLines(string label, PlotValuesGetter getter, int valuesCount, int valuesOffset = 0, string? overlay = null, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, float width = 0, float height = 0)
     {
-        var handle = GCHandle.Alloc(getter);
+        var state = new CallbackState<PlotValuesGetter>(getter);
+        var handle = GCHandle.Alloc(state);
         try
         {
             IGSharp_PlotLinesCallback(ToUtf8(label), &PlotValuesGetterThunk, (void*)GCHandle.ToIntPtr(handle), valuesCount, valuesOffset, ToUtf8(overlay), scaleMin, scaleMax, new IGSharp_Vec2(width, height));
+            state.ThrowIfFailed();
         }
         finally { handle.Free(); }
     }
@@ -1018,10 +1123,12 @@ public static unsafe class ImGui
     /// <summary>Plots a histogram with values supplied by a callback.</summary>
     public static void PlotHistogram(string label, PlotValuesGetter getter, int valuesCount, int valuesOffset = 0, string? overlay = null, float scaleMin = float.MaxValue, float scaleMax = float.MaxValue, float width = 0, float height = 0)
     {
-        var handle = GCHandle.Alloc(getter);
+        var state = new CallbackState<PlotValuesGetter>(getter);
+        var handle = GCHandle.Alloc(state);
         try
         {
             IGSharp_PlotHistogramCallback(ToUtf8(label), &PlotValuesGetterThunk, (void*)GCHandle.ToIntPtr(handle), valuesCount, valuesOffset, ToUtf8(overlay), scaleMin, scaleMax, new IGSharp_Vec2(width, height));
+            state.ThrowIfFailed();
         }
         finally { handle.Free(); }
     }
@@ -1030,8 +1137,13 @@ public static unsafe class ImGui
     private static float PlotValuesGetterThunk(void* data, int idx)
     {
         var handle = GCHandle.FromIntPtr((nint)data);
-        var getter = (PlotValuesGetter)handle.Target!;
-        return getter(idx);
+        var state = (CallbackState<PlotValuesGetter>)handle.Target!;
+        try { return state.Callback(idx); }
+        catch (Exception ex)
+        {
+            state.Capture(ex);
+            return 0;
+        }
     }
 
     // --- Widgets: Progress ---
@@ -1080,6 +1192,13 @@ public static unsafe class ImGui
 
     /// <summary>Queries whether a tree node with the given storage ID is currently open.</summary>
     public static bool TreeNodeGetOpen(uint storageId) => IGSharp_TreeNodeGetOpen(storageId);
+
+    /// <summary>Sets a tree node's open state in the current window storage.</summary>
+    public static void TreeNodeSetOpen(uint storageId, bool open)
+    {
+        using var storage = GetStateStorage();
+        storage.SetBool(storageId, open);
+    }
 
     /// <summary>Sets whether the next tree node or collapsing header will be open.</summary>
     public static void SetNextItemOpen(bool isOpen, Cond cond = Cond.None)
@@ -1147,7 +1266,11 @@ public static unsafe class ImGui
         try
         {
             fixed (int* p = &currentItem)
-                return IGSharp_ListBoxCallback(ToUtf8(label), p, &ItemsGetterThunk, (void*)GCHandle.ToIntPtr(handle), itemsCount, heightInItems);
+            {
+                var result = IGSharp_ListBoxCallback(ToUtf8(label), p, &ItemsGetterThunk, (void*)GCHandle.ToIntPtr(handle), itemsCount, heightInItems);
+                state.ThrowIfFailed();
+                return result;
+            }
         }
         finally { handle.Free(); }
     }
@@ -1187,7 +1310,11 @@ public static unsafe class ImGui
         try
         {
             fixed (int* p = &currentItem)
-                return IGSharp_ComboCallback(ToUtf8(label), p, &ItemsGetterThunk, (void*)GCHandle.ToIntPtr(handle), itemsCount, popupMaxHeightInItems);
+            {
+                var result = IGSharp_ComboCallback(ToUtf8(label), p, &ItemsGetterThunk, (void*)GCHandle.ToIntPtr(handle), itemsCount, popupMaxHeightInItems);
+                state.ThrowIfFailed();
+                return result;
+            }
         }
         finally { handle.Free(); }
     }
@@ -1199,6 +1326,7 @@ public static unsafe class ImGui
     {
         private readonly Func<int, string> _getter;
         private readonly List<nint> _allocations = [];
+        private ExceptionDispatchInfo? _exception;
 
         public ItemsGetterState(Func<int, string> getter) => _getter = getter;
 
@@ -1208,6 +1336,10 @@ public static unsafe class ImGui
             _allocations.Add(ptr);
             return (byte*)ptr;
         }
+
+        public void Capture(Exception exception) => _exception ??= ExceptionDispatchInfo.Capture(exception);
+
+        public void ThrowIfFailed() => _exception?.Throw();
 
         public void Dispose()
         {
@@ -1222,7 +1354,12 @@ public static unsafe class ImGui
     {
         var handle = GCHandle.FromIntPtr((nint)data);
         var state = (ItemsGetterState)handle.Target!;
-        return state.GetItemText(idx);
+        try { return state.GetItemText(idx); }
+        catch (Exception ex)
+        {
+            state.Capture(ex);
+            return null;
+        }
     }
 
     // --- Widgets: Menus ---
@@ -1517,24 +1654,24 @@ public static unsafe class ImGui
     public static bool IsItemToggledOpen() => IGSharp_IsItemToggledOpen();
 
     /// <summary>Gets the top-left of the last item's bounding rectangle in screen coordinates.</summary>
-    public static (float X, float Y) GetItemRectMin()
+    public static Vec2 GetItemRectMin()
     {
         var v = IGSharp_GetItemRectMin();
-        return (v.X, v.Y);
+        return new Vec2(v.X, v.Y);
     }
 
     /// <summary>Gets the bottom-right of the last item's bounding rectangle in screen coordinates.</summary>
-    public static (float X, float Y) GetItemRectMax()
+    public static Vec2 GetItemRectMax()
     {
         var v = IGSharp_GetItemRectMax();
-        return (v.X, v.Y);
+        return new Vec2(v.X, v.Y);
     }
 
     /// <summary>Gets the size of the last item's bounding rectangle.</summary>
-    public static (float Width, float Height) GetItemRectSize()
+    public static Vec2 GetItemRectSize()
     {
         var v = IGSharp_GetItemRectSize();
-        return (v.X, v.Y);
+        return new Vec2(v.X, v.Y);
     }
 
     /// <summary>Marks the last item as the default focus target when the current window opens.</summary>
@@ -1729,14 +1866,13 @@ public static unsafe class ImGui
     /// <summary>Custom size-constraint callback: receives the window position and current size, and may adjust the desired size.</summary>
     public delegate void SizeConstraintCallback(Vec2 pos, Vec2 currentSize, ref Vec2 desiredSize);
 
-    // The constraint applies to the next Begin() only; a single pending slot mirrors native semantics.
-    private static SizeConstraintCallback? _sizeConstraintCallback;
+    private static readonly ConcurrentDictionary<nint, SizeConstraintCallback> SizeConstraintCallbacks = new();
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void SizeConstraintThunk(IGSharp_SizeCallbackData* data)
     {
-        var cb = _sizeConstraintCallback;
-        if (cb == null) return;
+        var context = (nint)IGSharp_GetCurrentContext();
+        if (!SizeConstraintCallbacks.TryRemove(context, out var cb)) return;
         try
         {
             var p = IGSharp_SizeCallbackData_GetPos(data);
@@ -1746,18 +1882,22 @@ public static unsafe class ImGui
             cb(new Vec2(p.X, p.Y), new Vec2(c.X, c.Y), ref desired);
             IGSharp_SizeCallbackData_SetDesiredSize(data, new IGSharp_Vec2(desired.X, desired.Y));
         }
-        catch
+        catch (Exception ex)
         {
-            // Exceptions must not cross the native boundary.
+            ReportUnhandledCallbackException(ex);
         }
     }
 
     /// <summary>Sets a custom size constraint for the next window (e.g. fixed aspect ratio or stepped sizes).</summary>
     public static void SetNextWindowSizeConstraints(Vec2 min, Vec2 max, SizeConstraintCallback callback)
     {
-        _sizeConstraintCallback = callback;
+        var context = (nint)IGSharp_GetCurrentContext();
+        if (context == 0) throw new InvalidOperationException("No current ImGui context.");
+        SizeConstraintCallbacks[context] = callback;
         IGSharp_SetNextWindowSizeConstraints(new IGSharp_Vec2(min.X, min.Y), new IGSharp_Vec2(max.X, max.Y), &SizeConstraintThunk, null);
     }
+
+    internal static void ReleaseContext(nint context) => SizeConstraintCallbacks.TryRemove(context, out _);
 
     /// <summary>Sets the content size used to compute scrollbar ranges for the next window.</summary>
     public static void SetNextWindowContentSize(float width, float height)
@@ -1767,7 +1907,7 @@ public static unsafe class ImGui
     public static void SetNextWindowScroll(float scrollX, float scrollY)
         => IGSharp_SetNextWindowScroll(new IGSharp_Vec2(scrollX, scrollY));
 
-    /// <summary>Sets the current window's position. Prefer <see cref="SetNextWindowPos"/> — calling this inside Begin/End causes a one-frame lag.</summary>
+    /// <summary>Sets the current window's position. Prefer <see cref="SetNextWindowPos(Vec2, Cond, Vec2)"/> — calling this inside Begin/End causes a one-frame lag.</summary>
     public static void SetWindowPos(float x, float y, Cond cond = Cond.None)
         => IGSharp_SetWindowPos(new IGSharp_Vec2(x, y), (int)cond);
 
@@ -1775,7 +1915,7 @@ public static unsafe class ImGui
     public static void SetWindowPos(string name, float x, float y, Cond cond = Cond.None)
         => IGSharp_SetWindowPosNamed(ToUtf8(name), new IGSharp_Vec2(x, y), (int)cond);
 
-    /// <summary>Sets the current window's size. Prefer <see cref="SetNextWindowSize"/> — calling this inside Begin/End causes a one-frame lag.</summary>
+    /// <summary>Sets the current window's size. Prefer <see cref="SetNextWindowSize(Vec2, Cond)"/> — calling this inside Begin/End causes a one-frame lag.</summary>
     public static void SetWindowSize(float width, float height, Cond cond = Cond.None)
         => IGSharp_SetWindowSize(new IGSharp_Vec2(width, height), (int)cond);
 
@@ -2074,4 +2214,29 @@ public static unsafe class ImGui
 
     /// <summary>Writes a line to the ImGui debug log (visible in <see cref="ShowDebugLogWindow()"/>).</summary>
     public static void DebugLog(string text) => IGSharp_DebugLog(ToUtf8(text));
+
+    private static void RequireLength<T>(ReadOnlySpan<T> values, int required, string paramName)
+    {
+        if (values.Length < required)
+            throw new ArgumentException($"The span must contain at least {required} elements.", paramName);
+    }
+
+    internal static void ReportUnhandledCallbackException(Exception exception)
+    {
+        var handlers = UnhandledCallbackException;
+        if (handlers == null) return;
+        foreach (Action<Exception> handler in handlers.GetInvocationList())
+        {
+            try { handler(exception); }
+            catch { }
+        }
+    }
+
+    private sealed class CallbackState<T>(T callback)
+    {
+        private ExceptionDispatchInfo? _exception;
+        public T Callback { get; } = callback;
+        public void Capture(Exception exception) => _exception ??= ExceptionDispatchInfo.Capture(exception);
+        public void ThrowIfFailed() => _exception?.Throw();
+    }
 }

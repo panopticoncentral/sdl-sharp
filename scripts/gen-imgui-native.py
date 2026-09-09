@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Generate SdlSharp.ImGui/Native.cs from imgui_sharp.h.
 Preserves the hand-written SDL3 backend section from the existing file."""
+import os
+from pathlib import Path
 import re, sys
 
-HDR = '/Users/paulv/Projects/imgui-sharp-native/src/imgui_sharp.h'
-OLD = '/Users/paulv/Projects/sdl-sharp/src/SdlSharp.ImGui/Native.cs'
-OUT = '/Users/paulv/Projects/sdl-sharp/src/SdlSharp.ImGui/Native.cs'
+ROOT = Path(__file__).resolve().parents[1]
+NATIVE_REPO = Path(os.environ.get('IMGUI_SHARP_NATIVE_REPO', ROOT.parent / 'imgui-sharp-native'))
+HDR = NATIVE_REPO / 'src' / 'imgui_sharp.h'
+OLD = ROOT / 'src' / 'SdlSharp.ImGui' / 'Native.cs'
+OUT = OLD
 
 # ---- opaque handle names (from the header's consumer branch) ----
 h = open(HDR).read()

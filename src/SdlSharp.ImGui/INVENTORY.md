@@ -25,11 +25,12 @@ Cross-reference of Dear ImGui (imgui.h) sections with SdlSharp.ImGui native bind
 | GetIO | function | Native.IGSharp_GetIO | Io (static class) | Direct mirror-struct access |
 | GetPlatformIO | function | Native.IGSharp_GetPlatformIO | PlatformIO (static class) | Handlers + properties |
 | GetStyle | function | Native.IGSharp_GetStyle | Style (static class) | Direct mirror-struct access |
-| NewFrame | function | Native.IGSharp_NewFrame | ImGuiBackend.NewFrame (internal) | Called by backend |
+| NewFrame | function | Native.IGSharp_NewFrame | ImGuiBackend.NewFrame | Called by backend owner |
 | EndFrame | function | Native.IGSharp_EndFrame | ImGui.EndFrame | |
 | Render | function | Native.IGSharp_Render | ImGui.Render | |
 | GetDrawData | function | Native.IGSharp_GetDrawData | ImGui.GetDrawData | Returns DrawData |
 | GetVersion | function | Native.IGSharp_GetVersion | ImGui.GetVersion | |
+| IMGUI_VERSION_NUM | macro | Native.IGSharp_GetVersionNumber | ImGui.GetVersionNumber | Exact native compile-time version |
 | IMGUI_CHECKVERSION | macro | Native.IGSharp_CheckVersion | Context.Create (internal) | |
 
 ## Demo, Debug, Information
@@ -1342,7 +1343,7 @@ All flag/enum types are wrapped as public C# enums in `SdlSharp.ImGui` namespace
 | ImGui Symbol | Kind | Native Wrapper | Managed Wrapper | Notes |
 |---|---|---|---|---|
 | ImGui_ImplSDL3_InitForSDLGPU | function | Native.IGSharp_ImplSDL3_InitForSDLGPU | ImGuiBackend.Init | |
-| ImGui_ImplSDL3_Shutdown | function | Native.IGSharp_ImplSDL3_Shutdown | ImGuiBackend.Shutdown | |
+| ImGui_ImplSDL3_Shutdown | function | Native.IGSharp_ImplSDL3_Shutdown | ImGuiBackend.Dispose | |
 | ImGui_ImplSDL3_NewFrame | function | Native.IGSharp_ImplSDL3_NewFrame | ImGuiBackend.NewFrame | |
 | ImGui_ImplSDL3_ProcessEvent | function | Native.IGSharp_ImplSDL3_ProcessEvent | ImGuiBackend (internal) | Via event filter |
 | ImGui_ImplSDL3_InitForOther | function | - | - | niche — using SDL_GPU path |
@@ -1351,7 +1352,7 @@ All flag/enum types are wrapped as public C# enums in `SdlSharp.ImGui` namespace
 | ImGui_ImplSDL3_InitForMetal | function | - | - | niche — using SDL_GPU path |
 | ImGui_ImplSDL3_InitForOpenGL | function | - | - | niche — using SDL_GPU path |
 | ImGui_ImplSDLGPU3_Init | function | Native.IGSharp_ImplSDLGPU3_Init | ImGuiBackend.Init | |
-| ImGui_ImplSDLGPU3_Shutdown | function | Native.IGSharp_ImplSDLGPU3_Shutdown | ImGuiBackend.Shutdown | |
+| ImGui_ImplSDLGPU3_Shutdown | function | Native.IGSharp_ImplSDLGPU3_Shutdown | ImGuiBackend.Dispose | |
 | ImGui_ImplSDLGPU3_NewFrame | function | Native.IGSharp_ImplSDLGPU3_NewFrame | ImGuiBackend.NewFrame | |
 | ImGui_ImplSDLGPU3_PrepareDrawData | function | Native.IGSharp_ImplSDLGPU3_PrepareDrawData | ImGuiBackend.PrepareDrawData | Takes DrawData |
 | ImGui_ImplSDLGPU3_RenderDrawData | function | Native.IGSharp_ImplSDLGPU3_RenderDrawData | ImGuiBackend.RenderDrawData | Takes DrawData |

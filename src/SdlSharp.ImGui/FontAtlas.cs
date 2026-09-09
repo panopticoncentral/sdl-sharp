@@ -37,20 +37,36 @@ public readonly unsafe struct FontAtlas
 
     /// <summary>Adds the default ProggyClean.ttf font.</summary>
     public Font AddDefaultFont(FontConfig? config = null)
-        => new(IGSharp_FontAtlas_AddFontDefault(Handle, config != null ? config.Handle : null));
+    {
+        if (config == null) return new(IGSharp_FontAtlas_AddFontDefault(Handle, null));
+        using var scope = config.PrepareForAdd(Handle);
+        return new(IGSharp_FontAtlas_AddFontDefault(Handle, scope.Handle));
+    }
 
     /// <summary>Adds the default embedded vector font (scales cleanly to any size).</summary>
     public Font AddDefaultVectorFont(FontConfig? config = null)
-        => new(IGSharp_FontAtlas_AddFontDefaultVector(Handle, config != null ? config.Handle : null));
+    {
+        if (config == null) return new(IGSharp_FontAtlas_AddFontDefaultVector(Handle, null));
+        using var scope = config.PrepareForAdd(Handle);
+        return new(IGSharp_FontAtlas_AddFontDefaultVector(Handle, scope.Handle));
+    }
 
     /// <summary>Adds the default embedded bitmap font (ProggyClean, crisp at its native 13px size).</summary>
     public Font AddDefaultBitmapFont(FontConfig? config = null)
-        => new(IGSharp_FontAtlas_AddFontDefaultBitmap(Handle, config != null ? config.Handle : null));
+    {
+        if (config == null) return new(IGSharp_FontAtlas_AddFontDefaultBitmap(Handle, null));
+        using var scope = config.PrepareForAdd(Handle);
+        return new(IGSharp_FontAtlas_AddFontDefaultBitmap(Handle, scope.Handle));
+    }
 
     /// <summary>Loads a font from a TTF/OTF file on disk.</summary>
     public Font AddFontFromFileTTF(string filename, float sizePixels, FontConfig? config = null)
-        => new(IGSharp_FontAtlas_AddFontFromFileTTF(Handle, ToUtf8(filename), sizePixels,
-            config != null ? config.Handle : null, null));
+    {
+        if (config == null)
+            return new(IGSharp_FontAtlas_AddFontFromFileTTF(Handle, ToUtf8(filename), sizePixels, null, null));
+        using var scope = config.PrepareForAdd(Handle);
+        return new(IGSharp_FontAtlas_AddFontFromFileTTF(Handle, ToUtf8(filename), sizePixels, scope.Handle, null));
+    }
 
     /// <summary>
     /// Loads a font from an in-memory TTF/OTF buffer. The buffer is copied into ImGui-owned memory,
@@ -65,14 +81,16 @@ public readonly unsafe struct FontAtlas
         fontData.CopyTo(new Span<byte>(copy, fontData.Length));
         if (config != null)
         {
+            using var scope = config.PrepareForAdd(Handle);
+            var configHandle = scope.Handle;
             // The atlas copies the config on add, so temporarily marking the caller's config is safe.
-            var previousOwnership = IGSharp_FontConfig_GetFontDataOwnedByAtlas(config.Handle);
-            IGSharp_FontConfig_SetFontDataOwnedByAtlas(config.Handle, true);
+            var previousOwnership = IGSharp_FontConfig_GetFontDataOwnedByAtlas(configHandle);
+            IGSharp_FontConfig_SetFontDataOwnedByAtlas(configHandle, true);
             try
             {
-                return new(IGSharp_FontAtlas_AddFontFromMemoryTTF(Handle, copy, fontData.Length, sizePixels, config.Handle, null));
+                return new(IGSharp_FontAtlas_AddFontFromMemoryTTF(Handle, copy, fontData.Length, sizePixels, configHandle, null));
             }
-            finally { IGSharp_FontConfig_SetFontDataOwnedByAtlas(config.Handle, previousOwnership); }
+            finally { IGSharp_FontConfig_SetFontDataOwnedByAtlas(configHandle, previousOwnership); }
         }
         var cfg = IGSharp_FontConfig_Create();
         try
@@ -90,9 +108,15 @@ public readonly unsafe struct FontAtlas
     /// </summary>
     public Font AddFontFromMemoryCompressedTTF(ReadOnlySpan<byte> compressedData, float sizePixels, FontConfig? config = null)
     {
+        if (config == null)
+        {
+            fixed (byte* p = compressedData)
+                return new(IGSharp_FontAtlas_AddFontFromMemoryCompressedTTF(Handle, p, compressedData.Length, sizePixels, null, null));
+        }
+        using var scope = config.PrepareForAdd(Handle);
         fixed (byte* p = compressedData)
             return new(IGSharp_FontAtlas_AddFontFromMemoryCompressedTTF(Handle, p, compressedData.Length, sizePixels,
-                config != null ? config.Handle : null, null));
+                scope.Handle, null));
     }
 
     /// <summary>
@@ -100,8 +124,12 @@ public readonly unsafe struct FontAtlas
     /// <c>binary_to_compressed_c</c> tool with <c>-base85</c>).
     /// </summary>
     public Font AddFontFromMemoryCompressedBase85TTF(string compressedDataBase85, float sizePixels, FontConfig? config = null)
-        => new(IGSharp_FontAtlas_AddFontFromMemoryCompressedBase85TTF(Handle, ToUtf8(compressedDataBase85), sizePixels,
-            config != null ? config.Handle : null, null));
+    {
+        if (config == null)
+            return new(IGSharp_FontAtlas_AddFontFromMemoryCompressedBase85TTF(Handle, ToUtf8(compressedDataBase85), sizePixels, null, null));
+        using var scope = config.PrepareForAdd(Handle);
+        return new(IGSharp_FontAtlas_AddFontFromMemoryCompressedBase85TTF(Handle, ToUtf8(compressedDataBase85), sizePixels, scope.Handle, null));
+    }
 
     // --- Font enumeration / removal ---
 

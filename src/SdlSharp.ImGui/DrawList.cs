@@ -181,12 +181,13 @@ public readonly unsafe struct DrawList
 
     // --- Images ---
 
-    /// <summary>Draws an axis-aligned textured rectangle. <paramref name="textureId"/> is backend-specific (SDL_GPU: SDL_GPUTexture*).</summary>
-    public void AddImage(ulong textureId, Vec2 min, Vec2 max, Vec2 uvMin = default, Vec2 uvMax = default, uint col = 0xFFFFFFFFu)
-    {
-        var defaultMax = uvMax == default ? new Vec2(1, 1) : uvMax;
-        IGSharp_DrawList_AddImage(Handle, textureId, Reinterpret(min), Reinterpret(max), Reinterpret(uvMin), Reinterpret(defaultMax), col);
-    }
+    /// <summary>Draws an axis-aligned textured rectangle using the full texture.</summary>
+    public void AddImage(ulong textureId, Vec2 min, Vec2 max, uint col = 0xFFFFFFFFu)
+        => AddImage(textureId, min, max, default, new Vec2(1, 1), col);
+
+    /// <summary>Draws an axis-aligned textured rectangle with explicit UV coordinates. <paramref name="textureId"/> is backend-specific (SDL_GPU: SDL_GPUTexture*).</summary>
+    public void AddImage(ulong textureId, Vec2 min, Vec2 max, Vec2 uvMin, Vec2 uvMax, uint col = 0xFFFFFFFFu)
+        => IGSharp_DrawList_AddImage(Handle, textureId, Reinterpret(min), Reinterpret(max), Reinterpret(uvMin), Reinterpret(uvMax), col);
 
     /// <summary>Draws a textured quadrilateral.</summary>
     public void AddImageQuad(ulong textureId, Vec2 p1, Vec2 p2, Vec2 p3, Vec2 p4, Vec2 uv1, Vec2 uv2, Vec2 uv3, Vec2 uv4, uint col = 0xFFFFFFFFu)
@@ -197,7 +198,11 @@ public readonly unsafe struct DrawList
         => IGSharp_DrawList_AddImageRounded(Handle, textureId, Reinterpret(min), Reinterpret(max), Reinterpret(uvMin), Reinterpret(uvMax), col, rounding, (int)flags);
 
     /// <summary>Draws an axis-aligned image using an SDL_GPU texture.</summary>
-    public void AddImage(GpuTexture texture, Vec2 min, Vec2 max, Vec2 uvMin = default, Vec2 uvMax = default, uint col = 0xFFFFFFFFu)
+    public void AddImage(GpuTexture texture, Vec2 min, Vec2 max, uint col = 0xFFFFFFFFu)
+        => AddImage((ulong)texture.NativeHandle, min, max, col);
+
+    /// <summary>Draws an axis-aligned image using an SDL_GPU texture and explicit UV coordinates.</summary>
+    public void AddImage(GpuTexture texture, Vec2 min, Vec2 max, Vec2 uvMin, Vec2 uvMax, uint col = 0xFFFFFFFFu)
         => AddImage((ulong)texture.NativeHandle, min, max, uvMin, uvMax, col);
 
     /// <summary>Draws a textured quadrilateral using an SDL_GPU texture.</summary>
@@ -279,14 +284,25 @@ public readonly unsafe struct DrawList
     public void AddCallback(Action<DrawList, DrawCmd> callback)
     {
         ArgumentNullException.ThrowIfNull(callback);
+        var context = (nint)IGSharp_GetCurrentContext();
+        if (context == 0) throw new InvalidOperationException("No current ImGui context.");
         var frame = IGSharp_GetFrameCount();
-        if (frame != s_callbacksFrame)
+        int index;
+        lock (CallbackSync)
         {
-            s_callbacks.Clear();
-            s_callbacksFrame = frame;
+            if (!Callbacks.TryGetValue(context, out var state))
+            {
+                state = new CallbackFrameState();
+                Callbacks.Add(context, state);
+            }
+            if (frame != state.Frame)
+            {
+                state.Callbacks.Clear();
+                state.Frame = frame;
+            }
+            index = state.Callbacks.Count;
+            state.Callbacks.Add(callback);
         }
-        int index = s_callbacks.Count;
-        s_callbacks.Add(callback);
         // ImGui copies the userdata (size > 0) into the draw list, so the local's address is safe here.
         IGSharp_DrawList_AddCallback(Handle, &CallbackTrampoline, &index, (nuint)sizeof(int));
     }
@@ -318,8 +334,8 @@ public readonly unsafe struct DrawList
 
     // ImGui is single-threaded; delegates are rooted here for the frame they were added in and
     // replaced wholesale when AddCallback is first called in a later frame.
-    private static readonly List<Action<DrawList, DrawCmd>> s_callbacks = [];
-    private static int s_callbacksFrame = -1;
+    private static readonly object CallbackSync = new();
+    private static readonly Dictionary<nint, CallbackFrameState> Callbacks = new();
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void CallbackTrampoline(IGSharp_DrawList* drawList, IGSharp_DrawCmd* cmd)
@@ -327,13 +343,31 @@ public readonly unsafe struct DrawList
         try
         {
             var index = *(int*)IGSharp_DrawCmd_GetUserCallbackData(cmd);
-            if ((uint)index < (uint)s_callbacks.Count)
-                s_callbacks[index](new DrawList(drawList), new DrawCmd(cmd));
+            Action<DrawList, DrawCmd>? callback = null;
+            lock (CallbackSync)
+            {
+                var context = (nint)IGSharp_GetCurrentContext();
+                if (Callbacks.TryGetValue(context, out var state) && (uint)index < (uint)state.Callbacks.Count)
+                    callback = state.Callbacks[index];
+            }
+            callback?.Invoke(new DrawList(drawList), new DrawCmd(cmd));
         }
-        catch
+        catch (Exception ex)
         {
-            // Never let a managed exception escape into native rendering code.
+            ImGui.ReportUnhandledCallbackException(ex);
         }
+    }
+
+    internal static void ReleaseContext(nint context)
+    {
+        lock (CallbackSync)
+            Callbacks.Remove(context);
+    }
+
+    private sealed class CallbackFrameState
+    {
+        public int Frame = -1;
+        public List<Action<DrawList, DrawCmd>> Callbacks { get; } = [];
     }
 
     private static IGSharp_Vec2 Reinterpret(Vec2 v) => new(v.X, v.Y);

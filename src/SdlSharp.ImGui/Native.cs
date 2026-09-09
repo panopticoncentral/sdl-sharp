@@ -409,6 +409,10 @@ internal static unsafe partial class Native
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial byte* IGSharp_GetVersion();
 
+    [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_GetVersionNumber")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int IGSharp_GetVersionNumber();
+
     // --- Styles ---
 
     [LibraryImport(ImGuiLib, EntryPoint = "IGSharp_StyleColorsDark")]
