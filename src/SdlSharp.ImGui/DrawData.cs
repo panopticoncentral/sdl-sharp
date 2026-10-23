@@ -10,12 +10,17 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct DrawData
 {
-    internal DrawData(IGSharp_DrawData* handle) => Handle = handle;
+    internal DrawData(IGSharp_DrawData* handle, Lifetime? lifetime = null, bool? frame = null) => _view = new(handle, lifetime, frame ?? true);
 
-    internal IGSharp_DrawData* Handle { get; }
+    private readonly NativeView<IGSharp_DrawData> _view;
+    internal IGSharp_DrawData* Handle => _view.Handle;
+    internal Lifetime Lifetime => _view.Lifetime!;
 
     /// <summary>True if this handle is non-null and the draw data is valid (set after Render, cleared after NewFrame).</summary>
-    public bool Valid => Handle != null && IGSharp_DrawData_GetValid(Handle);
+    public bool Valid => _view.IsValid && IGSharp_DrawData_GetValid(Handle);
+
+    /// <summary>Frame counter of the producing context.</summary>
+    public int FrameCount => IGSharp_DrawData_GetFrameCount(Handle);
 
     /// <summary>Number of draw lists to render.</summary>
     public int CmdListsCount => IGSharp_DrawData_GetCmdListsCount(Handle);
@@ -27,7 +32,7 @@ public readonly unsafe struct DrawData
     public int TotalVtxCount => IGSharp_DrawData_GetTotalVtxCount(Handle);
 
     /// <summary>Returns the draw list at <paramref name="index"/> (0 .. <see cref="CmdListsCount"/> - 1).</summary>
-    public DrawList GetCmdList(int index) => new(IGSharp_DrawData_GetCmdList(Handle, index));
+    public DrawList GetCmdList(int index) { ArgumentOutOfRangeException.ThrowIfNegative(index); ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, CmdListsCount); return new(IGSharp_DrawData_GetCmdList(Handle, index), frame: !Lifetime.Owned); }
 
     /// <summary>Top-left position of the viewport to render (== <see cref="Viewport.Pos"/> for the main viewport).</summary>
     public Vec2 DisplayPos
@@ -65,9 +70,18 @@ public readonly unsafe struct DrawData
     /// <summary>Number of textures the backend is expected to update this frame (backend concern; 0 if the textures list is unset).</summary>
     public int TexturesCount => IGSharp_DrawData_GetTexturesCount(Handle);
 
+    /// <summary>Gets a texture update by index with bounds checking.</summary>
+    public TextureData GetTexture(int index)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(index); ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, TexturesCount);
+        var list = IGSharp_DrawData_GetTextures(Handle);
+        return new(IGSharp_TextureList_Get(list, index));
+    }
+
     /// <summary>Converts all draw lists' indexed buffers to non-indexed ones, for backends that cannot render indexed geometry. Slow!</summary>
-    public void DeIndexAllBuffers() => IGSharp_DrawData_DeIndexAllBuffers(Handle);
+    public void DeIndexAllBuffers() { EnsureMutable(); IGSharp_DrawData_DeIndexAllBuffers(Handle); }
 
     /// <summary>Scales all clip rectangles by <paramref name="fbScale"/> — for retina displays or when the final output buffer differs from DisplaySize.</summary>
-    public void ScaleClipRects(Vec2 fbScale) => IGSharp_DrawData_ScaleClipRects(Handle, new IGSharp_Vec2(fbScale.X, fbScale.Y));
+    public void ScaleClipRects(Vec2 fbScale) { EnsureMutable(); IGSharp_DrawData_ScaleClipRects(Handle, new IGSharp_Vec2(fbScale.X, fbScale.Y)); }
+    private void EnsureMutable() { _ = Handle; if (Lifetime.Owned) throw new InvalidOperationException("An owned submission retains immutable snapshots. Transform a snapshot before adding it."); }
 }

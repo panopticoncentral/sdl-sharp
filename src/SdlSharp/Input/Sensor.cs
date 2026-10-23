@@ -12,22 +12,28 @@ namespace SdlSharp.Input;
 public sealed unsafe class Sensor : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     internal Native.SDL_Sensor* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private Native.SDL_Sensor* _handle;
 
-    internal Sensor(Native.SDL_Sensor* handle, bool ownsHandle = true)
+    internal Sensor(Native.SDL_Sensor* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Sensor), (nint)handle, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>A constant for gravity in m/s², for use with accelerometer data.</summary>
@@ -95,7 +101,7 @@ public sealed unsafe class Sensor : IDisposable
 
     /// <summary>Gets the properties associated with this sensor.</summary>
     public PropertyGroup Properties =>
-        new(CheckId(SDL_GetSensorProperties(Handle)), ownsHandle: false);
+        new(CheckId(SDL_GetSensorProperties(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>Updates the state of all open sensors.</summary>
     public static void Update() => SDL_UpdateSensors();
@@ -105,8 +111,13 @@ public sealed unsafe class Sensor : IDisposable
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_CloseSensor(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_CloseSensor(_handle);
+            });
         }
         _handle = null;
     }
+    /// <summary>Gets the platform-specific sensor type for a connected instance ID.</summary>
+    public static int GetNonPortableType(uint id) => SDL_GetSensorNonPortableTypeForID(id);
 }

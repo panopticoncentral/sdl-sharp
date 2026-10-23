@@ -10,6 +10,8 @@ namespace SdlSharp.Graphics;
 public sealed unsafe class GlContext : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     /// <summary>
     /// The underlying native SDL_GLContext pointer.
@@ -19,16 +21,20 @@ public sealed unsafe class GlContext : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private SDL_GLContextState* _handle;
 
-    internal GlContext(SDL_GLContextState* handle, bool ownsHandle = true)
+    internal GlContext(SDL_GLContextState* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(GlContext), (nint)handle, ownsHandle, threadAffine: true, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>
@@ -71,12 +77,23 @@ public sealed unsafe class GlContext : IDisposable
         }
     }
 
+    private int _dependentCount;
+    private readonly Stack<IDisposable> _dependentLeases = new();
+    internal void ValidateDependentOwner() { _ = Handle; if (!_ownsHandle) throw new ArgumentException("Pass the original owning SDL wrapper; borrowed aliases cannot retain native lifetime."); }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    internal void RetainDependent() { ValidateDependentOwner(); _dependentLeases.Push(Lifetime.Retain()); _dependentCount++; }
+    internal void ReleaseDependent() { _dependentLeases.Pop().Dispose(); _dependentCount--; }
+
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (_dependentCount != 0) throw new InvalidOperationException("Dispose dependent backends before this resource.");
         if (_ownsHandle && _handle != null)
         {
+            Lifetime.Release(() =>
+            {
             _ = SDL_GL_DestroyContext(_handle);
+            });
         }
         _handle = null;
     }

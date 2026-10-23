@@ -14,6 +14,8 @@ namespace SdlSharp.Input;
 public sealed unsafe class Cursor : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     /// <summary>
     /// The underlying native SDL_Cursor pointer.
@@ -23,16 +25,20 @@ public sealed unsafe class Cursor : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private SDL_Cursor* _handle;
 
-    internal Cursor(SDL_Cursor* handle, bool ownsHandle = true)
+    internal Cursor(SDL_Cursor* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Cursor), (nint)handle, ownsHandle, threadAffine: true, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>
@@ -80,8 +86,27 @@ public sealed unsafe class Cursor : IDisposable
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyCursor(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_DestroyCursor(_handle);
+            });
         }
         _handle = null;
+    }
+    /// <summary>Creates a monochrome cursor. Width must be a multiple of eight and each buffer must contain width × height / 8 bytes.</summary>
+    public static Cursor CreateBitmap(ReadOnlySpan<byte> data, ReadOnlySpan<byte> mask, int width, int height, int hotX, int hotY)
+    {
+        if (width <= 0 || width % 8 != 0 || height <= 0) throw new ArgumentOutOfRangeException(nameof(width));
+        var length = checked(width / 8 * height);
+        if (data.Length < length || mask.Length < length) throw new ArgumentException("Cursor bitmap or mask is too short.");
+        fixed (byte* d = data) fixed (byte* m = mask) return new(Check(SDL_CreateCursor(d, m, width, height, hotX, hotY)));
+    }
+    /// <summary>Creates an animated cursor, copying the supplied frame surfaces.</summary>
+    public static Cursor CreateAnimated(ReadOnlySpan<CursorFrame> frames, int hotX, int hotY)
+    {
+        if (frames.IsEmpty) throw new ArgumentException("At least one frame is required.", nameof(frames));
+        var native = new Native.SDL_CursorFrameInfo[frames.Length];
+        for (var i = 0; i < frames.Length; i++) native[i] = new() { surface = frames[i].Surface.Handle, duration = frames[i].DurationMilliseconds };
+        fixed (Native.SDL_CursorFrameInfo* p = native) return new(Check(SDL_CreateAnimatedCursor(p, frames.Length, hotX, hotY)));
     }
 }

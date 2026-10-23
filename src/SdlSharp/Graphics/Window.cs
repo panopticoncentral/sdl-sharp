@@ -15,6 +15,8 @@ namespace SdlSharp.Graphics;
 public sealed unsafe class Window : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     /// <summary>
     /// The underlying native SDL_Window pointer.
@@ -24,16 +26,25 @@ public sealed unsafe class Window : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private SDL_Window* _handle;
 
-    internal Window(SDL_Window* handle, bool ownsHandle = true)
+    internal Window(SDL_Window* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Window), (nint)handle, ownsHandle, threadAffine: true, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
+        if (ownsHandle && parent == null)
+        {
+            var nativeParent = SDL_GetWindowParent(handle);
+            if (nativeParent != null) Lifetime.SetParent(NativeLifetime.Get(typeof(Window), (nint)nativeParent, false, true));
+        }
     }
 
     // --- Position constants ---
@@ -152,10 +163,10 @@ public sealed unsafe class Window : IDisposable
 
     /// <summary>
     /// Gets the properties associated with this window. The returned group is owned
-    /// by SDL and must not be disposed.
+    /// by SDL; disposing this view does not destroy the native group.
     /// </summary>
     public PropertyGroup Properties =>
-        new(CheckId(SDL_GetWindowProperties(Handle)), ownsHandle: false);
+        new(CheckId(SDL_GetWindowProperties(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>
     /// Gets the current window flags.
@@ -398,11 +409,21 @@ public sealed unsafe class Window : IDisposable
 
     /// <summary>
     /// Gets the SDL surface associated with the window for software rendering.
-    /// The returned surface is owned by the window and must not be disposed.
+    /// The returned surface is borrowed; disposing the view does not destroy it. It is invalid after the window surface is replaced or destroyed.
     /// </summary>
     /// <returns>A non-owning surface for the window.</returns>
-    public Surface GetSurface() =>
-        new(Check(SDL_GetWindowSurface(Handle)), ownsHandle: false);
+    public Surface GetSurface()
+    {
+        var window = Handle;
+        var pointer = Check(SDL_GetWindowSurface(window));
+        var surface = new Surface(pointer, ownsHandle: false, parent: Lifetime);
+        var state = surface.Lifetime;
+        state.Validate = () =>
+        {
+            if (SDL_GetWindowSurface(window) != pointer) { state.Invalidate(); throw new ObjectDisposedException(nameof(Surface), "The window surface was replaced."); }
+        };
+        return surface;
+    }
 
     /// <summary>
     /// Copies the window surface to the screen.
@@ -426,7 +447,12 @@ public sealed unsafe class Window : IDisposable
     /// <summary>
     /// Destroys the surface associated with the window.
     /// </summary>
-    public void DestroyWindowSurface() => Check(SDL_DestroyWindowSurface(Handle));
+    public void DestroyWindowSurface()
+    {
+        _ = Handle;
+        Lifetime.InvalidateChildren(typeof(Surface));
+        Check(SDL_DestroyWindowSurface(Handle));
+    }
 
     /// <summary>
     /// Gets whether the window has an associated SDL surface for software rendering.
@@ -593,7 +619,7 @@ public sealed unsafe class Window : IDisposable
     /// <see cref="WindowFlags.PopupMenu"/>.</param>
     /// <returns>A new owning window wrapper for the popup.</returns>
     public Window CreatePopup(int offsetX, int offsetY, int w, int h, WindowFlags flags) =>
-        new(Check(SDL_CreatePopupWindow(Handle, offsetX, offsetY, w, h, (SDL_WindowFlags)flags)));
+        new(Check(SDL_CreatePopupWindow(Handle, offsetX, offsetY, w, h, (SDL_WindowFlags)flags)), parent: Lifetime);
 
     /// <summary>
     /// Gets the parent of this window, as a non-owning wrapper, or <c>null</c> if this
@@ -614,7 +640,11 @@ public sealed unsafe class Window : IDisposable
     /// this a toplevel window.
     /// </summary>
     /// <param name="parent">The new parent window, or <c>null</c>.</param>
-    public void SetParent(Window? parent) => Check(SDL_SetWindowParent(Handle, parent?.Handle));
+    public void SetParent(Window? parent)
+    {
+        Check(SDL_SetWindowParent(Handle, parent?.Handle));
+        Lifetime.SetParent(parent?.Lifetime);
+    }
 
     /// <summary>
     /// Toggles the modal state of the window. The window must currently have a
@@ -699,11 +729,12 @@ public sealed unsafe class Window : IDisposable
     /// <returns>The hit test result for the point.</returns>
     public delegate HitTestResult HitTestHandler(Window window, Point area);
 
-    private GCHandle _hitTestHandle;
+    private CallbackHandle _hitTestHandle;
+    private sealed record HitTestHolder(Window Window, HitTestHandler Handler);
 
     /// <summary>
     /// Sets or clears (<c>null</c>) the hit-test callback used for custom window dragging
-    /// and resizing regions. Exceptions thrown by the handler are swallowed and
+    /// and resizing regions. Exceptions thrown by the handler are captured by Application.ThrowPendingCallbackException and
     /// treated as <see cref="HitTestResult.Normal"/> (they must not cross the
     /// native boundary). The callback may fire frequently and at any time while
     /// the user interacts with the window, so the handler should be fast and
@@ -712,42 +743,29 @@ public sealed unsafe class Window : IDisposable
     /// <param name="handler">The hit-test handler, or <c>null</c> to clear it.</param>
     public unsafe void SetHitTest(HitTestHandler? handler)
     {
-        if (handler == null)
-        {
-            if (_hitTestHandle.IsAllocated)
-            {
-                _hitTestHandle.Free();
-                _hitTestHandle = default;
-            }
-
-            Check(SDL_SetWindowHitTest(Handle, null, null));
-            return;
-        }
-
-        var previousHandle = _hitTestHandle;
-        var holder = new HitTestHolder(this, handler);
-        var newHandle = GCHandle.Alloc(holder);
-        Check(SDL_SetWindowHitTest(Handle, &HitTestCallback, (void*)GCHandle.ToIntPtr(newHandle)));
-        _hitTestHandle = newHandle;
-
-        if (previousHandle.IsAllocated)
-        {
-            previousHandle.Free();
-        }
+        var window = Handle;
+        CallbackErrors.EnsureOutsideCallback();
+        var previous = _hitTestHandle;
+        var next = handler == null ? default : CallbackHandle.Alloc(new HitTestHolder(this, handler));
+        try { Check(SDL_SetWindowHitTest(window, handler == null ? null : &HitTestCallback, (void*)(nint)next)); }
+        catch { next.Free(); throw; }
+        _hitTestHandle = next;
+        if (next.IsAllocated) Lifetime.AddCleanup(next.Free);
+        previous.Free();
     }
-
-    private sealed record HitTestHolder(Window Window, HitTestHandler Handler);
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static SDL_HitTestResult HitTestCallback(SDL_Window* win, SDL_Point* area, void* userdata)
     {
         try
         {
-            var holder = (HitTestHolder)GCHandle.FromIntPtr((nint)userdata).Target!;
+            using var callbackScope = CallbackErrors.Enter();
+            var holder = (HitTestHolder)CallbackHandle.FromIntPtr((nint)userdata).Target!;
             return (SDL_HitTestResult)holder.Handler(holder.Window, Point.FromNative(*area));
         }
-        catch
+        catch (Exception error)
         {
+            CallbackErrors.Capture(error);
             return SDL_HitTestResult.SDL_HITTEST_NORMAL;
         }
     }
@@ -772,7 +790,14 @@ public sealed unsafe class Window : IDisposable
     /// <returns>A new OpenGL context. Dispose it when no longer needed.</returns>
     /// <seealso cref="GlContext.MakeCurrent"/>
     /// <seealso cref="GlSwap"/>
-    public GlContext CreateGlContext() => new(Check(SDL_GL_CreateContext(Handle)));
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    public GlContext CreateGlContext()
+    {
+        var context = new GlContext(Check(SDL_GL_CreateContext(Handle)));
+        var lease = Lifetime.Retain();
+        context.Lifetime.AddCleanup(lease.Dispose);
+        return context;
+    }
 
     /// <summary>
     /// Updates this window's OpenGL surface with the rendered content. The window must have
@@ -783,15 +808,26 @@ public sealed unsafe class Window : IDisposable
     /// <seealso cref="GlContext.MakeCurrent"/>
     public void GlSwap() => Check(SDL_GL_SwapWindow(Handle));
 
+    private int _dependentCount;
+    private readonly Stack<IDisposable> _dependentLeases = new();
+    internal void ValidateDependentOwner() { _ = Handle; if (!_ownsHandle) throw new ArgumentException("Pass the original owning SDL wrapper; borrowed aliases cannot retain native lifetime."); }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    internal void RetainDependent() { ValidateDependentOwner(); _dependentLeases.Push(Lifetime.Retain()); _dependentCount++; }
+    internal void ReleaseDependent() { _dependentLeases.Pop().Dispose(); _dependentCount--; }
+
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (_dependentCount != 0) throw new InvalidOperationException("Dispose dependent backends before this resource.");
+        if (_ownsHandle && _handle != null && Lifetime.IsAlive) Lifetime.EnsureCanDestroy();
         if (_hitTestHandle.IsAllocated)
         {
-            if (!_ownsHandle && _handle != null)
+            if (!_ownsHandle && _handle != null && Lifetime.IsAlive)
             {
+                Lifetime.Check();
+                CallbackErrors.EnsureOutsideCallback();
                 // A non-owning wrapper doesn't destroy the underlying SDL window, which
-                // stays alive and would otherwise keep calling back into a freed GCHandle.
+                // stays alive and would otherwise keep calling back into a freed CallbackHandle.
                 _ = SDL_SetWindowHitTest(_handle, null, null);
             }
 
@@ -801,8 +837,20 @@ public sealed unsafe class Window : IDisposable
 
         if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyWindow(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_DestroyWindow(_handle);
+            });
         }
         _handle = null;
+    }
+    /// <summary>Gets a copy of the window display's ICC color profile.</summary>
+    public byte[] GetIccProfile()
+    {
+        nuint size;
+        var data = SDL_GetWindowICCProfile(Handle, &size);
+        if (data == null) throw new SdlException();
+        try { return new ReadOnlySpan<byte>(data, checked((int)size)).ToArray(); }
+        finally { SDL_free(data); }
     }
 }

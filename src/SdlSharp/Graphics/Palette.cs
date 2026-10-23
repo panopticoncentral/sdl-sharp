@@ -9,22 +9,28 @@ namespace SdlSharp.Graphics;
 public sealed unsafe class Palette : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     internal Native.SDL_Palette* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private Native.SDL_Palette* _handle;
 
-    internal Palette(Native.SDL_Palette* handle, bool ownsHandle = true)
+    internal Palette(Native.SDL_Palette* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Palette), (nint)handle, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>
@@ -71,7 +77,10 @@ public sealed unsafe class Palette : IDisposable
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyPalette(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_DestroyPalette(_handle);
+            });
         }
         _handle = null;
     }

@@ -1,86 +1,105 @@
 using static SdlSharp.ImGui.Native;
-
 namespace SdlSharp.ImGui;
 
-/// <summary>
-/// Manages a Dear ImGui context. Dispose to destroy the context.
-/// </summary>
+/// <summary>Owns an ImGui context and its resources on one thread. Dispose deterministically.</summary>
 public sealed unsafe class Context : IDisposable
 {
-    private static readonly object Sync = new();
-    private static readonly Dictionary<nint, Context> FontAtlasOwners = new();
-    private readonly List<nint> _ownedFontRanges = [];
-
-    private Context(IGSharp_Context* handle, IGSharp_FontAtlas* fontAtlas)
+    private static readonly Dictionary<nint, WeakReference<Context>> Contexts = [];
+    private IGSharp_Context* _handle;
+    private int _callbackDepth;
+    internal readonly Dictionary<nint, Stack<StateStorageScope>> StorageScopes = [];
+    internal readonly Stack<nint> TableHostWindows = [];
+    internal nint? DragSourceHostWindow;
+    internal void EnsureStorageRestored()
     {
-        Handle = handle;
-        FontAtlas = fontAtlas;
+        CheckCurrent();
+        if (StorageScopes.Count != 0) throw new InvalidOperationException("Dispose state-storage scopes before ending or starting a frame.");
     }
-
-    private IGSharp_Context* Handle { get; set; }
-    private IGSharp_FontAtlas* FontAtlas { get; }
-
-    /// <summary>
-    /// Creates a new ImGui context and sets it as the current context.
-    /// </summary>
-    public static Context Create()
+    internal void EnsureWindowStorageRestored()
     {
-        if (!IGSharp_ValidateLayouts(
-                (nuint)sizeof(IGSharp_IO), (nuint)sizeof(IGSharp_Style), (nuint)sizeof(IGSharp_KeyData),
-                (nuint)sizeof(IGSharp_PlatformImeData), (nuint)sizeof(IGSharp_DrawVert), (nuint)sizeof(IGSharp_FontAtlasRect)))
-            throw new InvalidOperationException("imgui_sharp struct layout mismatch between the managed mirrors and the native library.");
-        var ctx = IGSharp_CreateContext(null);
-        if (ctx == null)
-            throw new InvalidOperationException("Failed to create ImGui context.");
-        IGSharp_SetCurrentContext(ctx);
-        IGSharp_CheckVersion();
-        var context = new Context(ctx, IGSharp_GetIO()->Fonts);
-        lock (Sync)
-        {
-            FontAtlasOwners.Add((nint)context.FontAtlas, context);
-        }
+        CheckCurrent();
+        if (StorageScopes.ContainsKey((nint)IGSharp_GetWindowDrawList())) throw new InvalidOperationException("Dispose this window's state-storage scopes before ending it.");
+    }
+    internal void CheckOutsideCallback() { if (_callbackDepth != 0) throw new InvalidOperationException("This operation is not allowed during a native callback."); }
+    internal IDisposable EnterCallback() { CheckCurrent(); _callbackDepth++; return new ReleaseAction(() => _callbackDepth--); }
+    private readonly int _thread = Environment.CurrentManagedThreadId;
+    internal Lifetime Lifetime { get; }
+    internal IGSharp_Context* Handle { get { CheckAccess(); return _handle; } }
+    private Context(IGSharp_Context* handle)
+    {
+        _handle = handle;
+        Lifetime = new((nint)handle, this);
+        lock (Contexts) Contexts[(nint)handle] = new(this);
+    }
+    /// <summary>Creates and activates a context with its own font atlas.</summary>
+    public static Context Create() => CreateCore(null);
+    /// <summary>Creates a context retaining a shared, owned font atlas until context disposal.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the context lifetime, or disposed in the catch path.")]
+    public static Context Create(OwnedFontAtlas sharedAtlas)
+    {
+        ArgumentNullException.ThrowIfNull(sharedAtlas);
+        var atlas = sharedAtlas.Atlas;
+        var retention = atlas.Lifetime.Retain();
+        try { var context = CreateCore(atlas.Handle); context.Lifetime.AddCleanup(retention.Dispose); return context; }
+        catch { retention.Dispose(); throw; }
+    }
+    private static Context CreateCore(IGSharp_FontAtlas* atlas)
+    {
+        if (TryGetCurrent() is { _callbackDepth: > 0 }) throw new InvalidOperationException("A native callback cannot create another context.");
+        ValidateAbi(); var handle = IGSharp_CreateContext(atlas);
+        if (handle == null) throw new OutOfMemoryException();
+        IGSharp_SetCurrentContext(handle);
+        var context = new Context(handle);
+        if (atlas == null) _ = new Lifetime((nint)IGSharp_GetIO()->Fonts, context, context.Lifetime);
         return context;
     }
-
-    /// <summary>Makes this context the active one for subsequent ImGui calls.</summary>
-    public void MakeCurrent()
+    /// <summary>The active managed context; throws when none is active.</summary>
+    public static Context Current => TryGetCurrent() ?? throw new InvalidOperationException("No managed ImGui context is current.");
+    internal static Context? TryGetCurrent()
     {
-        ObjectDisposedException.ThrowIf(Handle == null, typeof(Context));
-        IGSharp_SetCurrentContext(Handle);
+        var pointer = (nint)IGSharp_GetCurrentContext();
+        lock (Contexts) return Contexts.TryGetValue(pointer, out var weak) && weak.TryGetTarget(out var context) ? context : null;
     }
-
-    /// <summary>True if this is the currently active ImGui context.</summary>
-    public bool IsCurrent => Handle != null && IGSharp_GetCurrentContext() == Handle;
-
-    /// <inheritdoc/>
+    /// <summary>Whether this context has been disposed.</summary>
+    public bool IsDisposed => _handle == null;
+    /// <summary>Whether this context is currently active.</summary>
+    public bool IsCurrent => _handle != null && IGSharp_GetCurrentContext() == _handle;
+    internal void CheckAccess()
+    {
+        ObjectDisposedException.ThrowIf(_handle == null, this);
+        if (_thread != Environment.CurrentManagedThreadId) throw new InvalidOperationException("Use this context on its creating thread.");
+    }
+    internal void CheckCurrent()
+    {
+        CheckAccess();
+        if (!IsCurrent) throw new InvalidOperationException("The resource's ImGui context is not current. Use Context.Enter().");
+    }
+    /// <summary>Makes this context current.</summary>
+    public void MakeCurrent() { CheckAccess(); if (TryGetCurrent() is { _callbackDepth: > 0 } active && !ReferenceEquals(active, this)) throw new InvalidOperationException("A native callback cannot switch contexts."); IGSharp_SetCurrentContext(_handle); }
+    /// <summary>Activates this context until the returned scope is disposed, then restores the previous context.</summary>
+    public IDisposable Enter()
+    {
+        CheckAccess(); var previous = TryGetCurrent(); MakeCurrent();
+        return new ReleaseAction(() => { if (_thread != Environment.CurrentManagedThreadId) throw new InvalidOperationException("Dispose a context scope on its creating thread."); if (previous is { IsDisposed: false }) previous.MakeCurrent(); else { TryGetCurrent()?.CheckOutsideCallback(); IGSharp_SetCurrentContext(null); } });
+    }
+    /// <summary>Starts a headless/custom-backend frame after IO has been configured.</summary>
+    public void NewFrame() { CheckCurrent(); CheckOutsideCallback(); EnsureStorageRestored(); ImGui.ReleaseFrameCallbacks(); Lifetime.AdvanceFrame();
+        SdlSharp.ImGui.Lifetime.Capture((nint)IGSharp_GetIO()->Fonts).AdvanceFrame(); IGSharp_NewFrame(); }
+    /// <summary>Disposes owned children before destroying the context, restoring the previous context when possible.</summary>
     public void Dispose()
     {
-        if (Handle == null) return;
-        var handle = Handle;
-        lock (Sync)
+        if (_handle == null) return;
+        CheckAccess(); if (_callbackDepth != 0) throw new InvalidOperationException("A context cannot be disposed from inside a native callback.");
+        var previous = TryGetCurrent(); MakeCurrent(); var pointer = (nint)_handle;
+        try
         {
-            FontAtlasOwners.Remove((nint)FontAtlas);
+            Lifetime.EnsureContextCanDispose();
+            DrawList.ReleaseFrame(pointer);
+            Lifetime.Dispose();
+            IGSharp_DestroyContext(_handle); _handle = null;
+            PlatformIO.ReleaseContext(pointer); Io.ReleaseContext(pointer); ImGui.ReleaseContext(pointer); DrawList.ReleaseContext(pointer);
+            lock (Contexts) Contexts.Remove(pointer);
         }
-        IGSharp_DestroyContext(handle);
-        Handle = null;
-        PlatformIO.ReleaseContext((nint)handle);
-        Io.ReleaseContext((nint)handle);
-        ImGui.ReleaseContext((nint)handle);
-        DrawList.ReleaseContext((nint)handle);
-        foreach (var range in _ownedFontRanges)
-            IGSharp_MemFree((void*)range);
-        _ownedFontRanges.Clear();
-    }
-
-    internal static bool AdoptFontRange(IGSharp_FontAtlas* atlas, ushort* range)
-    {
-        if (range == null) return true;
-        lock (Sync)
-        {
-            if (!FontAtlasOwners.TryGetValue((nint)atlas, out var context))
-                return false;
-            context._ownedFontRanges.Add((nint)range);
-            return true;
-        }
+        finally { IGSharp_SetCurrentContext(previous is { IsDisposed: false } ? previous._handle : null); }
     }
 }

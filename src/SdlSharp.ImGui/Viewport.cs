@@ -8,12 +8,14 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct Viewport
 {
-    internal readonly IGSharp_Viewport* Handle;
+    private readonly NativeView<IGSharp_Viewport> _view;
+    internal IGSharp_Viewport* Handle => _view.Handle;
+    internal Lifetime Lifetime => _view.Lifetime!;
 
-    internal Viewport(IGSharp_Viewport* handle) => Handle = handle;
+    internal Viewport(IGSharp_Viewport* handle, Lifetime? lifetime = null, bool? frame = null) => _view = new(handle, lifetime, frame ?? true);
 
     /// <summary>True if this handle refers to a valid viewport.</summary>
-    public bool IsValid => Handle != null;
+    public bool IsValid => _view.IsValid;
 
     /// <summary>Unique identifier of the viewport.</summary>
     public uint Id => IGSharp_Viewport_GetID(Handle);

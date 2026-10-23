@@ -12,6 +12,8 @@ namespace SdlSharp.Graphics.Gpu;
 public sealed unsafe class GpuDevice : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     /// <summary>
     /// The underlying native SDL_GPUDevice pointer.
@@ -21,23 +23,27 @@ public sealed unsafe class GpuDevice : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private SDL_GPUDevice* _handle;
 
-    internal GpuDevice(SDL_GPUDevice* handle, bool ownsHandle = true)
+    internal GpuDevice(SDL_GPUDevice* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(GpuDevice), (nint)handle, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>
     /// Whether this device has been disposed. Lets dependent GPU resources skip
     /// their native release when the device is already gone.
     /// </summary>
-    internal bool IsDisposed => _handle == null;
+    internal bool IsDisposed => _handle == null || !Lifetime.IsAlive;
 
     /// <summary>
     /// Creates a new GPU device with the specified shader format support.
@@ -98,7 +104,7 @@ public sealed unsafe class GpuDevice : IDisposable
     /// Each access returns a new wrapper around the same underlying SDL property set;
     /// the wrappers are not equal to each other.
     /// </summary>
-    public PropertyGroup Properties => new(SDL_GetGPUDeviceProperties(Handle), ownsHandle: false);
+    public PropertyGroup Properties => new(CheckId(SDL_GetGPUDeviceProperties(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>
     /// Creates a GPU shader from the specified creation info.
@@ -134,15 +140,17 @@ public sealed unsafe class GpuDevice : IDisposable
     /// <returns>A new GPU graphics pipeline.</returns>
     public GpuGraphicsPipeline CreateGraphicsPipeline(in GpuGraphicsPipelineCreateInfo createInfo)
     {
+        if (!ReferenceEquals(createInfo.VertexShader.Device.Lifetime, Lifetime) || !ReferenceEquals(createInfo.FragmentShader.Device.Lifetime, Lifetime))
+            throw new ArgumentException("Pipeline shaders must belong to this GPU device.", nameof(createInfo));
         var vertexBufferDescs = createInfo.VertexInputState.VertexBufferDescriptions ?? [];
         var vertexAttributes = createInfo.VertexInputState.VertexAttributes ?? [];
         var colorTargetDescs = createInfo.TargetInfo.ColorTargetDescriptions ?? [];
 
-        Span<SDL_GPUVertexBufferDescription> nativeVertexBuffers = stackalloc SDL_GPUVertexBufferDescription[vertexBufferDescs.Length];
+        Span<SDL_GPUVertexBufferDescription> nativeVertexBuffers = vertexBufferDescs.Length <= 64 ? stackalloc SDL_GPUVertexBufferDescription[vertexBufferDescs.Length] : new SDL_GPUVertexBufferDescription[vertexBufferDescs.Length];
         for (var i = 0; i < vertexBufferDescs.Length; i++) nativeVertexBuffers[i] = vertexBufferDescs[i].ToNative();
-        Span<SDL_GPUVertexAttribute> nativeAttributes = stackalloc SDL_GPUVertexAttribute[vertexAttributes.Length];
+        Span<SDL_GPUVertexAttribute> nativeAttributes = vertexAttributes.Length <= 64 ? stackalloc SDL_GPUVertexAttribute[vertexAttributes.Length] : new SDL_GPUVertexAttribute[vertexAttributes.Length];
         for (var i = 0; i < vertexAttributes.Length; i++) nativeAttributes[i] = vertexAttributes[i].ToNative();
-        Span<SDL_GPUColorTargetDescription> nativeColorTargets = stackalloc SDL_GPUColorTargetDescription[colorTargetDescs.Length];
+        Span<SDL_GPUColorTargetDescription> nativeColorTargets = colorTargetDescs.Length <= 64 ? stackalloc SDL_GPUColorTargetDescription[colorTargetDescs.Length] : new SDL_GPUColorTargetDescription[colorTargetDescs.Length];
         for (var i = 0; i < colorTargetDescs.Length; i++) nativeColorTargets[i] = colorTargetDescs[i].ToNative();
 
         fixed (SDL_GPUVertexBufferDescription* pVertexBuffers = nativeVertexBuffers)
@@ -258,17 +266,34 @@ public sealed unsafe class GpuDevice : IDisposable
     /// <returns>A new command buffer.</returns>
     public GpuCommandBuffer AcquireCommandBuffer() => new(this, Check(SDL_AcquireGPUCommandBuffer(Handle)));
 
-    /// <summary>
-    /// Claims a window for GPU presentation on this device.
-    /// </summary>
-    /// <param name="window">The window to claim.</param>
-    public void ClaimWindow(Window window) => Check(SDL_ClaimWindowForGPUDevice(Handle, window.Handle));
+    private Dictionary<NativeLifetime, (nint Pointer, IDisposable Lease)> Claims => (Dictionary<NativeLifetime, (nint, IDisposable)>)(Lifetime.Attachment ??= new Dictionary<NativeLifetime, (nint, IDisposable)>());
+    internal void CheckClaim(Window window)
+    {
+        _ = Handle; _ = window.Handle;
+        if (!Claims.ContainsKey(window.Lifetime)) throw new InvalidOperationException("Claim the window with this GPU device first.");
+    }
+    /// <summary>Claims a window for this GPU device, retaining it until release or device disposal.</summary>
+    public void ClaimWindow(Window window)
+    {
+        _ = Handle; _ = window.Handle;
+        if (Claims.ContainsKey(window.Lifetime)) return;
+        var pointer = window.Handle;
+        var lease = window.Lifetime.Retain();
+        try { Check(SDL_ClaimWindowForGPUDevice(Handle, pointer)); Claims.Add(window.Lifetime, ((nint)pointer, lease)); }
+        catch { lease.Dispose(); throw; }
+    }
 
     /// <summary>
     /// Releases a window from GPU presentation on this device.
     /// </summary>
     /// <param name="window">The window to release.</param>
-    public void ReleaseWindow(Window window) => SDL_ReleaseWindowFromGPUDevice(Handle, window.Handle);
+    public void ReleaseWindow(Window window)
+    {
+        CheckClaim(window);
+        window.Lifetime.EnsureLeaseCountAtMost(1);
+        SDL_ReleaseWindowFromGPUDevice(Handle, window.Handle);
+        Claims.Remove(window.Lifetime, out var claim); claim.Lease.Dispose();
+    }
 
     /// <summary>
     /// Sets the swapchain parameters for a window.
@@ -341,13 +366,30 @@ public sealed unsafe class GpuDevice : IDisposable
     public bool SupportsSampleCount(GpuTextureFormat format, GpuSampleCount sampleCount) =>
         SDL_GPUTextureSupportsSampleCount(Handle, (SDL_GPUTextureFormat)format, (SDL_GPUSampleCount)sampleCount);
 
+    private int _dependentCount;
+    private readonly Stack<IDisposable> _dependentLeases = new();
+    internal void ValidateDependentOwner() { _ = Handle; if (!_ownsHandle) throw new ArgumentException("Pass the original owning SDL wrapper; borrowed aliases cannot retain native lifetime."); }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    internal void RetainDependent() { ValidateDependentOwner(); _dependentLeases.Push(Lifetime.Retain()); _dependentCount++; }
+    internal void ReleaseDependent() { _dependentLeases.Pop().Dispose(); _dependentCount--; }
+
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && _handle != null)
+        if (_dependentCount != 0) throw new InvalidOperationException("Dispose dependent backends before this resource.");
+        if (_ownsHandle && _handle != null && Lifetime.IsAlive)
         {
+            foreach (var owner in Claims.Keys) owner.Check();
+            Lifetime.Release(() =>
+            {
+            foreach (var claim in Claims.Values) SDL_ReleaseWindowFromGPUDevice(_handle, (SDL_Window*)claim.Pointer);
             SDL_DestroyGPUDevice(_handle);
+            foreach (var claim in Claims.Values) claim.Lease.Dispose();
+            Claims.Clear();
+            });
         }
         _handle = null;
     }
+    /// <summary>Checks whether a device with these creation properties is supported.</summary>
+    public static bool Supports(PropertyGroup properties) => SDL_GPUSupportsProperties(properties.Id);
 }

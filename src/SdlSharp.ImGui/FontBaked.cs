@@ -14,12 +14,14 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct FontBaked
 {
-    internal readonly IGSharp_FontBaked* Handle;
+    private readonly NativeView<IGSharp_FontBaked> _view;
+    internal IGSharp_FontBaked* Handle => _view.Handle;
+    internal Lifetime Lifetime => _view.Lifetime!;
 
-    internal FontBaked(IGSharp_FontBaked* handle) => Handle = handle;
+    internal FontBaked(IGSharp_FontBaked* handle, Lifetime? lifetime = null, bool? frame = null) => _view = new(handle, lifetime, frame ?? true);
 
     /// <summary>True if this handle refers to valid baked font data.</summary>
-    public bool IsValid => Handle != null;
+    public bool IsValid => _view.IsValid;
 
     /// <summary>The size in pixels this instance was baked at.</summary>
     public float Size => IGSharp_FontBaked_GetSize(Handle);
@@ -40,7 +42,7 @@ public readonly unsafe struct FontBaked
     public int GlyphCount => IGSharp_FontBaked_GetGlyphsCount(Handle);
 
     /// <summary>Gets a baked glyph by index (0 to <see cref="GlyphCount"/> - 1).</summary>
-    public FontGlyph GetGlyph(int index) => new(IGSharp_FontBaked_GetGlyph(Handle, index));
+    public FontGlyph GetGlyph(int index) { ArgumentOutOfRangeException.ThrowIfNegative(index); ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, GlyphCount); return new(IGSharp_FontBaked_GetGlyph(Handle, index)); }
 
     /// <summary>
     /// Finds the glyph for <paramref name="c"/>, baking it on demand. Returns the fallback glyph
@@ -59,4 +61,7 @@ public readonly unsafe struct FontBaked
 
     /// <summary>True if the glyph for <paramref name="c"/> has already been baked (does not trigger baking).</summary>
     public bool IsGlyphLoaded(char c) => IGSharp_FontBaked_IsGlyphLoaded(Handle, c);
+    /// <summary>Clears this size's baked output and expires existing views of it.</summary>
+    public void ClearOutputData() { Lifetime.EnsureUnretained(); IGSharp_FontBaked_ClearOutputData(Handle); Lifetime.InvalidateViews(); }
+
 }

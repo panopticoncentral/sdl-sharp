@@ -32,13 +32,22 @@ public readonly record struct SdlGuid
     /// Parses a GUID from its canonical 32-character hex string form.
     /// </summary>
     /// <param name="text">The GUID string.</param>
-    /// <returns>
-    /// The decoded GUID. Malformed input is not rejected: SDL decodes any character that is not a
-    /// hex digit as the nibble 0, so invalid input silently yields a partial — possibly non-zero —
-    /// meaningless GUID. <see cref="IsZero"/> is therefore not a reliable validity check; only an
-    /// empty or entirely non-hex string reliably produces the zero GUID.
-    /// </returns>
-    public static SdlGuid Parse(string text) => new(SDL_StringToGUID(ToUtf8(text)));
+    /// <returns>The decoded GUID.</returns>
+    /// <exception cref="FormatException">The input is not exactly 32 hexadecimal digits.</exception>
+    public static SdlGuid Parse(string text)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        return TryParse(text, out var value) ? value : throw new FormatException("An SDL GUID must contain exactly 32 hexadecimal digits.");
+    }
+
+    /// <summary>Attempts to parse exactly 32 hexadecimal digits.</summary>
+    public static bool TryParse(string? text, out SdlGuid value)
+    {
+        value = default;
+        if (text == null || text.Length != 32 || !text.All(char.IsAsciiHexDigit)) return false;
+        value = new(SDL_StringToGUID(ToUtf8(text)));
+        return true;
+    }
 
     /// <summary>
     /// Returns the canonical 32-character lowercase hex string form.
@@ -50,5 +59,12 @@ public readonly record struct SdlGuid
             SDL_GUIDToString(ToNative(), p, buffer.Length);
         var terminator = buffer.IndexOf((byte)0);
         return Encoding.ASCII.GetString(buffer[..(terminator < 0 ? buffer.Length : terminator)]);
+    }
+    /// <summary>Decodes USB identifiers and mapping CRC from a joystick GUID.</summary>
+    public unsafe (ushort Vendor, ushort Product, ushort Version, ushort Crc) GetDeviceInfo()
+    {
+        ushort vendor, product, version, crc;
+        Native.Joystick.SDL_GetJoystickGUIDInfo(ToNative(), &vendor, &product, &version, &crc);
+        return (vendor, product, version, crc);
     }
 }

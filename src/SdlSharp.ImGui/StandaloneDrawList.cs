@@ -8,15 +8,22 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public sealed unsafe class StandaloneDrawList : IDisposable
 {
-    private IGSharp_DrawList* _handle;
+    private readonly IGSharp_DrawList* _handle;
+    private readonly Lifetime _lifetime;
+    private int _frame;
 
-    private StandaloneDrawList(IGSharp_DrawList* handle) => _handle = handle;
+    private StandaloneDrawList(IGSharp_DrawList* handle)
+    {
+        _frame = IGSharp_GetFrameCount();
+        _handle = handle; var pointer = (nint)handle;
+        _lifetime = Lifetime.Own(pointer, () => IGSharp_DrawList_Destroy((IGSharp_DrawList*)pointer));
+    }
 
     private IGSharp_DrawList* Handle
     {
         get
         {
-            ObjectDisposedException.ThrowIf(_handle == null, this);
+            _lifetime.Check();
             return _handle;
         }
     }
@@ -35,19 +42,17 @@ public sealed unsafe class StandaloneDrawList : IDisposable
     /// <summary>
     /// A borrowed drawing view. Do not retain or use it after this owner is disposed.
     /// </summary>
-    public DrawList List => new(Handle);
+    public DrawList List
+    {
+        get { var handle = Handle; if (_frame != IGSharp_GetFrameCount()) throw new InvalidOperationException("Reset this standalone list before using it in a new frame."); return new(handle, _lifetime, frame: true); }
+    }
 
     /// <summary>
     /// Clears the previous output after starting a new frame on the owning context.
     /// Push the clip rectangle and texture again before drawing.
     /// </summary>
-    public void ResetForNewFrame() => IGSharp_DrawList_ResetForNewFrame(Handle);
+    public void ResetForNewFrame() { _lifetime.EnsureUnretained(); IGSharp_DrawList_ResetForNewFrame(Handle); _lifetime.ReleaseAttachments(); _lifetime.InvalidateViews(); _frame = IGSharp_GetFrameCount(); }
 
     /// <summary>Releases the native list. Safe to call more than once.</summary>
-    public void Dispose()
-    {
-        if (_handle == null) return;
-        IGSharp_DrawList_Destroy(_handle);
-        _handle = null;
-    }
+    public void Dispose() => _lifetime.Dispose();
 }

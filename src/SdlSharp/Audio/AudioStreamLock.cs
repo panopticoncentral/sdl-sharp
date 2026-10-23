@@ -2,18 +2,22 @@ using static SdlSharp.Native.Audio;
 
 namespace SdlSharp.Audio;
 
-/// <summary>
-/// A scope that keeps an <see cref="AudioStream"/> locked against its audio-thread
-/// callbacks. Obtain one with <see cref="AudioStream.Lock"/> and dispose it (for
-/// example with <c>using</c>) to unlock. While held, the stream's get/put callbacks
-/// will not run, so shared state can be updated safely.
-/// </summary>
-public readonly ref struct AudioStreamLock
+/// <summary>Locks an audio stream until disposed once on the acquiring thread.</summary>
+public sealed unsafe class AudioStreamLock : IDisposable
 {
-    private readonly unsafe Native.SDL_AudioStream* _stream;
-
-    internal unsafe AudioStreamLock(Native.SDL_AudioStream* stream) => _stream = stream;
-
-    /// <summary>Unlocks the stream.</summary>
-    public unsafe void Dispose() => SDL_UnlockAudioStream(_stream);
+    private readonly SdlScope _scope;
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    internal AudioStreamLock(AudioStream stream)
+    {
+        var handle = stream.Handle;
+        var lease = stream.Lifetime.Retain();
+        try
+        {
+            Native.Common.Check(SDL_LockAudioStream(handle));
+            _scope = new SdlScope(() => { SDL_UnlockAudioStream(handle); lease.Dispose(); });
+        }
+        catch { lease.Dispose(); throw; }
+    }
+    /// <summary>Unlocks the stream once. Repeated disposal is harmless.</summary>
+    public void Dispose() => _scope.Dispose();
 }

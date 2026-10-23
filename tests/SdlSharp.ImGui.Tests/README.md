@@ -1,38 +1,32 @@
-# Local ImGui integration check
+# ImGui high-level integration tests
 
-A dependency-free console regression test (nonzero exit on failure), using the
-actual managed binding and either NuGet runtime resolution or an explicitly selected native shared library.
-It checks mirrored struct sizes, standalone drawing, cloning, reset/reuse on a
-second frame, disposal guards, and availability of both new native exports.
-Custom GPU pipeline rendering itself needs a GPU and is not exercised here.
+A dependency-free .NET 10 console suite; failures exit nonzero. It uses the real managed/native bindings and SDL's dummy video driver, so it needs no visible window or GPU.
 
-Build the sibling native repo first, then build this project:
+Coverage includes default numeric widgets, fixed/growing/string text editing over multiple frames (including `EnterReturnsTrue`), repeated size callbacks, UTF-8 filtering and IDs, balanced UI scopes, shared atlases, failed font loads, glyph/command snapshots, callback retention across frames, retained render/texture containers, nested platform-handler restoration, callback exceptions, thread/context guards, and backend/resource disposal ordering. Native ABI layouts and exports are checked as well.
 
 ```sh
-dotnet build tests/SdlSharp.ImGui.Tests/SdlSharp.ImGui.Tests.csproj -c Release -p:GeneratePackageOnBuild=false
-```
+dotnet restore SdlSharp.slnx
+python3 scripts/check-imgui-model-coverage.py
 
-To verify the referenced NuGet package using normal runtime resolution, run without arguments:
+dotnet build tests/SdlSharp.ImGui.Tests/SdlSharp.ImGui.Tests.csproj -c Release \
+  -m:1 -p:UseSharedCompilation=false -p:GeneratePackageOnBuild=false
 
-```sh
 dotnet tests/SdlSharp.ImGui.Tests/bin/Release/net10.0/SdlSharp.ImGui.Tests.dll
 ```
 
-To verify a local native build, pass an absolute library path when running. Put the matching SDL3 runtime next
-to that library. On macOS, use the signed SDL3 binary from SdlSharp.Redist,
-which the build places under the test output's runtimes directory. The native
-repo's extracted build-time SDL framework binary may not have a valid signature.
+The public `ImguiSharp.Redist` 0.4.0-preview.3 package supplies the native runtime, generated C# contract, and CloneOutput fix. The commands above exercise ordinary NuGet resolution; no sibling checkout or binding regeneration is required.
 
-Example from the sdl-sharp repo on Apple Silicon (adjust the native build path):
+For a local native build, pass its absolute library path as the executable's optional argument. Place the matching SDL3 shared library next to it (`libSDL3.dylib`, `SDL3.dll`, or `libSDL3.so.0`). Explicit-path tests resolve **both** libraries from that directory. On macOS use a signed SDL3 binary, such as the one from SdlSharp.Redist. Use the updated native repository for debug validation, including its CloneOutput fix; test both Debug and Release configurations when changing native code.
+
+To test an unpublished native package, regenerate and pack it in `imgui-sharp-native`, including its native runtime under `runtimes/<rid>/native/`. Restore from the resulting feed with an isolated cache, then use the build/test commands above:
 
 ```sh
-stage=$(mktemp -d)
-cp ../imgui-sharp-native/build/libimgui_sharp.dylib "$stage/"
-cp tests/SdlSharp.ImGui.Tests/bin/Release/net10.0/runtimes/osx-arm64/native/libSDL3.dylib "$stage/"
-dotnet tests/SdlSharp.ImGui.Tests/bin/Release/net10.0/SdlSharp.ImGui.Tests.dll "$stage/libimgui_sharp.dylib"
+dotnet restore SdlSharp.slnx \
+  --source /absolute/path/to/imgui-sharp-native/packages \
+  --source https://api.nuget.org/v3/index.json \
+  --packages /absolute/path/to/isolated-packages
 ```
 
-With an explicit path, the resolver bypasses the packaged ImguiSharp.Redist copy.
-Without an argument, no resolver override is installed and the test verifies the
-referenced NuGet package. These additions require ImguiSharp.Redist 0.3.0-preview.2
-or later.
+Use a fresh cache when repacking the same unpublished version. The coverage checker reads the restored package selected by MSBuild, including packages restored outside the default NuGet cache.
+
+These tests do not publish packages. Actual hardware GPU command submission remains a separate manual integration check. The native repository also contains the C++ wrapper/backend-forwarding tests and the exhaustive P/Invoke suite.

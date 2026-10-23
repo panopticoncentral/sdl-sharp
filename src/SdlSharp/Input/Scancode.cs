@@ -323,6 +323,8 @@ public enum Scancode
     CrSel = (int)Native.SDL_Scancode.SDL_SCANCODE_CRSEL,
     /// <summary>The ExSel key.</summary>
     ExSel = (int)Native.SDL_Scancode.SDL_SCANCODE_EXSEL,
+    /// <summary>Front key.</summary>
+    Front = (int)Native.SDL_Scancode.SDL_SCANCODE_FRONT,
     /// <summary>The keypad 00 key.</summary>
     Kp00 = (int)Native.SDL_Scancode.SDL_SCANCODE_KP_00,
     /// <summary>The keypad 000 key.</summary>

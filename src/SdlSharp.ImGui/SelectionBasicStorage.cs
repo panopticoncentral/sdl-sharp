@@ -22,17 +22,21 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
     private static readonly ConcurrentDictionary<nint, AdapterState> _adapters = new();
 
     private IGSharp_SelectionBasicStorage* _handle;
+    private readonly Lifetime _lifetime;
 
     /// <summary>Creates a new, empty selection storage.</summary>
     public SelectionBasicStorage()
     {
-        _handle = IGSharp_SelectionBasicStorage_Create();
+        _handle = IGSharp_SelectionBasicStorage_Create(); var pointer = (nint)_handle;
+        _lifetime = Lifetime.Own(pointer, () => IGSharp_SelectionBasicStorage_Destroy((IGSharp_SelectionBasicStorage*)pointer));
+        _lifetime.AddCleanup(() => _adapters.TryRemove(pointer, out _));
     }
 
     /// <summary>Applies the selection requests coming from BeginMultiSelect/EndMultiSelect.</summary>
     public void ApplyRequests(MultiSelectIO io)
     {
         ThrowIfDisposed();
+        using var lease = _lifetime.Retain();
         IGSharp_SelectionBasicStorage_ApplyRequests(_handle, io.Handle);
         ThrowAdapterException();
     }
@@ -59,10 +63,10 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
     }
 
     /// <summary>
-    /// Enumerates the storage IDs of all selected items (in selection-storage order;
-    /// see <see cref="PreserveOrder"/>). Do not modify the selection while enumerating.
+    /// Copies the selected IDs in selection-storage order. The returned snapshot is independent
+    /// of subsequent mutations or disposal; see <see cref="PreserveOrder"/>.
     /// </summary>
-    public IEnumerable<uint> SelectedItems
+    public IReadOnlyList<uint> SelectedItems
     {
         get
         {
@@ -71,11 +75,11 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
         }
     }
 
-    private IEnumerable<uint> EnumerateSelectedItems()
+    private uint[] EnumerateSelectedItems()
     {
-        nint iterator = 0;
-        while (TryGetNextSelectedItem(ref iterator, out var id))
-            yield return id;
+        nint iterator = 0; var selected = new List<uint>(Size);
+        while (TryGetNextSelectedItem(ref iterator, out var id)) selected.Add(id);
+        return selected.ToArray();
     }
 
     private bool TryGetNextSelectedItem(ref nint iterator, out uint id)
@@ -93,6 +97,7 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
     public uint GetStorageIdFromIndex(int index)
     {
         ThrowIfDisposed();
+        using var lease = _lifetime.Retain();
         var result = IGSharp_SelectionBasicStorage_GetStorageIdFromIndex(_handle, index);
         ThrowAdapterException();
         return result;
@@ -162,7 +167,7 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
     {
         if (!_adapters.TryGetValue((nint)self, out var state))
             return (uint)index;
-        try { return state.Adapter(index); }
+        try { using var guard = Context.TryGetCurrent()?.EnterCallback(); return state.Adapter(index); }
         catch (Exception ex)
         {
             state.Capture(ex);
@@ -170,20 +175,28 @@ public sealed unsafe class SelectionBasicStorage : IDisposable
         }
     }
 
+    /// <summary>Swaps selection contents and order with another storage, preserving each owner's configuration and adapter.</summary>
+    public void Swap(SelectionBasicStorage other)
+    {
+        ArgumentNullException.ThrowIfNull(other); ThrowIfDisposed(); other.ThrowIfDisposed();
+        if (ReferenceEquals(this, other)) return;
+        IGSharp_SelectionBasicStorage_Swap(_handle, other._handle);
+
+    }
+
     /// <summary>Releases the unmanaged selection storage.</summary>
     public void Dispose()
     {
         if (_handle != null)
         {
-            _adapters.TryRemove((nint)_handle, out _);
-            IGSharp_SelectionBasicStorage_Destroy(_handle);
+            _lifetime.Dispose();
             _handle = null;
         }
     }
 
     private void ThrowIfDisposed()
     {
-        if (_handle == null) throw new ObjectDisposedException(nameof(SelectionBasicStorage));
+        _lifetime.Check();
     }
 
     private void ThrowAdapterException()

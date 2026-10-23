@@ -13,22 +13,28 @@ namespace SdlSharp.Input;
 public sealed unsafe class Joystick : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     internal Native.SDL_Joystick* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private Native.SDL_Joystick* _handle;
 
-    internal Joystick(Native.SDL_Joystick* handle, bool ownsHandle = true)
+    internal Joystick(Native.SDL_Joystick* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Joystick), (nint)handle, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>Opens a joystick by instance ID.</summary>
@@ -174,7 +180,7 @@ public sealed unsafe class Joystick : IDisposable
         Marshal.PtrToStringUTF8((nint)SDL_GetJoystickPathForID(new Native.SDL_JoystickID(id)));
 
     /// <summary>Gets the properties of this joystick (capability flags — names in <see cref="JoystickProperties"/>). Owned by SDL.</summary>
-    public PropertyGroup Properties => new(SDL_GetJoystickProperties(Handle), ownsHandle: false);
+    public PropertyGroup Properties => new(CheckId(SDL_GetJoystickProperties(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>
     /// Gets or sets the player index. The getter returns -1 when no player index is
@@ -272,8 +278,36 @@ public sealed unsafe class Joystick : IDisposable
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_CloseJoystick(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_CloseJoystick(_handle);
+            });
         }
         _handle = null;
+    }
+    /// <summary>Locks joystick state until the scope is disposed on this thread.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    public static SdlScope Lock()
+    {
+        var operation = Application.BeginOperation();
+        SDL_LockJoysticks();
+        return new SdlScope(() => { SDL_UnlockJoysticks(); operation.Dispose(); });
+    }
+    /// <summary>Returns whether an instance is a virtual joystick.</summary>
+    public static bool IsVirtual(uint id) => SDL_IsJoystickVirtual(id);
+    /// <summary>Queues an axis value for a virtual joystick.</summary>
+    public void SetVirtualAxis(int axis, short value) => Check(SDL_SetJoystickVirtualAxis(Handle, axis, value));
+    /// <summary>Queues relative ball motion for a virtual joystick.</summary>
+    public void SetVirtualBall(int ball, short x, short y) => Check(SDL_SetJoystickVirtualBall(Handle, ball, x, y));
+    /// <summary>Queues a button value for a virtual joystick.</summary>
+    public void SetVirtualButton(int button, bool down) => Check(SDL_SetJoystickVirtualButton(Handle, button, down));
+    /// <summary>Queues a hat value for a virtual joystick.</summary>
+    public void SetVirtualHat(int hat, HatPosition position) => Check(SDL_SetJoystickVirtualHat(Handle, hat, (byte)position));
+    /// <summary>Queues a touchpad contact for a virtual joystick.</summary>
+    public void SetVirtualTouchpad(int touchpad, int finger, bool down, float x, float y, float pressure) => Check(SDL_SetJoystickVirtualTouchpad(Handle, touchpad, finger, down, x, y, pressure));
+    /// <summary>Queues sensor values with a nanosecond timestamp for a virtual joystick.</summary>
+    public void SendVirtualSensorData(SensorType type, ulong timestamp, ReadOnlySpan<float> data)
+    {
+        fixed (float* values = data) Check(SDL_SendJoystickVirtualSensorData(Handle, (Native.SDL_SensorType)type, timestamp, values, data.Length));
     }
 }

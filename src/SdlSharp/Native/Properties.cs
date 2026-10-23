@@ -78,9 +78,7 @@ public static partial class Properties
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void SDL_UnlockProperties(SDL_PropertiesID props);
 
-    // Skipped: SDL_SetPointerPropertyWithCleanup — its cleanup callback ties native
-    // lifetime management to managed state; use SetPointerProperty and manage
-    // lifetime on the managed side instead.
+    // Additional SDL 3.4 APIs are implemented in Additional.cs and CoreExtras.cs.
 
     /// <summary>
     /// Set a pointer property in a group of properties.

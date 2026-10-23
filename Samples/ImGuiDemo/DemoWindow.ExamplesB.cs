@@ -375,7 +375,7 @@ internal static unsafe partial class DemoWindow
                 uint col = ImGui.ColorConvertFloat4ToU32(s_customrendering_colf[0], s_customrendering_colf[1], s_customrendering_colf[2], s_customrendering_colf[3]);
                 float sz = s_customrendering_sz;
                 const float spacing = 10.0f;
-                const DrawFlags corners_tl_br = DrawFlags.RoundCornersTopLeft | DrawFlags.RoundCornersBottomRight;
+                const DrawFlags corners_tl_br = DrawFlags.RoundTopLeft | DrawFlags.RoundBottomRight;
                 float rounding = sz / 5.0f;
                 int circle_segments = s_customrendering_circle_segments_override ? s_customrendering_circle_segments_override_v : 0;
                 int curve_segments = s_customrendering_curve_segments_override ? s_customrendering_curve_segments_override_v : 0;
@@ -391,20 +391,20 @@ internal static unsafe partial class DemoWindow
                     draw_list.AddNgon(new Vec2(x + sz * 0.5f, y + sz * 0.5f), sz * 0.5f, col, s_customrendering_ngon_sides, th); x += sz + spacing;  // N-gon
                     draw_list.AddCircle(new Vec2(x + sz * 0.5f, y + sz * 0.5f), sz * 0.5f, col, circle_segments, th); x += sz + spacing;             // Circle
                     draw_list.AddEllipse(new Vec2(x + sz * 0.5f, y + sz * 0.5f), new Vec2(sz * 0.5f, sz * 0.3f), col, -0.3f, circle_segments, th); x += sz + spacing; // Ellipse
-                    draw_list.AddRect(new Vec2(x, y), new Vec2(x + sz, y + sz), col, 0.0f, DrawFlags.None, th); x += sz + spacing;                   // Square
-                    draw_list.AddRect(new Vec2(x, y), new Vec2(x + sz, y + sz), col, rounding, DrawFlags.None, th); x += sz + spacing;               // Square with all rounded corners
-                    draw_list.AddRect(new Vec2(x, y), new Vec2(x + sz, y + sz), col, rounding, corners_tl_br, th); x += sz + spacing;                // Square with two rounded corners
+                    draw_list.AddRect(new Vec2(x, y), new Vec2(x + sz, y + sz), col, 0.0f, th, DrawFlags.None); x += sz + spacing;                   // Square
+                    draw_list.AddRect(new Vec2(x, y), new Vec2(x + sz, y + sz), col, rounding, th, DrawFlags.None); x += sz + spacing;               // Square with all rounded corners
+                    draw_list.AddRect(new Vec2(x, y), new Vec2(x + sz, y + sz), col, rounding, th, corners_tl_br); x += sz + spacing;                // Square with two rounded corners
                     draw_list.AddTriangle(new Vec2(x + sz * 0.5f, y), new Vec2(x + sz, y + sz - 0.5f), new Vec2(x, y + sz - 0.5f), col, th); x += sz + spacing; // Triangle
                     //draw_list.AddTriangle(new Vec2(x + sz * 0.2f, y), new Vec2(x, y + sz - 0.5f), new Vec2(x + sz * 0.4f, y + sz - 0.5f), col, th); x += sz * 0.4f + spacing; // Thin triangle
-                    PathConcaveShape(draw_list, x, y, sz); draw_list.PathStroke(col, DrawFlags.Closed, th); x += sz + spacing;                       // Concave Shape
-                    //draw_list.AddPolyline(concave_shape, col, DrawFlags.Closed, th);
+                    PathConcaveShape(draw_list, x, y, sz); draw_list.PathStroke(col, th, DrawFlags.Closed); x += sz + spacing;                       // Concave Shape
+                    //draw_list.AddPolyline(concave_shape, col, th, DrawFlags.Closed);
                     draw_list.AddLine(new Vec2(x, y), new Vec2(x + sz, y), col, th); x += sz + spacing;                                              // Horizontal line (note: drawing a filled rectangle will be faster!)
                     draw_list.AddLine(new Vec2(x, y), new Vec2(x, y + sz), col, th); x += spacing;                                                   // Vertical line (note: drawing a filled rectangle will be faster!)
                     draw_list.AddLine(new Vec2(x, y), new Vec2(x + sz, y + sz), col, th); x += sz + spacing;                                         // Diagonal line
 
                     // Path
                     draw_list.PathArcTo(new Vec2(x + sz * 0.5f, y + sz * 0.5f), sz * 0.5f, 3.141592f, 3.141592f * -0.5f);
-                    draw_list.PathStroke(col, DrawFlags.None, th);
+                    draw_list.PathStroke(col, th, DrawFlags.None);
                     x += sz + spacing;
 
                     // Quadratic Bezier Curve (3 control points)

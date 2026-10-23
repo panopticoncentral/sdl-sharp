@@ -82,3 +82,32 @@ public static partial class FileSystem
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static unsafe partial byte* SDL_GetCurrentDirectory();
 }
+
+// Shared filesystem value types used by the storage interface.
+public enum SDL_PathType
+{
+    SDL_PATHTYPE_NONE = 0,
+    SDL_PATHTYPE_FILE = 1,
+    SDL_PATHTYPE_DIRECTORY = 2,
+    SDL_PATHTYPE_OTHER = 3
+}
+public enum SDL_EnumerationResult
+{
+    SDL_ENUM_CONTINUE = 0,
+    SDL_ENUM_SUCCESS = 1,
+    SDL_ENUM_FAILURE = 2
+}
+[StructLayout(LayoutKind.Sequential)]
+public struct SDL_PathInfo
+{
+    public SDL_PathType type;
+    public ulong size;
+    public long create_time;
+    public long modify_time;
+    public long access_time;
+}
+
+public enum SDL_GlobFlags : uint
+{
+    SDL_GLOB_CASEINSENSITIVE = 1
+}

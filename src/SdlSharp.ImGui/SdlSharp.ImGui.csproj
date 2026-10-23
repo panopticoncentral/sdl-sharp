@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImguiSharpIncludeBindings>true</ImguiSharpIncludeBindings>
+    <DefineConstants>$(DefineConstants);IGSHARP_EXTERNAL_SDL</DefineConstants>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -29,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImguiSharp.Redist" Version="0.3.0-preview.3" />
+    <PackageReference Include="ImguiSharp.Redist" Version="0.4.0-preview.3" />
   </ItemGroup>
 
 </Project>

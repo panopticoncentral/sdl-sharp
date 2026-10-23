@@ -9,7 +9,11 @@ namespace SdlSharp.Graphics.Gpu;
 /// </summary>
 public sealed unsafe class GpuSampler : IDisposable
 {
+    internal readonly NativeLifetime Lifetime;
     private readonly GpuDevice _device;
+    private readonly Native.SDL_GPUDevice* _devicePointer;
+    private Native.SDL_GPUDevice* DeviceHandle { get { _device.Lifetime.Check(); return _devicePointer; } }
+    internal GpuDevice Device => _device;
 
     /// <summary>
     /// The underlying native SDL_GPUSampler pointer.
@@ -19,6 +23,7 @@ public sealed unsafe class GpuSampler : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
             return _handle;
         }
     }
@@ -27,17 +32,20 @@ public sealed unsafe class GpuSampler : IDisposable
 
     internal GpuSampler(GpuDevice device, SDL_GPUSampler* handle)
     {
-        _device = device;
+        _device = new GpuDevice(device.Handle, ownsHandle: false);
+        _devicePointer = device.Handle;
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(GpuSampler), (nint)handle, true, parent: device.Lifetime);
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_handle != null && !_device.IsDisposed)
+        if (_handle != null && _device.Lifetime.IsAlive)
         {
-            SDL_ReleaseGPUSampler(_device.Handle, _handle);
+            Lifetime.Release(() => { SDL_ReleaseGPUSampler(DeviceHandle, _handle); });
         }
         _handle = null;
+        _device.Dispose();
     }
 }

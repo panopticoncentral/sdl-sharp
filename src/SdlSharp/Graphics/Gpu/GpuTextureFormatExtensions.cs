@@ -26,4 +26,8 @@ public static class GpuTextureFormatExtensions
     /// <returns>The size in bytes.</returns>
     public static uint CalculateSize(this GpuTextureFormat format, uint width, uint height, uint depthOrLayerCount = 1) =>
         SDL_CalculateGPUTextureFormatSize((SDL_GPUTextureFormat)format, width, height, depthOrLayerCount);
+    /// <summary>Gets the corresponding SDL pixel format, or Unknown when no conversion exists.</summary>
+    public static PixelFormat ToPixelFormat(this GpuTextureFormat format) => (PixelFormat)SDL_GetPixelFormatFromGPUTextureFormat((SDL_GPUTextureFormat)format);
+    /// <summary>Gets the corresponding GPU texture format, or Invalid when no conversion exists.</summary>
+    public static GpuTextureFormat ToGpuTextureFormat(this PixelFormat format) => (GpuTextureFormat)SDL_GetGPUTextureFormatFromPixelFormat((SDL_PixelFormat)format);
 }

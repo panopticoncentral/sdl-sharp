@@ -7,30 +7,38 @@ namespace SdlSharp.Graphics.Gpu;
 /// A managed wrapper around an SDL GPU render pass (SDL_GPURenderPass).
 /// Render passes record draw commands and are ended by calling <see cref="End"/>.
 /// </summary>
-public sealed unsafe class GpuRenderPass
+public sealed unsafe class GpuRenderPass : IDisposable
 {
     /// <summary>
     /// The underlying native SDL_GPURenderPass pointer.
     /// </summary>
+    private readonly GpuCommandBuffer _command;
+    internal void CheckCommand(GpuCommandBuffer command)
+    {
+        _ = Handle;
+        if (!ReferenceEquals(_command, command)) throw new ArgumentException("The render pass belongs to a different command buffer.", nameof(command));
+    }
+
     internal SDL_GPURenderPass* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            _command.CheckPass(this);
             return _handle;
         }
     }
 
     private SDL_GPURenderPass* _handle;
 
-    internal GpuRenderPass(SDL_GPURenderPass* handle) { _handle = handle; }
+    internal GpuRenderPass(GpuCommandBuffer command, SDL_GPURenderPass* handle) { _command = command; command.BeginPass(this); _handle = handle; }
 
     /// <summary>
     /// Binds a graphics pipeline for subsequent draw commands.
     /// </summary>
     /// <param name="pipeline">The graphics pipeline to bind.</param>
     public void BindGraphicsPipeline(GpuGraphicsPipeline pipeline) =>
-        SDL_BindGPUGraphicsPipeline(Handle, pipeline.Handle);
+        SDL_BindGPUGraphicsPipeline(Handle, _command.Use(pipeline));
 
     /// <summary>
     /// Sets the viewport for the render pass.
@@ -73,8 +81,8 @@ public sealed unsafe class GpuRenderPass
     /// <param name="bindings">The buffer bindings to bind.</param>
     public void BindVertexBuffers(uint firstSlot, ReadOnlySpan<GpuBufferBinding> bindings)
     {
-        Span<SDL_GPUBufferBinding> native = stackalloc SDL_GPUBufferBinding[bindings.Length];
-        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative();
+        Span<SDL_GPUBufferBinding> native = bindings.Length <= 64 ? stackalloc SDL_GPUBufferBinding[bindings.Length] : new SDL_GPUBufferBinding[bindings.Length];
+        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative(_command);
         fixed (SDL_GPUBufferBinding* p = native)
             SDL_BindGPUVertexBuffers(Handle, firstSlot, p, (uint)bindings.Length);
     }
@@ -86,7 +94,7 @@ public sealed unsafe class GpuRenderPass
     /// <param name="elementSize">The size of each index element.</param>
     public void BindIndexBuffer(in GpuBufferBinding binding, GpuIndexElementSize elementSize)
     {
-        var native = binding.ToNative();
+        var native = binding.ToNative(_command);
         SDL_BindGPUIndexBuffer(Handle, &native, (SDL_GPUIndexElementSize)elementSize);
     }
 
@@ -97,8 +105,8 @@ public sealed unsafe class GpuRenderPass
     /// <param name="bindings">The texture-sampler bindings to bind.</param>
     public void BindVertexSamplers(uint firstSlot, ReadOnlySpan<GpuTextureSamplerBinding> bindings)
     {
-        Span<SDL_GPUTextureSamplerBinding> native = stackalloc SDL_GPUTextureSamplerBinding[bindings.Length];
-        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative();
+        Span<SDL_GPUTextureSamplerBinding> native = bindings.Length <= 64 ? stackalloc SDL_GPUTextureSamplerBinding[bindings.Length] : new SDL_GPUTextureSamplerBinding[bindings.Length];
+        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative(_command);
         fixed (SDL_GPUTextureSamplerBinding* p = native)
             SDL_BindGPUVertexSamplers(Handle, firstSlot, p, (uint)bindings.Length);
     }
@@ -110,8 +118,8 @@ public sealed unsafe class GpuRenderPass
     /// <param name="bindings">The texture-sampler bindings to bind.</param>
     public void BindFragmentSamplers(uint firstSlot, ReadOnlySpan<GpuTextureSamplerBinding> bindings)
     {
-        Span<SDL_GPUTextureSamplerBinding> native = stackalloc SDL_GPUTextureSamplerBinding[bindings.Length];
-        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative();
+        Span<SDL_GPUTextureSamplerBinding> native = bindings.Length <= 64 ? stackalloc SDL_GPUTextureSamplerBinding[bindings.Length] : new SDL_GPUTextureSamplerBinding[bindings.Length];
+        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative(_command);
         fixed (SDL_GPUTextureSamplerBinding* p = native)
             SDL_BindGPUFragmentSamplers(Handle, firstSlot, p, (uint)bindings.Length);
     }
@@ -123,9 +131,13 @@ public sealed unsafe class GpuRenderPass
     /// <param name="textures">The storage textures to bind.</param>
     public void BindVertexStorageTextures(uint firstSlot, ReadOnlySpan<GpuTexture> textures)
     {
-        var pointers = stackalloc SDL_GPUTexture*[textures.Length];
-        for (var i = 0; i < textures.Length; i++) pointers[i] = textures[i].Handle;
+        Span<nint> addresses = textures.Length <= 64 ? stackalloc nint[textures.Length] : new nint[textures.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (SDL_GPUTexture**)rawPointers;
+        for (var i = 0; i < textures.Length; i++) pointers[i] = _command.Use(textures[i]);
         SDL_BindGPUVertexStorageTextures(Handle, firstSlot, pointers, (uint)textures.Length);
+        }
     }
 
     /// <summary>
@@ -135,9 +147,13 @@ public sealed unsafe class GpuRenderPass
     /// <param name="textures">The storage textures to bind.</param>
     public void BindFragmentStorageTextures(uint firstSlot, ReadOnlySpan<GpuTexture> textures)
     {
-        var pointers = stackalloc SDL_GPUTexture*[textures.Length];
-        for (var i = 0; i < textures.Length; i++) pointers[i] = textures[i].Handle;
+        Span<nint> addresses = textures.Length <= 64 ? stackalloc nint[textures.Length] : new nint[textures.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (SDL_GPUTexture**)rawPointers;
+        for (var i = 0; i < textures.Length; i++) pointers[i] = _command.Use(textures[i]);
         SDL_BindGPUFragmentStorageTextures(Handle, firstSlot, pointers, (uint)textures.Length);
+        }
     }
 
     /// <summary>
@@ -147,9 +163,13 @@ public sealed unsafe class GpuRenderPass
     /// <param name="buffers">The storage buffers to bind.</param>
     public void BindVertexStorageBuffers(uint firstSlot, ReadOnlySpan<GpuBuffer> buffers)
     {
-        var pointers = stackalloc SDL_GPUBuffer*[buffers.Length];
-        for (var i = 0; i < buffers.Length; i++) pointers[i] = buffers[i].Handle;
+        Span<nint> addresses = buffers.Length <= 64 ? stackalloc nint[buffers.Length] : new nint[buffers.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (SDL_GPUBuffer**)rawPointers;
+        for (var i = 0; i < buffers.Length; i++) pointers[i] = _command.Use(buffers[i]);
         SDL_BindGPUVertexStorageBuffers(Handle, firstSlot, pointers, (uint)buffers.Length);
+        }
     }
 
     /// <summary>
@@ -159,9 +179,13 @@ public sealed unsafe class GpuRenderPass
     /// <param name="buffers">The storage buffers to bind.</param>
     public void BindFragmentStorageBuffers(uint firstSlot, ReadOnlySpan<GpuBuffer> buffers)
     {
-        var pointers = stackalloc SDL_GPUBuffer*[buffers.Length];
-        for (var i = 0; i < buffers.Length; i++) pointers[i] = buffers[i].Handle;
+        Span<nint> addresses = buffers.Length <= 64 ? stackalloc nint[buffers.Length] : new nint[buffers.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (SDL_GPUBuffer**)rawPointers;
+        for (var i = 0; i < buffers.Length; i++) pointers[i] = _command.Use(buffers[i]);
         SDL_BindGPUFragmentStorageBuffers(Handle, firstSlot, pointers, (uint)buffers.Length);
+        }
     }
 
     /// <summary>
@@ -192,7 +216,7 @@ public sealed unsafe class GpuRenderPass
     /// <param name="offset">Byte offset into the buffer.</param>
     /// <param name="drawCount">Number of draw commands to execute.</param>
     public void DrawPrimitivesIndirect(GpuBuffer buffer, uint offset, uint drawCount) =>
-        SDL_DrawGPUPrimitivesIndirect(Handle, buffer.Handle, offset, drawCount);
+        SDL_DrawGPUPrimitivesIndirect(Handle, _command.Use(buffer), offset, drawCount);
 
     /// <summary>
     /// Draws indexed primitives using indirect draw arguments from a buffer.
@@ -201,7 +225,7 @@ public sealed unsafe class GpuRenderPass
     /// <param name="offset">Byte offset into the buffer.</param>
     /// <param name="drawCount">Number of draw commands to execute.</param>
     public void DrawIndexedPrimitivesIndirect(GpuBuffer buffer, uint offset, uint drawCount) =>
-        SDL_DrawGPUIndexedPrimitivesIndirect(Handle, buffer.Handle, offset, drawCount);
+        SDL_DrawGPUIndexedPrimitivesIndirect(Handle, _command.Use(buffer), offset, drawCount);
 
     /// <summary>
     /// Ends the render pass.
@@ -209,7 +233,10 @@ public sealed unsafe class GpuRenderPass
     public void End()
     {
         var handle = Handle;
+        _command.EndPass(this);
         _handle = null;
         SDL_EndGPURenderPass(handle);
     }
+    /// <summary>Ends this pass once.</summary>
+    public void Dispose() { if (_handle != null) End(); }
 }

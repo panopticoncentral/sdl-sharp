@@ -13,22 +13,37 @@ namespace SdlSharp.Input;
 public sealed unsafe class Gamepad : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
+    private readonly NativeLifetime? _joystickLifetime;
 
     internal Native.SDL_Gamepad* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private Native.SDL_Gamepad* _handle;
 
-    internal Gamepad(Native.SDL_Gamepad* handle, bool ownsHandle = true)
+    internal Gamepad(Native.SDL_Gamepad* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Gamepad), (nint)handle, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
+        if (ownsHandle)
+        {
+            // Each managed gamepad open also guarantees the underlying joystick
+            // stays open. Account for that reference alongside Joystick.Open so
+            // closing either kind of owner cannot invalidate the other's views.
+            var joystick = Check(SDL_GetGamepadJoystick(handle));
+            _joystickLifetime = NativeLifetime.Get(typeof(Joystick), (nint)joystick, owns: true);
+        }
     }
 
     /// <summary>Opens a gamepad by joystick instance ID.</summary>
@@ -126,7 +141,7 @@ public sealed unsafe class Gamepad : IDisposable
     public static SdlGuid GetGuidForId(uint id) => new(SDL_GetGamepadGUIDForID(new Native.SDL_JoystickID(id)));
 
     /// <summary>Gets the underlying joystick as a non-owning wrapper.</summary>
-    public Joystick GetJoystick() => new(Check(SDL_GetGamepadJoystick(Handle)), ownsHandle: false);
+    public Joystick GetJoystick() => new(Check(SDL_GetGamepadJoystick(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>Gets the Steam Input handle, or 0 if unavailable.</summary>
     public ulong SteamHandle => SDL_GetGamepadSteamHandle(Handle);
@@ -169,7 +184,17 @@ public sealed unsafe class Gamepad : IDisposable
         Marshal.PtrToStringUTF8((nint)SDL_GetGamepadPathForID(new Native.SDL_JoystickID(id)));
 
     /// <summary>Gets the properties of this gamepad (capability flags — names in <see cref="GamepadProperties"/>). Owned by SDL.</summary>
-    public PropertyGroup Properties => new(SDL_GetGamepadProperties(Handle), ownsHandle: false);
+    public PropertyGroup Properties
+    {
+        get
+        {
+            var id = CheckId(SDL_GetGamepadProperties(Handle));
+            // SDL shares these properties with the underlying joystick, which
+            // may also have independent opens that outlive this gamepad.
+            using var joystick = GetJoystick();
+            return new(id, ownsHandle: false, parent: joystick.Lifetime);
+        }
+    }
 
     /// <summary>
     /// Gets or sets the player index. The getter returns -1 when no player index is
@@ -367,13 +392,70 @@ public sealed unsafe class Gamepad : IDisposable
     private static uint ToMilliseconds(TimeSpan duration) =>
         (uint)Math.Clamp(duration.TotalMilliseconds, 0, uint.MaxValue);
 
+    private int _dependentCount;
+    private readonly Stack<IDisposable> _dependentLeases = new();
+    internal void ValidateDependentOwner() { _ = Handle; if (!_ownsHandle) throw new ArgumentException("Pass the original owning SDL wrapper; borrowed aliases cannot retain native lifetime."); }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    internal void RetainDependent() { ValidateDependentOwner(); _dependentLeases.Push(Lifetime.Retain()); _dependentCount++; }
+    internal void ReleaseDependent() { _dependentLeases.Pop().Dispose(); _dependentCount--; }
+
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (_dependentCount != 0) throw new InvalidOperationException("Dispose dependent backends before this resource.");
         if (_ownsHandle && _handle != null)
         {
-            SDL_CloseGamepad(_handle);
+            if (_joystickLifetime is { IsAlive: true }) _joystickLifetime.EnsureCanDestroy();
+            Lifetime.Release(() =>
+            {
+                SDL_CloseGamepad(_handle);
+            });
+            // SDL_CloseGamepad releases the native reference. Only the managed
+            // reference count remains to be adjusted here.
+            _joystickLifetime?.Release(static () => { });
         }
         _handle = null;
+    }
+    /// <summary>Loads gamepad mappings from a managed stream, leaving it open.</summary>
+    public static int AddMappings(Stream stream)
+    {
+        using var bridge = SdlStreamBridge.ForReading(stream);
+        var count = SDL_AddGamepadMappingsFromIO(bridge.Handle, false);
+        bridge.ThrowIfError();
+        if (count < 0) throw new SdlException();
+        return count;
+    }
+    /// <summary>Gets a snapshot of all installed gamepad mappings.</summary>
+    public static string[] GetMappings()
+    {
+        int count;
+        var mappings = SDL_GetGamepadMappings(&count);
+        if (mappings == null) throw new SdlException();
+        try
+        {
+            var result = new string[count];
+            for (var i = 0; i < count; i++) result[i] = Marshal.PtrToStringUTF8((nint)mappings[i]) ?? string.Empty;
+            return result;
+        }
+        finally { SDL_free(mappings); }
+    }
+    /// <summary>Gets a snapshot of the joystick-to-gamepad control bindings.</summary>
+    public GamepadBinding[] GetBindings()
+    {
+        int count;
+        var bindings = SDL_GetGamepadBindings(Handle, &count);
+        if (bindings == null) throw new SdlException();
+        try
+        {
+            var result = new GamepadBinding[count];
+            for (var i = 0; i < count; i++)
+            {
+                var binding = bindings[i];
+                result[i] = new((GamepadBindingType)binding->input_type, binding->input[0], binding->input[1], binding->input[2],
+                    (GamepadBindingType)binding->output_type, binding->output[0], binding->output[1], binding->output[2]);
+            }
+            return result;
+        }
+        finally { SDL_free(bindings); }
     }
 }

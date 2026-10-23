@@ -7,9 +7,9 @@ namespace SdlSharp.Native;
 
 /// <summary>
 /// A 128-bit device GUID (bus type, vendor, product encoding — not an RFC 4122 UUID).
-/// Stored as two ulongs for blittability; layout-identical to the C Uint8 data[16].
+/// Stored as two packed ulongs; byte alignment matches the C Uint8 data[16].
 /// </summary>
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct SDL_GUID
 {
     public ulong data0;

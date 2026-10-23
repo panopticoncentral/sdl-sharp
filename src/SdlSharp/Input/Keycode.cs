@@ -327,6 +327,8 @@ public enum Keycode : uint
     CrSel = (uint)Native.SDL_Keycode.SDLK_CRSEL,
     /// <summary>The ExSel key.</summary>
     ExSel = (uint)Native.SDL_Keycode.SDLK_EXSEL,
+    /// <summary>Front key.</summary>
+    Front = (uint)Native.SDL_Keycode.SDLK_FRONT,
     /// <summary>The keypad 00 key.</summary>
     Kp00 = (uint)Native.SDL_Keycode.SDLK_KP_00,
     /// <summary>The keypad 000 key.</summary>

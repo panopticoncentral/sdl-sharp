@@ -9,18 +9,20 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct TableSortSpecs
 {
-    internal readonly IGSharp_TableSortSpecs* Handle;
+    private readonly NativeView<IGSharp_TableSortSpecs> _view;
+    internal IGSharp_TableSortSpecs* Handle => _view.Handle;
+    internal Lifetime Lifetime => _view.Lifetime!;
 
-    internal TableSortSpecs(IGSharp_TableSortSpecs* handle) => Handle = handle;
+    internal TableSortSpecs(IGSharp_TableSortSpecs* handle, Lifetime? lifetime = null, bool? frame = null) => _view = new(handle, lifetime, frame ?? true);
 
     /// <summary>True if the table currently has sort specs (false outside a sortable table).</summary>
-    public bool IsValid => Handle != null;
+    public bool IsValid => _view.IsValid;
 
     /// <summary>Number of columns currently contributing to the sort (usually 1; &gt; 1 with <see cref="TableFlags.SortMulti"/>).</summary>
     public int SpecsCount => IGSharp_TableSortSpecs_GetSpecsCount(Handle);
 
     /// <summary>Gets the per-column spec at the given index.</summary>
-    public TableColumnSortSpecs GetSpec(int index) => new(IGSharp_TableSortSpecs_GetSpec(Handle, index));
+    public TableColumnSortSpecs GetSpec(int index) { ArgumentOutOfRangeException.ThrowIfNegative(index); ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, SpecsCount); return new(IGSharp_TableSortSpecs_GetSpec(Handle, index)); }
 
     /// <summary>
     /// True when the sort specs changed since last read. Re-sort your data and set to false.

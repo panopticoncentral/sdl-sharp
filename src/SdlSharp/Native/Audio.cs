@@ -11,7 +11,7 @@ namespace SdlSharp.Native;
 /// <summary>
 /// Audio data format values.
 /// </summary>
-public enum SDL_AudioFormat : ushort
+public enum SDL_AudioFormat : uint
 {
     /// <summary>Unspecified audio format.</summary>
     SDL_AUDIO_UNKNOWN = 0x0000,
@@ -336,10 +336,7 @@ public static partial class Audio
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_PutAudioStreamData(SDL_AudioStream* stream, void* buf, int len);
 
-    // Skipped SDL_PutAudioStreamDataNoCopy: the zero-copy put requires the caller
-    // to keep the native buffer alive until an asynchronous completion callback
-    // fires, which is incompatible with managed memory without unbounded pinning.
-    // SDL_PutAudioStreamData / SDL_PutAudioStreamPlanarData cover the use case.
+    // Additional SDL 3.4 APIs are implemented in Additional.cs and CoreExtras.cs.
 
     /// <summary>Add data to the stream, given non-interleaved (planar) channel buffers.</summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_PutAudioStreamPlanarData")]
@@ -403,8 +400,7 @@ public static partial class Audio
     [return: MarshalAs(UnmanagedType.U1)]
     public static unsafe partial bool SDL_LoadWAV(ReadOnlySpan<byte> path, SDL_AudioSpec* spec, byte** audio_buf, uint* audio_len);
 
-    // Skipped SDL_LoadWAV_IO: IO-stream variant of SDL_LoadWAV. .NET has its own
-    // stream abstractions; SDL_LoadWAV (path-based) is bound and covers the case.
+    // Additional SDL 3.4 APIs are implemented in Additional.cs and CoreExtras.cs.
 
     // --- Format info ---
 

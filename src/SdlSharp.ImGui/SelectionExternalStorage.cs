@@ -23,11 +23,14 @@ public sealed unsafe class SelectionExternalStorage : IDisposable
     private static readonly ConcurrentDictionary<nint, AdapterState> _adapters = new();
 
     private IGSharp_SelectionExternalStorage* _handle;
+    private readonly Lifetime _lifetime;
 
     /// <summary>Creates a new external selection storage helper.</summary>
     public SelectionExternalStorage()
     {
-        _handle = IGSharp_SelectionExternalStorage_Create();
+        _handle = IGSharp_SelectionExternalStorage_Create(); var pointer = (nint)_handle;
+        _lifetime = Lifetime.Own(pointer, () => IGSharp_SelectionExternalStorage_Destroy((IGSharp_SelectionExternalStorage*)pointer));
+        _lifetime.AddCleanup(() => _adapters.TryRemove(pointer, out _));
     }
 
     /// <summary>
@@ -38,6 +41,7 @@ public sealed unsafe class SelectionExternalStorage : IDisposable
     public void ApplyRequests(MultiSelectIO io)
     {
         ThrowIfDisposed();
+        using var lease = _lifetime.Retain();
         IGSharp_SelectionExternalStorage_ApplyRequests(_handle, io.Handle);
         if (_adapters.TryGetValue((nint)_handle, out var state))
             state.ThrowIfFailed();
@@ -82,7 +86,7 @@ public sealed unsafe class SelectionExternalStorage : IDisposable
     private static void SetItemSelectedThunk(IGSharp_SelectionExternalStorage* self, int index, byte selected)
     {
         if (!_adapters.TryGetValue((nint)self, out var state)) return;
-        try { state.Adapter(index, selected != 0); }
+        try { using var guard = Context.TryGetCurrent()?.EnterCallback(); state.Adapter(index, selected != 0); }
         catch (Exception ex) { state.Capture(ex); }
     }
 
@@ -91,15 +95,14 @@ public sealed unsafe class SelectionExternalStorage : IDisposable
     {
         if (_handle != null)
         {
-            _adapters.TryRemove((nint)_handle, out _);
-            IGSharp_SelectionExternalStorage_Destroy(_handle);
+            _lifetime.Dispose();
             _handle = null;
         }
     }
 
     private void ThrowIfDisposed()
     {
-        if (_handle == null) throw new ObjectDisposedException(nameof(SelectionExternalStorage));
+        _lifetime.Check();
     }
 
     private sealed class AdapterState(SelectionSetItemSelected adapter)

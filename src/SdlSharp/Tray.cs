@@ -18,20 +18,22 @@ public sealed unsafe class Tray : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
             return _handle;
         }
     }
 
     private Native.SDL_Tray* _handle;
+    internal readonly NativeLifetime Lifetime;
 
     internal bool IsDisposed => _handle == null;
 
-    // One GCHandle per entry that has a managed callback, keyed by the native
+    // One CallbackHandle per entry that has a managed callback, keyed by the native
     // entry pointer. Freed when the entry's callback is replaced/cleared, when
     // the entry is removed, or (for any still registered) at Dispose.
-    internal readonly Dictionary<nint, GCHandle> CallbackHandles = new();
+    internal readonly Dictionary<nint, CallbackHandle> CallbackHandles = new();
 
-    private Tray(Native.SDL_Tray* handle) => _handle = handle;
+    internal Tray(Native.SDL_Tray* handle) { _handle = handle; Lifetime = NativeLifetime.Get(typeof(Tray), (nint)handle, true, threadAffine: true); }
 
     /// <summary>
     /// Creates a tray icon.
@@ -73,11 +75,13 @@ public sealed unsafe class Tray : IDisposable
     {
         try
         {
-            var holder = (TrayEntry.CallbackHolder)GCHandle.FromIntPtr((nint)userdata).Target!;
+            using var callbackScope = CallbackErrors.Enter();
+            var holder = (TrayEntry.CallbackHolder)CallbackHandle.FromIntPtr((nint)userdata).Target!;
             holder.Callback(new TrayEntry(entry, holder.Tray));
         }
-        catch
+        catch (Exception error)
         {
+            CallbackErrors.Capture(error);
             // Exceptions must not cross the native boundary.
         }
     }
@@ -87,7 +91,7 @@ public sealed unsafe class Tray : IDisposable
     {
         if (_handle != null)
         {
-            SDL_DestroyTray(_handle);
+            Lifetime.Release(() => SDL_DestroyTray(_handle));
         }
 
         _handle = null;

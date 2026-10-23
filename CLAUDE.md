@@ -1,6 +1,6 @@
 # SdlSharp — SDL3 C# Wrapper
 
-Wrapping SDL 3.4.2 (at `../SDL`) for C# on .NET 10.0. Upstream headers are at `../SDL/include/SDL3/`.
+Wrapping SDL 3.4.18 for C# on .NET 10.0, supplied by SdlSharp.Redist 1.0.1. Use the release headers from the redist SDK (or the matching upstream release) for coverage and ABI checks.
 
 ## Architecture Rules
 
@@ -15,15 +15,18 @@ Follow these patterns when adding new wrappers.
 - **`byte*` return** for C strings returned by SDL (converted via `Marshal.PtrToStringUTF8` in high-level wrappers)
 - **Separate static classes per SDL header** in `SdlSharp.Native` namespace (e.g., `Init`, `Error`, `Properties`)
 - **Opaque pointer types** as empty structs: `public struct SDL_Window;` for type safety
-- **Callbacks**: `[UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]` static methods + `GCHandle` for userdata
+- **Callbacks**: `[UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]` static methods + non-reused `CallbackHandle` tokens for userdata; contain all exceptions and use `CallbackErrors` or task completion to report them
 - **No XML docs required**: CS1591 is suppressed for this layer via `src/SdlSharp/Native/.editorconfig` — the SDL headers are the documentation. Doc comments are welcome but optional here.
 
 ### High-level wrappers (`SdlSharp`, `SdlSharp.Graphics`, etc.)
 
 - **XML docs required**: every public type and member gets a `///` doc comment (`GenerateDocumentationFile` is on; CS1591 must stay at zero)
 - **`Common.ToUtf8(string?)`** converts `string?` to null-terminated UTF-8 `byte[]?` for passing to native layer (null input → null → null pointer)
-- **Handle wrappers**: `sealed unsafe class` with `IDisposable`, raw pointer `Handle` property, `_ownsHandle` flag
-- **Use-after-dispose guard**: the internal `Handle`/`Id` getter is backed by a private field and throws via `ObjectDisposedException.ThrowIf(_handle == null, this)`; `Dispose()` reads the field directly, destroys only when owning, and always nulls the field (double-dispose safe). GPU resources skip their native release when `_device.IsDisposed`. Objects invalidated by lifecycle calls rather than `Dispose` (`GpuCommandBuffer.Submit`/`Cancel`, pass `End()`) consume the handle the same way.
+- **Handle wrappers**: `sealed unsafe class` with `IDisposable`, internal guarded `Handle`/`Id`, and shared `NativeLifetime` identity. Track real native parent destruction separately from retained dependencies. Borrowed views do not destroy native state.
+- **Use-after-dispose guard**: check both the wrapper's local disposed state and `NativeLifetime.Check()`. Register parent/child relationships and leases before exposing native resources. Dispose through `Lifetime.Release` so aliases and native children invalidate together; preserve SDL's reference counts for repeated opens. Never rely on a borrowed owner's wrapper-local disposed bit to determine native lifetime.
+- **Acquisition scopes**: locks, maps, camera frames, GPU passes, and callback subscriptions have shared once-only release state. Retain dependencies until native completion and check required thread affinity. Do not call thread-affine SDL destruction from finalizers.
+- **Bounds and callbacks**: validate spans, strides, counts, and checked byte lengths before P/Invoke; bound stack allocation. Native callbacks must not leak exceptions or recycled userdata addresses. Async task continuations must not run inside native callbacks.
+- **Coverage and tests**: update `audit/sdl3-coverage-3.4.18.json`, regenerate the native probe, and run `scripts/test-sdl.py` plus the ImGui tests. Consult `SDL_REVIEW.md` for current contracts and intentional exclusions. Build with `-p:GeneratePackageOnBuild=false`; publishing managed packages requires a separate explicit request.
 - **Error checking**: `Common.Check(bool)`, `Common.Check<T>(T*)`, `Common.CheckId(uint)` → throw `SdlException`
 - **Value types**: `readonly record struct` (Color, Point, Rectangle, etc.)
 - **Event args**: `readonly record struct` (not classes) to avoid GC pressure
@@ -36,10 +39,17 @@ Follow these patterns when adding new wrappers.
   public enum InitFlags : uint { Audio = (uint)Native.SDL_InitFlags.SDL_INIT_AUDIO, ... }
   ```
 
+### HID and storage rules
+
+- HID native `wchar_t` pointers use explicit UTF-16 on Windows and UTF-32 on Unix. Never marshal them unconditionally as .NET `char*` or `LPWStr`.
+- `HidApi` owns initialization references and discovery thread affinity; devices and BLE scopes retain that session. Device report operations use spans and serialize against disposal.
+- `StorageContainer` owns SDL storage. Custom `StorageBackend` callbacks are synchronous and must contain exceptions. Ownership transfers only after successful open, with explicit `leaveOpen` support. A failed native close still frees the container: invalidate before rethrowing.
+- HID/storage regression tests must not send reports to attached hardware or modify real user/cloud saves. Use the internal HID transport fixture and temporary/custom storage providers.
+
 ### Namespaces
 
 - **Root**: `SdlSharp` (not Sdl3Sharp)
-- **Sub-namespaces**: `SdlSharp.Graphics`, `SdlSharp.Input`, `SdlSharp.Audio`, `SdlSharp.Graphics.Gpu`
+- **Sub-namespaces**: `SdlSharp.Graphics`, `SdlSharp.Input`, `SdlSharp.Audio`, `SdlSharp.Graphics.Gpu`, `SdlSharp.IO`
 
 ## Code Examples
 
@@ -71,32 +81,39 @@ namespace SdlSharp.Graphics;
 public sealed unsafe class Window : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     internal SDL_Window* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private SDL_Window* _handle;
 
-    internal Window(SDL_Window* handle, bool ownsHandle = true)
+    internal Window(SDL_Window* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Window), (nint)handle, ownsHandle,
+            threadAffine: true, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
-    public static Window Create(string title, int w, int h, ulong flags = 0) =>
-        new(Common.Check(SDL_CreateWindow(Common.ToUtf8(title), w, h, flags)));
+    public static Window Create(string title, int w, int h, WindowFlags flags = WindowFlags.None) =>
+        new(Common.Check(SDL_CreateWindow(Common.ToUtf8(title), w, h, (SDL_WindowFlags)flags)));
 
     public void Dispose()
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyWindow(_handle);
+            Lifetime.Release(() => SDL_DestroyWindow(_handle));
         }
         _handle = null;
     }
@@ -116,8 +133,8 @@ public static unsafe string? GetError() =>
 
 ## Reference
 
-- **Upstream SDL3 headers**: `../SDL/include/SDL3/` (86 header files)
+- **Upstream SDL3 headers**: release 3.4.18, available in the matching `../sdl-sharp-redist/` extracted SDK. Pass its include path to the coverage/probe scripts.
 - **SDL3 redist packaging**: `../sdl-sharp-redist/`
-- **Old SDL2 wrappers**: `git show HEAD~1:src/SdlSharp/` (for reference, not to copy)
+- **Old SDL2 wrappers**: `git show main:src/SdlSharp/` (for reference, not to copy)
 - **SDL3 first draft**: `git show sdl3-first-draft:src/SdlSharp/` (for reference)
-- **Task tracking**: `TODO.md`
+- **Task tracking**: `TODO.md`; current ownership/API review and platform validation limits: `SDL_REVIEW.md`.

@@ -11,12 +11,15 @@ var library = args.Length == 1
     : NativeLibrary.Load("imgui_sharp", assembly, null);
 if (args.Length == 1)
 {
+    var sdlName = OperatingSystem.IsMacOS() ? "libSDL3.dylib" : OperatingSystem.IsWindows() ? "SDL3.dll" : "libSDL3.so.0";
+    var sdl = NativeLibrary.Load(Path.Combine(Path.GetDirectoryName(path)!, sdlName));
+    NativeLibrary.SetDllImportResolver(typeof(SdlSharp.Application).Assembly, (name, _, _) => name == "SDL3" ? sdl : 0);
     // A local-build test overrides resolution; package tests deliberately do not.
     NativeLibrary.SetDllImportResolver(assembly,
         (name, requestingAssembly, searchPath) => name == "imgui_sharp" ? library : IntPtr.Zero);
 }
 NativeLibrary.GetExport(library, "IGSharp_DrawList_ResetForNewFrame");
-NativeLibrary.GetExport(library, "IGSharp_ImplSDLGPU3_RenderDrawDataWithPipeline");
+NativeLibrary.GetExport(library, "IGSharp_ImplSDLGPU3_RenderDrawData");
 if (args.Length == 1)
     NativeLibrary.GetExport(library, "IGSharp_GetVersionNumber");
 
@@ -74,7 +77,7 @@ unsafe
     int indices = IGSharp_DrawList_GetIdxBufferSize(list.Handle);
     Check(vertices > 0 && indices > 0, "Drawing produced no geometry");
     using (var clone = list.CloneOutput())
-        Check(IGSharp_DrawList_GetVtxBufferSize(clone.List.Handle) == vertices, "Clone lost geometry");
+        Check(IGSharp_DrawList_GetVtxBufferSize(clone.Handle) == vertices, "Clone lost geometry");
     ImGui.EndFrame();
 
     IGSharp_NewFrame();
@@ -90,6 +93,8 @@ unsafe
     ExpectDisposed(() => owner.ResetForNewFrame());
     ExpectDisposed(() => { _ = owner.List; });
 }
+HighLevelTests.Run();
+ReviewSafetyTests.Run();
 Console.WriteLine($"PASS: layouts, context isolation, span guards, callbacks, font lifetimes, drawing, cloning, reuse, disposal, and exports ({path})");
 // Keep the library loaded until process exit: generated P/Invokes cache its entry points.
 

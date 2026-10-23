@@ -7,30 +7,33 @@ namespace SdlSharp.Graphics.Gpu;
 /// A managed wrapper around an SDL GPU compute pass (SDL_GPUComputePass).
 /// Compute passes record compute dispatch commands and are ended by calling <see cref="End"/>.
 /// </summary>
-public sealed unsafe class GpuComputePass
+public sealed unsafe class GpuComputePass : IDisposable
 {
     /// <summary>
     /// The underlying native SDL_GPUComputePass pointer.
     /// </summary>
+    private readonly GpuCommandBuffer _command;
+
     internal SDL_GPUComputePass* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            _command.CheckPass(this);
             return _handle;
         }
     }
 
     private SDL_GPUComputePass* _handle;
 
-    internal GpuComputePass(SDL_GPUComputePass* handle) { _handle = handle; }
+    internal GpuComputePass(GpuCommandBuffer command, SDL_GPUComputePass* handle) { _command = command; command.BeginPass(this); _handle = handle; }
 
     /// <summary>
     /// Binds a compute pipeline for subsequent dispatch commands.
     /// </summary>
     /// <param name="pipeline">The compute pipeline to bind.</param>
     public void BindPipeline(GpuComputePipeline pipeline) =>
-        SDL_BindGPUComputePipeline(Handle, pipeline.Handle);
+        SDL_BindGPUComputePipeline(Handle, _command.Use(pipeline));
 
     /// <summary>
     /// Binds texture-sampler pairs to compute shader sampler slots.
@@ -39,8 +42,8 @@ public sealed unsafe class GpuComputePass
     /// <param name="bindings">The texture-sampler bindings to bind.</param>
     public void BindSamplers(uint firstSlot, ReadOnlySpan<GpuTextureSamplerBinding> bindings)
     {
-        Span<SDL_GPUTextureSamplerBinding> native = stackalloc SDL_GPUTextureSamplerBinding[bindings.Length];
-        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative();
+        Span<SDL_GPUTextureSamplerBinding> native = bindings.Length <= 64 ? stackalloc SDL_GPUTextureSamplerBinding[bindings.Length] : new SDL_GPUTextureSamplerBinding[bindings.Length];
+        for (var i = 0; i < bindings.Length; i++) native[i] = bindings[i].ToNative(_command);
         fixed (SDL_GPUTextureSamplerBinding* p = native)
             SDL_BindGPUComputeSamplers(Handle, firstSlot, p, (uint)bindings.Length);
     }
@@ -52,9 +55,13 @@ public sealed unsafe class GpuComputePass
     /// <param name="textures">The storage textures to bind.</param>
     public void BindStorageTextures(uint firstSlot, ReadOnlySpan<GpuTexture> textures)
     {
-        var pointers = stackalloc SDL_GPUTexture*[textures.Length];
-        for (var i = 0; i < textures.Length; i++) pointers[i] = textures[i].Handle;
+        Span<nint> addresses = textures.Length <= 64 ? stackalloc nint[textures.Length] : new nint[textures.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (SDL_GPUTexture**)rawPointers;
+        for (var i = 0; i < textures.Length; i++) pointers[i] = _command.Use(textures[i]);
         SDL_BindGPUComputeStorageTextures(Handle, firstSlot, pointers, (uint)textures.Length);
+        }
     }
 
     /// <summary>
@@ -64,9 +71,13 @@ public sealed unsafe class GpuComputePass
     /// <param name="buffers">The storage buffers to bind.</param>
     public void BindStorageBuffers(uint firstSlot, ReadOnlySpan<GpuBuffer> buffers)
     {
-        var pointers = stackalloc SDL_GPUBuffer*[buffers.Length];
-        for (var i = 0; i < buffers.Length; i++) pointers[i] = buffers[i].Handle;
+        Span<nint> addresses = buffers.Length <= 64 ? stackalloc nint[buffers.Length] : new nint[buffers.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (SDL_GPUBuffer**)rawPointers;
+        for (var i = 0; i < buffers.Length; i++) pointers[i] = _command.Use(buffers[i]);
         SDL_BindGPUComputeStorageBuffers(Handle, firstSlot, pointers, (uint)buffers.Length);
+        }
     }
 
     /// <summary>
@@ -84,7 +95,7 @@ public sealed unsafe class GpuComputePass
     /// <param name="buffer">The buffer containing indirect dispatch arguments.</param>
     /// <param name="offset">Byte offset into the buffer.</param>
     public void DispatchIndirect(GpuBuffer buffer, uint offset) =>
-        SDL_DispatchGPUComputeIndirect(Handle, buffer.Handle, offset);
+        SDL_DispatchGPUComputeIndirect(Handle, _command.Use(buffer), offset);
 
     /// <summary>
     /// Ends the compute pass.
@@ -92,7 +103,10 @@ public sealed unsafe class GpuComputePass
     public void End()
     {
         var handle = Handle;
+        _command.EndPass(this);
         _handle = null;
         SDL_EndGPUComputePass(handle);
     }
+    /// <summary>Ends this pass once.</summary>
+    public void Dispose() { if (_handle != null) End(); }
 }

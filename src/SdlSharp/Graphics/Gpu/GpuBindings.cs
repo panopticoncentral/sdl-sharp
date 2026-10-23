@@ -5,20 +5,20 @@ namespace SdlSharp.Graphics.Gpu;
 /// <summary>A vertex or index buffer binding.</summary>
 public readonly record struct GpuBufferBinding(GpuBuffer Buffer, uint Offset = 0)
 {
-    internal unsafe SDL_GPUBufferBinding ToNative() => new() { buffer = Buffer.Handle, offset = Offset };
+    internal unsafe SDL_GPUBufferBinding ToNative(GpuCommandBuffer command) => new() { buffer = command.Use(Buffer), offset = Offset };
 }
 
 /// <summary>A texture-sampler pair binding.</summary>
 public readonly record struct GpuTextureSamplerBinding(GpuTexture Texture, GpuSampler Sampler)
 {
-    internal unsafe SDL_GPUTextureSamplerBinding ToNative() => new() { texture = Texture.Handle, sampler = Sampler.Handle };
+    internal unsafe SDL_GPUTextureSamplerBinding ToNative(GpuCommandBuffer command) => new() { texture = command.Use(Texture), sampler = command.Use(Sampler) };
 }
 
 /// <summary>A read-write storage buffer binding for compute passes.</summary>
 public readonly record struct GpuStorageBufferReadWriteBinding(GpuBuffer Buffer, bool Cycle = false)
 {
-    internal unsafe SDL_GPUStorageBufferReadWriteBinding ToNative() =>
-        new() { buffer = Buffer.Handle, cycle = (byte)(Cycle ? 1 : 0) };
+    internal unsafe SDL_GPUStorageBufferReadWriteBinding ToNative(GpuCommandBuffer command) =>
+        new() { buffer = command.Use(Buffer), cycle = (byte)(Cycle ? 1 : 0) };
 }
 
 /// <summary>A read-write storage texture binding for compute passes.</summary>
@@ -33,8 +33,8 @@ public readonly record struct GpuStorageTextureReadWriteBinding
     /// <summary>Whether to cycle the texture to avoid stalls.</summary>
     public bool Cycle { get; init; }
 
-    internal unsafe SDL_GPUStorageTextureReadWriteBinding ToNative() =>
-        new() { texture = Texture.Handle, mip_level = MipLevel, layer = Layer, cycle = (byte)(Cycle ? 1 : 0) };
+    internal unsafe SDL_GPUStorageTextureReadWriteBinding ToNative(GpuCommandBuffer command) =>
+        new() { texture = command.Use(Texture), mip_level = MipLevel, layer = Layer, cycle = (byte)(Cycle ? 1 : 0) };
 }
 
 /// <summary>A color render target for a render pass.</summary>
@@ -63,15 +63,15 @@ public readonly record struct GpuColorTargetInfo
     /// <summary>Whether to cycle the resolve texture to avoid stalls.</summary>
     public bool CycleResolveTexture { get; init; }
 
-    internal unsafe SDL_GPUColorTargetInfo ToNative() => new()
+    internal unsafe SDL_GPUColorTargetInfo ToNative(GpuCommandBuffer command) => new()
     {
-        texture = Texture.Handle,
+        texture = command.Use(Texture),
         mip_level = MipLevel,
         layer_or_depth_plane = LayerOrDepthPlane,
         clear_color = ClearColor.ToNative(),
         load_op = (SDL_GPULoadOp)LoadOp,
         store_op = (SDL_GPUStoreOp)StoreOp,
-        resolve_texture = ResolveTexture is { } resolve ? resolve.Handle : null,
+        resolve_texture = ResolveTexture is { } resolve ? command.Use(resolve) : null,
         resolve_mip_level = ResolveMipLevel,
         resolve_layer = ResolveLayer,
         cycle = (byte)(Cycle ? 1 : 0),
@@ -103,9 +103,9 @@ public readonly record struct GpuDepthStencilTargetInfo
     /// <summary>The layer to use.</summary>
     public byte Layer { get; init; }
 
-    internal unsafe SDL_GPUDepthStencilTargetInfo ToNative() => new()
+    internal unsafe SDL_GPUDepthStencilTargetInfo ToNative(GpuCommandBuffer command) => new()
     {
-        texture = Texture.Handle,
+        texture = command.Use(Texture),
         clear_depth = ClearDepth,
         load_op = (SDL_GPULoadOp)LoadOp,
         store_op = (SDL_GPUStoreOp)StoreOp,
@@ -127,21 +127,21 @@ public readonly record struct GpuViewport(float X, float Y, float W, float H, fl
 /// <summary>Transfer-buffer-side parameters of a texture upload/download.</summary>
 public readonly record struct GpuTextureTransferInfo(GpuTransferBuffer TransferBuffer, uint Offset = 0, uint PixelsPerRow = 0, uint RowsPerLayer = 0)
 {
-    internal unsafe SDL_GPUTextureTransferInfo ToNative() =>
-        new() { transfer_buffer = TransferBuffer.Handle, offset = Offset, pixels_per_row = PixelsPerRow, rows_per_layer = RowsPerLayer };
+    internal unsafe SDL_GPUTextureTransferInfo ToNative(GpuCommandBuffer command) =>
+        new() { transfer_buffer = command.Use(TransferBuffer), offset = Offset, pixels_per_row = PixelsPerRow, rows_per_layer = RowsPerLayer };
 }
 
 /// <summary>A location in a transfer buffer.</summary>
 public readonly record struct GpuTransferBufferLocation(GpuTransferBuffer TransferBuffer, uint Offset = 0)
 {
-    internal unsafe SDL_GPUTransferBufferLocation ToNative() => new() { transfer_buffer = TransferBuffer.Handle, offset = Offset };
+    internal unsafe SDL_GPUTransferBufferLocation ToNative(GpuCommandBuffer command) => new() { transfer_buffer = command.Use(TransferBuffer), offset = Offset };
 }
 
 /// <summary>A location in a texture.</summary>
 public readonly record struct GpuTextureLocation(GpuTexture Texture, uint MipLevel = 0, uint Layer = 0, uint X = 0, uint Y = 0, uint Z = 0)
 {
-    internal unsafe SDL_GPUTextureLocation ToNative() =>
-        new() { texture = Texture.Handle, mip_level = MipLevel, layer = Layer, x = X, y = Y, z = Z };
+    internal unsafe SDL_GPUTextureLocation ToNative(GpuCommandBuffer command) =>
+        new() { texture = command.Use(Texture), mip_level = MipLevel, layer = Layer, x = X, y = Y, z = Z };
 }
 
 /// <summary>A region of a texture.</summary>
@@ -169,8 +169,8 @@ public readonly record struct GpuTextureRegion
     /// <summary>Depth of the region.</summary>
     public uint D { get; init; } = 1;
 
-    internal unsafe SDL_GPUTextureRegion ToNative() =>
-        new() { texture = Texture.Handle, mip_level = MipLevel, layer = Layer, x = X, y = Y, z = Z, w = W, h = H, d = D };
+    internal unsafe SDL_GPUTextureRegion ToNative(GpuCommandBuffer command) =>
+        new() { texture = command.Use(Texture), mip_level = MipLevel, layer = Layer, x = X, y = Y, z = Z, w = W, h = H, d = D };
 }
 
 /// <summary>A blit source or destination region.</summary>
@@ -191,20 +191,20 @@ public readonly record struct GpuBlitRegion
     /// <summary>Height of the region.</summary>
     public uint H { get; init; }
 
-    internal unsafe SDL_GPUBlitRegion ToNative() =>
-        new() { texture = Texture.Handle, mip_level = MipLevel, layer_or_depth_plane = LayerOrDepthPlane, x = X, y = Y, w = W, h = H };
+    internal unsafe SDL_GPUBlitRegion ToNative(GpuCommandBuffer command) =>
+        new() { texture = command.Use(Texture), mip_level = MipLevel, layer_or_depth_plane = LayerOrDepthPlane, x = X, y = Y, w = W, h = H };
 }
 
 /// <summary>A location in a GPU buffer.</summary>
 public readonly record struct GpuBufferLocation(GpuBuffer Buffer, uint Offset = 0)
 {
-    internal unsafe SDL_GPUBufferLocation ToNative() => new() { buffer = Buffer.Handle, offset = Offset };
+    internal unsafe SDL_GPUBufferLocation ToNative(GpuCommandBuffer command) => new() { buffer = command.Use(Buffer), offset = Offset };
 }
 
 /// <summary>A region of a GPU buffer.</summary>
 public readonly record struct GpuBufferRegion(GpuBuffer Buffer, uint Offset, uint Size)
 {
-    internal unsafe SDL_GPUBufferRegion ToNative() => new() { buffer = Buffer.Handle, offset = Offset, size = Size };
+    internal unsafe SDL_GPUBufferRegion ToNative(GpuCommandBuffer command) => new() { buffer = command.Use(Buffer), offset = Offset, size = Size };
 }
 
 /// <summary>Parameters for a texture blit.</summary>
@@ -225,10 +225,10 @@ public readonly record struct GpuBlitInfo
     /// <summary>Whether to cycle the destination texture to avoid stalls.</summary>
     public bool Cycle { get; init; }
 
-    internal unsafe SDL_GPUBlitInfo ToNative() => new()
+    internal unsafe SDL_GPUBlitInfo ToNative(GpuCommandBuffer command) => new()
     {
-        source = Source.ToNative(),
-        destination = Destination.ToNative(),
+        source = Source.ToNative(command),
+        destination = Destination.ToNative(command),
         load_op = (SDL_GPULoadOp)LoadOp,
         clear_color = ClearColor.ToNative(),
         flip_mode = (SDL_FlipMode)FlipMode,

@@ -11,29 +11,38 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public static unsafe class Io
 {
+    private static IGSharp_IO* CurrentHandle { get { Context.Current.CheckCurrent(); return IGSharp_GetIO(); } }
+
     private static readonly ConcurrentDictionary<nint, nint> IniFilenames = new();
+
+    /// <summary>Default color editor options. Supply the complete desired flag combination.</summary>
+    public static ColorEditFlags ConfigColorEditFlags
+    {
+        get => (ColorEditFlags)CurrentHandle->ConfigColorEditFlags;
+        set => CurrentHandle->ConfigColorEditFlags = (int)value;
+    }
 
     // --- Display ---
 
     /// <summary>Main display size in pixels. Must be set by the backend before <c>NewFrame</c>.</summary>
     public static Vec2 DisplaySize
     {
-        get { var v = IGSharp_GetIO()->DisplaySize; return new Vec2(v.X, v.Y); }
-        set => IGSharp_GetIO()->DisplaySize = new IGSharp_Vec2(value.X, value.Y);
+        get { var v = CurrentHandle->DisplaySize; return new Vec2(v.X, v.Y); }
+        set => CurrentHandle->DisplaySize = new IGSharp_Vec2(value.X, value.Y);
     }
 
     /// <summary>Ratio of framebuffer pixels to display units (for Retina / HiDPI displays).</summary>
     public static Vec2 DisplayFramebufferScale
     {
-        get { var v = IGSharp_GetIO()->DisplayFramebufferScale; return new Vec2(v.X, v.Y); }
-        set => IGSharp_GetIO()->DisplayFramebufferScale = new IGSharp_Vec2(value.X, value.Y);
+        get { var v = CurrentHandle->DisplayFramebufferScale; return new Vec2(v.X, v.Y); }
+        set => CurrentHandle->DisplayFramebufferScale = new IGSharp_Vec2(value.X, value.Y);
     }
 
     /// <summary>Seconds since the last frame (time step for animation / timing).</summary>
     public static float DeltaTime
     {
-        get => IGSharp_GetIO()->DeltaTime;
-        set => IGSharp_GetIO()->DeltaTime = value;
+        get => CurrentHandle->DeltaTime;
+        set => CurrentHandle->DeltaTime = value;
     }
 
     // --- Mouse / Keyboard state (read-only) ---
@@ -41,27 +50,27 @@ public static unsafe class Io
     /// <summary>Current mouse position in screen coordinates.</summary>
     public static Vec2 MousePos
     {
-        get { var v = IGSharp_GetIO()->MousePos; return new Vec2(v.X, v.Y); }
+        get { var v = CurrentHandle->MousePos; return new Vec2(v.X, v.Y); }
     }
 
     /// <summary>Mouse position delta since the last frame.</summary>
     public static Vec2 MouseDelta
     {
-        get { var v = IGSharp_GetIO()->MouseDelta; return new Vec2(v.X, v.Y); }
+        get { var v = CurrentHandle->MouseDelta; return new Vec2(v.X, v.Y); }
     }
 
     /// <summary>Vertical mouse wheel delta.</summary>
-    public static float MouseWheel => IGSharp_GetIO()->MouseWheel;
+    public static float MouseWheel => CurrentHandle->MouseWheel;
 
     /// <summary>Horizontal mouse wheel delta.</summary>
-    public static float MouseWheelHorizontal => IGSharp_GetIO()->MouseWheelH;
+    public static float MouseWheelHorizontal => CurrentHandle->MouseWheelH;
 
     /// <summary>Seconds the mouse button has been held, or -1 when it is up.</summary>
     public static float GetMouseDownDuration(MouseButton button)
     {
         var index = (int)button;
         if ((uint)index >= 5) throw new ArgumentOutOfRangeException(nameof(button));
-        return IGSharp_GetIO()->MouseDownDuration[index];
+        return CurrentHandle->MouseDownDuration[index];
     }
 
     /// <summary>Mouse position where the most recent click for this button began.</summary>
@@ -69,7 +78,7 @@ public static unsafe class Io
     {
         var index = (int)button;
         if ((uint)index >= 5) throw new ArgumentOutOfRangeException(nameof(button));
-        var position = IGSharp_GetIO()->MouseClickedPos[index];
+        var position = CurrentHandle->MouseClickedPos[index];
         return new Vec2(position.X, position.Y);
     }
 
@@ -78,7 +87,7 @@ public static unsafe class Io
     {
         get
         {
-            var io = IGSharp_GetIO();
+            var io = CurrentHandle;
             return io->InputQueueCharacters_Data == null || io->InputQueueCharacters_Size == 0
                 ? string.Empty
                 : new string((char*)io->InputQueueCharacters_Data, 0, io->InputQueueCharacters_Size);
@@ -86,66 +95,66 @@ public static unsafe class Io
     }
 
     /// <summary>True if Ctrl is held this frame.</summary>
-    public static bool KeyCtrl => IGSharp_GetIO()->KeyCtrl;
+    public static bool KeyCtrl => CurrentHandle->KeyCtrl;
 
     /// <summary>True if Shift is held this frame.</summary>
-    public static bool KeyShift => IGSharp_GetIO()->KeyShift;
+    public static bool KeyShift => CurrentHandle->KeyShift;
 
     /// <summary>True if Alt is held this frame.</summary>
-    public static bool KeyAlt => IGSharp_GetIO()->KeyAlt;
+    public static bool KeyAlt => CurrentHandle->KeyAlt;
 
     /// <summary>True if Super (Windows / Cmd) is held this frame.</summary>
-    public static bool KeySuper => IGSharp_GetIO()->KeySuper;
+    public static bool KeySuper => CurrentHandle->KeySuper;
 
     // --- "Want" flags (signals to the backend) ---
 
     /// <summary>True if ImGui wants to capture mouse input (the backend should not also act on it).</summary>
-    public static bool WantCaptureMouse => IGSharp_GetIO()->WantCaptureMouse;
+    public static bool WantCaptureMouse => CurrentHandle->WantCaptureMouse;
 
     /// <summary>Capture intent excluding the click that closes a popup.</summary>
-    public static bool WantCaptureMouseUnlessPopupClose => IGSharp_GetIO()->WantCaptureMouseUnlessPopupClose;
+    public static bool WantCaptureMouseUnlessPopupClose => CurrentHandle->WantCaptureMouseUnlessPopupClose;
 
     /// <summary>True if ImGui wants to capture keyboard input.</summary>
-    public static bool WantCaptureKeyboard => IGSharp_GetIO()->WantCaptureKeyboard;
+    public static bool WantCaptureKeyboard => CurrentHandle->WantCaptureKeyboard;
 
     /// <summary>True if ImGui wants a text-input UI (e.g. on-screen keyboard on mobile).</summary>
-    public static bool WantTextInput => IGSharp_GetIO()->WantTextInput;
+    public static bool WantTextInput => CurrentHandle->WantTextInput;
 
     /// <summary>True if ImGui wants the backend to reposition the mouse cursor.</summary>
-    public static bool WantSetMousePos => IGSharp_GetIO()->WantSetMousePos;
+    public static bool WantSetMousePos => CurrentHandle->WantSetMousePos;
 
     /// <summary>True if ImGui has unsaved settings (backend should save the ini file). Clear after saving.</summary>
     public static bool WantSaveIniSettings
     {
-        get => IGSharp_GetIO()->WantSaveIniSettings;
-        set => IGSharp_GetIO()->WantSaveIniSettings = value;
+        get => CurrentHandle->WantSaveIniSettings;
+        set => CurrentHandle->WantSaveIniSettings = value;
     }
 
     // --- Navigation state ---
 
     /// <summary>True if keyboard/gamepad navigation is currently active.</summary>
-    public static bool NavActive => IGSharp_GetIO()->NavActive;
+    public static bool NavActive => CurrentHandle->NavActive;
 
     /// <summary>True if the navigation highlight rectangle is currently visible.</summary>
-    public static bool NavVisible => IGSharp_GetIO()->NavVisible;
+    public static bool NavVisible => CurrentHandle->NavVisible;
 
     // --- Timing / Config ---
 
     /// <summary>Frame rate (computed as a running average).</summary>
-    public static float Framerate => IGSharp_GetIO()->Framerate;
+    public static float Framerate => CurrentHandle->Framerate;
 
     /// <summary>Config flags (navigation, DPI awareness, etc.).</summary>
     public static ConfigFlags ConfigFlags
     {
-        get => (ConfigFlags)IGSharp_GetIO()->ConfigFlags;
-        set => IGSharp_GetIO()->ConfigFlags = (int)value;
+        get => (ConfigFlags)CurrentHandle->ConfigFlags;
+        set => CurrentHandle->ConfigFlags = (int)value;
     }
 
     /// <summary>Backend capability flags (set by the imgui_impl_* backend).</summary>
     public static BackendFlags BackendFlags
     {
-        get => (BackendFlags)IGSharp_GetIO()->BackendFlags;
-        set => IGSharp_GetIO()->BackendFlags = (int)value;
+        get => (BackendFlags)CurrentHandle->BackendFlags;
+        set => CurrentHandle->BackendFlags = (int)value;
     }
 
     /// <summary>Sets the filename for saving/loading window layout. Pass null to disable persistence.</summary>
@@ -155,7 +164,7 @@ public static unsafe class Io
         if (context == 0)
             throw new InvalidOperationException("No current ImGui context.");
         var ptr = Marshal.StringToCoTaskMemUTF8(filename);
-        IGSharp_GetIO()->IniFilename = (byte*)ptr;
+        CurrentHandle->IniFilename = (byte*)ptr;
         if (IniFilenames.TryGetValue(context, out var previous) && previous != 0)
             Marshal.FreeCoTaskMem(previous);
         if (ptr == IntPtr.Zero)
@@ -173,320 +182,352 @@ public static unsafe class Io
     // --- Metrics (read-only) ---
 
     /// <summary>Total vertex count submitted this frame.</summary>
-    public static int MetricsRenderVertices => IGSharp_GetIO()->MetricsRenderVertices;
+    public static int MetricsRenderVertices => CurrentHandle->MetricsRenderVertices;
 
     /// <summary>Total index count submitted this frame.</summary>
-    public static int MetricsRenderIndices => IGSharp_GetIO()->MetricsRenderIndices;
+    public static int MetricsRenderIndices => CurrentHandle->MetricsRenderIndices;
 
     /// <summary>Count of visible windows this frame.</summary>
-    public static int MetricsRenderWindows => IGSharp_GetIO()->MetricsRenderWindows;
+    public static int MetricsRenderWindows => CurrentHandle->MetricsRenderWindows;
 
     /// <summary>Count of active windows this frame.</summary>
-    public static int MetricsActiveWindows => IGSharp_GetIO()->MetricsActiveWindows;
+    public static int MetricsActiveWindows => CurrentHandle->MetricsActiveWindows;
 
     // --- Timing tunables ---
 
     /// <summary>Time in seconds for a double-click (default ~0.30).</summary>
     public static float MouseDoubleClickTime
     {
-        get => IGSharp_GetIO()->MouseDoubleClickTime;
-        set => IGSharp_GetIO()->MouseDoubleClickTime = value;
+        get => CurrentHandle->MouseDoubleClickTime;
+        set => CurrentHandle->MouseDoubleClickTime = value;
     }
 
     /// <summary>Maximum distance (in pixels) between two clicks to count as a double-click.</summary>
     public static float MouseDoubleClickMaxDist
     {
-        get => IGSharp_GetIO()->MouseDoubleClickMaxDist;
-        set => IGSharp_GetIO()->MouseDoubleClickMaxDist = value;
+        get => CurrentHandle->MouseDoubleClickMaxDist;
+        set => CurrentHandle->MouseDoubleClickMaxDist = value;
     }
 
     /// <summary>Drag distance threshold (in pixels) before a drag is registered.</summary>
     public static float MouseDragThreshold
     {
-        get => IGSharp_GetIO()->MouseDragThreshold;
-        set => IGSharp_GetIO()->MouseDragThreshold = value;
+        get => CurrentHandle->MouseDragThreshold;
+        set => CurrentHandle->MouseDragThreshold = value;
     }
 
     /// <summary>Delay (seconds) before a held key starts repeating.</summary>
     public static float KeyRepeatDelay
     {
-        get => IGSharp_GetIO()->KeyRepeatDelay;
-        set => IGSharp_GetIO()->KeyRepeatDelay = value;
+        get => CurrentHandle->KeyRepeatDelay;
+        set => CurrentHandle->KeyRepeatDelay = value;
     }
 
     /// <summary>Rate (seconds) at which a held key repeats after the initial delay.</summary>
     public static float KeyRepeatRate
     {
-        get => IGSharp_GetIO()->KeyRepeatRate;
-        set => IGSharp_GetIO()->KeyRepeatRate = value;
+        get => CurrentHandle->KeyRepeatRate;
+        set => CurrentHandle->KeyRepeatRate = value;
     }
 
     // --- Event injection (backends call these to forward OS events into ImGui) ---
 
     /// <summary>Queue a key down/up event.</summary>
-    public static void AddKeyEvent(Key key, bool down) => IGSharp_IO_AddKeyEvent(IGSharp_GetIO(), (int)key, down);
+    public static void AddKeyEvent(Key key, bool down) => IGSharp_IO_AddKeyEvent(CurrentHandle, (int)key, down);
 
     /// <summary>Queue a key event with an analog value (e.g. gamepad trigger).</summary>
-    public static void AddKeyAnalogEvent(Key key, bool down, float value) => IGSharp_IO_AddKeyAnalogEvent(IGSharp_GetIO(), (int)key, down, value);
+    public static void AddKeyAnalogEvent(Key key, bool down, float value) => IGSharp_IO_AddKeyAnalogEvent(CurrentHandle, (int)key, down, value);
 
     /// <summary>Queue a mouse position event.</summary>
-    public static void AddMousePosEvent(float x, float y) => IGSharp_IO_AddMousePosEvent(IGSharp_GetIO(), x, y);
+    public static void AddMousePosEvent(float x, float y) => IGSharp_IO_AddMousePosEvent(CurrentHandle, x, y);
 
     /// <summary>Queue a mouse button down/up event.</summary>
-    public static void AddMouseButtonEvent(MouseButton button, bool down) => IGSharp_IO_AddMouseButtonEvent(IGSharp_GetIO(), (int)button, down);
+    public static void AddMouseButtonEvent(MouseButton button, bool down) => IGSharp_IO_AddMouseButtonEvent(CurrentHandle, (int)button, down);
 
     /// <summary>Queue a mouse wheel scroll event (vertical + horizontal).</summary>
-    public static void AddMouseWheelEvent(float wheelX, float wheelY) => IGSharp_IO_AddMouseWheelEvent(IGSharp_GetIO(), wheelX, wheelY);
+    public static void AddMouseWheelEvent(float wheelX, float wheelY) => IGSharp_IO_AddMouseWheelEvent(CurrentHandle, wheelX, wheelY);
 
     /// <summary>Queue a mouse source change (mouse / touch / pen). Call before <see cref="AddMousePosEvent"/>.</summary>
-    public static void AddMouseSourceEvent(MouseSource source) => IGSharp_IO_AddMouseSourceEvent(IGSharp_GetIO(), (int)source);
+    public static void AddMouseSourceEvent(MouseSource source) => IGSharp_IO_AddMouseSourceEvent(CurrentHandle, (int)source);
 
     /// <summary>Queue a window focus gain/loss event.</summary>
-    public static void AddFocusEvent(bool focused) => IGSharp_IO_AddFocusEvent(IGSharp_GetIO(), focused);
+    public static void AddFocusEvent(bool focused) => IGSharp_IO_AddFocusEvent(CurrentHandle, focused);
 
     /// <summary>Queue a character input (Unicode scalar) for text widgets.</summary>
-    public static void AddInputCharacter(uint c) => IGSharp_IO_AddInputCharacter(IGSharp_GetIO(), c);
+    public static void AddInputCharacter(uint c) => IGSharp_IO_AddInputCharacter(CurrentHandle, c);
 
     /// <summary>Queue a UTF-16 code unit input (combine surrogate pairs before calling).</summary>
-    public static void AddInputCharacterUTF16(ushort c) => IGSharp_IO_AddInputCharacterUTF16(IGSharp_GetIO(), c);
+    public static void AddInputCharacterUTF16(ushort c) => IGSharp_IO_AddInputCharacterUTF16(CurrentHandle, c);
 
     /// <summary>Queue a UTF-8 string input.</summary>
-    public static void AddInputCharactersUTF8(string str) => IGSharp_IO_AddInputCharactersUTF8(IGSharp_GetIO(), ToUtf8(str));
+    public static void AddInputCharactersUTF8(string str) => IGSharp_IO_AddInputCharactersUTF8(CurrentHandle, ToUtf8(str));
 
     /// <summary>Enables or disables event acceptance. Pass false while the app is not focused to drop pending events.</summary>
-    public static void SetAppAcceptingEvents(bool accepting) => IGSharp_IO_SetAppAcceptingEvents(IGSharp_GetIO(), accepting);
+    public static void SetAppAcceptingEvents(bool accepting) => IGSharp_IO_SetAppAcceptingEvents(CurrentHandle, accepting);
 
     /// <summary>Clears the pending event queue without processing.</summary>
-    public static void ClearEventsQueue() => IGSharp_IO_ClearEventsQueue(IGSharp_GetIO());
+    public static void ClearEventsQueue() => IGSharp_IO_ClearEventsQueue(CurrentHandle);
 
     /// <summary>Clears current keyboard state (useful when focus is lost).</summary>
-    public static void ClearInputKeys() => IGSharp_IO_ClearInputKeys(IGSharp_GetIO());
+    public static void ClearInputKeys() => IGSharp_IO_ClearInputKeys(CurrentHandle);
 
     /// <summary>Clears current mouse state.</summary>
-    public static void ClearInputMouse() => IGSharp_IO_ClearInputMouse(IGSharp_GetIO());
+    public static void ClearInputMouse() => IGSharp_IO_ClearInputMouse(CurrentHandle);
 
     // --- Configuration options (direct ImGuiIO mirror fields) ---
 
     /// <summary>Mirror of <c>ImGuiIO::FontAllowUserScaling</c>.</summary>
     public static bool FontAllowUserScaling
     {
-        get => IGSharp_GetIO()->FontAllowUserScaling;
-        set => IGSharp_GetIO()->FontAllowUserScaling = value;
+        get => CurrentHandle->FontAllowUserScaling;
+        set => CurrentHandle->FontAllowUserScaling = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigNavSwapGamepadButtons</c>.</summary>
     public static bool ConfigNavSwapGamepadButtons
     {
-        get => IGSharp_GetIO()->ConfigNavSwapGamepadButtons;
-        set => IGSharp_GetIO()->ConfigNavSwapGamepadButtons = value;
+        get => CurrentHandle->ConfigNavSwapGamepadButtons;
+        set => CurrentHandle->ConfigNavSwapGamepadButtons = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigNavMoveSetMousePos</c>.</summary>
     public static bool ConfigNavMoveSetMousePos
     {
-        get => IGSharp_GetIO()->ConfigNavMoveSetMousePos;
-        set => IGSharp_GetIO()->ConfigNavMoveSetMousePos = value;
+        get => CurrentHandle->ConfigNavMoveSetMousePos;
+        set => CurrentHandle->ConfigNavMoveSetMousePos = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigNavCaptureKeyboard</c>.</summary>
     public static bool ConfigNavCaptureKeyboard
     {
-        get => IGSharp_GetIO()->ConfigNavCaptureKeyboard;
-        set => IGSharp_GetIO()->ConfigNavCaptureKeyboard = value;
+        get => CurrentHandle->ConfigNavCaptureKeyboard;
+        set => CurrentHandle->ConfigNavCaptureKeyboard = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigNavEscapeClearFocusItem</c>.</summary>
     public static bool ConfigNavEscapeClearFocusItem
     {
-        get => IGSharp_GetIO()->ConfigNavEscapeClearFocusItem;
-        set => IGSharp_GetIO()->ConfigNavEscapeClearFocusItem = value;
+        get => CurrentHandle->ConfigNavEscapeClearFocusItem;
+        set => CurrentHandle->ConfigNavEscapeClearFocusItem = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigNavEscapeClearFocusWindow</c>.</summary>
     public static bool ConfigNavEscapeClearFocusWindow
     {
-        get => IGSharp_GetIO()->ConfigNavEscapeClearFocusWindow;
-        set => IGSharp_GetIO()->ConfigNavEscapeClearFocusWindow = value;
+        get => CurrentHandle->ConfigNavEscapeClearFocusWindow;
+        set => CurrentHandle->ConfigNavEscapeClearFocusWindow = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigNavCursorVisibleAuto</c>.</summary>
     public static bool ConfigNavCursorVisibleAuto
     {
-        get => IGSharp_GetIO()->ConfigNavCursorVisibleAuto;
-        set => IGSharp_GetIO()->ConfigNavCursorVisibleAuto = value;
+        get => CurrentHandle->ConfigNavCursorVisibleAuto;
+        set => CurrentHandle->ConfigNavCursorVisibleAuto = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigNavCursorVisibleAlways</c>.</summary>
     public static bool ConfigNavCursorVisibleAlways
     {
-        get => IGSharp_GetIO()->ConfigNavCursorVisibleAlways;
-        set => IGSharp_GetIO()->ConfigNavCursorVisibleAlways = value;
+        get => CurrentHandle->ConfigNavCursorVisibleAlways;
+        set => CurrentHandle->ConfigNavCursorVisibleAlways = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::MouseDrawCursor</c>.</summary>
     public static bool MouseDrawCursor
     {
-        get => IGSharp_GetIO()->MouseDrawCursor;
-        set => IGSharp_GetIO()->MouseDrawCursor = value;
+        get => CurrentHandle->MouseDrawCursor;
+        set => CurrentHandle->MouseDrawCursor = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigMacOSXBehaviors</c>.</summary>
     public static bool ConfigMacOSXBehaviors
     {
-        get => IGSharp_GetIO()->ConfigMacOSXBehaviors;
-        set => IGSharp_GetIO()->ConfigMacOSXBehaviors = value;
+        get => CurrentHandle->ConfigMacOSXBehaviors;
+        set => CurrentHandle->ConfigMacOSXBehaviors = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigInputTrickleEventQueue</c>.</summary>
     public static bool ConfigInputTrickleEventQueue
     {
-        get => IGSharp_GetIO()->ConfigInputTrickleEventQueue;
-        set => IGSharp_GetIO()->ConfigInputTrickleEventQueue = value;
+        get => CurrentHandle->ConfigInputTrickleEventQueue;
+        set => CurrentHandle->ConfigInputTrickleEventQueue = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigInputTextCursorBlink</c>.</summary>
     public static bool ConfigInputTextCursorBlink
     {
-        get => IGSharp_GetIO()->ConfigInputTextCursorBlink;
-        set => IGSharp_GetIO()->ConfigInputTextCursorBlink = value;
+        get => CurrentHandle->ConfigInputTextCursorBlink;
+        set => CurrentHandle->ConfigInputTextCursorBlink = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigInputTextEnterKeepActive</c>.</summary>
     public static bool ConfigInputTextEnterKeepActive
     {
-        get => IGSharp_GetIO()->ConfigInputTextEnterKeepActive;
-        set => IGSharp_GetIO()->ConfigInputTextEnterKeepActive = value;
+        get => CurrentHandle->ConfigInputTextEnterKeepActive;
+        set => CurrentHandle->ConfigInputTextEnterKeepActive = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigDragClickToInputText</c>.</summary>
     public static bool ConfigDragClickToInputText
     {
-        get => IGSharp_GetIO()->ConfigDragClickToInputText;
-        set => IGSharp_GetIO()->ConfigDragClickToInputText = value;
+        get => CurrentHandle->ConfigDragClickToInputText;
+        set => CurrentHandle->ConfigDragClickToInputText = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigWindowsResizeFromEdges</c>.</summary>
     public static bool ConfigWindowsResizeFromEdges
     {
-        get => IGSharp_GetIO()->ConfigWindowsResizeFromEdges;
-        set => IGSharp_GetIO()->ConfigWindowsResizeFromEdges = value;
+        get => CurrentHandle->ConfigWindowsResizeFromEdges;
+        set => CurrentHandle->ConfigWindowsResizeFromEdges = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigWindowsMoveFromTitleBarOnly</c>.</summary>
     public static bool ConfigWindowsMoveFromTitleBarOnly
     {
-        get => IGSharp_GetIO()->ConfigWindowsMoveFromTitleBarOnly;
-        set => IGSharp_GetIO()->ConfigWindowsMoveFromTitleBarOnly = value;
+        get => CurrentHandle->ConfigWindowsMoveFromTitleBarOnly;
+        set => CurrentHandle->ConfigWindowsMoveFromTitleBarOnly = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigWindowsCopyContentsWithCtrlC</c>.</summary>
     public static bool ConfigWindowsCopyContentsWithCtrlC
     {
-        get => IGSharp_GetIO()->ConfigWindowsCopyContentsWithCtrlC;
-        set => IGSharp_GetIO()->ConfigWindowsCopyContentsWithCtrlC = value;
+        get => CurrentHandle->ConfigWindowsCopyContentsWithCtrlC;
+        set => CurrentHandle->ConfigWindowsCopyContentsWithCtrlC = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigScrollbarScrollByPage</c>.</summary>
     public static bool ConfigScrollbarScrollByPage
     {
-        get => IGSharp_GetIO()->ConfigScrollbarScrollByPage;
-        set => IGSharp_GetIO()->ConfigScrollbarScrollByPage = value;
+        get => CurrentHandle->ConfigScrollbarScrollByPage;
+        set => CurrentHandle->ConfigScrollbarScrollByPage = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigErrorRecovery</c>.</summary>
     public static bool ConfigErrorRecovery
     {
-        get => IGSharp_GetIO()->ConfigErrorRecovery;
-        set => IGSharp_GetIO()->ConfigErrorRecovery = value;
+        get => CurrentHandle->ConfigErrorRecovery;
+        set => CurrentHandle->ConfigErrorRecovery = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigErrorRecoveryEnableAssert</c>.</summary>
     public static bool ConfigErrorRecoveryEnableAssert
     {
-        get => IGSharp_GetIO()->ConfigErrorRecoveryEnableAssert;
-        set => IGSharp_GetIO()->ConfigErrorRecoveryEnableAssert = value;
+        get => CurrentHandle->ConfigErrorRecoveryEnableAssert;
+        set => CurrentHandle->ConfigErrorRecoveryEnableAssert = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigErrorRecoveryEnableDebugLog</c>.</summary>
     public static bool ConfigErrorRecoveryEnableDebugLog
     {
-        get => IGSharp_GetIO()->ConfigErrorRecoveryEnableDebugLog;
-        set => IGSharp_GetIO()->ConfigErrorRecoveryEnableDebugLog = value;
+        get => CurrentHandle->ConfigErrorRecoveryEnableDebugLog;
+        set => CurrentHandle->ConfigErrorRecoveryEnableDebugLog = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigErrorRecoveryEnableTooltip</c>.</summary>
     public static bool ConfigErrorRecoveryEnableTooltip
     {
-        get => IGSharp_GetIO()->ConfigErrorRecoveryEnableTooltip;
-        set => IGSharp_GetIO()->ConfigErrorRecoveryEnableTooltip = value;
+        get => CurrentHandle->ConfigErrorRecoveryEnableTooltip;
+        set => CurrentHandle->ConfigErrorRecoveryEnableTooltip = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigDebugIsDebuggerPresent</c>.</summary>
     public static bool ConfigDebugIsDebuggerPresent
     {
-        get => IGSharp_GetIO()->ConfigDebugIsDebuggerPresent;
-        set => IGSharp_GetIO()->ConfigDebugIsDebuggerPresent = value;
+        get => CurrentHandle->ConfigDebugIsDebuggerPresent;
+        set => CurrentHandle->ConfigDebugIsDebuggerPresent = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigDebugHighlightIdConflicts</c>.</summary>
     public static bool ConfigDebugHighlightIdConflicts
     {
-        get => IGSharp_GetIO()->ConfigDebugHighlightIdConflicts;
-        set => IGSharp_GetIO()->ConfigDebugHighlightIdConflicts = value;
+        get => CurrentHandle->ConfigDebugHighlightIdConflicts;
+        set => CurrentHandle->ConfigDebugHighlightIdConflicts = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigDebugHighlightIdConflictsShowItemPicker</c>.</summary>
     public static bool ConfigDebugHighlightIdConflictsShowItemPicker
     {
-        get => IGSharp_GetIO()->ConfigDebugHighlightIdConflictsShowItemPicker;
-        set => IGSharp_GetIO()->ConfigDebugHighlightIdConflictsShowItemPicker = value;
+        get => CurrentHandle->ConfigDebugHighlightIdConflictsShowItemPicker;
+        set => CurrentHandle->ConfigDebugHighlightIdConflictsShowItemPicker = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigDebugBeginReturnValueOnce</c>.</summary>
     public static bool ConfigDebugBeginReturnValueOnce
     {
-        get => IGSharp_GetIO()->ConfigDebugBeginReturnValueOnce;
-        set => IGSharp_GetIO()->ConfigDebugBeginReturnValueOnce = value;
+        get => CurrentHandle->ConfigDebugBeginReturnValueOnce;
+        set => CurrentHandle->ConfigDebugBeginReturnValueOnce = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigDebugBeginReturnValueLoop</c>.</summary>
     public static bool ConfigDebugBeginReturnValueLoop
     {
-        get => IGSharp_GetIO()->ConfigDebugBeginReturnValueLoop;
-        set => IGSharp_GetIO()->ConfigDebugBeginReturnValueLoop = value;
+        get => CurrentHandle->ConfigDebugBeginReturnValueLoop;
+        set => CurrentHandle->ConfigDebugBeginReturnValueLoop = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigDebugIgnoreFocusLoss</c>.</summary>
     public static bool ConfigDebugIgnoreFocusLoss
     {
-        get => IGSharp_GetIO()->ConfigDebugIgnoreFocusLoss;
-        set => IGSharp_GetIO()->ConfigDebugIgnoreFocusLoss = value;
+        get => CurrentHandle->ConfigDebugIgnoreFocusLoss;
+        set => CurrentHandle->ConfigDebugIgnoreFocusLoss = value;
     }
 
     /// <summary>Mirror of <c>ImGuiIO::ConfigDebugIniSettings</c>.</summary>
     public static bool ConfigDebugIniSettings
     {
-        get => IGSharp_GetIO()->ConfigDebugIniSettings;
-        set => IGSharp_GetIO()->ConfigDebugIniSettings = value;
+        get => CurrentHandle->ConfigDebugIniSettings;
+        set => CurrentHandle->ConfigDebugIniSettings = value;
     }
 
     /// <summary>Minimum time between saving the .ini state, in seconds.</summary>
     public static float IniSavingRate
     {
-        get => IGSharp_GetIO()->IniSavingRate;
-        set => IGSharp_GetIO()->IniSavingRate = value;
+        get => CurrentHandle->IniSavingRate;
+        set => CurrentHandle->IniSavingRate = value;
     }
 
     /// <summary>Timer to free transient windows/tables memory buffers when unused (seconds).</summary>
     public static float ConfigMemoryCompactTimer
     {
-        get => IGSharp_GetIO()->ConfigMemoryCompactTimer;
-        set => IGSharp_GetIO()->ConfigMemoryCompactTimer = value;
+        get => CurrentHandle->ConfigMemoryCompactTimer;
+        set => CurrentHandle->ConfigMemoryCompactTimer = value;
     }
 
     /// <summary>Name of the platform backend, if set (e.g. "imgui_impl_sdl3").</summary>
-    public static string? BackendPlatformName => Marshal.PtrToStringUTF8((IntPtr)IGSharp_GetIO()->BackendPlatformName);
+    public static string? BackendPlatformName => Marshal.PtrToStringUTF8((IntPtr)CurrentHandle->BackendPlatformName);
 
     /// <summary>Name of the renderer backend, if set (e.g. "imgui_impl_sdlgpu3").</summary>
-    public static string? BackendRendererName => Marshal.PtrToStringUTF8((IntPtr)IGSharp_GetIO()->BackendRendererName);
+    public static string? BackendRendererName => Marshal.PtrToStringUTF8((IntPtr)CurrentHandle->BackendRendererName);
+    /// <summary>ImGui IO.ConfigDebugDrawListDefaultsToStrokeLegacy configuration.</summary>
+    public static bool ConfigDebugDrawListDefaultsToStrokeLegacy
+    {
+        get => CurrentHandle->ConfigDebugDrawListDefaultsToStrokeLegacy;
+        set => CurrentHandle->ConfigDebugDrawListDefaultsToStrokeLegacy = value;
+    }
+
+    /// <summary>ImGui IO.MouseSingleClickDelay configuration.</summary>
+    public static float MouseSingleClickDelay
+    {
+        get => CurrentHandle->MouseSingleClickDelay;
+        set => CurrentHandle->MouseSingleClickDelay = value;
+    }
+
+    /// <summary>ImGui IO.ConfigIniSettingsAutoDiscardMonths configuration.</summary>
+    public static int ConfigIniSettingsAutoDiscardMonths
+    {
+        get => CurrentHandle->ConfigIniSettingsAutoDiscardMonths;
+        set => CurrentHandle->ConfigIniSettingsAutoDiscardMonths = value;
+    }
+
+    /// <summary>ImGui IO.ConfigIniSettingsSaveLastUsedDate configuration.</summary>
+    public static bool ConfigIniSettingsSaveLastUsedDate
+    {
+        get => CurrentHandle->ConfigIniSettingsSaveLastUsedDate;
+        set => CurrentHandle->ConfigIniSettingsSaveLastUsedDate = value;
+    }
+
+    /// <summary>Associates a submitted key event with native platform codes for legacy integrations.</summary>
+    public static void SetKeyEventNativeData(Key key, int keycode, int scancode, int legacyIndex = -1)
+        => IGSharp_IO_SetKeyEventNativeData(CurrentHandle, (int)key, keycode, scancode, legacyIndex);
+
 }

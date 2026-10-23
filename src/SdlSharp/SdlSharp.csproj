@@ -15,16 +15,18 @@
     <Description>A C# binding for the Simple DirectMedia Layer library (http://www.libsdl.org).</Description>
     <Copyright>Copyright 2019-2026</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/panopticoncentral/sdk-sharp</RepositoryUrl>
+    <RepositoryUrl>https://github.com/panopticoncentral/sdl-sharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="SdlSharp.ImGui" />
+    <InternalsVisibleTo Include="SdlSharp.Tests" />
+    <InternalsVisibleTo Include="SdlSharp.ImGui.Tests" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SdlSharp.Redist" Version="1.0.0" />
+    <PackageReference Include="SdlSharp.Redist" Version="1.0.1" />
   </ItemGroup>
 
 </Project>

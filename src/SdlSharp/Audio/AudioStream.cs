@@ -10,7 +10,7 @@ namespace SdlSharp.Audio;
 /// A callback invoked when an audio stream needs more data (get) or has received
 /// data (put). It runs on SDL's audio thread — keep it fast, avoid allocation and
 /// blocking, and use <see cref="AudioStream.Lock"/> to guard shared state.
-/// Exceptions that escape the callback are swallowed.
+/// Callback exceptions are captured by Application.ThrowPendingCallbackException.
 /// </summary>
 /// <param name="stream">The stream that triggered the callback.</param>
 /// <param name="additionalAmount">The amount, in bytes, of additional data the stream wants (get) or received (put); may be zero.</param>
@@ -24,9 +24,12 @@ public delegate void AudioStreamDataCallback(AudioStream stream, int additionalA
 public sealed unsafe class AudioStream : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
-    private GCHandle _getCallbackHandle;
-    private GCHandle _putCallbackHandle;
+    private bool _ownsDevice;
+    private CallbackHandle _getCallbackHandle;
+    private CallbackHandle _putCallbackHandle;
 
     private sealed record CallbackHolder(AudioStream Stream, AudioStreamDataCallback Callback);
 
@@ -35,16 +38,20 @@ public sealed unsafe class AudioStream : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private Native.SDL_AudioStream* _handle;
 
-    internal AudioStream(Native.SDL_AudioStream* handle, bool ownsHandle = true)
+    internal AudioStream(Native.SDL_AudioStream* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(AudioStream), (nint)handle, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>
@@ -80,14 +87,14 @@ public sealed unsafe class AudioStream : IDisposable
             specPtr = &nativeSpec;
         }
 
-        return new AudioStream(Check(SDL_OpenAudioDeviceStream(devid, specPtr, null, null)));
+        return new AudioStream(Check(SDL_OpenAudioDeviceStream(devid, specPtr, null, null))) { _ownsDevice = true };
     }
 
     /// <summary>
     /// Gets the properties associated with this stream.
     /// </summary>
     public PropertyGroup Properties =>
-        new(CheckId(SDL_GetAudioStreamProperties(Handle)), ownsHandle: false);
+        new(CheckId(SDL_GetAudioStreamProperties(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>
     /// Gets the current input and output formats of this stream.
@@ -235,11 +242,13 @@ public sealed unsafe class AudioStream : IDisposable
     {
         try
         {
-            var holder = (CallbackHolder)GCHandle.FromIntPtr((nint)userdata).Target!;
+            using var callbackScope = CallbackErrors.Enter();
+            var holder = (CallbackHolder)CallbackHandle.FromIntPtr((nint)userdata).Target!;
             holder.Callback(holder.Stream, additionalAmount, totalAmount);
         }
-        catch
+        catch (Exception error)
         {
+            CallbackErrors.Capture(error);
             // Must not cross the native boundary on the audio thread.
         }
     }
@@ -262,29 +271,31 @@ public sealed unsafe class AudioStream : IDisposable
     public void SetPutCallback(AudioStreamDataCallback? callback) =>
         SetCallback(callback, ref _putCallbackHandle, isGet: false);
 
-    private void SetCallback(AudioStreamDataCallback? callback, ref GCHandle slot, bool isGet)
+    private void SetCallback(AudioStreamDataCallback? callback, ref CallbackHandle slot, bool isGet)
     {
+        CallbackErrors.EnsureOutsideCallback();
+        var stream = Handle;
         var previous = slot;
 
         if (callback == null)
         {
             if (isGet)
             {
-                Check(SDL_SetAudioStreamGetCallback(Handle, null, null));
+                Check(SDL_SetAudioStreamGetCallback(stream, null, null));
             }
             else
             {
-                Check(SDL_SetAudioStreamPutCallback(Handle, null, null));
+                Check(SDL_SetAudioStreamPutCallback(stream, null, null));
             }
 
             slot = default;
         }
         else
         {
-            var newHandle = GCHandle.Alloc(new CallbackHolder(this, callback));
+            var newHandle = CallbackHandle.Alloc(new CallbackHolder(this, callback));
             var ok = isGet
-                ? SDL_SetAudioStreamGetCallback(Handle, &DataCallback, (void*)GCHandle.ToIntPtr(newHandle))
-                : SDL_SetAudioStreamPutCallback(Handle, &DataCallback, (void*)GCHandle.ToIntPtr(newHandle));
+                ? SDL_SetAudioStreamGetCallback(stream, &DataCallback, (void*)CallbackHandle.ToIntPtr(newHandle))
+                : SDL_SetAudioStreamPutCallback(stream, &DataCallback, (void*)CallbackHandle.ToIntPtr(newHandle));
 
             if (!ok)
             {
@@ -293,6 +304,8 @@ public sealed unsafe class AudioStream : IDisposable
             }
 
             slot = newHandle;
+
+            Lifetime.AddCleanup(newHandle.Free);
         }
 
         if (previous.IsAllocated)
@@ -309,8 +322,7 @@ public sealed unsafe class AudioStream : IDisposable
     /// <returns>A lock scope; dispose it to unlock.</returns>
     public AudioStreamLock Lock()
     {
-        Check(SDL_LockAudioStream(Handle));
-        return new AudioStreamLock(Handle);
+        return new AudioStreamLock(this);
     }
 
     /// <summary>
@@ -323,7 +335,7 @@ public sealed unsafe class AudioStream : IDisposable
         get
         {
             var id = SDL_GetAudioStreamDevice(Handle);
-            return id.Value == 0 ? null : new AudioDevice(id, ownsHandle: false);
+            return id.Value == 0 ? null : new AudioDevice(id, ownsHandle: false, parent: _ownsDevice ? Lifetime : null);
         }
     }
 
@@ -337,13 +349,23 @@ public sealed unsafe class AudioStream : IDisposable
     /// <exception cref="ArgumentException"><paramref name="channels"/> is empty.</exception>
     public void PutPlanarData(byte[][] channels, int numSamples)
     {
+        ArgumentNullException.ThrowIfNull(channels);
+        ArgumentOutOfRangeException.ThrowIfNegative(numSamples);
+        GetFormat(out var input, out _);
+        if (channels.Length != input.Channels) throw new ArgumentException("Provide one buffer per input channel.", nameof(channels));
+        var bytes = checked(numSamples * input.Format.GetByteSize());
+        foreach (var channel in channels)
+            if (channel == null || channel.Length < bytes) throw new ArgumentException("A channel buffer is too short.", nameof(channels));
         if (channels.Length == 0)
         {
             throw new ArgumentException("At least one channel is required.", nameof(channels));
         }
 
         var handles = new GCHandle[channels.Length];
-        var pointers = stackalloc void*[channels.Length];
+        Span<nint> addresses = channels.Length <= 64 ? stackalloc nint[channels.Length] : new nint[channels.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (void**)rawPointers;
         try
         {
             for (var i = 0; i < channels.Length; i++)
@@ -360,6 +382,7 @@ public sealed unsafe class AudioStream : IDisposable
             {
                 if (h.IsAllocated) h.Free();
             }
+        }
         }
     }
 
@@ -422,11 +445,47 @@ public sealed unsafe class AudioStream : IDisposable
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyAudioStream(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_DestroyAudioStream(_handle);
+            });
         }
         _handle = null;
 
         if (_getCallbackHandle.IsAllocated) _getCallbackHandle.Free();
         if (_putCallbackHandle.IsAllocated) _putCallbackHandle.Free();
+    }
+    private sealed class PendingAudio
+    {
+        internal System.Buffers.MemoryHandle Pin;
+        internal readonly TaskCompletionSource Completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private int _released;
+        internal void Release()
+        {
+            if (Interlocked.Exchange(ref _released, 1) != 0) return;
+            try { Pin.Dispose(); Completion.TrySetResult(); }
+            catch (Exception error) { Completion.TrySetException(error); }
+        }
+    }
+    /// <summary>Queues memory without copying it. Do not modify or dispose the memory until the returned task completes. Completion means SDL has released the memory, including when queued audio is cleared or the stream is destroyed.</summary>
+    public Task PutDataAsync(ReadOnlyMemory<byte> data)
+    {
+        var stream = Handle;
+        var state = new PendingAudio { Pin = data.Pin() };
+        var registration = CallbackHandle.Alloc(state);
+        try
+        {
+            Check(SDL_PutAudioStreamDataNoCopy(stream, state.Pin.Pointer, data.Length, &AudioDataComplete, (void*)(nint)registration));
+            return state.Completion.Task;
+        }
+        catch { state.Release(); registration.Free(); throw; }
+    }
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
+    private static void AudioDataComplete(void* data, void* buffer, int length)
+    {
+        var registration = CallbackHandle.FromIntPtr((nint)data);
+        try { using var scope = CallbackErrors.Enter(); if (registration.Target is PendingAudio state) state.Release(); }
+        catch (Exception error) { CallbackErrors.Capture(error); }
+        finally { registration.Free(); }
     }
 }

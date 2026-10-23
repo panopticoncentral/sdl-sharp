@@ -12,22 +12,28 @@ namespace SdlSharp.Graphics;
 public sealed unsafe class Camera : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     internal SDL_Camera* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private SDL_Camera* _handle;
 
-    internal Camera(SDL_Camera* handle, bool ownsHandle = true)
+    internal Camera(SDL_Camera* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Camera), (nint)handle, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>Opens a camera device.</summary>
@@ -136,27 +142,16 @@ public sealed unsafe class Camera : IDisposable
 
     /// <summary>Gets the properties associated with this camera.</summary>
     public PropertyGroup Properties =>
-        new(CheckId(SDL_GetCameraProperties(Handle)), ownsHandle: false);
+        new(CheckId(SDL_GetCameraProperties(Handle)), ownsHandle: false, parent: Lifetime);
 
-    /// <summary>
-    /// Acquires a video frame from the camera.
-    /// Returns null if no frame is available yet.
-    /// The returned surface must be released with <see cref="ReleaseFrame"/>.
-    /// </summary>
-    /// <param name="timestampNS">Receives the frame timestamp in nanoseconds.</param>
-    public Surface? AcquireFrame(out ulong timestampNS)
+    /// <summary>Acquires a frame lease, or returns null when no frame is ready. Dispose each frame before closing the camera.</summary>
+    public CameraFrame? AcquireFrame()
     {
-        ulong ts;
-        var surface = SDL_AcquireCameraFrame(Handle, &ts);
-        timestampNS = ts;
-        return surface == null ? null : new Surface(surface, ownsHandle: false);
+        var handle = Handle;
+        ulong timestamp;
+        var surface = SDL_AcquireCameraFrame(handle, &timestamp);
+        return surface == null ? null : new CameraFrame(Lifetime, surface, timestamp, () => SDL_ReleaseCameraFrame(handle, surface));
     }
-
-    /// <summary>
-    /// Releases a frame previously acquired with <see cref="AcquireFrame"/>.
-    /// </summary>
-    public void ReleaseFrame(Surface frame) =>
-        SDL_ReleaseCameraFrame(Handle, frame.Handle);
 
     private static CameraSpec MarshalSpec(SDL_CameraSpec* s) =>
         new((PixelFormat)s->format, (Colorspace)s->colorspace,
@@ -167,7 +162,10 @@ public sealed unsafe class Camera : IDisposable
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_CloseCamera(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_CloseCamera(_handle);
+            });
         }
         _handle = null;
     }

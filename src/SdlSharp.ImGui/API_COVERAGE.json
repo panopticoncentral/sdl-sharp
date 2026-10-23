@@ -1,0 +1,4550 @@
+{
+  "IGSharp_AcceptDragDropPayload": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_AlignTextToFramePadding": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ArrowButton": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Begin": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginChild": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginChildID": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginCombo": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginDisabled": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginDragDropSource": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginDragDropTarget": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginGroup": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginItemTooltip": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginListBox": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginMainMenuBar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginMenu": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginMenuBar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginMultiSelect": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginPopup": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginPopupContextItem": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginPopupContextVoid": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginPopupContextWindow": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginPopupModal": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginTabBar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginTabItem": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginTable": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BeginTooltip": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Bullet": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_BulletText": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Button": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_CalcItemWidth": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_CalcTextSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Checkbox": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_CheckboxFlags": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_CheckboxFlagsUInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_CloseCurrentPopup": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_CollapsingHeader": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_CollapsingHeaderClosable": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ColorButton": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ColorConvertFloat4ToU32": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ColorConvertHSVtoRGB": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ColorConvertRGBtoHSV": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ColorConvertU32ToFloat4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ColorEdit3": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ColorEdit4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ColorPicker3": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ColorPicker4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Columns": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Combo": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ComboCallback": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ComboStr": {
+    "design": "ImGui.Combo accepts managed string collections; the native NUL-separated packed string overload is redundant."
+  },
+  "IGSharp_CreateContext": {
+    "implementation": [
+      "Context.cs"
+    ]
+  },
+  "IGSharp_DebugCheckVersionAndDataLayout": {
+    "design": "Context.Create calls generated ValidateAbi, which checks the version, complete struct sizes, alignments, and field offsets."
+  },
+  "IGSharp_DebugFlashStyleColor": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DebugLog": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DebugStartItemPicker": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DebugTextEncoding": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DestroyContext": {
+    "implementation": [
+      "Context.cs"
+    ]
+  },
+  "IGSharp_DragFloat": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragFloat2": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragFloat3": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragFloat4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragFloatRange2": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragInt2": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragInt3": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragInt4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragIntRange2": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragScalar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DragScalarN": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_DrawCmd_GetClipRect": {
+    "design": "DrawCmd copies this field atomically through IGSharp_DrawCmd_GetInfo; it never exposes a command pointer that can be invalidated by vector growth."
+  },
+  "IGSharp_DrawCmd_GetElemCount": {
+    "design": "DrawCmd copies this field atomically through IGSharp_DrawCmd_GetInfo; it never exposes a command pointer that can be invalidated by vector growth."
+  },
+  "IGSharp_DrawCmd_GetIdxOffset": {
+    "design": "DrawCmd copies this field atomically through IGSharp_DrawCmd_GetInfo; it never exposes a command pointer that can be invalidated by vector growth."
+  },
+  "IGSharp_DrawCmd_GetInfo": {
+    "implementation": [
+      "DrawCmd.cs"
+    ]
+  },
+  "IGSharp_DrawCmd_GetTexID": {
+    "design": "DrawCmd copies this field atomically through IGSharp_DrawCmd_GetInfo; it never exposes a command pointer that can be invalidated by vector growth."
+  },
+  "IGSharp_DrawCmd_GetTexRef": {
+    "implementation": [
+      "ClonedDrawList.cs"
+    ]
+  },
+  "IGSharp_DrawCmd_GetUserCallback": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawCmd_GetUserCallbackData": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawCmd_GetUserCallbackDataSize": {
+    "design": "DrawCmd copies this field atomically through IGSharp_DrawCmd_GetInfo; it never exposes a command pointer that can be invalidated by vector growth."
+  },
+  "IGSharp_DrawCmd_GetVtxOffset": {
+    "design": "DrawCmd copies this field atomically through IGSharp_DrawCmd_GetInfo; it never exposes a command pointer that can be invalidated by vector growth."
+  },
+  "IGSharp_DrawData_AddDrawList": {
+    "implementation": [
+      "ClonedDrawList.cs",
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_Clear": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_Create": {
+    "implementation": [
+      "ClonedDrawList.cs",
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_DeIndexAllBuffers": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_Destroy": {
+    "implementation": [
+      "ClonedDrawList.cs",
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetCmdList": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetCmdListsCount": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetDisplayPos": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetDisplaySize": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetFrameCount": {
+    "implementation": [
+      "DrawData.cs",
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetFramebufferScale": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetOwnerViewport": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetTextures": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetTexturesCount": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetTexturesData": {
+    "design": "DrawData.GetTexture and TextureList provide checked indexed access instead of an escaping pointer array."
+  },
+  "IGSharp_DrawData_GetTotalIdxCount": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetTotalVtxCount": {
+    "implementation": [
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_GetValid": {
+    "implementation": [
+      "DrawData.cs",
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_ScaleClipRects": {
+    "implementation": [
+      "ClonedDrawList.cs",
+      "DrawData.cs"
+    ]
+  },
+  "IGSharp_DrawData_SetDisplayPos": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_SetDisplaySize": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_SetFrameCount": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_SetFramebufferScale": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_SetOwnerViewport": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_SetTextures": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawData_SetValid": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawListSplitter_Clear": {
+    "implementation": [
+      "DrawListSplitter.cs"
+    ]
+  },
+  "IGSharp_DrawListSplitter_ClearFreeMemory": {
+    "implementation": [
+      "DrawListSplitter.cs"
+    ]
+  },
+  "IGSharp_DrawListSplitter_Create": {
+    "implementation": [
+      "DrawListSplitter.cs"
+    ]
+  },
+  "IGSharp_DrawListSplitter_Destroy": {
+    "implementation": [
+      "DrawListSplitter.cs"
+    ]
+  },
+  "IGSharp_DrawListSplitter_Merge": {
+    "implementation": [
+      "DrawListSplitter.cs"
+    ]
+  },
+  "IGSharp_DrawListSplitter_SetCurrentChannel": {
+    "implementation": [
+      "DrawListSplitter.cs"
+    ]
+  },
+  "IGSharp_DrawListSplitter_Split": {
+    "implementation": [
+      "DrawListSplitter.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddBezierCubic": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddBezierQuadratic": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddCallback": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddCircle": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddCircleFilled": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddConcavePolyFilled": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddConvexPolyFilled": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddDrawCmd": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddEllipse": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddEllipseFilled": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddImage": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddImageQuad": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddImageRounded": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddLine": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddLineH": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddLineV": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddNgon": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddNgonFilled": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddPolyline": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddQuad": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddQuadFilled": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddRect": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddRectFilled": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddRectFilledMultiColor": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddText": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddTextFont": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddTriangle": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_AddTriangleFilled": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_ChannelsMerge": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_ChannelsSetCurrent": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_ChannelsSplit": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_CloneOutput": {
+    "implementation": [
+      "ClonedDrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_Create": {
+    "implementation": [
+      "StandaloneDrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_Destroy": {
+    "implementation": [
+      "ClonedDrawList.cs",
+      "StandaloneDrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_GetClipRectMax": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_GetClipRectMin": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_GetCmd": {
+    "implementation": [
+      "ClonedDrawList.cs",
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_GetCmdBufferData": {
+    "design": "DrawList.GetCmd returns a value snapshot and CopyVertices/CopyIndices copy geometry. An unguarded command-buffer pointer is deliberately not exposed."
+  },
+  "IGSharp_DrawList_GetCmdBufferSize": {
+    "implementation": [
+      "ClonedDrawList.cs",
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_GetFlags": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_GetIdxBufferData": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawList_GetIdxBufferSize": {
+    "implementation": [
+      "ClonedDrawList.cs",
+      "DrawList.cs",
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawList_GetVtxBufferData": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawList_GetVtxBufferSize": {
+    "implementation": [
+      "ClonedDrawList.cs",
+      "DrawList.cs",
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathArcTo": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathArcToFast": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathBezierCubicCurveTo": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathBezierQuadraticCurveTo": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathClear": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathEllipticalArcTo": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathFillConcave": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathFillConvex": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathLineTo": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathLineToMergeDuplicate": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathRect": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PathStroke": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PopClipRect": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PopDrawFlag": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PopTexture": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PrimQuadUV": {
+    "design": "DrawList.AddMesh validates and reserves complete indexed meshes. AddRect/AddImageQuad cover shape helpers. Unbalanced reserve/write/unreserve operations are deliberately not public."
+  },
+  "IGSharp_DrawList_PrimRect": {
+    "design": "DrawList.AddMesh validates and reserves complete indexed meshes. AddRect/AddImageQuad cover shape helpers. Unbalanced reserve/write/unreserve operations are deliberately not public."
+  },
+  "IGSharp_DrawList_PrimRectUV": {
+    "design": "DrawList.AddMesh validates and reserves complete indexed meshes. AddRect/AddImageQuad cover shape helpers. Unbalanced reserve/write/unreserve operations are deliberately not public."
+  },
+  "IGSharp_DrawList_PrimReserve": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PrimUnreserve": {
+    "design": "DrawList.AddMesh validates and reserves complete indexed meshes. AddRect/AddImageQuad cover shape helpers. Unbalanced reserve/write/unreserve operations are deliberately not public."
+  },
+  "IGSharp_DrawList_PrimVtx": {
+    "design": "DrawList.AddMesh validates and reserves complete indexed meshes. AddRect/AddImageQuad cover shape helpers. Unbalanced reserve/write/unreserve operations are deliberately not public."
+  },
+  "IGSharp_DrawList_PrimWriteIdx": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PrimWriteVtx": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PushClipRect": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PushClipRectFullScreen": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PushDrawFlag": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_PushTexture": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_ResetForNewFrame": {
+    "implementation": [
+      "StandaloneDrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_SetFlags": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_DrawList_SetPixelDensity": {
+    "implementation": [
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_Dummy": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_End": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndChild": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndCombo": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndDisabled": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndDragDropSource": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndDragDropTarget": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndFrame": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndGroup": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndListBox": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndMainMenuBar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndMenu": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndMenuBar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndMultiSelect": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndPopup": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndTabBar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndTabItem": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndTable": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_EndTooltip": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_AddCustomRect": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_AddFont": {
+    "design": "FontAtlas.AddDefault* and AddFontFromMemoryTTF combine FontConfig with a copied font source. A config containing arbitrary unmanaged FontData is not exposed."
+  },
+  "IGSharp_FontAtlas_AddFontDefault": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_AddFontDefaultBitmap": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_AddFontDefaultVector": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_AddFontFromFileTTF": {
+    "design": "FontAtlas.AddFontFromFileTTF uses File.ReadAllBytes and the copying loader to provide normal .NET I/O exceptions and consistent ownership."
+  },
+  "IGSharp_FontAtlas_AddFontFromMemoryCompressedBase85TTF": {
+    "design": "FontAtlas decodes and validates the compressed stream in managed code, including input/output bounds and checksum, then uses the copying font loader. The upstream decompressor ignores input bounds."
+  },
+  "IGSharp_FontAtlas_AddFontFromMemoryCompressedTTF": {
+    "design": "FontAtlas decodes and validates the compressed stream in managed code, including input/output bounds and checksum, then uses the copying font loader. The upstream decompressor ignores input bounds."
+  },
+  "IGSharp_FontAtlas_AddFontFromMemoryTTFBorrow": {
+    "design": "FontAtlas.AddFontFromMemoryTTF copies ReadOnlySpan<byte>. Untracked borrowed pointers are deliberately excluded from the managed ownership contract."
+  },
+  "IGSharp_FontAtlas_AddFontFromMemoryTTFCopy": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_AddFontFromMemoryTTFTransfer": {
+    "design": "FontAtlas.AddFontFromMemoryTTF copies ReadOnlySpan<byte>. Transferring allocator-specific raw pointers is deliberately excluded."
+  },
+  "IGSharp_FontAtlas_Clear": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_ClearFonts": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_ClearInputData": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_ClearTexData": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_CompactCache": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_Create": {
+    "implementation": [
+      "OwnedFontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_Destroy": {
+    "implementation": [
+      "OwnedFontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetCustomRect": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetFlags": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetFont": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetFontCount": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetFontLoaderFlags": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetFontLoaderName": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetGlyphRangesDefault": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetLocked": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetRendererHasTextures": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexData": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexDesiredFormat": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexGlyphPadding": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexID": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexIsBuilt": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexMaxHeight": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexMaxWidth": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexMinHeight": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexMinWidth": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexPixelsUseColors": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexRef": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexUvScale": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetTexUvWhitePixel": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_GetUserData": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_RemoveCustomRect": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_RemoveFont": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetFlags": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetFontLoader": {
+    "design": "Native C++ font-loader/plugin interface, not a stable managed delegate ABI. Use the bundled loader; configuring a native loader remains native-host work."
+  },
+  "IGSharp_FontAtlas_SetFontLoaderFlags": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetTexDesiredFormat": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetTexGlyphPadding": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetTexMaxHeight": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetTexMaxWidth": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetTexMinHeight": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetTexMinWidth": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetTexPixelsUseColors": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontAtlas_SetUserData": {
+    "implementation": [
+      "FontAtlas.cs"
+    ]
+  },
+  "IGSharp_FontBaked_ClearOutputData": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_FindGlyph": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_FindGlyphNoFallback": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_GetAscent": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_GetCharAdvance": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_GetDescent": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_GetFallbackAdvanceX": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_GetGlyph": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_GetGlyphsCount": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_GetRasterizerDensity": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_GetSize": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontBaked_IsGlyphLoaded": {
+    "implementation": [
+      "FontBaked.cs"
+    ]
+  },
+  "IGSharp_FontConfig_Create": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_Destroy": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetEllipsisChar": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetExtraSizeScale": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetFlags": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetFontData": {
+    "design": "Font source data and allocation ownership are controlled by FontAtlas.AddFontFromMemoryTTF; pointer/ownership setters that could contradict that contract are deliberately not public."
+  },
+  "IGSharp_FontConfig_GetFontDataOwnedByAtlas": {
+    "design": "Font source data and allocation ownership are controlled by FontAtlas.AddFontFromMemoryTTF; pointer/ownership setters that could contradict that contract are deliberately not public."
+  },
+  "IGSharp_FontConfig_GetFontDataSize": {
+    "design": "Font source data and allocation ownership are controlled by FontAtlas.AddFontFromMemoryTTF; pointer/ownership setters that could contradict that contract are deliberately not public."
+  },
+  "IGSharp_FontConfig_GetFontLoaderFlags": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetFontNo": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetGlyphExcludeRanges": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetGlyphExtraAdvanceX": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetGlyphMaxAdvanceX": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetGlyphMinAdvanceX": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetGlyphOffset": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetGlyphRanges": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetMergeMode": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetName": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetOversampleH": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetOversampleV": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetPixelSnapH": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetRasterizerDensity": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetRasterizerMultiply": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_GetSizePixels": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetEllipsisChar": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetExtraSizeScale": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetFlags": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetFontData": {
+    "design": "Font source data and allocation ownership are controlled by FontAtlas.AddFontFromMemoryTTF; pointer/ownership setters that could contradict that contract are deliberately not public."
+  },
+  "IGSharp_FontConfig_SetFontDataOwnedByAtlas": {
+    "design": "Font source data and allocation ownership are controlled by FontAtlas.AddFontFromMemoryTTF; pointer/ownership setters that could contradict that contract are deliberately not public."
+  },
+  "IGSharp_FontConfig_SetFontDataSize": {
+    "design": "Font source data and allocation ownership are controlled by FontAtlas.AddFontFromMemoryTTF; pointer/ownership setters that could contradict that contract are deliberately not public."
+  },
+  "IGSharp_FontConfig_SetFontLoaderFlags": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetFontNo": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetGlyphExcludeRanges": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetGlyphExtraAdvanceX": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetGlyphMaxAdvanceX": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetGlyphMinAdvanceX": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetGlyphOffset": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetGlyphRanges": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetMergeMode": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetName": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetOversampleH": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetOversampleV": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetPixelSnapH": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetRasterizerDensity": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetRasterizerMultiply": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontConfig_SetSizePixels": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_FontGlyphRangesBuilder_AddChar": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_FontGlyphRangesBuilder_AddRanges": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_FontGlyphRangesBuilder_AddText": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_FontGlyphRangesBuilder_BuildRanges": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_FontGlyphRangesBuilder_Clear": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_FontGlyphRangesBuilder_Create": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_FontGlyphRangesBuilder_Destroy": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_FontGlyphRangesBuilder_GetBit": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_FontGlyphRangesBuilder_SetBit": {
+    "design": "GlyphRangesBuilder.Add(char) sets membership in the same BMP character set."
+  },
+  "IGSharp_FontGlyph_GetAdvanceX": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetCodepoint": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetColored": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetPackId": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetSourceIdx": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetU0": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetU1": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetV0": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetV1": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetVisible": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetX0": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetX1": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetY0": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_FontGlyph_GetY1": {
+    "implementation": [
+      "FontGlyph.cs"
+    ]
+  },
+  "IGSharp_Font_AddRemapCodepoint": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_AddRemapCodepointToGlyphIndex": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_CalcTextSizeA": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_CalcWordWrapPosition": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_ClearOutputData": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_GetDebugName": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_GetEllipsisAutoBake": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_GetEllipsisChar": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_GetFallbackChar": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_GetFlags": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_GetFontBaked": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_GetLegacySize": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_GetOwnerAtlas": {
+    "implementation": [
+      "Font.cs",
+      "FontAtlas.cs",
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Font_IsGlyphInFont": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_IsGlyphRangeUnused": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_IsLoaded": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_RenderChar": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_RenderText": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_SetEllipsisAutoBake": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_SetEllipsisChar": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_SetFallbackChar": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_SetFlags": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_Font_SetLegacySize": {
+    "implementation": [
+      "Font.cs"
+    ]
+  },
+  "IGSharp_GetAbiSchemaHash": {
+    "implementation": [
+      "Native.Layouts.cs"
+    ]
+  },
+  "IGSharp_GetAbiVersion": {
+    "implementation": [
+      "Native.Layouts.cs"
+    ]
+  },
+  "IGSharp_GetAllocatorFunctions": {
+    "design": "Process-global allocator replacement is native-host configuration. Excluded because it can invalidate SafeHandle/finalizer allocation provenance and all existing owners."
+  },
+  "IGSharp_GetBackgroundDrawList": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetClipboardText": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetColorU32": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetColorU32Packed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetColorU32Vec4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetColumnIndex": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetColumnOffset": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetColumnWidth": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetColumnsCount": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetContentRegionAvail": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetCurrentContext": {
+    "implementation": [
+      "Context.cs",
+      "ImGui.cs",
+      "Io.cs",
+      "PlatformIO.cs",
+      "StandaloneDrawList.cs"
+    ]
+  },
+  "IGSharp_GetCursorPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetCursorPosX": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetCursorPosY": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetCursorScreenPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetCursorStartPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetDragDropPayload": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetDrawData": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetDrawListSharedData": {
+    "implementation": [
+      "StandaloneDrawList.cs"
+    ]
+  },
+  "IGSharp_GetFieldOffset": {
+    "implementation": [
+      "Native.Layouts.cs"
+    ]
+  },
+  "IGSharp_GetFont": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetFontBaked": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetFontSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetFontTexUvWhitePixel": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetForegroundDrawList": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetFrameCount": {
+    "implementation": [
+      "DrawListSplitter.cs",
+      "ImGui.cs",
+      "Lifetime.cs",
+      "StandaloneDrawList.cs"
+    ]
+  },
+  "IGSharp_GetFrameHeight": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetFrameHeightWithSpacing": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetIDInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetIDPtr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetIDStr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetIDStrRange": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_GetIO": {
+    "implementation": [
+      "Context.cs",
+      "ImGui.cs",
+      "ImGuiBackend.cs",
+      "Io.cs",
+      "SdlPlatformBackend.cs",
+      "TextureData.cs",
+      "TextureReference.cs"
+    ]
+  },
+  "IGSharp_GetItemClickedCountWithSingleClickDelay": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetItemFlags": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetItemID": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetItemRectMax": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetItemRectMin": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetItemRectSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetKeyName": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetKeyPressedAmount": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetMainViewport": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetMouseClickedCount": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetMouseCursor": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetMouseDragDelta": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetMousePos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetMousePosOnOpeningCurrentPopup": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetPlatformIO": {
+    "implementation": [
+      "DrawCmd.cs",
+      "DrawList.cs",
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_GetScrollMaxX": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetScrollMaxY": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetScrollX": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetScrollY": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetStateStorage": {
+    "implementation": [
+      "ImGui.cs",
+      "StateStorageScope.cs"
+    ]
+  },
+  "IGSharp_GetStructAlignment": {
+    "implementation": [
+      "Native.Layouts.cs"
+    ]
+  },
+  "IGSharp_GetStructSize": {
+    "implementation": [
+      "Native.Layouts.cs"
+    ]
+  },
+  "IGSharp_GetStyle": {
+    "implementation": [
+      "ImGui.cs",
+      "Style.cs",
+      "StyleSnapshot.cs"
+    ]
+  },
+  "IGSharp_GetStyleColorName": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetStyleColorVec4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetTextLineHeight": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetTextLineHeightWithSpacing": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetTime": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetTreeNodeToLabelSpacing": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetVersion": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetVersionNumber": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetWindowDrawList": {
+    "implementation": [
+      "Context.cs",
+      "ImGui.cs",
+      "StateStorageScope.cs"
+    ]
+  },
+  "IGSharp_GetWindowHeight": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetWindowPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetWindowSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_GetWindowWidth": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IO_AddFocusEvent": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_AddInputCharacter": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_AddInputCharacterUTF16": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_AddInputCharactersUTF8": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_AddKeyAnalogEvent": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_AddKeyEvent": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_AddMouseButtonEvent": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_AddMousePosEvent": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_AddMouseSourceEvent": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_AddMouseWheelEvent": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_ClearEventsQueue": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_ClearInputKeys": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_ClearInputMouse": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_SetAppAcceptingEvents": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_IO_SetKeyEventNativeData": {
+    "implementation": [
+      "Io.cs"
+    ]
+  },
+  "IGSharp_Image": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ImageButton": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ImageWithBg": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_InitForD3D": {
+    "implementation": [
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_InitForMetal": {
+    "implementation": [
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_InitForOpenGL": {
+    "implementation": [
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_InitForOther": {
+    "implementation": [
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_InitForSDLGPU": {
+    "implementation": [
+      "ImGuiBackend.cs",
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_InitForSDLRenderer": {
+    "implementation": [
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_InitForVulkan": {
+    "implementation": [
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_NewFrame": {
+    "implementation": [
+      "ImGuiBackend.cs",
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_ProcessEvent": {
+    "implementation": [
+      "ImGuiBackend.cs",
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_SetGamepadMode": {
+    "implementation": [
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_SetMouseCaptureMode": {
+    "implementation": [
+      "ImGuiBackend.cs",
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDL3_Shutdown": {
+    "implementation": [
+      "ImGuiBackend.cs",
+      "SdlPlatformBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDLGPU3_CreateDeviceObjects": {
+    "implementation": [
+      "ImGuiBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDLGPU3_DestroyDeviceObjects": {
+    "implementation": [
+      "ImGuiBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDLGPU3_GetRenderStateDevice": {
+    "design": "ImGuiBackend.Device returns the actual retained managed device owner, avoiding an independently disposable alias of the render-state pointer."
+  },
+  "IGSharp_ImplSDLGPU3_Init": {
+    "implementation": [
+      "ImGuiBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDLGPU3_NewFrame": {
+    "implementation": [
+      "ImGuiBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDLGPU3_PrepareDrawData": {
+    "implementation": [
+      "ImGuiBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDLGPU3_RenderDrawData": {
+    "implementation": [
+      "ImGuiBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDLGPU3_Shutdown": {
+    "implementation": [
+      "ImGuiBackend.cs"
+    ]
+  },
+  "IGSharp_ImplSDLGPU3_UpdateTexture": {
+    "implementation": [
+      "ImGuiBackend.cs"
+    ]
+  },
+  "IGSharp_Indent": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputDouble": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputFloat": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputFloat2": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputFloat3": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputFloat4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputInt2": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputInt3": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputInt4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputScalar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputScalarN": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputText": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_ClearSelection": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_DeleteChars": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetBuf": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetBufDirty": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetBufSize": {
+    "implementation": [
+      "ImGui.cs",
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetBufTextLen": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetCtx": {
+    "design": "InputTextCallbackData.Context returns the active managed context; callback guards prevent context switching or destruction during invocation."
+  },
+  "IGSharp_InputTextCallbackData_GetCursorPos": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetEventActivated": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetEventChar": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetEventFlag": {
+    "implementation": [
+      "ImGui.cs",
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetEventKey": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetFlags": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetID": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetSelectionEnd": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetSelectionStart": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_GetUserData": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_HasSelection": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_InsertChars": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_ResizeBuf": {
+    "implementation": [
+      "ImGui.cs",
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SelectAll": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SetBuf": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SetBufDirty": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SetBufSize": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SetBufTextLen": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SetCursorPos": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SetEventChar": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SetSelection": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SetSelectionEnd": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextCallbackData_SetSelectionStart": {
+    "implementation": [
+      "InputTextCallbackData.cs"
+    ]
+  },
+  "IGSharp_InputTextMultiline": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InputTextWithHint": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_InvisibleButton": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsAnyItemActive": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsAnyItemFocused": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsAnyItemHovered": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsAnyMouseDown": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemActivated": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemActive": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemClicked": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemDeactivated": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemDeactivatedAfterEdit": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemEdited": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemFocused": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemHovered": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemToggledOpen": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemToggledSelection": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsItemVisible": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsKeyChordPressed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsKeyDown": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsKeyPressed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsKeyReleased": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsMouseClicked": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsMouseDoubleClicked": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsMouseDown": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsMouseDragging": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsMouseHoveringRect": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsMousePosValid": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsMouseReleased": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsMouseReleasedWithDelay": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsPopupOpen": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsRectVisible": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsRectVisibleRange": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsWindowAppearing": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsWindowCollapsed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsWindowFocused": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_IsWindowHovered": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_LabelText": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ListBox": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ListBoxCallback": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ListClipper_Begin": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_Create": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_Destroy": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_End": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_GetDisplayEnd": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_GetDisplayStart": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_GetUserIndex": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_IncludeItemsByIndex": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_SeekCursorForItem": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_SetUserIndex": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_ListClipper_Step": {
+    "implementation": [
+      "ListClipper.cs"
+    ]
+  },
+  "IGSharp_LoadIniSettingsFromDisk": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_LoadIniSettingsFromMemory": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_LogButtons": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_LogFinish": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_LogText": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_LogToClipboard": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_LogToFile": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_LogToTTY": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_MemAlloc": {
+    "implementation": [
+      "FontConfig.cs"
+    ]
+  },
+  "IGSharp_MemFree": {
+    "implementation": [
+      "FontConfig.cs",
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_MenuItem": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_MenuItemPtr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_MultiSelectIO_GetItemsCount": {
+    "implementation": [
+      "MultiSelectIO.cs"
+    ]
+  },
+  "IGSharp_MultiSelectIO_GetNavIdItem": {
+    "implementation": [
+      "MultiSelectIO.cs"
+    ]
+  },
+  "IGSharp_MultiSelectIO_GetNavIdSelected": {
+    "implementation": [
+      "MultiSelectIO.cs"
+    ]
+  },
+  "IGSharp_MultiSelectIO_GetRangeSrcItem": {
+    "implementation": [
+      "MultiSelectIO.cs"
+    ]
+  },
+  "IGSharp_MultiSelectIO_GetRangeSrcReset": {
+    "implementation": [
+      "MultiSelectIO.cs"
+    ]
+  },
+  "IGSharp_MultiSelectIO_GetRequest": {
+    "implementation": [
+      "MultiSelectIO.cs"
+    ]
+  },
+  "IGSharp_MultiSelectIO_GetRequestsCount": {
+    "implementation": [
+      "MultiSelectIO.cs"
+    ]
+  },
+  "IGSharp_MultiSelectIO_SetRangeSrcReset": {
+    "implementation": [
+      "MultiSelectIO.cs"
+    ]
+  },
+  "IGSharp_NewFrame": {
+    "implementation": [
+      "Context.cs"
+    ]
+  },
+  "IGSharp_NewLine": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_NextColumn": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_OnceUponAFrame_Check": {
+    "design": "FrameGate provides per-context once-per-frame behavior entirely in managed code, without a native allocation."
+  },
+  "IGSharp_OnceUponAFrame_Create": {
+    "design": "FrameGate provides per-context once-per-frame behavior entirely in managed code, without a native allocation."
+  },
+  "IGSharp_OnceUponAFrame_Destroy": {
+    "design": "FrameGate provides per-context once-per-frame behavior entirely in managed code, without a native allocation."
+  },
+  "IGSharp_OnceUponAFrame_GetRefFrame": {
+    "design": "FrameGate provides per-context once-per-frame behavior entirely in managed code, without a native allocation."
+  },
+  "IGSharp_OpenPopup": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_OpenPopupID": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_OpenPopupOnItemClick": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Payload_GetData": {
+    "implementation": [
+      "DragDropPayload.cs"
+    ]
+  },
+  "IGSharp_Payload_GetDataSize": {
+    "implementation": [
+      "DragDropPayload.cs"
+    ]
+  },
+  "IGSharp_Payload_GetDataType": {
+    "implementation": [
+      "DragDropPayload.cs"
+    ]
+  },
+  "IGSharp_Payload_IsDataType": {
+    "implementation": [
+      "DragDropPayload.cs"
+    ]
+  },
+  "IGSharp_Payload_IsDelivery": {
+    "implementation": [
+      "DragDropPayload.cs"
+    ]
+  },
+  "IGSharp_Payload_IsPreview": {
+    "implementation": [
+      "DragDropPayload.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_ClearPlatformHandlers": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_ClearRendererHandlers": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetDrawCallbackResetRenderState": {
+    "implementation": [
+      "DrawCmd.cs",
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetDrawCallbackSetSamplerFromTex": {
+    "implementation": [
+      "DrawCmd.cs",
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetDrawCallbackSetSamplerLinear": {
+    "implementation": [
+      "DrawCmd.cs",
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetDrawCallbackSetSamplerNearest": {
+    "implementation": [
+      "DrawCmd.cs",
+      "DrawList.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetPlatformClipboardUserData": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetPlatformGetClipboardTextFn": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetPlatformImeUserData": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetPlatformLocaleDecimalPoint": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetPlatformOpenInShellFn": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetPlatformOpenInShellUserData": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetPlatformSessionDate": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetPlatformSetClipboardTextFn": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetPlatformSetImeDataFn": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetRendererRenderState": {
+    "design": "Renderer-specific untyped native state is deliberately not exposed; ImGuiBackend owns typed GPU resources and custom renderers retain their own state."
+  },
+  "IGSharp_PlatformIO_GetRendererTextureMaxHeight": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetRendererTextureMaxWidth": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetTexture": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_GetTexturesCount": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetDrawCallbackResetRenderState": {
+    "design": "DrawCmd.CallbackKind identifies renderer reset/sampler commands. Custom .NET renderers handle these in their render loop; installing native renderer function pointers is deliberately excluded."
+  },
+  "IGSharp_PlatformIO_SetDrawCallbackSetSamplerFromTex": {
+    "design": "DrawCmd.CallbackKind identifies renderer reset/sampler commands. Custom .NET renderers handle these in their render loop; installing native renderer function pointers is deliberately excluded."
+  },
+  "IGSharp_PlatformIO_SetDrawCallbackSetSamplerLinear": {
+    "design": "DrawCmd.CallbackKind identifies renderer reset/sampler commands. Custom .NET renderers handle these in their render loop; installing native renderer function pointers is deliberately excluded."
+  },
+  "IGSharp_PlatformIO_SetDrawCallbackSetSamplerNearest": {
+    "design": "DrawCmd.CallbackKind identifies renderer reset/sampler commands. Custom .NET renderers handle these in their render loop; installing native renderer function pointers is deliberately excluded."
+  },
+  "IGSharp_PlatformIO_SetPlatformClipboardUserData": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetPlatformGetClipboardTextFn": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetPlatformImeUserData": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetPlatformLocaleDecimalPoint": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetPlatformOpenInShellFn": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetPlatformOpenInShellUserData": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetPlatformSessionDate": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetPlatformSetClipboardTextFn": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetPlatformSetImeDataFn": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetRendererRenderState": {
+    "design": "Custom .NET renderers retain their own typed state; no arbitrary native render-state pointer is installed."
+  },
+  "IGSharp_PlatformIO_SetRendererTextureMaxHeight": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlatformIO_SetRendererTextureMaxWidth": {
+    "implementation": [
+      "PlatformIO.cs"
+    ]
+  },
+  "IGSharp_PlotHistogram": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PlotHistogramCallback": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PlotLines": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PlotLinesCallback": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PopClipRect": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PopFont": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PopID": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PopItemFlag": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PopItemWidth": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PopStyleColor": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PopStyleVar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PopTextWrapPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ProgressBar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushClipRect": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushFont": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushIDInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushIDPtr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushIDStr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushIDStrRange": {
+    "implementation": [
+      "ManagedUtilities.cs"
+    ]
+  },
+  "IGSharp_PushItemFlag": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushItemWidth": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushStyleColorU32": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushStyleColorVec4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushStyleVarFloat": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushStyleVarVec2": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushStyleVarX": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushStyleVarY": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_PushTextWrapPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_RadioButton": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_RadioButtonInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Render": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ResetMouseDragDelta": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SameLine": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SaveIniSettingsToDisk": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SaveIniSettingsToMemory": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Selectable": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SelectablePtr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_ApplyRequests": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_Clear": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_Contains": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_Create": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_Destroy": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_GetNextSelectedItem": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_GetPreserveOrder": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_GetSize": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_GetStorageIdFromIndex": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_GetUserData": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_SetAdapterIndexToStorageId": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_SetItemSelected": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_SetPreserveOrder": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_SetUserData": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionBasicStorage_Swap": {
+    "implementation": [
+      "SelectionBasicStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionExternalStorage_ApplyRequests": {
+    "implementation": [
+      "SelectionExternalStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionExternalStorage_Create": {
+    "implementation": [
+      "SelectionExternalStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionExternalStorage_Destroy": {
+    "implementation": [
+      "SelectionExternalStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionExternalStorage_GetUserData": {
+    "implementation": [
+      "SelectionExternalStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionExternalStorage_SetAdapterSetItemSelected": {
+    "implementation": [
+      "SelectionExternalStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionExternalStorage_SetUserData": {
+    "implementation": [
+      "SelectionExternalStorage.cs"
+    ]
+  },
+  "IGSharp_SelectionRequest_GetRangeDirection": {
+    "implementation": [
+      "SelectionRequest.cs"
+    ]
+  },
+  "IGSharp_SelectionRequest_GetRangeFirstItem": {
+    "implementation": [
+      "SelectionRequest.cs"
+    ]
+  },
+  "IGSharp_SelectionRequest_GetRangeLastItem": {
+    "implementation": [
+      "SelectionRequest.cs"
+    ]
+  },
+  "IGSharp_SelectionRequest_GetSelected": {
+    "implementation": [
+      "SelectionRequest.cs"
+    ]
+  },
+  "IGSharp_SelectionRequest_GetType": {
+    "implementation": [
+      "SelectionRequest.cs"
+    ]
+  },
+  "IGSharp_Separator": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SeparatorText": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetAllocatorFunctions": {
+    "design": "Process-global allocator replacement is native-host configuration. Excluded because it can invalidate SafeHandle/finalizer allocation provenance and all existing owners."
+  },
+  "IGSharp_SetClipboardText": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetColumnOffset": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetColumnWidth": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetCurrentContext": {
+    "implementation": [
+      "Context.cs"
+    ]
+  },
+  "IGSharp_SetCursorPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetCursorPosX": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetCursorPosY": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetCursorScreenPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetDragDropPayload": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetItemDefaultFocus": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetItemKeyOwner": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetItemTooltip": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetKeyboardFocusHere": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetMouseCursor": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNavCursorVisible": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextFrameWantCaptureKeyboard": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextFrameWantCaptureMouse": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextItemAllowOverlap": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextItemOpen": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextItemSelectionUserData": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextItemShortcut": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextItemStorageID": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextItemWidth": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextWindowBgAlpha": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextWindowCollapsed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextWindowContentSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextWindowFocus": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextWindowPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextWindowScroll": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextWindowSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetNextWindowSizeConstraints": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetScrollFromPosX": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetScrollFromPosY": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetScrollHereX": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetScrollHereY": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetScrollX": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetScrollY": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetStateStorage": {
+    "implementation": [
+      "StateStorageScope.cs"
+    ]
+  },
+  "IGSharp_SetTabItemClosed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetTooltip": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetWindowCollapsed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetWindowCollapsedNamed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetWindowFocus": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetWindowFocusNamed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetWindowPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetWindowPosNamed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetWindowSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SetWindowSizeNamed": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Shortcut": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ShowAboutWindow": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ShowDebugLogWindow": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ShowDemoWindow": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ShowFontSelector": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ShowIDStackToolWindow": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ShowMetricsWindow": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ShowStyleEditor": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ShowStyleSelector": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ShowUserGuide": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SizeCallbackData_GetCurrentSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SizeCallbackData_GetDesiredSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SizeCallbackData_GetPos": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SizeCallbackData_GetUserData": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SizeCallbackData_SetDesiredSize": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderAngle": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderFloat": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderFloat2": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderFloat3": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderFloat4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderInt2": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderInt3": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderInt4": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderScalar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SliderScalarN": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_SmallButton": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Spacing": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Storage_BuildSortByKey": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_Clear": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_Create": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_Destroy": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_GetBool": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_GetBoolRef": {
+    "design": "Storage.Get*/Set* provide typed value access. References into reallocating native storage are deliberately excluded."
+  },
+  "IGSharp_Storage_GetFloat": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_GetFloatRef": {
+    "design": "Storage.Get*/Set* provide typed value access. References into reallocating native storage are deliberately excluded."
+  },
+  "IGSharp_Storage_GetInt": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_GetIntRef": {
+    "design": "Storage.Get*/Set* provide typed value access. References into reallocating native storage are deliberately excluded."
+  },
+  "IGSharp_Storage_GetVoidPtr": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_GetVoidPtrRef": {
+    "design": "Storage.Get*/Set* provide typed value access. References into reallocating native storage are deliberately excluded."
+  },
+  "IGSharp_Storage_SetAllInt": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_SetBool": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_SetFloat": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_SetInt": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_Storage_SetVoidPtr": {
+    "implementation": [
+      "Storage.cs"
+    ]
+  },
+  "IGSharp_StyleColorsClassic": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_StyleColorsDark": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_StyleColorsLight": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Style_Init": {
+    "implementation": [
+      "StyleSnapshot.cs"
+    ]
+  },
+  "IGSharp_Style_ScaleAllSizes": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TabItemButton": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableAngledHeadersRow": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableColumnSortSpecs_GetColumnIndex": {
+    "implementation": [
+      "TableColumnSortSpecs.cs"
+    ]
+  },
+  "IGSharp_TableColumnSortSpecs_GetColumnUserID": {
+    "implementation": [
+      "TableColumnSortSpecs.cs"
+    ]
+  },
+  "IGSharp_TableColumnSortSpecs_GetSortDirection": {
+    "implementation": [
+      "TableColumnSortSpecs.cs"
+    ]
+  },
+  "IGSharp_TableColumnSortSpecs_GetSortOrder": {
+    "implementation": [
+      "TableColumnSortSpecs.cs"
+    ]
+  },
+  "IGSharp_TableGetColumnCount": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableGetColumnFlags": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableGetColumnIndex": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableGetColumnName": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableGetHoveredColumn": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableGetRowIndex": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableGetSortSpecs": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableHeader": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableHeadersRow": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableNextColumn": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableNextRow": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableSetBgColor": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableSetColumnEnabled": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableSetColumnIndex": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableSetupColumn": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableSetupScrollFreeze": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TableSortSpecs_GetSpec": {
+    "implementation": [
+      "TableSortSpecs.cs"
+    ]
+  },
+  "IGSharp_TableSortSpecs_GetSpecsCount": {
+    "implementation": [
+      "TableSortSpecs.cs"
+    ]
+  },
+  "IGSharp_TableSortSpecs_GetSpecsDirty": {
+    "implementation": [
+      "TableSortSpecs.cs"
+    ]
+  },
+  "IGSharp_TableSortSpecs_SetSpecsDirty": {
+    "implementation": [
+      "TableSortSpecs.cs"
+    ]
+  },
+  "IGSharp_Text": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TextBuffer_Append": {
+    "design": "System.Text.StringBuilder provides append/clear/reserve operations; TextBuffer provides owned, reusable UTF-8 InputText storage. A second native string-builder owner is unnecessary."
+  },
+  "IGSharp_TextBuffer_CStr": {
+    "design": "System.Text.StringBuilder provides append/clear/reserve operations; TextBuffer provides owned, reusable UTF-8 InputText storage. A second native string-builder owner is unnecessary."
+  },
+  "IGSharp_TextBuffer_Clear": {
+    "design": "System.Text.StringBuilder provides append/clear/reserve operations; TextBuffer provides owned, reusable UTF-8 InputText storage. A second native string-builder owner is unnecessary."
+  },
+  "IGSharp_TextBuffer_Create": {
+    "design": "System.Text.StringBuilder provides append/clear/reserve operations; TextBuffer provides owned, reusable UTF-8 InputText storage. A second native string-builder owner is unnecessary."
+  },
+  "IGSharp_TextBuffer_Destroy": {
+    "design": "System.Text.StringBuilder provides append/clear/reserve operations; TextBuffer provides owned, reusable UTF-8 InputText storage. A second native string-builder owner is unnecessary."
+  },
+  "IGSharp_TextBuffer_Empty": {
+    "design": "System.Text.StringBuilder provides append/clear/reserve operations; TextBuffer provides owned, reusable UTF-8 InputText storage. A second native string-builder owner is unnecessary."
+  },
+  "IGSharp_TextBuffer_Reserve": {
+    "design": "System.Text.StringBuilder provides append/clear/reserve operations; TextBuffer provides owned, reusable UTF-8 InputText storage. A second native string-builder owner is unnecessary."
+  },
+  "IGSharp_TextBuffer_Resize": {
+    "design": "System.Text.StringBuilder provides append/clear/reserve operations; TextBuffer provides owned, reusable UTF-8 InputText storage. A second native string-builder owner is unnecessary."
+  },
+  "IGSharp_TextBuffer_Size": {
+    "design": "System.Text.StringBuilder provides append/clear/reserve operations; TextBuffer provides owned, reusable UTF-8 InputText storage. A second native string-builder owner is unnecessary."
+  },
+  "IGSharp_TextColored": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TextDisabled": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TextFilter_Build": {
+    "implementation": [
+      "TextFilter.cs"
+    ]
+  },
+  "IGSharp_TextFilter_Clear": {
+    "design": "TextFilter.Clear updates its existing native input buffer and rebuilds the filter."
+  },
+  "IGSharp_TextFilter_Create": {
+    "implementation": [
+      "TextFilter.cs"
+    ]
+  },
+  "IGSharp_TextFilter_Destroy": {
+    "implementation": [
+      "TextFilter.cs"
+    ]
+  },
+  "IGSharp_TextFilter_Draw": {
+    "design": "TextFilter.Draw uses the validated managed InputText span overload, keeping Text synchronized even with EnterReturnsTrue."
+  },
+  "IGSharp_TextFilter_DrawWithHint": {
+    "design": "TextFilter.DrawWithHint uses the validated managed InputTextWithHint span overload."
+  },
+  "IGSharp_TextFilter_GetInputBuf": {
+    "implementation": [
+      "TextFilter.cs"
+    ]
+  },
+  "IGSharp_TextFilter_GetInputBufSize": {
+    "implementation": [
+      "TextFilter.cs"
+    ]
+  },
+  "IGSharp_TextFilter_IsActive": {
+    "implementation": [
+      "TextFilter.cs"
+    ]
+  },
+  "IGSharp_TextFilter_PassFilter": {
+    "implementation": [
+      "TextFilter.cs"
+    ]
+  },
+  "IGSharp_TextLink": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TextLinkOpenURL": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TextUnformatted": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TextWrapped": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TextureData_AllocatePixels": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TextureData_Create": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TextureData_Destroy": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TextureData_DestroyPixels": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetBackendUserData": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetBytesPerPixel": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetFormat": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetHeight": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetPitch": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetPixels": {
+    "implementation": [
+      "RenderResources.cs",
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetPixelsAt": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetPixelsPtr": {
+    "design": "TextureData.GetPixelSpan/CopyPixels and OwnedTextureData.Pixels provide checked-size access to the same pixels."
+  },
+  "IGSharp_TextureData_GetQueueUserData": {
+    "implementation": [
+      "TextureData.cs",
+      "TextureRetention.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetRefCount": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetSizeInBytes": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetStatus": {
+    "implementation": [
+      "TextureData.cs",
+      "TextureRetention.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetTexID": {
+    "implementation": [
+      "TextureData.cs",
+      "TextureReference.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetTexRef": {
+    "design": "TextureData.Reference creates the same guarded deferred texture reference."
+  },
+  "IGSharp_TextureData_GetUniqueID": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetUnusedFrames": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetUpdate": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetUpdateRect": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetUpdatesCount": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetUseColors": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetUsedRect": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_GetWidth": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_SetBackendUserData": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureData_SetQueueUserData": {
+    "implementation": [
+      "TextureData.cs",
+      "TextureRetention.cs"
+    ]
+  },
+  "IGSharp_TextureData_SetStatus": {
+    "implementation": [
+      "TextureData.cs",
+      "TextureRetention.cs"
+    ]
+  },
+  "IGSharp_TextureData_SetTexID": {
+    "implementation": [
+      "TextureData.cs"
+    ]
+  },
+  "IGSharp_TextureList_Add": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TextureList_Clear": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TextureList_Create": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TextureList_Destroy": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TextureList_Get": {
+    "implementation": [
+      "DrawData.cs",
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TextureList_GetCount": {
+    "implementation": [
+      "RenderResources.cs"
+    ]
+  },
+  "IGSharp_TreeNode": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TreeNodeEx": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TreeNodeExPtr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TreeNodeExStr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TreeNodeGetOpen": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TreeNodePtr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TreeNodeStr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TreePop": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TreePushPtr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_TreePushStr": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Unindent": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_VSliderFloat": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_VSliderInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_VSliderScalar": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ValueBool": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ValueFloat": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ValueInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_ValueUInt": {
+    "implementation": [
+      "ImGui.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetCenter": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetFlags": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetFramebufferScale": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetID": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetPlatformHandle": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetPlatformHandleRaw": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetPos": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetSize": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetWorkCenter": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetWorkPos": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_GetWorkSize": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_SetPlatformHandle": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  },
+  "IGSharp_Viewport_SetPlatformHandleRaw": {
+    "implementation": [
+      "Viewport.cs"
+    ]
+  }
+}

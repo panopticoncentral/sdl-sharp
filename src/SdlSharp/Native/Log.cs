@@ -102,4 +102,8 @@ public static partial class Log
     public static unsafe partial void SDL_SetLogOutputFunction(
         delegate* unmanaged[Cdecl]<void*, int, SDL_LogPriority, byte*, void> callback,
         void* userdata);
+    /// <summary>Gets SDL's default logging function.</summary>
+    [LibraryImport(Common.Sdl3, EntryPoint = "SDL_GetDefaultLogOutputFunction")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial delegate* unmanaged[Cdecl]<void*, int, SDL_LogPriority, byte*, void> SDL_GetDefaultLogOutputFunction();
 }

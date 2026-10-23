@@ -16,8 +16,13 @@ public static unsafe class Clipboard
     /// </summary>
     public static string? Text
     {
-        get => Marshal.PtrToStringUTF8((nint)SDL_GetClipboardText());
-        set => Check(SDL_SetClipboardText(ToUtf8(value)));
+        get
+        {
+            var text = Check(SDL_GetClipboardText());
+            try { return Marshal.PtrToStringUTF8((nint)text); }
+            finally { SDL_free(text); }
+        }
+        set { CallbackErrors.EnsureOutsideCallback(); Check(SDL_SetClipboardText(ToUtf8(value))); }
     }
 
     /// <summary>
@@ -34,59 +39,35 @@ public static unsafe class Clipboard
     /// <returns>The data for the requested MIME type, or null.</returns>
     public delegate ReadOnlySpan<byte> ClipboardDataProvider(string? mimeType);
 
-    // Prevent the native delegates and the ClipboardDataState from being GC'd
-    // while SDL holds references to them.
-    private static GCHandle _clipboardDataHandle;
-
     private sealed class ClipboardDataState
     {
-        public required ClipboardDataProvider Provider;
-        public GCHandle LastResultPin;
+        internal required ClipboardDataProvider Provider;
+        internal readonly List<GCHandle> Pins = [];
     }
 
-    /// <summary>
-    /// Offer clipboard data to the OS. When another application requests the data,
-    /// <paramref name="provider"/> will be called with the requested MIME type.
-    /// </summary>
-    /// <param name="provider">A delegate called when clipboard data is requested.</param>
-    /// <param name="mimeTypes">The MIME types being offered.</param>
+    /// <summary>Offers data for the listed MIME types until replaced or cleared. Returned buffers are copied and retained until SDL releases the offer.</summary>
     public static void SetData(ClipboardDataProvider provider, params string[] mimeTypes)
     {
-        // Free any previous state
-        if (_clipboardDataHandle.IsAllocated)
-            _clipboardDataHandle.Free();
-
+        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(mimeTypes);
+        CallbackErrors.EnsureOutsideCallback();
         var state = new ClipboardDataState { Provider = provider };
-        _clipboardDataHandle = GCHandle.Alloc(state);
-
-        // Convert MIME types to null-terminated UTF-8 byte arrays
-        var mimeTypeBytes = new byte[mimeTypes.Length][];
-        for (var i = 0; i < mimeTypes.Length; i++)
-            mimeTypeBytes[i] = ToUtf8(mimeTypes[i])!;
-
-        // Pin all arrays and build pointer array
+        var handle = CallbackHandle.Alloc(state);
         var pins = new GCHandle[mimeTypes.Length];
-        var ptrs = stackalloc byte*[mimeTypes.Length];
+        var addresses = new nint[mimeTypes.Length];
         try
         {
             for (var i = 0; i < mimeTypes.Length; i++)
             {
-                pins[i] = GCHandle.Alloc(mimeTypeBytes[i], GCHandleType.Pinned);
-                ptrs[i] = (byte*)pins[i].AddrOfPinnedObject();
+                ArgumentException.ThrowIfNullOrEmpty(mimeTypes[i]);
+                pins[i] = GCHandle.Alloc(ToUtf8(mimeTypes[i])!, GCHandleType.Pinned);
+                addresses[i] = pins[i].AddrOfPinnedObject();
             }
-
-            Check(SDL_SetClipboardData(
-                _dataCallback,
-                _cleanupCallback,
-                (void*)(nint)_clipboardDataHandle,
-                ptrs,
-                (nuint)mimeTypes.Length));
+            fixed (nint* pointers = addresses)
+                Check(SDL_SetClipboardData(_dataCallback, _cleanupCallback, (void*)(nint)handle, (byte**)pointers, (nuint)addresses.Length));
         }
-        finally
-        {
-            foreach (var pin in pins)
-                if (pin.IsAllocated) pin.Free();
-        }
+        catch { CleanupCallbackImpl((void*)(nint)handle); throw; }
+        finally { foreach (var pin in pins) if (pin.IsAllocated) pin.Free(); }
     }
 
     private static readonly SDL_ClipboardDataCallback _dataCallback = DataCallbackImpl;
@@ -94,41 +75,40 @@ public static unsafe class Clipboard
 
     private static void* DataCallbackImpl(void* userdata, byte* mimeType, nuint* size)
     {
-        var state = (ClipboardDataState)GCHandle.FromIntPtr((nint)userdata).Target!;
-        var mimeTypeString = mimeType != null ? Marshal.PtrToStringUTF8((nint)mimeType) : null;
-        var data = state.Provider(mimeTypeString);
-
-        // Free previous pinned result
-        if (state.LastResultPin.IsAllocated)
-            state.LastResultPin.Free();
-
-        if (data.IsEmpty)
+        *size = 0;
+        try
         {
-            *size = 0;
-            return null;
+            using var scope = CallbackErrors.Enter();
+            if (CallbackHandle.FromIntPtr((nint)userdata).Target is not ClipboardDataState state) return null;
+            lock (state)
+            {
+                var data = state.Provider(Marshal.PtrToStringUTF8((nint)mimeType));
+                if (data.IsEmpty) return null;
+                var pin = GCHandle.Alloc(data.ToArray(), GCHandleType.Pinned);
+                state.Pins.Add(pin);
+                *size = (nuint)data.Length;
+                return (void*)pin.AddrOfPinnedObject();
+            }
         }
-
-        // Copy to a pinned buffer — SDL requires the data to remain valid
-        var buffer = data.ToArray();
-        state.LastResultPin = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-        *size = (nuint)buffer.Length;
-        return (void*)state.LastResultPin.AddrOfPinnedObject();
+        catch (Exception error) { CallbackErrors.Capture(error); return null; }
     }
 
     private static void CleanupCallbackImpl(void* userdata)
     {
-        var handle = GCHandle.FromIntPtr((nint)userdata);
-        var state = (ClipboardDataState)handle.Target!;
-        if (state.LastResultPin.IsAllocated)
-            state.LastResultPin.Free();
+        var handle = CallbackHandle.FromIntPtr((nint)userdata);
+        if (handle.Target is not ClipboardDataState state) return;
         handle.Free();
-        _clipboardDataHandle = default;
+        lock (state)
+        {
+            foreach (var pin in state.Pins) pin.Free();
+            state.Pins.Clear();
+        }
     }
 
     /// <summary>
     /// Clears the clipboard data.
     /// </summary>
-    public static void ClearData() => Check(SDL_ClearClipboardData());
+    public static void ClearData() { CallbackErrors.EnsureOutsideCallback(); Check(SDL_ClearClipboardData()); }
 
     /// <summary>
     /// Gets the clipboard data for the given MIME type.
@@ -141,8 +121,8 @@ public static unsafe class Clipboard
         if (ptr == null) return [];
         try
         {
-            var result = new byte[size];
-            new ReadOnlySpan<byte>(ptr, (int)size).CopyTo(result);
+            var result = new byte[checked((int)size)];
+            new ReadOnlySpan<byte>(ptr, checked((int)size)).CopyTo(result);
             return result;
         }
         finally
@@ -176,4 +156,17 @@ public static unsafe class Clipboard
             SDL_free(ptrs);
         }
     }
+    /// <summary>Gets or sets the platform's primary selection text.</summary>
+    public static string? PrimarySelectionText
+    {
+        get
+        {
+            var text = Check(SDL_GetPrimarySelectionText());
+            try { return Marshal.PtrToStringUTF8((nint)text); }
+            finally { SDL_free(text); }
+        }
+        set => Check(SDL_SetPrimarySelectionText(ToUtf8(value)));
+    }
+    /// <summary>Whether the primary selection contains text.</summary>
+    public static bool HasPrimarySelectionText => SDL_HasPrimarySelectionText();
 }

@@ -10,6 +10,8 @@ namespace SdlSharp.Graphics;
 public sealed unsafe class Surface : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     /// <summary>
     /// The underlying native SDL_Surface pointer.
@@ -19,16 +21,20 @@ public sealed unsafe class Surface : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private SDL_Surface* _handle;
 
-    internal Surface(SDL_Surface* handle, bool ownsHandle = true)
+    internal Surface(SDL_Surface* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Surface), (nint)handle, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>
@@ -97,10 +103,10 @@ public sealed unsafe class Surface : IDisposable
 
     /// <summary>
     /// Gets the properties associated with this surface. The returned group is owned
-    /// by SDL and must not be disposed.
+    /// by SDL; disposing this view does not destroy the native group.
     /// </summary>
     public PropertyGroup Properties =>
-        new(CheckId(SDL_GetSurfaceProperties(Handle)), ownsHandle: false);
+        new(CheckId(SDL_GetSurfaceProperties(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>
     /// Gets or sets the colorspace used by this surface.
@@ -255,15 +261,22 @@ public sealed unsafe class Surface : IDisposable
     public void SavePng(string file) =>
         Check(SDL_SavePNG(Handle, ToUtf8(file)));
 
-    /// <summary>
-    /// Locks the surface for direct pixel access.
-    /// </summary>
-    public void Lock() => Check(SDL_LockSurface(Handle));
-
-    /// <summary>
-    /// Unlocks the surface after direct pixel access.
-    /// </summary>
-    public void Unlock() => SDL_UnlockSurface(Handle);
+    /// <summary>Locks packed pixel rows until the returned lease is disposed.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    public PixelLock Lock()
+    {
+        var handle = Handle;
+        if (((uint)Format >> 28) != 1) throw new NotSupportedException("Pixel locks require a packed pixel format.");
+        var rowBytes = PixelFormatDetails.Get(Format).GetRowByteCount(Width);
+        var lease = Lifetime.RetainExclusive();
+        try
+        {
+            Check(SDL_LockSurface(handle));
+            return new PixelLock((nint)handle->pixels, handle->pitch, rowBytes, handle->h,
+                () => { SDL_UnlockSurface(handle); lease.Dispose(); });
+        }
+        catch { lease.Dispose(); throw; }
+    }
 
     /// <summary>
     /// Fills a rectangle with a specific color value.
@@ -624,8 +637,12 @@ public sealed unsafe class Surface : IDisposable
     /// when the surface is destroyed, and disposing the returned wrapper has no effect on the
     /// native palette.
     /// </returns>
-    public Palette CreatePalette() =>
-        new(Check(SDL_CreateSurfacePalette(Handle)), ownsHandle: false);
+    public Palette CreatePalette()
+    {
+        var surface = Handle;
+        Lifetime.InvalidateChildren(typeof(Palette));
+        return new(Check(SDL_CreateSurfacePalette(surface)), ownsHandle: false, parent: Lifetime);
+    }
 
     /// <summary>
     /// Gets the palette used by this surface, if any.
@@ -637,7 +654,7 @@ public sealed unsafe class Surface : IDisposable
     public Palette? GetPalette()
     {
         var handle = SDL_GetSurfacePalette(Handle);
-        return handle == null ? null : new Palette(handle, ownsHandle: false);
+        return handle == null ? null : new Palette(handle, ownsHandle: false, parent: Lifetime);
     }
 
     /// <summary>
@@ -645,7 +662,13 @@ public sealed unsafe class Surface : IDisposable
     /// palette, which can be safely disposed afterwards.
     /// </summary>
     /// <param name="palette">The palette to use.</param>
-    public void SetPalette(Palette palette) => Check(SDL_SetSurfacePalette(Handle, palette.Handle));
+    public void SetPalette(Palette palette)
+    {
+        var surface = Handle;
+        var replacement = palette.Handle;
+        if (SDL_GetSurfacePalette(surface) != replacement) Lifetime.InvalidateChildren(typeof(Palette));
+        Check(SDL_SetSurfacePalette(surface, replacement));
+    }
 
     /// <summary>
     /// Premultiplies the alpha in this surface, in place.
@@ -694,7 +717,7 @@ public sealed unsafe class Surface : IDisposable
             var result = new Surface[count];
             for (var i = 0; i < count; i++)
             {
-                result[i] = new Surface(ptr[i], ownsHandle: false);
+                result[i] = new Surface(ptr[i], ownsHandle: false, parent: Lifetime);
             }
             return result;
         }
@@ -708,15 +731,91 @@ public sealed unsafe class Surface : IDisposable
     /// Removes all alternate versions of this surface, destroying them if this was the last
     /// reference to them.
     /// </summary>
-    public void RemoveAlternateImages() => SDL_RemoveSurfaceAlternateImages(Handle);
+    public void RemoveAlternateImages()
+    {
+        var surface = Handle;
+        Lifetime.InvalidateChildren(typeof(Surface));
+        SDL_RemoveSurfaceAlternateImages(surface);
+    }
 
     /// <inheritdoc/>
     public void Dispose()
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_DestroySurface(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_DestroySurface(_handle);
+            });
         }
         _handle = null;
+    }
+    /// <summary>Loads an image from a managed stream, leaving it open.</summary>
+    public static Surface Load(Stream stream)
+    {
+        using var bridge = SdlStreamBridge.ForReading(stream);
+        var result = SDL_LoadSurface_IO(bridge.Handle, false);
+        try { bridge.ThrowIfError(); return new Surface(Check(result)); }
+        catch { if (result != null) SDL_DestroySurface(result); throw; }
+    }
+    /// <summary>Loads an image from a managed stream, leaving it open.</summary>
+    public static Surface LoadBmp(Stream stream)
+    {
+        using var bridge = SdlStreamBridge.ForReading(stream);
+        var result = SDL_LoadBMP_IO(bridge.Handle, false);
+        try { bridge.ThrowIfError(); return new Surface(Check(result)); }
+        catch { if (result != null) SDL_DestroySurface(result); throw; }
+    }
+    /// <summary>Loads an image from a managed stream, leaving it open.</summary>
+    public static Surface LoadPng(Stream stream)
+    {
+        using var bridge = SdlStreamBridge.ForReading(stream);
+        var result = SDL_LoadPNG_IO(bridge.Handle, false);
+        try { bridge.ThrowIfError(); return new Surface(Check(result)); }
+        catch { if (result != null) SDL_DestroySurface(result); throw; }
+    }
+    /// <summary>Saves this image to a managed stream, leaving it open.</summary>
+    public void SaveBmp(Stream stream)
+    {
+        using var bridge = SdlStreamBridge.ForWriting(stream);
+        var success = SDL_SaveBMP_IO(Handle, bridge.Handle, false);
+        bridge.ThrowIfError();
+        Check(success);
+        bridge.CompleteWrite();
+    }
+    /// <summary>Saves this image to a managed stream, leaving it open.</summary>
+    public void SavePng(Stream stream)
+    {
+        using var bridge = SdlStreamBridge.ForWriting(stream);
+        var success = SDL_SavePNG_IO(Handle, bridge.Handle, false);
+        bridge.ThrowIfError();
+        Check(success);
+        bridge.CompleteWrite();
+    }
+    /// <summary>Creates a surface over pinned managed memory. Keep the memory owner alive until this surface and all alternate-image references to it have been released.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The native surface owns the idempotent pin cleanup after property registration; failure destroys the surface and releases the pin.")]
+    public static Surface CreateFrom(int width, int height, PixelFormat format, Memory<byte> pixels, int pitch)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(width);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(height);
+        if (((uint)format >> 28) != 1) throw new ArgumentException("Managed memory surfaces require a packed format.", nameof(format));
+        var rowBytes = PixelFormatDetails.Get(format).GetRowByteCount(width);
+        BufferBounds.Check(pixels.Length, height, rowBytes, pitch, nameof(pixels));
+        var pin = pixels.Pin();
+        var release = new SdlScope(pin.Dispose, threadAffine: false);
+        try
+        {
+            var surface = new Surface(Check(SDL_CreateSurfaceFrom(width, height, (SDL_PixelFormat)format, pin.Pointer, pitch)));
+            // SDL may retain this surface through alternate-image references. Its native
+            // properties are destroyed only when the final native reference is released.
+            try
+            {
+                using var properties = surface.Properties;
+                properties.SetOwnershipPointer("SdlSharp.Surface.PinnedPixels", 1, _ => release.Dispose());
+            }
+            catch { surface.Dispose(); throw; }
+            return surface;
+        }
+        catch { release.Dispose(); throw; }
     }
 }

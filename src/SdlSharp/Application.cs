@@ -13,18 +13,40 @@ namespace SdlSharp;
 /// </summary>
 public sealed unsafe class Application : IDisposable
 {
+    private static readonly object SessionGate = new();
+    private static Application? _current;
+    private readonly int _thread = Environment.CurrentManagedThreadId;
+    private bool _disposed;
+    private static int _pendingOperations;
+    internal static IDisposable BeginOperation()
+    {
+        Interlocked.Increment(ref _pendingOperations);
+        return new SdlScope(() => Interlocked.Decrement(ref _pendingOperations), threadAffine: false);
+    }
+    internal static object? CurrentSession => _current;
+
+    /// <summary>Rethrows the next exception caught at an SDL callback boundary.</summary>
+    public static void ThrowPendingCallbackException() => CallbackErrors.ThrowPending();
+
+    private sealed record PendingMainThread(Action Action, IDisposable Operation, bool Wait)
+    {
+        internal System.Runtime.ExceptionServices.ExceptionDispatchInfo? Error;
+    }
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void RunOnMainThreadCallback(void* userdata)
     {
-        var handle = GCHandle.FromIntPtr((nint)userdata);
+        var handle = CallbackHandle.FromIntPtr((nint)userdata);
+        if (handle.Target is not PendingMainThread pending) return;
         try
         {
-            ((Action)handle.Target!)();
+            pending.Action();
         }
-        finally
+        catch (Exception error)
         {
-            handle.Free();
+            if (pending.Wait) pending.Error = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(error);
+            else CallbackErrors.Capture(error);
         }
+        finally { handle.Free(); pending.Operation.Dispose(); }
     }
 
     /// <summary>
@@ -33,7 +55,12 @@ public sealed unsafe class Application : IDisposable
     /// <param name="flags">The subsystems to initialize.</param>
     public Application(InitFlags flags)
     {
-        Check(SDL_Init((Native.SDL_InitFlags)flags));
+        lock (SessionGate)
+        {
+            if (_current != null) throw new InvalidOperationException("Only one SDL application may be active at a time.");
+            Check(SDL_Init((Native.SDL_InitFlags)flags));
+            _current = this;
+        }
     }
 
     /// <summary>
@@ -47,8 +74,11 @@ public sealed unsafe class Application : IDisposable
     /// Shuts down specific SDL subsystems.
     /// </summary>
     /// <param name="flags">The subsystems to shut down.</param>
-    public static void QuitSubSystem(InitFlags flags) =>
+    public static void QuitSubSystem(InitFlags flags)
+    {
+        if (_current is { } current) NativeLifetime.CheckSessionShutdown(current);
         SDL_QuitSubSystem((Native.SDL_InitFlags)flags);
+    }
 
     /// <summary>
     /// Gets a mask of the currently initialized subsystems.
@@ -73,14 +103,18 @@ public sealed unsafe class Application : IDisposable
     /// </summary>
     /// <param name="action">The action to run on the main thread.</param>
     /// <param name="waitComplete">true to block until the action completes, false to return immediately.</param>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
     public static void RunOnMainThread(Action action, bool waitComplete = true)
     {
-        var handle = GCHandle.Alloc(action);
+        ArgumentNullException.ThrowIfNull(action);
+        var pending = new PendingMainThread(action, BeginOperation(), waitComplete);
+        var handle = CallbackHandle.Alloc(pending);
         if (!SDL_RunOnMainThread(&RunOnMainThreadCallback, (void*)(nint)handle, waitComplete))
         {
-            handle.Free();
+            handle.Free(); pending.Operation.Dispose();
             throw new SdlException();
         }
+        pending.Error?.Throw();
     }
 
     /// <summary>
@@ -136,19 +170,21 @@ public sealed unsafe class Application : IDisposable
     /// <returns>True to keep the event, false to drop it.</returns>
     public delegate bool RawEventPredicate(in RawEvent e);
 
-    private static readonly Dictionary<RawEventHandler, GCHandle> WatchHandles = new();
-    private static GCHandle _eventFilterHandle;
+    private static readonly Dictionary<RawEventHandler, CallbackHandle> WatchHandles = new();
+    private static CallbackHandle _eventFilterHandle;
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static byte WatchTrampoline(void* userdata, Native.SDL_Event* e)
     {
         try
         {
-            var handler = (RawEventHandler)GCHandle.FromIntPtr((nint)userdata).Target!;
-            handler(new RawEvent((EventType)e->type, (nint)e));
+            using var callbackScope = CallbackErrors.Enter();
+            if (CallbackHandle.FromIntPtr((nint)userdata).Target is RawEventHandler handler)
+                handler(new RawEvent((EventType)e->type, (nint)e));
         }
-        catch
+        catch (Exception error)
         {
+            CallbackErrors.Capture(error);
             // A throwing watch must not drop the event or cross the boundary.
         }
 
@@ -160,11 +196,13 @@ public sealed unsafe class Application : IDisposable
     {
         try
         {
-            var predicate = (RawEventPredicate)GCHandle.FromIntPtr((nint)userdata).Target!;
+            using var callbackScope = CallbackErrors.Enter();
+            if (CallbackHandle.FromIntPtr((nint)userdata).Target is not RawEventPredicate predicate) return 1;
             return predicate(new RawEvent((EventType)e->type, (nint)e)) ? (byte)1 : (byte)0;
         }
-        catch
+        catch (Exception error)
         {
+            CallbackErrors.Capture(error);
             return 1; // On error keep the event rather than silently dropping it.
         }
     }
@@ -179,6 +217,7 @@ public sealed unsafe class Application : IDisposable
     /// <exception cref="ArgumentException">The handler is already registered.</exception>
     public static void AddEventWatch(RawEventHandler watch)
     {
+        CallbackErrors.EnsureOutsideCallback();
         lock (WatchHandles)
         {
             if (WatchHandles.ContainsKey(watch))
@@ -186,8 +225,8 @@ public sealed unsafe class Application : IDisposable
                 throw new ArgumentException("This handler is already registered as an event watch.", nameof(watch));
             }
 
-            var handle = GCHandle.Alloc(watch);
-            if (!SDL_AddEventWatch(&WatchTrampoline, (void*)GCHandle.ToIntPtr(handle)))
+            var handle = CallbackHandle.Alloc(watch);
+            if (!SDL_AddEventWatch(&WatchTrampoline, (void*)CallbackHandle.ToIntPtr(handle)))
             {
                 handle.Free();
                 throw new SdlException();
@@ -204,17 +243,12 @@ public sealed unsafe class Application : IDisposable
     /// <param name="watch">The watch callback to remove.</param>
     public static void RemoveEventWatch(RawEventHandler watch)
     {
+        CallbackErrors.EnsureOutsideCallback();
+        CallbackHandle handle;
         lock (WatchHandles)
-        {
-            if (!WatchHandles.TryGetValue(watch, out var handle))
-            {
-                return;
-            }
-
-            SDL_RemoveEventWatch(&WatchTrampoline, (void*)GCHandle.ToIntPtr(handle));
-            handle.Free();
-            WatchHandles.Remove(watch);
-        }
+            if (!WatchHandles.Remove(watch, out handle)) return;
+        SDL_RemoveEventWatch(&WatchTrampoline, (void*)CallbackHandle.ToIntPtr(handle));
+        handle.Free();
     }
 
     /// <summary>
@@ -227,6 +261,7 @@ public sealed unsafe class Application : IDisposable
     /// <param name="filter">The filter predicate, or <c>null</c> to clear.</param>
     public static void SetEventFilter(RawEventPredicate? filter)
     {
+        CallbackErrors.EnsureOutsideCallback();
         var previous = _eventFilterHandle;
 
         if (filter == null)
@@ -236,8 +271,8 @@ public sealed unsafe class Application : IDisposable
         }
         else
         {
-            var handle = GCHandle.Alloc(filter);
-            SDL_SetEventFilter(&FilterTrampoline, (void*)GCHandle.ToIntPtr(handle));
+            var handle = CallbackHandle.Alloc(filter);
+            SDL_SetEventFilter(&FilterTrampoline, (void*)CallbackHandle.ToIntPtr(handle));
             _eventFilterHandle = handle;
         }
 
@@ -254,10 +289,10 @@ public sealed unsafe class Application : IDisposable
     /// <param name="predicate">The predicate; return false to remove an event.</param>
     public static void FilterEvents(RawEventPredicate predicate)
     {
-        var handle = GCHandle.Alloc(predicate);
+        var handle = CallbackHandle.Alloc(predicate);
         try
         {
-            SDL_FilterEvents(&FilterTrampoline, (void*)GCHandle.ToIntPtr(handle));
+            SDL_FilterEvents(&FilterTrampoline, (void*)CallbackHandle.ToIntPtr(handle));
         }
         finally
         {
@@ -700,28 +735,28 @@ public sealed unsafe class Application : IDisposable
                 break;
 
             case Native.SDL_EventType.SDL_EVENT_PEN_PROXIMITY_IN:
-                PenProximityIn?.Invoke(new PenProximityEventArgs(e.pproximity.windowID.Value, e.pproximity.which));
+                PenProximityIn?.Invoke(new PenProximityEventArgs(e.pproximity.windowID.Value, e.pproximity.which, (PenInput)e.pproximity.pen_state, (PenDeviceType)e.pproximity.device_type));
                 break;
             case Native.SDL_EventType.SDL_EVENT_PEN_PROXIMITY_OUT:
-                PenProximityOut?.Invoke(new PenProximityEventArgs(e.pproximity.windowID.Value, e.pproximity.which));
+                PenProximityOut?.Invoke(new PenProximityEventArgs(e.pproximity.windowID.Value, e.pproximity.which, (PenInput)e.pproximity.pen_state, (PenDeviceType)e.pproximity.device_type));
                 break;
             case Native.SDL_EventType.SDL_EVENT_PEN_DOWN:
-                PenDown?.Invoke(new PenTouchEventArgs(e.ptouch.windowID.Value, e.ptouch.which, e.ptouch.x, e.ptouch.y, e.ptouch.eraser != 0, e.ptouch.down != 0));
+                PenDown?.Invoke(new PenTouchEventArgs(e.ptouch.windowID.Value, e.ptouch.which, e.ptouch.x, e.ptouch.y, e.ptouch.eraser != 0, e.ptouch.down != 0, (PenInput)e.ptouch.pen_state, (PenDeviceType)e.ptouch.device_type));
                 break;
             case Native.SDL_EventType.SDL_EVENT_PEN_UP:
-                PenUp?.Invoke(new PenTouchEventArgs(e.ptouch.windowID.Value, e.ptouch.which, e.ptouch.x, e.ptouch.y, e.ptouch.eraser != 0, e.ptouch.down != 0));
+                PenUp?.Invoke(new PenTouchEventArgs(e.ptouch.windowID.Value, e.ptouch.which, e.ptouch.x, e.ptouch.y, e.ptouch.eraser != 0, e.ptouch.down != 0, (PenInput)e.ptouch.pen_state, (PenDeviceType)e.ptouch.device_type));
                 break;
             case Native.SDL_EventType.SDL_EVENT_PEN_MOTION:
-                PenMotion?.Invoke(new PenMotionEventArgs(e.pmotion.windowID.Value, e.pmotion.which, e.pmotion.x, e.pmotion.y));
+                PenMotion?.Invoke(new PenMotionEventArgs(e.pmotion.windowID.Value, e.pmotion.which, e.pmotion.x, e.pmotion.y, (PenInput)e.pmotion.pen_state, (PenDeviceType)e.pmotion.device_type));
                 break;
             case Native.SDL_EventType.SDL_EVENT_PEN_BUTTON_DOWN:
-                PenButtonDown?.Invoke(new PenButtonEventArgs(e.pbutton.windowID.Value, e.pbutton.which, e.pbutton.x, e.pbutton.y, e.pbutton.button, e.pbutton.down != 0));
+                PenButtonDown?.Invoke(new PenButtonEventArgs(e.pbutton.windowID.Value, e.pbutton.which, e.pbutton.x, e.pbutton.y, e.pbutton.button, e.pbutton.down != 0, (PenInput)e.pbutton.pen_state, (PenDeviceType)e.pbutton.device_type));
                 break;
             case Native.SDL_EventType.SDL_EVENT_PEN_BUTTON_UP:
-                PenButtonUp?.Invoke(new PenButtonEventArgs(e.pbutton.windowID.Value, e.pbutton.which, e.pbutton.x, e.pbutton.y, e.pbutton.button, e.pbutton.down != 0));
+                PenButtonUp?.Invoke(new PenButtonEventArgs(e.pbutton.windowID.Value, e.pbutton.which, e.pbutton.x, e.pbutton.y, e.pbutton.button, e.pbutton.down != 0, (PenInput)e.pbutton.pen_state, (PenDeviceType)e.pbutton.device_type));
                 break;
             case Native.SDL_EventType.SDL_EVENT_PEN_AXIS:
-                PenAxisMotion?.Invoke(new PenAxisEventArgs(e.paxis.windowID.Value, e.paxis.which, e.paxis.x, e.paxis.y, (PenAxis)e.paxis.axis, e.paxis.value));
+                PenAxisMotion?.Invoke(new PenAxisEventArgs(e.paxis.windowID.Value, e.paxis.which, e.paxis.x, e.paxis.y, (PenAxis)e.paxis.axis, e.paxis.value, (PenInput)e.paxis.pen_state, (PenDeviceType)e.paxis.device_type));
                 break;
 
             case Native.SDL_EventType.SDL_EVENT_DROP_FILE:
@@ -826,21 +861,98 @@ public sealed unsafe class Application : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (_disposed) return;
+        if (_thread != Environment.CurrentManagedThreadId) throw new InvalidOperationException("Dispose the application on its creating thread.");
+        CallbackErrors.EnsureOutsideCallback();
+        if (Volatile.Read(ref _pendingOperations) != 0) throw new InvalidOperationException("Complete or dispose outstanding SDL operations first.");
+        NativeLifetime.CheckSessionShutdown(this);
         SDL_SetEventFilter(null, null);
         if (_eventFilterHandle.IsAllocated) _eventFilterHandle.Free();
         _eventFilterHandle = default;
-
-        lock (WatchHandles)
-        {
-            foreach (var (handler, handle) in WatchHandles)
-            {
-                SDL_RemoveEventWatch(&WatchTrampoline, (void*)GCHandle.ToIntPtr(handle));
-                handle.Free();
-            }
-
-            WatchHandles.Clear();
-        }
-
+        RawEventHandler[] watches;
+        lock (WatchHandles) watches = WatchHandles.Keys.ToArray();
+        foreach (var watch in watches) RemoveEventWatch(watch);
+        SdlLog.SetOutputFunction(null);
+        SdlAssert.SetAssertionHandler(null);
+        Mouse.SetRelativeTransform(null);
         SDL_Quit();
+        NativeLifetime.EndSession(this);
+        Keyboard.ReleaseNames();
+        RawEventFilter = null;
+        Quit = null;
+        KeyDown = null;
+        KeyUp = null;
+        TextInput = null;
+        MouseMotion = null;
+        MouseButtonDown = null;
+        MouseButtonUp = null;
+        MouseWheel = null;
+        Window = null;
+        UserEvent = null;
+        Display = null;
+        KeyboardAdded = null;
+        KeyboardRemoved = null;
+        MouseAdded = null;
+        MouseRemoved = null;
+        TextEditing = null;
+        TextEditingCandidates = null;
+        JoystickAxisMotion = null;
+        JoystickBallMotion = null;
+        JoystickHatMotion = null;
+        JoystickButtonDown = null;
+        JoystickButtonUp = null;
+        JoystickAdded = null;
+        JoystickRemoved = null;
+        JoystickUpdateComplete = null;
+        JoystickBatteryUpdated = null;
+        GamepadAxisMotion = null;
+        GamepadButtonDown = null;
+        GamepadButtonUp = null;
+        GamepadAdded = null;
+        GamepadRemoved = null;
+        GamepadRemapped = null;
+        GamepadUpdateComplete = null;
+        GamepadSteamHandleUpdated = null;
+        GamepadTouchpadDown = null;
+        GamepadTouchpadMotion = null;
+        GamepadTouchpadUp = null;
+        GamepadSensorUpdate = null;
+        FingerDown = null;
+        FingerUp = null;
+        FingerMotion = null;
+        FingerCanceled = null;
+        PinchBegin = null;
+        PinchUpdate = null;
+        PinchEnd = null;
+        PenProximityIn = null;
+        PenProximityOut = null;
+        PenDown = null;
+        PenUp = null;
+        PenMotion = null;
+        PenButtonDown = null;
+        PenButtonUp = null;
+        PenAxisMotion = null;
+        Drop = null;
+        ClipboardUpdate = null;
+        SensorUpdate = null;
+        AudioDeviceEvent = null;
+        CameraDeviceEvent = null;
+        RenderEvent = null;
+        _disposed = true;
+        lock (SessionGate) _current = null;
+    }
+    /// <summary>Reads a batch from the event queue and invokes a callback for each event while its native data is valid. Returns the number read. Set remove to false to peek.</summary>
+    public static int ReadEvents(RawEventHandler callback, int maximumCount = 64, bool remove = true, EventType minimum = 0, EventType maximum = (EventType)0xFFFF)
+    {
+        ArgumentNullException.ThrowIfNull(callback);
+        ArgumentOutOfRangeException.ThrowIfNegative(maximumCount);
+        var events = new Native.SDL_Event[maximumCount];
+        fixed (Native.SDL_Event* data = events)
+        {
+            var count = SDL_PeepEvents(data, maximumCount, remove ? Native.SDL_EventAction.SDL_GETEVENT : Native.SDL_EventAction.SDL_PEEKEVENT, (uint)minimum, (uint)maximum);
+            if (count < 0) throw new SdlException();
+            for (var i = 0; i < count; i++) callback(new RawEvent((EventType)data[i].type, (nint)(data + i)));
+            return count;
+        }
     }
 }

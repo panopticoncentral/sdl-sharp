@@ -9,4 +9,5 @@
   <ItemGroup>
     <ProjectReference Include="../../src/SdlSharp.ImGui/SdlSharp.ImGui.csproj" />
   </ItemGroup>
+  <ItemGroup><EmbeddedResource Include="Fixtures/ProggyClean.stb" /></ItemGroup>
 </Project>

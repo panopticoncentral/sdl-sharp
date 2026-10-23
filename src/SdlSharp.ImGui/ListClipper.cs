@@ -16,11 +16,14 @@ namespace SdlSharp.ImGui;
 public sealed unsafe class ListClipper : IDisposable
 {
     private IGSharp_ListClipper* _handle;
+    private readonly Lifetime _lifetime;
 
     /// <summary>Creates a new list clipper.</summary>
     public ListClipper()
     {
-        _handle = IGSharp_ListClipper_New();
+        Context.Current.CheckCurrent();
+        _handle = IGSharp_ListClipper_Create(); var pointer = (nint)_handle;
+        _lifetime = Lifetime.Own(pointer, () => IGSharp_ListClipper_Destroy((IGSharp_ListClipper*)pointer));
     }
 
     /// <summary>
@@ -33,6 +36,9 @@ public sealed unsafe class ListClipper : IDisposable
         ThrowIfDisposed();
         IGSharp_ListClipper_Begin(_handle, itemsCount, itemsHeight);
     }
+
+    /// <summary>Application-defined index associated with this clipper.</summary>
+    public int UserIndex { get { ThrowIfDisposed(); return IGSharp_ListClipper_GetUserIndex(_handle); } set { ThrowIfDisposed(); IGSharp_ListClipper_SetUserIndex(_handle, value); } }
 
     /// <summary>Ends clipping (called automatically when stepping finishes, but safe to call explicitly).</summary>
     public void End()
@@ -87,13 +93,13 @@ public sealed unsafe class ListClipper : IDisposable
     {
         if (_handle != null)
         {
-            IGSharp_ListClipper_Delete(_handle);
+            _lifetime.Dispose();
             _handle = null;
         }
     }
 
     private void ThrowIfDisposed()
     {
-        if (_handle == null) throw new ObjectDisposedException(nameof(ListClipper));
+        _lifetime.Check();
     }
 }

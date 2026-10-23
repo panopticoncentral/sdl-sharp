@@ -11,7 +11,11 @@ namespace SdlSharp.Graphics.Gpu;
 /// </summary>
 public sealed unsafe class GpuTransferBuffer : IDisposable
 {
+    internal readonly NativeLifetime Lifetime;
     private readonly GpuDevice _device;
+    private readonly Native.SDL_GPUDevice* _devicePointer;
+    private Native.SDL_GPUDevice* DeviceHandle { get { _device.Lifetime.Check(); return _devicePointer; } }
+    internal GpuDevice Device => _device;
 
     /// <summary>
     /// The underlying native SDL_GPUTransferBuffer pointer.
@@ -21,6 +25,7 @@ public sealed unsafe class GpuTransferBuffer : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
             return _handle;
         }
     }
@@ -34,24 +39,28 @@ public sealed unsafe class GpuTransferBuffer : IDisposable
 
     internal GpuTransferBuffer(GpuDevice device, SDL_GPUTransferBuffer* handle, uint size)
     {
-        _device = device;
+        _device = new GpuDevice(device.Handle, ownsHandle: false);
+        _devicePointer = device.Handle;
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(GpuTransferBuffer), (nint)handle, true, parent: device.Lifetime);
         Size = size;
     }
 
-    /// <summary>
-    /// Maps the transfer buffer for CPU access.
-    /// The returned span is valid only until <see cref="Unmap"/> is called.
-    /// </summary>
-    /// <param name="cycle">Whether to cycle the buffer to avoid GPU stalls.</param>
-    /// <returns>A span over the mapped memory.</returns>
-    public Span<byte> Map(bool cycle = false) =>
-        new(Check((byte*)SDL_MapGPUTransferBuffer(_device.Handle, Handle, cycle)), (int)Size);
-
-    /// <summary>
-    /// Unmaps the transfer buffer, making it available for GPU operations again.
-    /// </summary>
-    public void Unmap() => SDL_UnmapGPUTransferBuffer(_device.Handle, Handle);
+    /// <summary>Maps this buffer until the returned lease is disposed.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    public GpuBufferMap Map(bool cycle = false)
+    {
+        var handle = Handle;
+        var device = DeviceHandle;
+        var size = checked((int)Size);
+        var lease = Lifetime.RetainExclusive();
+        try
+        {
+            var pixels = Check((byte*)SDL_MapGPUTransferBuffer(device, handle, cycle));
+            return new GpuBufferMap((nint)pixels, size, () => { SDL_UnmapGPUTransferBuffer(device, handle); lease.Dispose(); });
+        }
+        catch { lease.Dispose(); throw; }
+    }
 
     /// <summary>
     /// Copies data into the transfer buffer, mapping and unmapping it in one call.
@@ -63,9 +72,8 @@ public sealed unsafe class GpuTransferBuffer : IDisposable
     public void Write(ReadOnlySpan<byte> data, uint offset = 0, bool cycle = false)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan(offset + (ulong)data.Length, Size, nameof(data));
-        var mapped = Check((byte*)SDL_MapGPUTransferBuffer(_device.Handle, Handle, cycle));
-        data.CopyTo(new Span<byte>(mapped + offset, data.Length));
-        SDL_UnmapGPUTransferBuffer(_device.Handle, Handle);
+        using var mapping = Map(cycle);
+        data.CopyTo(mapping.Span.Slice(checked((int)offset), data.Length));
     }
 
     /// <summary>
@@ -88,9 +96,8 @@ public sealed unsafe class GpuTransferBuffer : IDisposable
     public void Read(Span<byte> destination, uint offset = 0)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan(offset + (ulong)destination.Length, Size, nameof(destination));
-        var mapped = Check((byte*)SDL_MapGPUTransferBuffer(_device.Handle, Handle, false));
-        new ReadOnlySpan<byte>(mapped + offset, destination.Length).CopyTo(destination);
-        SDL_UnmapGPUTransferBuffer(_device.Handle, Handle);
+        using var mapping = Map();
+        mapping.Span.Slice(checked((int)offset), destination.Length).CopyTo(destination);
     }
 
     /// <summary>
@@ -106,10 +113,11 @@ public sealed unsafe class GpuTransferBuffer : IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_handle != null && !_device.IsDisposed)
+        if (_handle != null && _device.Lifetime.IsAlive)
         {
-            SDL_ReleaseGPUTransferBuffer(_device.Handle, _handle);
+            Lifetime.Release(() => { SDL_ReleaseGPUTransferBuffer(DeviceHandle, _handle); });
         }
         _handle = null;
+        _device.Dispose();
     }
 }

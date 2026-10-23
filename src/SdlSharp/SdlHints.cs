@@ -16,7 +16,7 @@ public static unsafe class SdlHints
     /// <param name="name">The hint name.</param>
     /// <param name="value">The hint value.</param>
     /// <returns>true if the hint was set, false otherwise.</returns>
-    public static bool Set(string name, string value) =>
+    public static bool Set(string name, string? value) =>
         SDL_SetHint(ToUtf8(name), ToUtf8(value));
 
     /// <summary>
@@ -26,7 +26,7 @@ public static unsafe class SdlHints
     /// <param name="value">The value to set.</param>
     /// <param name="priority">The priority to set it with.</param>
     /// <returns>True if the hint was set.</returns>
-    public static bool Set(string name, string value, HintPriority priority) =>
+    public static bool Set(string name, string? value, HintPriority priority) =>
         SDL_SetHintWithPriority(ToUtf8(name), ToUtf8(value), (Native.SDL_HintPriority)priority);
 
     /// <summary>
@@ -57,4 +57,31 @@ public static unsafe class SdlHints
     /// Resets all hints to their default values.
     /// </summary>
     public static void ResetAll() => SDL_ResetHints();
+    /// <summary>Observes hint changes, including an immediate notification of the current value. Dispose to unregister.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    public static IDisposable Observe(string name, Action<string?, string?> changed)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(name);
+        var registration = CallbackHandle.Alloc(changed);
+        var operation = Application.BeginOperation();
+        try { Check(SDL_AddHintCallback(ToUtf8(name), &HintChanged, (void*)(nint)registration)); }
+        catch { registration.Free(); operation.Dispose(); throw; }
+        return new SdlScope(() =>
+        {
+            CallbackErrors.EnsureOutsideCallback();
+            SDL_RemoveHintCallback(ToUtf8(name), &HintChanged, (void*)(nint)registration);
+            registration.Free(); operation.Dispose();
+        });
+    }
+    [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+    private static void HintChanged(void* data, byte* name, byte* previous, byte* current)
+    {
+        try
+        {
+            using var scope = CallbackErrors.Enter();
+            if (CallbackHandle.FromIntPtr((nint)data).Target is Action<string?, string?> changed)
+                changed(Marshal.PtrToStringUTF8((nint)previous), Marshal.PtrToStringUTF8((nint)current));
+        }
+        catch (Exception error) { CallbackErrors.Capture(error); }
+    }
 }

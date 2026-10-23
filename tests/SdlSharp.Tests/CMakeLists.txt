@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.20)
+project(SdlAbiProbe C)
+if(NOT SDL_INCLUDE_DIR)
+    message(FATAL_ERROR "Pass -DSDL_INCLUDE_DIR=/path/to/SDL/include")
+endif()
+add_executable(sdl-abi-probe native-probe.c)
+target_include_directories(sdl-abi-probe PRIVATE "${SDL_INCLUDE_DIR}")
+set_target_properties(sdl-abi-probe PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON)

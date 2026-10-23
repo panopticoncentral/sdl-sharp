@@ -12,22 +12,29 @@ namespace SdlSharp.Input;
 public sealed unsafe class Haptic : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     internal Native.SDL_Haptic* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private Native.SDL_Haptic* _handle;
+    private Action<nint> _close = pointer => SDL_CloseHaptic((Native.SDL_Haptic*)pointer);
 
-    internal Haptic(Native.SDL_Haptic* handle, bool ownsHandle = true)
+    internal Haptic(Native.SDL_Haptic* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Haptic), (nint)handle, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>Opens a haptic device by instance ID.</summary>
@@ -38,9 +45,27 @@ public sealed unsafe class Haptic : IDisposable
     public static Haptic OpenFromMouse() =>
         new(Check(SDL_OpenHapticFromMouse()));
 
-    /// <summary>Opens the haptic device associated with a joystick.</summary>
-    public static Haptic OpenFromJoystick(Joystick joystick) =>
-        new(Check(SDL_OpenHapticFromJoystick(joystick.Handle)));
+    /// <summary>Opens the haptic device associated with a joystick, retaining the joystick until all references to the haptic device close.</summary>
+    public static Haptic OpenFromJoystick(Joystick joystick) => OpenFromJoystickCore(joystick,
+        pointer => (nint)Check(SDL_OpenHapticFromJoystick((Native.SDL_Joystick*)pointer)),
+        pointer => SDL_CloseHaptic((Native.SDL_Haptic*)pointer));
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The shared haptic lifetime owns the joystick lease until final close; failed opens release it immediately.")]
+    internal static Haptic OpenFromJoystickCore(Joystick joystick, Func<nint, nint> open, Action<nint> close)
+    {
+        ArgumentNullException.ThrowIfNull(joystick);
+        var pointer = (nint)joystick.Handle;
+        var lease = joystick.Lifetime.Retain();
+        nint handle = 0;
+        try
+        {
+            handle = open(pointer);
+            var result = new Haptic((Native.SDL_Haptic*)handle) { _close = close };
+            result.Lifetime.AddCleanup(lease.Dispose);
+            return result;
+        }
+        catch { if (handle != 0) close(handle); lease.Dispose(); throw; }
+    }
 
     /// <summary>Gets the instance IDs of all connected haptic devices.</summary>
     /// <exception cref="SdlException">The device list could not be retrieved (an empty array is the no-devices result).</exception>
@@ -83,7 +108,7 @@ public sealed unsafe class Haptic : IDisposable
     /// <summary>Stops the simple rumble on this device.</summary>
     public void StopRumble() => Check(SDL_StopHapticRumble(Handle));
 
-    internal bool IsDisposed => _handle == null;
+    internal bool IsDisposed => _handle == null || !Lifetime.IsAlive;
 
     /// <summary>Gets the instance ID of this haptic device.</summary>
     public uint Id => SDL_GetHapticID(Handle).Value;
@@ -272,7 +297,10 @@ public sealed unsafe class Haptic : IDisposable
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_CloseHaptic(_handle);
+            Lifetime.Release(() =>
+            {
+                _close((nint)_handle);
+            });
         }
         _handle = null;
     }

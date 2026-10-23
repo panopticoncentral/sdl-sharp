@@ -170,7 +170,7 @@ public readonly record struct Display(uint Id)
 
     /// <summary>
     /// Gets the properties associated with this display (see <see cref="DisplayProperties"/>
-    /// for the recognized names). The returned group is owned by SDL and must not be disposed.
+    /// for the recognized names). The returned group is owned by SDL; disposing this view does not destroy the native group.
     /// </summary>
     public PropertyGroup Properties =>
         new(CheckId(SDL_GetDisplayProperties(new SDL_DisplayID(Id))), ownsHandle: false);

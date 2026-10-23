@@ -9,18 +9,20 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct MultiSelectIO
 {
-    internal readonly IGSharp_MultiSelectIO* Handle;
+    private readonly NativeView<IGSharp_MultiSelectIO> _view;
+    internal IGSharp_MultiSelectIO* Handle => _view.Handle;
+    internal Lifetime Lifetime => _view.Lifetime!;
 
-    internal MultiSelectIO(IGSharp_MultiSelectIO* handle) => Handle = handle;
+    internal MultiSelectIO(IGSharp_MultiSelectIO* handle, Lifetime? lifetime = null, bool? frame = null) => _view = new(handle, lifetime, frame ?? true);
 
     /// <summary>True if this handle refers to a valid multi-select context.</summary>
-    public bool IsValid => Handle != null;
+    public bool IsValid => _view.IsValid;
 
     /// <summary>Number of selection requests to apply.</summary>
     public int RequestsCount => IGSharp_MultiSelectIO_GetRequestsCount(Handle);
 
     /// <summary>Gets the request at the given index.</summary>
-    public SelectionRequest GetRequest(int index) => new(IGSharp_MultiSelectIO_GetRequest(Handle, index));
+    public SelectionRequest GetRequest(int index) { ArgumentOutOfRangeException.ThrowIfNegative(index); ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, RequestsCount); return new(IGSharp_MultiSelectIO_GetRequest(Handle, index)); }
 
     /// <summary>(Clipper) Range source item — must be submitted even if clipped.</summary>
     public long RangeSrcItem => IGSharp_MultiSelectIO_GetRangeSrcItem(Handle);

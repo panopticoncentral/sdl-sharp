@@ -5,67 +5,67 @@ using static SdlSharp.ImGui.Native;
 namespace SdlSharp.ImGui;
 
 /// <summary>
-/// Flags for a <see cref="FontAtlas"/>.
-/// </summary>
-[Flags]
-public enum FontAtlasFlags
-{
-    /// <summary>No flags.</summary>
-    None = 0,
-    /// <summary>Don't round the texture height to the next power of two.</summary>
-    NoPowerOfTwoHeight = 1 << 0,
-    /// <summary>Don't build software mouse cursors into the atlas (saves a little texture memory).</summary>
-    NoMouseCursors = 1 << 1,
-    /// <summary>Don't build thick-line textures into the atlas (saves texture memory, allows point/nearest filtering).</summary>
-    NoBakedLines = 1 << 2,
-}
-
-/// <summary>
 /// A handle to ImGui's shared font atlas. Obtain via <see cref="ImGui.GetFontAtlas"/>.
 /// The atlas is owned by ImGui — do not dispose.
 /// </summary>
 public readonly unsafe struct FontAtlas
 {
-    internal readonly IGSharp_FontAtlas* Handle;
+    private readonly NativeView<IGSharp_FontAtlas> _view;
+    internal IGSharp_FontAtlas* Handle => _view.Handle;
+    internal Lifetime Lifetime => _view.Lifetime!;
 
-    internal FontAtlas(IGSharp_FontAtlas* handle) => Handle = handle;
+    internal FontAtlas(IGSharp_FontAtlas* handle, Lifetime? lifetime = null, bool? frame = null) => _view = new(handle, lifetime, frame ?? false);
 
     /// <summary>True if this handle refers to a valid font atlas.</summary>
-    public bool IsValid => Handle != null;
+    public bool IsValid => _view.IsValid;
+
+    /// <summary>Deferred atlas texture reference, safe to record before GPU upload.</summary>
+    public TextureReference TextureReference
+    {
+        get { var value = IGSharp_FontAtlas_GetTexRef(Handle); if (value.Data != null) _ = SdlSharp.ImGui.Lifetime.Capture((nint)value.Data, Lifetime); return new(value); }
+    }
+
+    private void EnsureMutable() { Context.TryGetCurrent()?.CheckOutsideCallback(); if (IsLocked) throw new InvalidOperationException("The font atlas is locked during a frame."); }
+    internal Font Wrap(IGSharp_Font* pointer)
+    {
+        if (pointer == null) throw new InvalidOperationException("ImGui could not load the font.");
+        return new(pointer, Lifetime.Capture((nint)pointer, Lifetime));
+    }
 
     // --- Adding fonts ---
 
     /// <summary>Adds the default ProggyClean.ttf font.</summary>
     public Font AddDefaultFont(FontConfig? config = null)
     {
-        if (config == null) return new(IGSharp_FontAtlas_AddFontDefault(Handle, null));
+        EnsureMutable();
+        if (config == null) return Wrap(IGSharp_FontAtlas_AddFontDefault(Handle, null));
         using var scope = config.PrepareForAdd(Handle);
-        return new(IGSharp_FontAtlas_AddFontDefault(Handle, scope.Handle));
+        return scope.Finish(IGSharp_FontAtlas_AddFontDefault(Handle, scope.Handle), Lifetime);
     }
 
     /// <summary>Adds the default embedded vector font (scales cleanly to any size).</summary>
     public Font AddDefaultVectorFont(FontConfig? config = null)
     {
-        if (config == null) return new(IGSharp_FontAtlas_AddFontDefaultVector(Handle, null));
+        EnsureMutable();
+        if (config == null) return Wrap(IGSharp_FontAtlas_AddFontDefaultVector(Handle, null));
         using var scope = config.PrepareForAdd(Handle);
-        return new(IGSharp_FontAtlas_AddFontDefaultVector(Handle, scope.Handle));
+        return scope.Finish(IGSharp_FontAtlas_AddFontDefaultVector(Handle, scope.Handle), Lifetime);
     }
 
     /// <summary>Adds the default embedded bitmap font (ProggyClean, crisp at its native 13px size).</summary>
     public Font AddDefaultBitmapFont(FontConfig? config = null)
     {
-        if (config == null) return new(IGSharp_FontAtlas_AddFontDefaultBitmap(Handle, null));
+        EnsureMutable();
+        if (config == null) return Wrap(IGSharp_FontAtlas_AddFontDefaultBitmap(Handle, null));
         using var scope = config.PrepareForAdd(Handle);
-        return new(IGSharp_FontAtlas_AddFontDefaultBitmap(Handle, scope.Handle));
+        return scope.Finish(IGSharp_FontAtlas_AddFontDefaultBitmap(Handle, scope.Handle), Lifetime);
     }
 
     /// <summary>Loads a font from a TTF/OTF file on disk.</summary>
     public Font AddFontFromFileTTF(string filename, float sizePixels, FontConfig? config = null)
     {
-        if (config == null)
-            return new(IGSharp_FontAtlas_AddFontFromFileTTF(Handle, ToUtf8(filename), sizePixels, null, null));
-        using var scope = config.PrepareForAdd(Handle);
-        return new(IGSharp_FontAtlas_AddFontFromFileTTF(Handle, ToUtf8(filename), sizePixels, scope.Handle, null));
+        ArgumentException.ThrowIfNullOrEmpty(filename);
+        return AddFontFromMemoryTTF(File.ReadAllBytes(filename), sizePixels, config);
     }
 
     /// <summary>
@@ -74,61 +74,40 @@ public readonly unsafe struct FontAtlas
     /// </summary>
     public Font AddFontFromMemoryTTF(ReadOnlySpan<byte> fontData, float sizePixels, FontConfig? config = null)
     {
-        // The atlas bakes glyphs lazily and reads the TTF data long after this call returns,
-        // so copy the managed buffer into ImGui-allocated memory and transfer ownership to
-        // the atlas (freed with the atlas), preserving the "buffer may be discarded" contract.
-        var copy = (byte*)IGSharp_MemAlloc((nuint)fontData.Length);
-        fontData.CopyTo(new Span<byte>(copy, fontData.Length));
-        if (config != null)
-        {
-            using var scope = config.PrepareForAdd(Handle);
-            var configHandle = scope.Handle;
-            // The atlas copies the config on add, so temporarily marking the caller's config is safe.
-            var previousOwnership = IGSharp_FontConfig_GetFontDataOwnedByAtlas(configHandle);
-            IGSharp_FontConfig_SetFontDataOwnedByAtlas(configHandle, true);
-            try
-            {
-                return new(IGSharp_FontAtlas_AddFontFromMemoryTTF(Handle, copy, fontData.Length, sizePixels, configHandle, null));
-            }
-            finally { IGSharp_FontConfig_SetFontDataOwnedByAtlas(configHandle, previousOwnership); }
-        }
-        var cfg = IGSharp_FontConfig_Create();
-        try
-        {
-            IGSharp_FontConfig_SetFontDataOwnedByAtlas(cfg, true);
-            return new(IGSharp_FontAtlas_AddFontFromMemoryTTF(Handle, copy, fontData.Length, sizePixels, cfg, null));
-        }
-        finally { IGSharp_FontConfig_Destroy(cfg); }
+        if (!TryAddFontFromMemoryTTF(fontData, sizePixels, out var font, config)) throw new InvalidOperationException("ImGui could not load the font.");
+        return font;
     }
 
     /// <summary>
     /// Loads a font from a compressed TTF buffer (produced by ImGui's <c>binary_to_compressed_c</c>
     /// tool). The data is decompressed into ImGui-owned memory, so the buffer does not need to
-    /// remain valid after this call.
+    /// remain valid after this call. Invalid data throws InvalidDataException; decompressed data is limited to 64 MiB by default.
     /// </summary>
-    public Font AddFontFromMemoryCompressedTTF(ReadOnlySpan<byte> compressedData, float sizePixels, FontConfig? config = null)
+    public Font AddFontFromMemoryCompressedTTF(ReadOnlySpan<byte> compressedData, float sizePixels, FontConfig? config = null, int maximumDecompressedSize = CompressedFont.DefaultMaximumSize)
     {
-        if (config == null)
-        {
-            fixed (byte* p = compressedData)
-                return new(IGSharp_FontAtlas_AddFontFromMemoryCompressedTTF(Handle, p, compressedData.Length, sizePixels, null, null));
-        }
-        using var scope = config.PrepareForAdd(Handle);
-        fixed (byte* p = compressedData)
-            return new(IGSharp_FontAtlas_AddFontFromMemoryCompressedTTF(Handle, p, compressedData.Length, sizePixels,
-                scope.Handle, null));
+        EnsureMutable();
+        return AddFontFromMemoryTTF(CompressedFont.Decode(compressedData, maximumDecompressedSize), sizePixels, config);
     }
 
-    /// <summary>
-    /// Loads a font from a base85-encoded compressed TTF string (produced by ImGui's
-    /// <c>binary_to_compressed_c</c> tool with <c>-base85</c>).
-    /// </summary>
-    public Font AddFontFromMemoryCompressedBase85TTF(string compressedDataBase85, float sizePixels, FontConfig? config = null)
+    /// <summary>Loads an ImGui Base85 compressed font after bounded decoding. Invalid data throws InvalidDataException; decompressed data is limited to 64 MiB by default.</summary>
+    public Font AddFontFromMemoryCompressedBase85TTF(string compressedDataBase85, float sizePixels, FontConfig? config = null, int maximumDecompressedSize = CompressedFont.DefaultMaximumSize)
     {
-        if (config == null)
-            return new(IGSharp_FontAtlas_AddFontFromMemoryCompressedBase85TTF(Handle, ToUtf8(compressedDataBase85), sizePixels, null, null));
-        using var scope = config.PrepareForAdd(Handle);
-        return new(IGSharp_FontAtlas_AddFontFromMemoryCompressedBase85TTF(Handle, ToUtf8(compressedDataBase85), sizePixels, scope.Handle, null));
+        EnsureMutable();
+        return AddFontFromMemoryCompressedTTF(CompressedFont.DecodeBase85(compressedDataBase85), sizePixels, config, maximumDecompressedSize);
+    }
+
+    /// <summary>Attempts to load a copied TTF/OTF buffer. Returns false for a rejected font.</summary>
+    public bool TryAddFontFromMemoryTTF(ReadOnlySpan<byte> data, float sizePixels, out Font font, FontConfig? config = null)
+    {
+        var handle = Handle;
+        if (IsLocked) throw new InvalidOperationException("Fonts cannot be added while the atlas is locked.");
+        fixed (byte* pointer = data)
+        {
+            using var scope = config?.PrepareForAdd(handle);
+            var result = IGSharp_FontAtlas_AddFontFromMemoryTTFCopy(handle, pointer, data.Length, sizePixels, scope == null ? null : scope.Handle, null);
+            if (result == null) { font = default; return false; }
+            font = scope == null ? Wrap(result) : scope.Finish(result, Lifetime); return true;
+        }
     }
 
     // --- Font enumeration / removal ---
@@ -137,30 +116,45 @@ public readonly unsafe struct FontAtlas
     public int FontCount => IGSharp_FontAtlas_GetFontCount(Handle);
 
     /// <summary>Gets a font at the given index (0 to <see cref="FontCount"/> - 1).</summary>
-    public Font GetFont(int index) => new(IGSharp_FontAtlas_GetFont(Handle, index));
+    public Font GetFont(int index) { ArgumentOutOfRangeException.ThrowIfNegative(index); ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, FontCount); return Wrap(IGSharp_FontAtlas_GetFont(Handle, index)); }
 
     /// <summary>Removes a font from the atlas and releases its baked data.</summary>
-    public void RemoveFont(Font font) => IGSharp_FontAtlas_RemoveFont(Handle, font.Handle);
+    public void RemoveFont(Font font)
+    {
+        EnsureMutable();
+        var handle = Handle; var target = font.Handle;
+        if (IGSharp_Font_GetOwnerAtlas(target) != handle) throw new ArgumentException("The font belongs to another atlas.", nameof(font));
+        Lifetime.EnsureUnretained(); font.Lifetime.EnsureUnretained(); IGSharp_FontAtlas_RemoveFont(handle, target); font.Lifetime.Dispose();
+    }
 
     // --- Clearing / cache management ---
 
-    /// <summary>Forces the atlas to build (rasterize) all queued fonts. Normally called automatically on first use.</summary>
-    public bool Build() => true; // ImGui now bakes fonts lazily on demand; there is no explicit atlas build step.
 
     /// <summary>Clears everything: fonts, input data, and baked texture data.</summary>
-    public void Clear() => IGSharp_FontAtlas_Clear(Handle);
+    public void Clear() { EnsureMutable(); Lifetime.EnsureUnretained(); IGSharp_FontAtlas_Clear(Handle); Lifetime.InvalidateChildren(); }
 
     /// <summary>Clears all fonts (input configs and their baked output).</summary>
-    public void ClearFonts() => IGSharp_FontAtlas_ClearFonts(Handle);
+    public void ClearFonts() { EnsureMutable(); Lifetime.EnsureUnretained(); IGSharp_FontAtlas_ClearFonts(Handle); Lifetime.InvalidateChildren(); }
 
-    /// <summary>Clears input font data (file buffers), keeping fonts and baked output. Frees CPU memory for loaded TTF data.</summary>
-    public void ClearInputData() => IGSharp_FontAtlas_ClearInputData(Handle);
+    /// <summary>Clears source buffers and baked glyph data. Font identities remain, but cannot load new glyphs until new sources are added.</summary>
+    public void ClearInputData()
+    {
+        EnsureMutable(); Lifetime.EnsureUnretained();
+        var fonts = new Font[FontCount]; for (var i = 0; i < fonts.Length; i++) fonts[i] = GetFont(i);
+        IGSharp_FontAtlas_ClearInputData(Handle);
+        foreach (var font in fonts) { font.Lifetime.InvalidateChildren(); font.Lifetime.ReleaseAttachments(); }
+    }
 
     /// <summary>Clears baked texture/glyph data; glyphs re-bake lazily on next use.</summary>
-    public void ClearTexData() => IGSharp_FontAtlas_ClearTexData(Handle);
+    public void ClearTexData()
+    {
+        EnsureMutable(); Lifetime.EnsureUnretained();
+        if (RendererHasTextures) throw new InvalidOperationException("Dynamic atlases do not support ClearTexData. Use Clear instead.");
+        IGSharp_FontAtlas_ClearTexData(Handle);
+    }
 
     /// <summary>Discards unused baked glyphs and sizes to shrink the atlas texture (safe to call any time).</summary>
-    public void CompactCache() => IGSharp_FontAtlas_CompactCache(Handle);
+    public void CompactCache() { Lifetime.EnsureUnretained(); IGSharp_FontAtlas_CompactCache(Handle); Lifetime.InvalidateGrandchildren(); }
 
     // --- Glyph ranges ---
 
@@ -207,6 +201,9 @@ public readonly unsafe struct FontAtlas
     /// <summary>Unregisters a custom rect, releasing its space in the atlas.</summary>
     public void RemoveCustomRect(int id) => IGSharp_FontAtlas_RemoveCustomRect(Handle, id);
 
+    /// <summary>Application-owned opaque native association; no ownership is transferred.</summary>
+    public nint UserData { get => (nint)IGSharp_FontAtlas_GetUserData(Handle); set => IGSharp_FontAtlas_SetUserData(Handle, (void*)value); }
+
     // --- Configuration ---
 
     /// <summary>Build flags for the atlas.</summary>
@@ -216,7 +213,7 @@ public readonly unsafe struct FontAtlas
         set => IGSharp_FontAtlas_SetFlags(Handle, (int)value);
     }
 
-    /// <summary>Preferred pixel format for the atlas texture. Default <see cref="TextureFormat.Rgba32"/>.</summary>
+    /// <summary>Preferred pixel format for the atlas texture. Default <see cref="TextureFormat.RGBA32"/>.</summary>
     public TextureFormat TexDesiredFormat
     {
         get => (TextureFormat)IGSharp_FontAtlas_GetTexDesiredFormat(Handle);
@@ -281,11 +278,11 @@ public readonly unsafe struct FontAtlas
     /// The atlas texture and its CPU-side pixel data. The texture is created and updated by the
     /// renderer backend — see <see cref="TextureData"/> for lifetime caveats.
     /// </summary>
-    public TextureData GetTexData() => new(IGSharp_FontAtlas_GetTexData(Handle));
+    public TextureData GetTexData() { var pointer = IGSharp_FontAtlas_GetTexData(Handle); return new(pointer, pointer == null ? null : Lifetime.Capture((nint)pointer, Lifetime)); }
 
     /// <summary>
     /// Backend-specific identifier for the current atlas texture (SDL_GPU backend:
-    /// an SDL_GPUTexture*), usable with <see cref="DrawList.AddImage(ulong, Vec2, Vec2, Vec2, Vec2, uint)"/>.
+    /// an SDL_GPUTexture*), usable with <see cref="DrawList.AddImage(TextureReference, Vec2, Vec2, Vec2, Vec2, uint)"/>.
     /// 0 until the backend creates the texture.
     /// </summary>
     public ulong TextureId => IGSharp_FontAtlas_GetTexID(Handle);

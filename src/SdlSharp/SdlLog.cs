@@ -11,8 +11,8 @@ namespace SdlSharp;
 /// </summary>
 public static unsafe class SdlLog
 {
-    // GCHandle to prevent the managed delegate from being collected while the native callback is active.
-    private static GCHandle _callbackHandle;
+    // CallbackHandle to prevent the managed delegate from being collected while the native callback is active.
+    private static CallbackHandle _callbackHandle;
 
     /// <summary>
     /// Sets the priority of all log categories.
@@ -55,25 +55,26 @@ public static unsafe class SdlLog
     /// <param name="callback">The callback to invoke, or null to reset to default.</param>
     public static void SetOutputFunction(Action<LogCategory, LogPriority, string?>? callback)
     {
-        // Free previous callback handle if any
-        if (_callbackHandle.IsAllocated)
-            _callbackHandle.Free();
-
+        CallbackErrors.EnsureOutsideCallback();
+        var previous = _callbackHandle;
+        _callbackHandle = callback == null ? default : CallbackHandle.Alloc(callback);
         if (callback == null)
         {
-            SDL_SetLogOutputFunction(null, null);
-            return;
+            SDL_SetLogOutputFunction(SDL_GetDefaultLogOutputFunction(), null);
         }
-
-        _callbackHandle = GCHandle.Alloc(callback);
-        SDL_SetLogOutputFunction(&NativeLogCallback, (void*)(nint)_callbackHandle);
+        else SDL_SetLogOutputFunction(&NativeLogCallback, (void*)(nint)_callbackHandle);
+        previous.Free();
     }
 
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static void NativeLogCallback(void* userdata, int category, Native.SDL_LogPriority priority, byte* message)
     {
-        var handle = GCHandle.FromIntPtr((nint)userdata);
-        var callback = (Action<LogCategory, LogPriority, string?>)handle.Target!;
-        callback((LogCategory)category, (LogPriority)priority, Marshal.PtrToStringUTF8((nint)message));
+        try
+        {
+            using var scope = CallbackErrors.Enter();
+            if (CallbackHandle.FromIntPtr((nint)userdata).Target is Action<LogCategory, LogPriority, string?> callback)
+                callback((LogCategory)category, (LogPriority)priority, Marshal.PtrToStringUTF8((nint)message));
+        }
+        catch (Exception error) { CallbackErrors.Capture(error); }
     }
 }

@@ -8,11 +8,12 @@ namespace SdlSharp.ImGui;
 /// determine which event is firing, and use the mutation helpers (<see cref="InsertChars(int, string)"/>,
 /// <see cref="DeleteChars"/>, <see cref="SelectAll"/>, etc.) to react.
 /// </summary>
-public readonly unsafe struct InputTextCallbackData
+public readonly unsafe ref struct InputTextCallbackData
 {
-    internal readonly IGSharp_InputTextCallbackData* Handle;
+    private readonly IGSharp_InputTextCallbackData* _handle;
+    internal IGSharp_InputTextCallbackData* Handle => _handle != null ? _handle : throw new InvalidOperationException("The callback data is empty.");
 
-    internal InputTextCallbackData(IGSharp_InputTextCallbackData* handle) => Handle = handle;
+    internal InputTextCallbackData(IGSharp_InputTextCallbackData* handle) => _handle = handle;
 
     /// <summary>Which callback event fired (one of <c>InputTextFlags.Callback*</c>).</summary>
     public InputTextFlags EventFlag => (InputTextFlags)IGSharp_InputTextCallbackData_GetEventFlag(Handle);
@@ -48,7 +49,7 @@ public readonly unsafe struct InputTextCallbackData
     public int BufTextLen
     {
         get => IGSharp_InputTextCallbackData_GetBufTextLen(Handle);
-        set => IGSharp_InputTextCallbackData_SetBufTextLen(Handle, value);
+        set { ArgumentOutOfRangeException.ThrowIfNegative(value); ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(value, BufSize); IGSharp_InputTextCallbackData_SetBufTextLen(Handle, value); }
     }
 
     /// <summary>Buffer capacity in bytes.</summary>
@@ -65,35 +66,47 @@ public readonly unsafe struct InputTextCallbackData
     public int CursorPos
     {
         get => IGSharp_InputTextCallbackData_GetCursorPos(Handle);
-        set => IGSharp_InputTextCallbackData_SetCursorPos(Handle, value);
+        set { ValidatePosition(value); IGSharp_InputTextCallbackData_SetCursorPos(Handle, value); }
     }
 
     /// <summary>Selection start position in bytes.</summary>
     public int SelectionStart
     {
         get => IGSharp_InputTextCallbackData_GetSelectionStart(Handle);
-        set => IGSharp_InputTextCallbackData_SetSelectionStart(Handle, value);
+        set { ValidatePosition(value); IGSharp_InputTextCallbackData_SetSelectionStart(Handle, value); }
     }
 
     /// <summary>Selection end position in bytes (exclusive).</summary>
     public int SelectionEnd
     {
         get => IGSharp_InputTextCallbackData_GetSelectionEnd(Handle);
-        set => IGSharp_InputTextCallbackData_SetSelectionEnd(Handle, value);
+        set { ValidatePosition(value); IGSharp_InputTextCallbackData_SetSelectionEnd(Handle, value); }
     }
 
     /// <summary>Deletes <paramref name="bytesCount"/> bytes starting at <paramref name="pos"/>.</summary>
     public void DeleteChars(int pos, int bytesCount)
-        => IGSharp_InputTextCallbackData_DeleteChars(Handle, pos, bytesCount);
+        { ValidatePosition(pos); ArgumentOutOfRangeException.ThrowIfNegative(bytesCount); ArgumentOutOfRangeException.ThrowIfGreaterThan(bytesCount, BufTextLen - pos); IGSharp_InputTextCallbackData_DeleteChars(Handle, pos, bytesCount); }
 
     /// <summary>Inserts UTF-8 bytes at <paramref name="pos"/>.</summary>
     public void InsertChars(int pos, ReadOnlySpan<byte> text)
-        => IGSharp_InputTextCallbackData_InsertChars(Handle, pos, text, null);
+        { ValidatePosition(pos); IGSharp_InputTextCallbackData_InsertChars(Handle, pos, text); }
 
     /// <summary>Inserts a managed string (encoded as UTF-8) at <paramref name="pos"/>.</summary>
     public void InsertChars(int pos, string text)
-        => IGSharp_InputTextCallbackData_InsertChars(Handle, pos, ToUtf8(text), null);
+        { ArgumentNullException.ThrowIfNull(text); InsertChars(pos, ToUtf8Range(text)); }
 
+    private void ValidatePosition(int position) { ArgumentOutOfRangeException.ThrowIfNegative(position); ArgumentOutOfRangeException.ThrowIfGreaterThan(position, BufTextLen); }
+    /// <summary>The owning managed context.</summary>
+    public Context Context => SdlSharp.ImGui.Context.Current;
+    /// <summary>The stable ID of the edited widget.</summary>
+    public uint Id => IGSharp_InputTextCallbackData_GetID(Handle);
+    /// <summary>Sets selection endpoints in UTF-8 byte offsets.</summary>
+    public void SetSelection(int start, int end)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(start); ArgumentOutOfRangeException.ThrowIfGreaterThan(start, BufTextLen);
+        ArgumentOutOfRangeException.ThrowIfNegative(end); ArgumentOutOfRangeException.ThrowIfGreaterThan(end, BufTextLen);
+        IGSharp_InputTextCallbackData_SetSelection(Handle, start, end);
+    }
     /// <summary>Selects the entire buffer.</summary>
     public void SelectAll() => IGSharp_InputTextCallbackData_SelectAll(Handle);
 
@@ -106,15 +119,15 @@ public readonly unsafe struct InputTextCallbackData
     /// <summary>
     /// Replaces the buffer pointer (used during a <see cref="InputTextFlags.CallbackResize"/> event
     /// to point ImGui at a freshly-grown buffer). The new buffer must remain valid until the
-    /// callback returns.
+    /// enclosing InputText call returns.
     /// </summary>
-    public void SetBuf(byte* newBuf) => IGSharp_InputTextCallbackData_SetBuf(Handle, newBuf);
+    internal void SetBuf(byte* newBuf) => IGSharp_InputTextCallbackData_SetBuf(Handle, newBuf);
 
     /// <summary>Sets the buffer capacity in bytes.</summary>
-    public void SetBufSize(int size) => IGSharp_InputTextCallbackData_SetBufSize(Handle, size);
+    internal void SetBufSize(int size) => IGSharp_InputTextCallbackData_SetBufSize(Handle, size);
 
     /// <summary>Atomic helper: replace both buffer pointer and capacity, used during a resize callback.</summary>
-    public void ResizeBuf(byte* newBuf, int newSize) => IGSharp_InputTextCallbackData_ResizeBuf(Handle, newBuf, newSize);
+    internal void ResizeBuf(byte* newBuf, int newSize) => IGSharp_InputTextCallbackData_ResizeBuf(Handle, newBuf, newSize);
 }
 
 /// <summary>

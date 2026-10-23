@@ -11,8 +11,6 @@
 // SDL_bits.h / SDL_endian.h / SDL_intrin.h — bit tricks, byte swapping, and
 // compiler intrinsics (inline-only, no exports). .NET has
 // System.Numerics.BitOperations, BinaryPrimitives, and hardware intrinsics.
-// SDL_hidapi.h — raw HID device access. Large, low-level surface serving niche
-// hardware; use the joystick/gamepad APIs, or a .NET HID library (e.g. HidSharp).
 // SDL_iostream.h — stream abstraction consumed by SDL's *_IO loader variants.
 // .NET has System.IO; the *_IO loaders are individually skip-commented in the
 // binding files of the headers that declare them (Audio.cs, Surface.cs, ...).
@@ -38,8 +36,6 @@
 // SDL_stdinc.h — C standard-library shims (string/math/memory/PRNG/iconv). The
 // BCL covers all of it; the one needed piece, SDL_free (for SDL-owned returns),
 // is bound in Common.cs.
-// SDL_storage.h — console title/user storage abstraction; .NET targets use
-// System.IO, and the console platforms it abstracts are not .NET targets.
 // SDL_test*.h (11 headers) — SDL's own test harness (SDLTest_* symbols, shipped
 // as a separate static library); not part of the runtime API.
 // SDL_thread.h — threads and TLS; .NET has System.Threading.Thread,

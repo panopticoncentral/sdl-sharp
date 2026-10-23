@@ -14,6 +14,8 @@ namespace SdlSharp.Graphics;
 public sealed unsafe class Renderer : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     /// <summary>
     /// The underlying native SDL_Renderer pointer.
@@ -23,16 +25,43 @@ public sealed unsafe class Renderer : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
 
     private SDL_Renderer* _handle;
 
-    internal Renderer(SDL_Renderer* handle, bool ownsHandle = true)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    internal Renderer(SDL_Renderer* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Renderer), (nint)handle, ownsHandle, threadAffine: true, parent: parent);
         _ownsHandle = ownsHandle;
+        if (ownsHandle && parent == null)
+        {
+            var window = SDL_GetRenderWindow(handle);
+            if (window != null) Lifetime.SetParent(NativeLifetime.Get(typeof(Window), (nint)window, false, true));
+        }
+        _viewParent = ownsHandle ? null : parent;
+        if (ownsHandle)
+        {
+            var properties = SDL_GetRendererProperties(handle);
+            var surface = Native.Properties.SDL_GetPointerProperty(properties, ToUtf8(Render.SDL_PROP_RENDERER_SURFACE_POINTER), null);
+            if (surface != null)
+            {
+                var lease = NativeLifetime.Get(typeof(Surface), (nint)surface, false).Retain();
+                Lifetime.AddCleanup(lease.Dispose);
+            }
+            var gpu = Native.Properties.SDL_GetPointerProperty(properties, ToUtf8(Render.SDL_PROP_RENDERER_GPU_DEVICE_POINTER), null);
+            if (gpu != null)
+            {
+                var device = NativeLifetime.Get(typeof(GpuDevice), (nint)gpu, false);
+                if (device.HasOwners) { var lease = device.Retain(); Lifetime.AddCleanup(lease.Dispose); }
+                else device.SetParent(Lifetime);
+            }
+        }
     }
 
     /// <summary>
@@ -154,7 +183,7 @@ public sealed unsafe class Renderer : IDisposable
     /// <param name="name">The name of the rendering driver to initialize, or <c>null</c> for the first available.</param>
     /// <returns>A new renderer.</returns>
     public static Renderer Create(Window window, string? name = null) =>
-        new(Check(SDL_CreateRenderer(window.Handle, ToUtf8(name))));
+        new(Check(SDL_CreateRenderer(window.Handle, ToUtf8(name))), parent: window.Lifetime);
 
     /// <summary>
     /// Creates a 2D rendering context using properties to specify options.
@@ -169,8 +198,7 @@ public sealed unsafe class Renderer : IDisposable
     /// </summary>
     /// <param name="surface">The surface where rendering is done.</param>
     /// <returns>A new renderer.</returns>
-    public static Renderer CreateSoftware(Surface surface) =>
-        new(Check(SDL_CreateSoftwareRenderer(surface.Handle)));
+    public static Renderer CreateSoftware(Surface surface) => new(Check(SDL_CreateSoftwareRenderer(surface.Handle)));
 
     /// <summary>
     /// Creates a 2D rendering context for a window, using an existing GPU device.
@@ -188,7 +216,7 @@ public sealed unsafe class Renderer : IDisposable
     /// GPU passes (see also <see cref="GetGpuDevice"/>).
     /// </remarks>
     public static Renderer CreateGpu(GpuDevice device, Window window) =>
-        new(Check(SDL_CreateGPURenderer(device.Handle, window.Handle)));
+        new(Check(SDL_CreateGPURenderer(device.Handle, window.Handle)), parent: window.Lifetime);
 
     /// <summary>
     /// Creates a window and default renderer.
@@ -202,7 +230,8 @@ public sealed unsafe class Renderer : IDisposable
     {
         Check(SDL_CreateWindowAndRenderer(ToUtf8(title), w, h, (SDL_WindowFlags)flags,
             out var window, out var renderer));
-        return (new Window(window), new Renderer(renderer));
+        var owner = new Window(window);
+        return (owner, new Renderer(renderer, parent: owner.Lifetime));
     }
 
     /// <summary>
@@ -223,10 +252,10 @@ public sealed unsafe class Renderer : IDisposable
 
     /// <summary>
     /// Gets the properties associated with this renderer. The returned group is owned
-    /// by SDL and must not be disposed.
+    /// by SDL; disposing this view does not destroy the native group.
     /// </summary>
     public PropertyGroup Properties =>
-        new(CheckId(SDL_GetRendererProperties(Handle)), ownsHandle: false);
+        new(CheckId(SDL_GetRendererProperties(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>
     /// Gets the GPU device associated with this renderer, for renderers created via
@@ -234,7 +263,7 @@ public sealed unsafe class Renderer : IDisposable
     /// device is non-owning; do not dispose it independently of the renderer.
     /// </summary>
     /// <returns>The GPU device backing this renderer.</returns>
-    public GpuDevice GetGpuDevice() => new(Check(SDL_GetGPURendererDevice(Handle)), ownsHandle: false);
+    public GpuDevice GetGpuDevice() => new(Check(SDL_GetGPURendererDevice(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>
     /// Gets the output size in pixels of this renderer.
@@ -435,7 +464,7 @@ public sealed unsafe class Renderer : IDisposable
     /// <param name="h">The height of the texture in pixels.</param>
     /// <returns>A new texture.</returns>
     public Texture CreateTexture(PixelFormat format, TextureAccess access, int w, int h) =>
-        new(Check(SDL_CreateTexture(Handle, (SDL_PixelFormat)format, (SDL_TextureAccess)access, w, h)));
+        new(Check(SDL_CreateTexture(Handle, (SDL_PixelFormat)format, (SDL_TextureAccess)access, w, h)), parent: Lifetime);
 
     /// <summary>
     /// Creates a texture from an existing surface.
@@ -443,7 +472,7 @@ public sealed unsafe class Renderer : IDisposable
     /// <param name="surface">The surface containing pixel data used to fill the texture.</param>
     /// <returns>A new texture.</returns>
     public Texture CreateTextureFromSurface(Surface surface) =>
-        new(Check(SDL_CreateTextureFromSurface(Handle, surface.Handle)));
+        new(Check(SDL_CreateTextureFromSurface(Handle, surface.Handle)), parent: Lifetime);
 
     /// <summary>
     /// Creates a texture for this renderer, using properties to specify options. Property names
@@ -452,7 +481,7 @@ public sealed unsafe class Renderer : IDisposable
     /// <param name="properties">The properties to create the texture with.</param>
     /// <returns>A new texture.</returns>
     public Texture CreateTexture(PropertyGroup properties) =>
-        new(Check(SDL_CreateTextureWithProperties(Handle, properties.Id)));
+        new(Check(SDL_CreateTextureWithProperties(Handle, properties.Id)), parent: Lifetime);
 
     /// <summary>
     /// Copies a portion of the texture to the current rendering target.
@@ -668,6 +697,10 @@ public sealed unsafe class Renderer : IDisposable
     public void GeometryRaw(Texture? texture, ReadOnlySpan<float> xy, int xyStride, ReadOnlySpan<FColor> colors,
         int colorStride, ReadOnlySpan<float> uv, int uvStride, int vertexCount, ReadOnlySpan<int> indices)
     {
+        BufferBounds.Check(checked(xy.Length * sizeof(float)), vertexCount, 2 * sizeof(float), xyStride, nameof(xy));
+        BufferBounds.Check(checked(colors.Length * sizeof(FColor)), vertexCount, sizeof(FColor), colorStride, nameof(colors));
+        if (texture != null) BufferBounds.Check(checked(uv.Length * sizeof(float)), vertexCount, 2 * sizeof(float), uvStride, nameof(uv));
+        foreach (var index in indices) if ((uint)index >= (uint)vertexCount) throw new ArgumentOutOfRangeException(nameof(indices));
         fixed (float* xyPtr = xy)
         fixed (FColor* colorPtr = colors)
         fixed (float* uvPtr = uv)
@@ -848,7 +881,7 @@ public sealed unsafe class Renderer : IDisposable
         get
         {
             var ptr = SDL_GetRenderTarget(Handle);
-            return ptr == null ? null : new Texture(ptr, ownsHandle: false);
+            return ptr == null ? null : new Texture(ptr, ownsHandle: false, parent: Lifetime);
         }
         set => Check(SDL_SetRenderTarget(Handle, value is { } t ? t.Handle : null));
     }
@@ -937,13 +970,37 @@ public sealed unsafe class Renderer : IDisposable
         set => Check(SDL_SetDefaultTextureScaleMode(Handle, (SDL_ScaleMode)value));
     }
 
+    private int _dependentCount;
+    private readonly Stack<IDisposable> _dependentLeases = new();
+    internal void ValidateDependentOwner() { _ = Handle; if (!_ownsHandle) throw new ArgumentException("Pass the original owning SDL wrapper; borrowed aliases cannot retain native lifetime."); }
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    internal void RetainDependent() { ValidateDependentOwner(); _dependentLeases.Push(Lifetime.Retain()); _dependentCount++; }
+    internal void ReleaseDependent() { _dependentLeases.Pop().Dispose(); _dependentCount--; }
+
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (_dependentCount != 0) throw new InvalidOperationException("Dispose dependent backends before this resource.");
         if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyRenderer(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_DestroyRenderer(_handle);
+            });
         }
         _handle = null;
+    }
+    /// <summary>Gets the borrowed CAMetalLayer for this renderer. Valid only while the renderer remains alive.</summary>
+    public nint MetalLayer => SDL_GetRenderMetalLayer(Handle);
+    /// <summary>Gets the borrowed current Metal command encoder. Do not retain it across renderer operations.</summary>
+    public nint MetalCommandEncoder => SDL_GetRenderMetalCommandEncoder(Handle);
+    /// <summary>Adds caller-owned Vulkan semaphores to the current render submission.</summary>
+    public void AddVulkanSemaphores(uint waitStageMask, ulong waitSemaphore, ulong signalSemaphore) => Check(SDL_AddVulkanRenderSemaphores(Handle, waitStageMask, unchecked((long)waitSemaphore), unchecked((long)signalSemaphore)));
+    /// <summary>Sets custom GPU renderer state, or clears it with null.</summary>
+    public void SetGpuRenderState(GpuRenderState? state)
+    {
+        if (state != null && !ReferenceEquals(state.Renderer.Lifetime, Lifetime)) throw new ArgumentException("Render state belongs to a different renderer.", nameof(state));
+        Check(SDL_SetGPURenderState(Handle, state == null ? null : state.Handle));
+        Lifetime.Attachment = state;
     }
 }

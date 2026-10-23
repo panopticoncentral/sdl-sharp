@@ -12,18 +12,20 @@ public sealed unsafe class TrayMenu
 {
     private readonly Native.SDL_TrayMenu* _menu;
     private readonly Tray _tray;
+    internal readonly NativeLifetime Lifetime;
 
-    internal TrayMenu(Native.SDL_TrayMenu* menu, Tray tray)
+    internal TrayMenu(Native.SDL_TrayMenu* menu, Tray tray, NativeLifetime? parent = null)
     {
         _menu = menu;
         _tray = tray;
+        Lifetime = NativeLifetime.Get(typeof(TrayMenu), (nint)menu, false, threadAffine: true, parent: parent ?? tray.Lifetime);
     }
 
     private Native.SDL_TrayMenu* Menu
     {
         get
         {
-            ObjectDisposedException.ThrowIf(_tray.IsDisposed, _tray);
+            Lifetime.Check();
             return _menu;
         }
     }
@@ -36,7 +38,7 @@ public sealed unsafe class TrayMenu
     /// <param name="flags">Entry kind and initial state (ignored for separators).</param>
     /// <returns>The new entry (separators included; SDL returns an entry for every successful insert).</returns>
     public TrayEntry InsertEntry(int index, string? label, TrayEntryFlags flags = TrayEntryFlags.Button) =>
-        new(Check(SDL_InsertTrayEntryAt(Menu, index, ToUtf8(label), (uint)flags)), _tray);
+        new(Check(SDL_InsertTrayEntryAt(Menu, index, ToUtf8(label), (uint)flags)), _tray, Lifetime);
 
     /// <summary>Gets a snapshot of the menu's entries.</summary>
     public TrayEntry[] Entries
@@ -49,7 +51,7 @@ public sealed unsafe class TrayMenu
             var result = new TrayEntry[count];
             for (var i = 0; i < count; i++)
             {
-                result[i] = new TrayEntry(entries[i], _tray);
+                result[i] = new TrayEntry(entries[i], _tray, Lifetime);
             }
 
             return result;

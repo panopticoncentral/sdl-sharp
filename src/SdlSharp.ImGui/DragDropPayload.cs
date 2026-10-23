@@ -11,19 +11,21 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public readonly unsafe struct DragDropPayload
 {
-    internal readonly IGSharp_Payload* Handle;
+    private readonly NativeView<IGSharp_Payload> _view;
+    internal IGSharp_Payload* Handle => _view.Handle;
+    internal Lifetime Lifetime => _view.Lifetime!;
 
-    internal DragDropPayload(IGSharp_Payload* handle) => Handle = handle;
+    internal DragDropPayload(IGSharp_Payload* handle, Lifetime? lifetime = null, bool? frame = null) => _view = new(handle, lifetime, frame ?? true);
 
     /// <summary>True if this handle refers to an active payload.</summary>
-    public bool IsValid => Handle != null;
+    public bool IsValid => _view.IsValid;
 
     /// <summary>Raw payload bytes (valid only for the current frame).</summary>
     public ReadOnlySpan<byte> Data
     {
         get
         {
-            if (Handle == null) return default;
+            if (!_view.IsValid) return default;
             var ptr = IGSharp_Payload_GetData(Handle);
             var size = IGSharp_Payload_GetDataSize(Handle);
             return ptr == null ? default : new ReadOnlySpan<byte>(ptr, size);
@@ -31,21 +33,21 @@ public readonly unsafe struct DragDropPayload
     }
 
     /// <summary>The payload type identifier set by the source.</summary>
-    public string? DataType => Handle == null ? null : Marshal.PtrToStringUTF8((nint)IGSharp_Payload_GetDataType(Handle));
+    public string? DataType => !_view.IsValid ? null : Marshal.PtrToStringUTF8((nint)IGSharp_Payload_GetDataType(Handle));
 
     /// <summary>Checks whether the payload's type matches <paramref name="type"/>.</summary>
-    public bool IsDataType(string type) => Handle != null && IGSharp_Payload_IsDataType(Handle, ToUtf8(type));
+    public bool IsDataType(string type) => _view.IsValid && IGSharp_Payload_IsDataType(Handle, ToUtf8(type));
 
     /// <summary>True while the user is hovering without releasing the mouse button yet.</summary>
-    public bool IsPreview => Handle != null && IGSharp_Payload_IsPreview(Handle);
+    public bool IsPreview => _view.IsValid && IGSharp_Payload_IsPreview(Handle);
 
     /// <summary>True on the frame the user released the mouse button (delivery frame).</summary>
-    public bool IsDelivery => Handle != null && IGSharp_Payload_IsDelivery(Handle);
+    public bool IsDelivery => _view.IsValid && IGSharp_Payload_IsDelivery(Handle);
 
     /// <summary>Reinterprets the payload data as a value of type <typeparamref name="T"/>. Returns false if the payload is invalid or has the wrong size.</summary>
     public bool TryGetValue<T>(out T value) where T : unmanaged
     {
-        if (Handle == null)
+        if (!_view.IsValid)
         {
             value = default;
             return false;

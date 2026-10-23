@@ -16,18 +16,20 @@ public sealed unsafe class TrayEntry
 
     private readonly Native.SDL_TrayEntry* _entry;
     private readonly Tray _tray;
+    internal readonly NativeLifetime Lifetime;
 
-    internal TrayEntry(Native.SDL_TrayEntry* entry, Tray tray)
+    internal TrayEntry(Native.SDL_TrayEntry* entry, Tray tray, NativeLifetime? parent = null)
     {
         _entry = entry;
         _tray = tray;
+        Lifetime = NativeLifetime.Get(typeof(TrayEntry), (nint)entry, false, threadAffine: true, parent: parent ?? tray.Lifetime);
     }
 
     private Native.SDL_TrayEntry* Entry
     {
         get
         {
-            ObjectDisposedException.ThrowIf(_tray.IsDisposed, _tray);
+            Lifetime.Check();
             return _entry;
         }
     }
@@ -54,7 +56,7 @@ public sealed unsafe class TrayEntry
     }
 
     /// <summary>Creates a submenu for this entry (the entry must have been created with <see cref="TrayEntryFlags.Submenu"/>).</summary>
-    public TrayMenu CreateSubmenu() => new(Check(SDL_CreateTraySubmenu(Entry)), _tray);
+    public TrayMenu CreateSubmenu() => new(Check(SDL_CreateTraySubmenu(Entry)), _tray, Lifetime);
 
     /// <summary>Gets this entry's submenu, or null if it has none.</summary>
     public TrayMenu? Submenu
@@ -62,7 +64,7 @@ public sealed unsafe class TrayEntry
         get
         {
             var menu = SDL_GetTraySubmenu(Entry);
-            return menu == null ? null : new TrayMenu(menu, _tray);
+            return menu == null ? null : new TrayMenu(menu, _tray, Lifetime);
         }
     }
 
@@ -79,6 +81,7 @@ public sealed unsafe class TrayEntry
     /// <param name="callback">The callback, or null to clear.</param>
     public void SetCallback(Action<TrayEntry>? callback)
     {
+        CallbackErrors.EnsureOutsideCallback();
         var key = (nint)Entry;
 
         lock (_tray.CallbackHandles)
@@ -91,9 +94,10 @@ public sealed unsafe class TrayEntry
             }
             else
             {
-                var handle = GCHandle.Alloc(new CallbackHolder(_tray, callback));
-                SDL_SetTrayEntryCallback(Entry, &Tray.EntryCallback, (void*)GCHandle.ToIntPtr(handle));
+                var handle = CallbackHandle.Alloc(new CallbackHolder(_tray, callback));
+                SDL_SetTrayEntryCallback(Entry, &Tray.EntryCallback, (void*)CallbackHandle.ToIntPtr(handle));
                 _tray.CallbackHandles[key] = handle;
+                Lifetime.AddCleanup(() => { handle.Free(); _tray.CallbackHandles.Remove(key); });
             }
 
             if (previous.IsAllocated)
@@ -110,16 +114,8 @@ public sealed unsafe class TrayEntry
     /// </summary>
     public void Remove()
     {
-        var key = (nint)Entry;
-
-        lock (_tray.CallbackHandles)
-        {
-            if (_tray.CallbackHandles.Remove(key, out var handle))
-            {
-                handle.Free();
-            }
-
-            SDL_RemoveTrayEntry(_entry);
-        }
+        Lifetime.EnsureCanDestroy();
+        SDL_RemoveTrayEntry(Entry);
+        Lifetime.Invalidate();
     }
 }

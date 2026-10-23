@@ -14,27 +14,35 @@ namespace SdlSharp.ImGui;
 /// </summary>
 public sealed unsafe class FontConfig : IDisposable
 {
-    private IGSharp_FontConfig* _handle;
-    private ushort* _glyphRanges;
-    private ushort* _glyphExcludeRanges;
+    private readonly ConfigHandle _resource = new();
+    private IGSharp_FontConfig* _handle => (IGSharp_FontConfig*)_resource.DangerousGetHandle();
+    private ushort* _glyphRanges { get => _resource.Ranges; set => _resource.Ranges = value; }
+    private ushort* _glyphExcludeRanges { get => _resource.Excluded; set => _resource.Excluded = value; }
 
     /// <summary>Creates a new font configuration with ImGui's defaults.</summary>
-    public FontConfig() => _handle = IGSharp_FontConfig_Create();
+    public FontConfig() { }
 
     internal IGSharp_FontConfig* Handle
     {
         get
         {
-            ThrowIfDisposed();
+            ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource);
             return _handle;
         }
+    }
+
+    /// <summary>Flags applied before the font is loaded.</summary>
+    public FontFlags Flags
+    {
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return (FontFlags)IGSharp_FontConfig_GetFlags(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetFlags(_handle, (int)value); }
     }
 
     /// <summary>Display name for the font, shown in debug tools (defaults to the filename when loading from disk).</summary>
     public string Name
     {
-        get { ThrowIfDisposed(); return Marshal.PtrToStringUTF8((nint)IGSharp_FontConfig_GetName(_handle)) ?? string.Empty; }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetName(_handle, ToUtf8(value ?? string.Empty)); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return Marshal.PtrToStringUTF8((nint)IGSharp_FontConfig_GetName(_handle)) ?? string.Empty; }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetName(_handle, ToUtf8(value ?? string.Empty)); }
     }
 
     /// <summary>
@@ -43,57 +51,57 @@ public sealed unsafe class FontConfig : IDisposable
     /// </summary>
     public bool MergeMode
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetMergeMode(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetMergeMode(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetMergeMode(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetMergeMode(_handle, value); }
     }
 
     /// <summary>Align every glyph AdvanceX to pixel boundaries (useful with some bitmap fonts). Default false.</summary>
     public bool PixelSnapH
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetPixelSnapH(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetPixelSnapH(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetPixelSnapH(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetPixelSnapH(_handle, value); }
     }
 
     /// <summary>Horizontal rasterizer oversampling. 0 = auto. Default 0.</summary>
     public int OversampleH
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetOversampleH(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetOversampleH(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetOversampleH(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetOversampleH(_handle, value); }
     }
 
     /// <summary>Vertical rasterizer oversampling. 0 = auto. Default 0.</summary>
     public int OversampleV
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetOversampleV(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetOversampleV(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetOversampleV(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetOversampleV(_handle, value); }
     }
 
     /// <summary>Character used for the "..." ellipsis when text is clipped. (char)0xFFFF = auto. </summary>
     public char EllipsisChar
     {
-        get { ThrowIfDisposed(); return (char)IGSharp_FontConfig_GetEllipsisChar(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetEllipsisChar(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return (char)IGSharp_FontConfig_GetEllipsisChar(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetEllipsisChar(_handle, value); }
     }
 
     /// <summary>Base font size in pixels. Optional: fonts bake at any size on demand; this sets the reference size.</summary>
     public float SizePixels
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetSizePixels(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetSizePixels(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetSizePixels(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetSizePixels(_handle, value); }
     }
 
     /// <summary>
     /// Restricts the glyphs loaded from this font to the given ranges: pairs of inclusive
     /// (first, last) codepoints (e.g. <c>[0x0020, 0x00FF]</c> for Basic Latin + Latin Supplement).
-    /// The setter copies the data. Each added font receives an independent context-owned copy.
+    /// The setter copies the data. Each added font receives an independent font-owned copy.
     /// Set an empty span to clear (load all available glyphs). Default empty.
     /// </summary>
     public ReadOnlySpan<ushort> GlyphRanges
     {
-        get { ThrowIfDisposed(); return RangesFromPointer(IGSharp_FontConfig_GetGlyphRanges(_handle)); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return RangesFromPointer(IGSharp_FontConfig_GetGlyphRanges(_handle)).ToArray(); }
         set
         {
-            ThrowIfDisposed();
+            ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource);
             var copy = CopyRanges(value);
             if (_glyphRanges != null)
                 IGSharp_MemFree(_glyphRanges);
@@ -105,14 +113,14 @@ public sealed unsafe class FontConfig : IDisposable
     /// <summary>
     /// Ranges of codepoints to exclude from this font source — pairs of inclusive (first, last)
     /// codepoints. Useful in <see cref="MergeMode"/> when merged fonts have overlapping glyphs.
-    /// Each added font receives an independent context-owned copy. Default empty.
+    /// Each added font receives an independent font-owned copy. Default empty.
     /// </summary>
     public ReadOnlySpan<ushort> GlyphExcludeRanges
     {
-        get { ThrowIfDisposed(); return RangesFromPointer(IGSharp_FontConfig_GetGlyphExcludeRanges(_handle)); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return RangesFromPointer(IGSharp_FontConfig_GetGlyphExcludeRanges(_handle)).ToArray(); }
         set
         {
-            ThrowIfDisposed();
+            ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource);
             var copy = CopyRanges(value);
             if (_glyphExcludeRanges != null)
                 IGSharp_MemFree(_glyphExcludeRanges);
@@ -124,129 +132,123 @@ public sealed unsafe class FontConfig : IDisposable
     /// <summary>Offset applied to every glyph of this font, in pixels. Default (0, 0).</summary>
     public Vec2 GlyphOffset
     {
-        get { ThrowIfDisposed(); var v = IGSharp_FontConfig_GetGlyphOffset(_handle); return new Vec2(v.X, v.Y); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetGlyphOffset(_handle, new IGSharp_Vec2(value.X, value.Y)); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); var v = IGSharp_FontConfig_GetGlyphOffset(_handle); return new Vec2(v.X, v.Y); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetGlyphOffset(_handle, new IGSharp_Vec2(value.X, value.Y)); }
     }
 
     /// <summary>Minimum AdvanceX for glyphs — use to make a font appear monospaced. Default 0.</summary>
     public float GlyphMinAdvanceX
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetGlyphMinAdvanceX(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetGlyphMinAdvanceX(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetGlyphMinAdvanceX(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetGlyphMinAdvanceX(_handle, value); }
     }
 
     /// <summary>Maximum AdvanceX for glyphs. Default float.MaxValue.</summary>
     public float GlyphMaxAdvanceX
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetGlyphMaxAdvanceX(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetGlyphMaxAdvanceX(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetGlyphMaxAdvanceX(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetGlyphMaxAdvanceX(_handle, value); }
     }
 
     /// <summary>Extra spacing added to every glyph's AdvanceX, in pixels. Default 0.</summary>
     public float GlyphExtraAdvanceX
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetGlyphExtraAdvanceX(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetGlyphExtraAdvanceX(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetGlyphExtraAdvanceX(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetGlyphExtraAdvanceX(_handle, value); }
     }
 
     /// <summary>Index of the font face to load when the TTF/OTF file contains multiple fonts. Default 0.</summary>
     public uint FontNo
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetFontNo(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetFontNo(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetFontNo(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetFontNo(_handle, value); }
     }
 
     /// <summary>Font-loader-specific flags (e.g. FreeType rasterizer flags when the FreeType loader is active). Default 0.</summary>
     public uint FontLoaderFlags
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetFontLoaderFlags(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetFontLoaderFlags(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetFontLoaderFlags(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetFontLoaderFlags(_handle, value); }
     }
 
     /// <summary>Brightness multiplier applied to rasterized coverage values (&gt;1 makes glyphs bolder/brighter). Default 1.</summary>
     public float RasterizerMultiply
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetRasterizerMultiply(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetRasterizerMultiply(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetRasterizerMultiply(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetRasterizerMultiply(_handle, value); }
     }
 
     /// <summary>DPI density used when rasterizing glyphs (e.g. 2 for retina displays). Default 1.</summary>
     public float RasterizerDensity
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetRasterizerDensity(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetRasterizerDensity(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetRasterizerDensity(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetRasterizerDensity(_handle, value); }
     }
 
     /// <summary>Extra scale applied to the requested size when baking this source. Default 1.</summary>
     public float ExtraSizeScale
     {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetExtraSizeScale(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetExtraSizeScale(_handle, value); }
-    }
-
-    /// <summary>
-    /// Advanced: whether the atlas owns (and frees) the raw font data buffer. The
-    /// <c>FontAtlas.AddFont*</c> wrappers manage this automatically; only change it if you are
-    /// doing your own unmanaged font-data plumbing.
-    /// </summary>
-    public bool FontDataOwnedByAtlas
-    {
-        get { ThrowIfDisposed(); return IGSharp_FontConfig_GetFontDataOwnedByAtlas(_handle); }
-        set { ThrowIfDisposed(); IGSharp_FontConfig_SetFontDataOwnedByAtlas(_handle, value); }
+        get { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); return IGSharp_FontConfig_GetExtraSizeScale(_handle); }
+        set { ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource); IGSharp_FontConfig_SetExtraSizeScale(_handle, value); }
     }
 
     /// <summary>
     /// Releases the unmanaged configuration and its source range copies. Fonts already added to
     /// atlases retain their own copies.
     /// </summary>
-    public void Dispose()
+    public void Dispose() => _resource.Dispose();
+
+    private sealed class ConfigHandle : SafeHandle
     {
-        if (_handle != null)
+        internal ushort* Ranges;
+        internal ushort* Excluded;
+        internal ConfigHandle() : base(0, true)
         {
-            IGSharp_FontConfig_Destroy(_handle);
-            _handle = null;
+            SetHandle((nint)IGSharp_FontConfig_Create());
+            if (IsInvalid) throw new OutOfMemoryException();
         }
-        if (_glyphRanges != null)
+        public override bool IsInvalid => handle == 0;
+        protected override bool ReleaseHandle()
         {
-            IGSharp_MemFree(_glyphRanges);
-            _glyphRanges = null;
-        }
-        if (_glyphExcludeRanges != null)
-        {
-            IGSharp_MemFree(_glyphExcludeRanges);
-            _glyphExcludeRanges = null;
+            IGSharp_FontConfig_Destroy((IGSharp_FontConfig*)handle);
+            IGSharp_MemFree(Ranges); IGSharp_MemFree(Excluded); handle = 0; return true;
         }
     }
 
     private void ThrowIfDisposed()
     {
-        if (_handle == null) throw new ObjectDisposedException(nameof(FontConfig));
+        ObjectDisposedException.ThrowIf(_resource.IsClosed, this);
     }
 
     internal AddScope PrepareForAdd(IGSharp_FontAtlas* atlas)
     {
-        ThrowIfDisposed();
+        ThrowIfDisposed(); using var nativeLease = new NativeCallLease(_resource);
         var glyphRanges = CopyRanges(RangesFromPointer(_glyphRanges));
-        var glyphExcludeRanges = CopyRanges(RangesFromPointer(_glyphExcludeRanges));
-        if (!Context.AdoptFontRange(atlas, glyphRanges) || !Context.AdoptFontRange(atlas, glyphExcludeRanges))
-        {
-            if (glyphRanges != null) IGSharp_MemFree(glyphRanges);
-            if (glyphExcludeRanges != null) IGSharp_MemFree(glyphExcludeRanges);
-            throw new InvalidOperationException("The font atlas is not owned by a managed ImGui context.");
-        }
+        ushort* glyphExcludeRanges;
+        try { glyphExcludeRanges = CopyRanges(RangesFromPointer(_glyphExcludeRanges)); }
+        catch { IGSharp_MemFree(glyphRanges); throw; }
         IGSharp_FontConfig_SetGlyphRanges(_handle, glyphRanges);
         IGSharp_FontConfig_SetGlyphExcludeRanges(_handle, glyphExcludeRanges);
-        return new AddScope(this);
+        return new AddScope(this, glyphRanges, glyphExcludeRanges);
     }
 
-    internal readonly ref struct AddScope(FontConfig config)
+    internal sealed class AddScope(FontConfig config, ushort* ranges, ushort* excluded) : IDisposable
     {
+        private bool _adopted;
         public IGSharp_FontConfig* Handle => config._handle;
-
+        internal Font Finish(IGSharp_Font* font, Lifetime atlas)
+        {
+            if (font == null) throw new InvalidOperationException("ImGui could not load the font.");
+            var lifetime = Lifetime.Capture((nint)font, atlas);
+            lifetime.AddCleanup(() => { IGSharp_MemFree(ranges); IGSharp_MemFree(excluded); });
+            _adopted = true;
+            return new Font(font, lifetime);
+        }
         public void Dispose()
         {
             IGSharp_FontConfig_SetGlyphRanges(config._handle, config._glyphRanges);
             IGSharp_FontConfig_SetGlyphExcludeRanges(config._handle, config._glyphExcludeRanges);
+            if (!_adopted) { IGSharp_MemFree(ranges); IGSharp_MemFree(excluded); }
         }
     }
 
@@ -265,7 +267,10 @@ public sealed unsafe class FontConfig : IDisposable
         if (value.IsEmpty) return null;
         if (value.Length % 2 != 0)
             throw new ArgumentException("Glyph ranges must be pairs of (first, last) codepoints.", nameof(value));
+        for (var i = 0; i < value.Length; i += 2)
+            if (value[i] == 0 || value[i] > value[i + 1]) throw new ArgumentException("Glyph ranges must be nonzero, ordered pairs.", nameof(value));
         var copy = (ushort*)IGSharp_MemAlloc((nuint)((value.Length + 1) * sizeof(ushort)));
+        if (copy == null) throw new OutOfMemoryException();
         value.CopyTo(new Span<ushort>(copy, value.Length));
         copy[value.Length] = 0;
         return copy;

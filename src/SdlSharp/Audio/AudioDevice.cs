@@ -10,7 +10,7 @@ namespace SdlSharp.Audio;
 /// A callback invoked with the final mixed audio just before it is sent to a device.
 /// It runs on SDL's audio thread — keep it fast and avoid blocking. The buffer is the
 /// device's mix in 32-bit float and may be modified in place. Exceptions that escape
-/// the callback are swallowed.
+/// the callback are captured by Application.ThrowPendingCallbackException.
 /// </summary>
 /// <param name="spec">The format of the buffer (always 32-bit float samples).</param>
 /// <param name="buffer">The audio samples, modifiable in place.</param>
@@ -22,26 +22,32 @@ public delegate void AudioPostmixCallback(in AudioSpec spec, Span<float> buffer)
 public sealed unsafe class AudioDevice : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     internal Native.SDL_AudioDeviceID Id
     {
         get
         {
             ObjectDisposedException.ThrowIf(_id.Value == 0, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _id;
         }
     }
 
     private Native.SDL_AudioDeviceID _id;
 
-    private GCHandle _postmixHandle;
+    private CallbackHandle _postmixHandle;
 
     private sealed record PostmixHolder(AudioPostmixCallback Callback);
 
-    internal AudioDevice(Native.SDL_AudioDeviceID id, bool ownsHandle = true)
+    internal AudioDevice(Native.SDL_AudioDeviceID id, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _id = id;
+        Lifetime = NativeLifetime.Get(typeof(AudioDevice), (nint)id.Value, ownsHandle, threadAffine: false, parent: parent);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>
@@ -208,13 +214,17 @@ public sealed unsafe class AudioDevice : IDisposable
     {
         if (streams.Length == 0) return;
 
-        var pointers = stackalloc Native.SDL_AudioStream*[streams.Length];
+        Span<nint> addresses = streams.Length <= 64 ? stackalloc nint[streams.Length] : new nint[streams.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (Native.SDL_AudioStream**)rawPointers;
         for (var i = 0; i < streams.Length; i++)
         {
             pointers[i] = streams[i].Handle;
         }
 
         Check(SDL_BindAudioStreams(Id, pointers, streams.Length));
+        }
     }
 
     /// <summary>
@@ -225,13 +235,17 @@ public sealed unsafe class AudioDevice : IDisposable
     {
         if (streams.Length == 0) return;
 
-        var pointers = stackalloc Native.SDL_AudioStream*[streams.Length];
+        Span<nint> addresses = streams.Length <= 64 ? stackalloc nint[streams.Length] : new nint[streams.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (Native.SDL_AudioStream**)rawPointers;
         for (var i = 0; i < streams.Length; i++)
         {
             pointers[i] = streams[i].Handle;
         }
 
         SDL_UnbindAudioStreams(pointers, streams.Length);
+        }
     }
 
     /// <summary>Gets whether this device ID refers to a physical (not logical) device.</summary>
@@ -265,13 +279,15 @@ public sealed unsafe class AudioDevice : IDisposable
     {
         try
         {
-            var holder = (PostmixHolder)GCHandle.FromIntPtr((nint)userdata).Target!;
+            using var callbackScope = CallbackErrors.Enter();
+            var holder = (PostmixHolder)CallbackHandle.FromIntPtr((nint)userdata).Target!;
             var managedSpec = new AudioSpec((AudioFormat)spec->format, spec->channels, spec->freq);
             var samples = new Span<float>(buffer, buflen / sizeof(float));
             holder.Callback(in managedSpec, samples);
         }
-        catch
+        catch (Exception error)
         {
+            CallbackErrors.Capture(error);
             // Must not cross the native boundary on the audio thread.
         }
     }
@@ -284,23 +300,27 @@ public sealed unsafe class AudioDevice : IDisposable
     /// <param name="callback">The callback, or <c>null</c> to clear.</param>
     public void SetPostmixCallback(AudioPostmixCallback? callback)
     {
+        CallbackErrors.EnsureOutsideCallback();
+        var id = Id;
         var previous = _postmixHandle;
 
         if (callback == null)
         {
-            Check(SDL_SetAudioPostmixCallback(Id, null, null));
+            Check(SDL_SetAudioPostmixCallback(id, null, null));
             _postmixHandle = default;
         }
         else
         {
-            var newHandle = GCHandle.Alloc(new PostmixHolder(callback));
-            if (!SDL_SetAudioPostmixCallback(Id, &PostmixCallback, (void*)GCHandle.ToIntPtr(newHandle)))
+            var newHandle = CallbackHandle.Alloc(new PostmixHolder(callback));
+            if (!SDL_SetAudioPostmixCallback(id, &PostmixCallback, (void*)CallbackHandle.ToIntPtr(newHandle)))
             {
                 newHandle.Free();
                 throw new SdlException();
             }
 
             _postmixHandle = newHandle;
+
+            Lifetime.AddCleanup(newHandle.Free);
         }
 
         if (previous.IsAllocated)
@@ -315,7 +335,7 @@ public sealed unsafe class AudioDevice : IDisposable
         if (!_ownsHandle && _id.Value != 0 && _postmixHandle.IsAllocated)
         {
             // This wrapper doesn't own the device, so the underlying device stays
-            // alive after this call. If we freed the GCHandle without clearing the
+            // alive after this call. If we freed the CallbackHandle without clearing the
             // native postmix callback first, SDL would keep invoking it on the audio
             // thread with a dangling userdata pointer. Ignore the result — Dispose
             // must not throw.
@@ -324,9 +344,12 @@ public sealed unsafe class AudioDevice : IDisposable
 
         if (_ownsHandle && _id.Value != 0)
         {
+            Lifetime.Release(() =>
+            {
             // SDL_CloseAudioDevice stops any callbacks before returning, so it's
-            // safe to free the postmix GCHandle afterward in this branch.
+            // safe to free the postmix CallbackHandle afterward in this branch.
             SDL_CloseAudioDevice(_id);
+            });
         }
 
         _id = default;

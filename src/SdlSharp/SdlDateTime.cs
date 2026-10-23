@@ -49,7 +49,7 @@ public static unsafe class SdlDateTime
         Native.SDL_DateTime dt;
         Check(SDL_TimeToDateTime(sdlTime, &dt, localTime));
         var result = new DateTime(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
-            dt.nanosecond / 1_000_000, localTime ? DateTimeKind.Local : DateTimeKind.Utc);
+            0, localTime ? DateTimeKind.Local : DateTimeKind.Utc).AddTicks(dt.nanosecond / 100);
         return result;
     }
 
@@ -58,6 +58,7 @@ public static unsafe class SdlDateTime
     /// </summary>
     public static long FromDateTime(DateTime dateTime)
     {
+        if (dateTime.Kind == DateTimeKind.Unspecified) throw new ArgumentException("Specify UTC or local time, or use DateTimeOffset.", nameof(dateTime));
         var dt = new Native.SDL_DateTime
         {
             year = dateTime.Year,
@@ -76,4 +77,9 @@ public static unsafe class SdlDateTime
         Check(SDL_DateTimeToTime(&dt, &ticks));
         return ticks;
     }
+    /// <summary>Converts nanoseconds since the Unix epoch to UTC, truncating sub-tick precision toward zero.</summary>
+    public static DateTimeOffset ToDateTimeOffset(long nanoseconds) => DateTimeOffset.UnixEpoch.AddTicks(nanoseconds / 100);
+
+    /// <summary>Converts an unambiguous instant to nanoseconds since the Unix epoch.</summary>
+    public static long FromDateTimeOffset(DateTimeOffset instant) => checked((instant.UtcTicks - DateTimeOffset.UnixEpoch.UtcTicks) * 100);
 }

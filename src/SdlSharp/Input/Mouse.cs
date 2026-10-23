@@ -107,4 +107,50 @@ public static unsafe class Mouse
     /// <returns>True if the button is pressed.</returns>
     public static bool IsButtonPressed(uint buttonMask, MouseButton button) =>
         (buttonMask & (1u << ((int)button - 1))) != 0;
+    /// <summary>Gets a snapshot of connected mouse instance IDs.</summary>
+    public static uint[] GetDevices()
+    {
+        int count;
+        var ids = Check(SDL_GetMice(&count));
+        try { return new ReadOnlySpan<uint>(ids, count).ToArray(); }
+        finally { SDL_free(ids); }
+    }
+    /// <summary>Gets a connected mouse's name.</summary>
+    public static string? GetName(uint id) => System.Runtime.InteropServices.Marshal.PtrToStringUTF8((nint)SDL_GetMouseNameForID(id));
+    /// <summary>Gets a borrowed view of the mouse focus window.</summary>
+    public static Window? Focus
+    {
+        get { var handle = SDL_GetMouseFocus(); return handle == null ? null : new Window(handle, false); }
+    }
+    /// <summary>Enables or disables relative motion for a window.</summary>
+    public static void SetRelativeMode(Window window, bool enabled) => Check(SDL_SetWindowRelativeMouseMode(window.Handle, enabled));
+    /// <summary>Gets whether a window uses relative mouse motion.</summary>
+    public static bool GetRelativeMode(Window window) => SDL_GetWindowRelativeMouseMode(window.Handle);
+    /// <summary>Transforms relative mouse motion. The window is borrowed and the timestamp is in nanoseconds.</summary>
+    public delegate (float X, float Y) MotionTransform(ulong timestamp, Window? window, uint mouseId, float x, float y);
+    private static CallbackHandle _transform;
+    /// <summary>Sets or clears the relative motion transform. Exceptions preserve the original motion and can be retrieved from Application.</summary>
+    public static void SetRelativeTransform(MotionTransform? transform)
+    {
+        CallbackErrors.EnsureOutsideCallback();
+        var next = transform == null ? default : CallbackHandle.Alloc(transform);
+        try { Check(SDL_SetRelativeMouseTransform(transform == null ? null : &TransformMotion, (void*)(nint)next)); }
+        catch { next.Free(); throw; }
+        _transform.Free(); _transform = next;
+    }
+    [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+    private static void TransformMotion(void* data, ulong timestamp, Native.SDL_Window* window, uint id, float* x, float* y)
+    {
+        try
+        {
+            using var scope = CallbackErrors.Enter();
+            if (CallbackHandle.FromIntPtr((nint)data).Target is MotionTransform transform)
+            {
+                using var view = window == null ? null : new Window(window, false);
+                var result = transform(timestamp, view, id, *x, *y);
+                *x = result.X; *y = result.Y;
+            }
+        }
+        catch (Exception error) { CallbackErrors.Capture(error); }
+    }
 }

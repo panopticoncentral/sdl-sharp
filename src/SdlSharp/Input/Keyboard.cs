@@ -74,4 +74,53 @@ public static unsafe class Keyboard
     /// Returns whether the platform has screen keyboard support.
     /// </summary>
     public static bool HasScreenKeyboardSupport() => SDL_HasScreenKeyboardSupport();
+    /// <summary>Gets a snapshot of connected keyboard instance IDs.</summary>
+    public static uint[] GetDevices()
+    {
+        int count;
+        var ids = Check(SDL_GetKeyboards(&count));
+        try { return new ReadOnlySpan<uint>(ids, count).ToArray(); }
+        finally { SDL_free(ids); }
+    }
+    /// <summary>Gets a connected keyboard's name.</summary>
+    public static string? GetName(uint id) => Marshal.PtrToStringUTF8((nint)SDL_GetKeyboardNameForID(id));
+    /// <summary>Gets a borrowed view of the keyboard focus window.</summary>
+    public static Graphics.Window? Focus
+    {
+        get { var handle = SDL_GetKeyboardFocus(); return handle == null ? null : new Graphics.Window(handle, false); }
+    }
+    /// <summary>Translates a key to its scancode and required modifiers.</summary>
+    public static Scancode GetScancodeFromKey(Keycode key, out KeyModifiers modifiers)
+    {
+        Native.SDL_Keymod native;
+        var code = SDL_GetScancodeFromKey((Native.SDL_Keycode)key, &native);
+        modifiers = (KeyModifiers)native;
+        return (Scancode)code;
+    }
+    /// <summary>Looks up a scancode by name.</summary>
+    public static Scancode GetScancodeFromName(string name) => (Scancode)SDL_GetScancodeFromName(ToUtf8(name));
+    /// <summary>Looks up a key by name.</summary>
+    public static Keycode GetKeyFromName(string name) => (Keycode)SDL_GetKeyFromName(ToUtf8(name));
+    /// <summary>Returns whether the on-screen keyboard is visible for a window.</summary>
+    public static bool IsScreenKeyboardShown(Graphics.Window window) => SDL_ScreenKeyboardShown(window.Handle);
+
+    private static readonly Dictionary<Scancode, GCHandle> Names = [];
+    /// <summary>Overrides a scancode name until application shutdown. Call on the main thread.</summary>
+    public static void SetScancodeName(Scancode scancode, string name)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        if (Application.CurrentSession == null) throw new InvalidOperationException("Initialize SDL first.");
+        if (!Application.IsMainThread) throw new InvalidOperationException("Set scancode names on the main thread.");
+        var bytes = ToUtf8(name)!;
+        var pin = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+        try { Check(SDL_SetScancodeName((Native.SDL_Scancode)scancode, bytes)); }
+        catch { pin.Free(); throw; }
+        if (Names.Remove(scancode, out var old)) old.Free();
+        Names[scancode] = pin;
+    }
+    internal static void ReleaseNames()
+    {
+        foreach (var pin in Names.Values) pin.Free();
+        Names.Clear();
+    }
 }

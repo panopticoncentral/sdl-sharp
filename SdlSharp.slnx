@@ -24,6 +24,7 @@
     <Project Path="Samples/TrayDemo/TrayDemo.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/SdlSharp.Tests/SdlSharp.Tests.csproj" />
     <Project Path="tests/SdlSharp.ImGui.Tests/SdlSharp.ImGui.Tests.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">

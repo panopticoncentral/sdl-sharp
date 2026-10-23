@@ -10,6 +10,8 @@ namespace SdlSharp.Graphics;
 public sealed unsafe class Texture : IDisposable
 {
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     /// <summary>
     /// The underlying native SDL_Texture pointer.
@@ -19,6 +21,8 @@ public sealed unsafe class Texture : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
@@ -155,10 +159,17 @@ public sealed unsafe class Texture : IDisposable
     /// <summary>Property: the SDL_GPUTexture associated with the V plane of a YUV texture (pointer).</summary>
     public const string PropGpuTextureV = Render.SDL_PROP_TEXTURE_GPU_TEXTURE_V_POINTER;
 
-    internal Texture(SDL_Texture* handle, bool ownsHandle = true)
+    internal Texture(SDL_Texture* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(Texture), (nint)handle, ownsHandle, threadAffine: true, parent: parent);
         _ownsHandle = ownsHandle;
+        if (parent == null)
+        {
+            var renderer = SDL_GetRendererFromTexture(handle);
+            if (renderer != null) Lifetime.SetParent(NativeLifetime.Get(typeof(Renderer), (nint)renderer, false, true));
+        }
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>
@@ -169,10 +180,10 @@ public sealed unsafe class Texture : IDisposable
 
     /// <summary>
     /// Gets the properties associated with this texture. The returned group is owned
-    /// by SDL and must not be disposed.
+    /// by SDL; disposing this view does not destroy the native group.
     /// </summary>
     public PropertyGroup Properties =>
-        new(CheckId(SDL_GetTextureProperties(Handle)), ownsHandle: false);
+        new(CheckId(SDL_GetTextureProperties(Handle)), ownsHandle: false, parent: Lifetime);
 
     /// <summary>
     /// Gets the width of the texture in pixels.
@@ -291,9 +302,15 @@ public sealed unsafe class Texture : IDisposable
         get
         {
             var ptr = SDL_GetTexturePalette(Handle);
-            return ptr == null ? null : new Palette(ptr, ownsHandle: false);
+            return ptr == null ? null : new Palette(ptr, ownsHandle: false, parent: Lifetime);
         }
-        set => Check(SDL_SetTexturePalette(Handle, value is { } p ? p.Handle : null));
+        set
+        {
+            var texture = Handle;
+            var replacement = value is { } p ? p.Handle : null;
+            if (SDL_GetTexturePalette(texture) != replacement) Lifetime.InvalidateChildren(typeof(Palette));
+            Check(SDL_SetTexturePalette(texture, replacement));
+        }
     }
 
     /// <summary>
@@ -323,6 +340,21 @@ public sealed unsafe class Texture : IDisposable
     /// <param name="pitch">The number of bytes in a row of pixel data, including padding between lines.</param>
     public void Update(Rectangle? rect, ReadOnlySpan<byte> pixels, int pitch)
     {
+        var area = ValidateArea(rect);
+        var format = Format;
+        if (format is PixelFormat.Yv12 or PixelFormat.Iyuv or PixelFormat.Nv12 or PixelFormat.Nv21 or PixelFormat.P010)
+        {
+            if ((area.X & 1) != 0 || (area.Y & 1) != 0) throw new ArgumentException("Planar updates require an even X and Y origin.", nameof(rect));
+            var sampleBytes = format == PixelFormat.P010 ? 2 : 1;
+            var rowBytes = checked(area.W * sampleBytes);
+            if (pitch < rowBytes || pitch % sampleBytes != 0) throw new ArgumentOutOfRangeException(nameof(pitch));
+            var chromaPitch = format is PixelFormat.Yv12 or PixelFormat.Iyuv ? checked((pitch + 1) / 2) : pitch;
+            var chromaRowBytes = checked(((area.W + 1) / 2) * (format is PixelFormat.Yv12 or PixelFormat.Iyuv ? 1 : 2 * sampleBytes));
+            if (chromaPitch < chromaRowBytes) throw new ArgumentOutOfRangeException(nameof(pitch));
+            var required = checked(pitch * area.H + chromaPitch * ((area.H + 1) / 2) * (format is PixelFormat.Yv12 or PixelFormat.Iyuv ? 2 : 1));
+            if (pixels.Length < required) throw new ArgumentException("The buffer must contain the complete padded Y and chroma planes.", nameof(pixels));
+        }
+        else BufferBounds.Check(pixels.Length, area.H, PackedRowBytes(area.W), pitch, nameof(pixels));
         fixed (byte* pixelsPtr = pixels)
         {
             if (rect is { } r)
@@ -350,6 +382,12 @@ public sealed unsafe class Texture : IDisposable
     public void UpdateYuv(Rectangle? rect, ReadOnlySpan<byte> yPlane, int yPitch,
         ReadOnlySpan<byte> uPlane, int uPitch, ReadOnlySpan<byte> vPlane, int vPitch)
     {
+        var area = ValidateArea(rect);
+        if ((area.X & 1) != 0 || (area.Y & 1) != 0) throw new ArgumentException("Planar updates require an even X and Y origin.", nameof(rect));
+        if (Format is not (PixelFormat.Yv12 or PixelFormat.Iyuv)) throw new ArgumentException("This texture is not planar YUV.");
+        BufferBounds.Check(yPlane.Length, area.H, area.W, yPitch, nameof(yPlane));
+        BufferBounds.Check(uPlane.Length, (area.H + 1) / 2, (area.W + 1) / 2, uPitch, nameof(uPlane));
+        BufferBounds.Check(vPlane.Length, (area.H + 1) / 2, (area.W + 1) / 2, vPitch, nameof(vPlane));
         fixed (byte* yPtr = yPlane)
         fixed (byte* uPtr = uPlane)
         fixed (byte* vPtr = vPlane)
@@ -376,6 +414,11 @@ public sealed unsafe class Texture : IDisposable
     /// <param name="uvPitch">The number of bytes between rows of pixel data for the UV plane.</param>
     public void UpdateNv(Rectangle? rect, ReadOnlySpan<byte> yPlane, int yPitch, ReadOnlySpan<byte> uvPlane, int uvPitch)
     {
+        var area = ValidateArea(rect);
+        if ((area.X & 1) != 0 || (area.Y & 1) != 0) throw new ArgumentException("Planar updates require an even X and Y origin.", nameof(rect));
+        if (Format is not (PixelFormat.Nv12 or PixelFormat.Nv21)) throw new ArgumentException("This texture is not NV12 or NV21.");
+        BufferBounds.Check(yPlane.Length, area.H, area.W, yPitch, nameof(yPlane));
+        BufferBounds.Check(uvPlane.Length, (area.H + 1) / 2, checked(((area.W + 1) / 2) * 2), uvPitch, nameof(uvPlane));
         fixed (byte* yPtr = yPlane)
         fixed (byte* uvPtr = uvPlane)
         {
@@ -391,84 +434,64 @@ public sealed unsafe class Texture : IDisposable
         }
     }
 
-    /// <summary>
-    /// Locks a portion of the texture for write-only pixel access.
-    /// </summary>
-    /// <param name="rect">The area to lock, or <c>null</c> for the entire texture.</param>
-    /// <param name="pixels">On return, the pointer to the locked pixels.</param>
-    /// <param name="pitch">On return, the pitch of the locked pixels.</param>
-    public void Lock(Rectangle? rect, out nint pixels, out int pitch)
+    /// <summary>Locks packed pixels for writing. Dispose the returned lease on this thread to upload the changes.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    public PixelLock Lock(Rectangle? rectangle = null)
     {
-        if (rect is { } r)
+        var area = ValidateArea(rectangle);
+        if (((uint)Format >> 28) != 1) throw new NotSupportedException("Row mappings require a packed RGB or indexed format; update YUV planes explicitly.");
+        var rowBytes = PackedRowBytes(area.W);
+        var handle = Handle;
+        var lease = Lifetime.RetainExclusive();
+        try
         {
-            var native = r.ToNative();
-            Check(SDL_LockTexture(Handle, &native, out var p, out pitch));
-            pixels = (nint)p;
+            var native = area.ToNative();
+            Check(SDL_LockTexture(handle, &native, out var pixels, out var pitch));
+            return new PixelLock((nint)pixels, pitch, rowBytes, area.H,
+                () => { SDL_UnlockTexture(handle); lease.Dispose(); });
         }
-        else
-        {
-            Check(SDL_LockTexture(Handle, null, out var p, out pitch));
-            pixels = (nint)p;
-        }
+        catch { lease.Dispose(); throw; }
     }
 
-    /// <summary>
-    /// Locks a portion of the texture for write-only pixel access, exposing the locked
-    /// pixels as a span. The span is valid only until <see cref="Unlock"/> is called.
-    /// </summary>
-    /// <param name="rect">The area to lock, or <c>null</c> for the entire texture.</param>
-    /// <param name="pitch">On return, the pitch of the locked pixels.</param>
-    /// <returns>A span over the locked pixels, covering pitch × height bytes of the locked area.</returns>
-    public Span<byte> Lock(Rectangle? rect, out int pitch)
+    private Rectangle ValidateArea(Rectangle? rectangle)
     {
-        if (rect is { } r)
-        {
-            var native = r.ToNative();
-            Check(SDL_LockTexture(Handle, &native, out var p, out pitch));
-            return new((void*)p, pitch * r.H);
-        }
-        else
-        {
-            Check(SDL_LockTexture(Handle, null, out var p, out pitch));
-            return new((void*)p, pitch * Height);
-        }
+        var area = rectangle ?? new Rectangle(0, 0, Width, Height);
+        if (area.X < 0 || area.Y < 0 || area.W <= 0 || area.H <= 0 || (long)area.X + area.W > Width || (long)area.Y + area.H > Height)
+            throw new ArgumentOutOfRangeException(nameof(rectangle));
+        return area;
     }
 
-    /// <summary>
-    /// Locks a portion of the texture for write-only pixel access, exposing it as a surface.
-    /// The returned surface is non-owning — it is only valid until <see cref="Unlock"/> is
-    /// called, which frees it; do not dispose it directly, and call <see cref="Unlock"/>
-    /// (not <see cref="IDisposable.Dispose"/> on the surface) to release it.
-    /// </summary>
-    /// <param name="rect">The area to lock, or <c>null</c> for the entire texture.</param>
-    /// <returns>A surface representing the locked pixels, valid until <see cref="Unlock"/> is called.</returns>
-    public Surface LockToSurface(Rectangle? rect = null)
+    private int PackedRowBytes(int width)
     {
-        if (rect is { } r)
-        {
-            var native = r.ToNative();
-            Check(SDL_LockTextureToSurface(Handle, &native, out var surface));
-            return new Surface(surface, ownsHandle: false);
-        }
-        else
-        {
-            Check(SDL_LockTextureToSurface(Handle, null, out var surface));
-            return new Surface(surface, ownsHandle: false);
-        }
+        if (Format is PixelFormat.Yuy2 or PixelFormat.Uyvy or PixelFormat.Yvyu) return checked(((width + 1) / 2) * 4);
+        if (((uint)Format >> 28) != 1) throw new ArgumentException("This mapping requires a packed texture format.");
+        return PixelFormatDetails.Get(Format).GetRowByteCount(width);
     }
-
-    /// <summary>
-    /// Unlocks the texture, uploading any changes to video memory.
-    /// </summary>
-    public void Unlock() => SDL_UnlockTexture(Handle);
 
     /// <inheritdoc/>
     public void Dispose()
     {
         if (_ownsHandle && _handle != null)
         {
-            SDL_DestroyTexture(_handle);
+            Lifetime.Release(() =>
+            {
+                SDL_DestroyTexture(_handle);
+            });
         }
         _handle = null;
+    }
+    /// <summary>Locks this texture as a borrowed surface until the returned lease is disposed.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000", Justification = "The lease is transferred to the returned scope or lifetime cleanup, which releases it exactly once.")]
+    public TextureSurfaceLock LockToSurface(Rectangle? rectangle = null)
+    {
+        var area = ValidateArea(rectangle).ToNative();
+        var handle = Handle;
+        var lease = Lifetime.RetainExclusive();
+        try
+        {
+            Check(SDL_LockTextureToSurface(handle, &area, out var surface));
+            return new TextureSurfaceLock(new Surface(surface, false, Lifetime), () => { SDL_UnlockTexture(handle); lease.Dispose(); });
+        }
+        catch { lease.Dispose(); throw; }
     }
 }

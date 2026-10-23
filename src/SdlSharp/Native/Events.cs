@@ -566,6 +566,8 @@ public struct SDL_PenProximityEvent
     public ulong timestamp;
     public SDL_WindowID windowID;
     public uint which;
+    public uint pen_state;
+    public SDL_PenDeviceType device_type;
 }
 
 /// <summary>
@@ -582,6 +584,7 @@ public struct SDL_PenMotionEvent
     public uint pen_state;
     public float x;
     public float y;
+    public SDL_PenDeviceType device_type;
 }
 
 /// <summary>
@@ -600,6 +603,7 @@ public struct SDL_PenTouchEvent
     public float y;
     public byte eraser;
     public byte down;
+    public SDL_PenDeviceType device_type;
 }
 
 /// <summary>
@@ -618,6 +622,7 @@ public struct SDL_PenButtonEvent
     public float y;
     public byte button;
     public byte down;
+    public SDL_PenDeviceType device_type;
 }
 
 /// <summary>
@@ -636,6 +641,7 @@ public struct SDL_PenAxisEvent
     public float y;
     public SDL_PenAxis axis;
     public float value;
+    public SDL_PenDeviceType device_type;
 }
 
 /// <summary>
@@ -904,10 +910,7 @@ public static partial class Events
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static unsafe partial int SDL_GetEventDescription(SDL_Event* @event, byte* buf, int buflen);
 
-    // Skipped SDL_PeepEvents (and its SDL_EventAction enum): bulk add/peek/get on a
-    // caller-supplied SDL_Event array does not fit the transient-pointer RawEvent
-    // model and would require a second managed event representation. The queue is
-    // served by SDL_PollEvent/SDL_WaitEvent/SDL_PushEvent/SDL_Has*/SDL_Flush*.
+    // Additional SDL 3.4 APIs are implemented in Additional.cs and CoreExtras.cs.
 
     // Skipped SDL_GetEventFilter: it returns the currently-installed native filter
     // pointer + userdata, which is only meaningful to whoever installed it. The

@@ -446,7 +446,7 @@ internal static unsafe partial class DemoWindow
             ImGui.SameLine(); HelpMarker(
                 "ColorEdit defaults to displaying RGB inputs if you don't specify a display mode, " +
                 "but the user can change it with a right-click on those inputs.\n\nColorPicker defaults to displaying RGB+HSV+Hex " +
-                "if you don't specify a display mode.\n\nYou can change the defaults using SetColorEditOptions().");
+                "if you don't specify a display mode.\n\nYou can change the defaults using Io.ConfigColorEditFlags.");
 
             var flags = baseFlags | (ColorEditFlags)_colorPickerFlags;
             if (_colorPickerMode == 1) flags |= ColorEditFlags.PickerHueBar;
@@ -462,14 +462,14 @@ internal static unsafe partial class DemoWindow
 
             ImGui.Text("Set defaults in code:");
             ImGui.SameLine(); HelpMarker(
-                "SetColorEditOptions() is designed to allow you to set boot-time default.\n" +
+                "Io.ConfigColorEditFlags is designed to allow you to set boot-time default.\n" +
                 "We don't have Push/Pop functions because you can force options on a per-widget basis if needed, " +
                 "and the user can change non-forced ones with the options menu.\nWe don't have a getter to avoid " +
                 "encouraging you to persistently save values that aren't forward-compatible.");
             if (ImGui.Button("Default: Uint8 + HSV + Hue Bar"))
-                ImGui.SetColorEditOptions(ColorEditFlags.Uint8 | ColorEditFlags.DisplayHSV | ColorEditFlags.PickerHueBar);
+                Io.ConfigColorEditFlags = ColorEditFlags.Uint8 | ColorEditFlags.DisplayHSV | ColorEditFlags.PickerHueBar | ColorEditFlags.InputRGB;
             if (ImGui.Button("Default: Float + HDR + Hue Wheel"))
-                ImGui.SetColorEditOptions(ColorEditFlags.Float | ColorEditFlags.HDR | ColorEditFlags.PickerHueWheel);
+                Io.ConfigColorEditFlags = ColorEditFlags.Float | ColorEditFlags.HDR | ColorEditFlags.PickerHueWheel | ColorEditFlags.InputRGB | ColorEditFlags.DisplayRGB;
 
             // Always display a small version of both types of pickers
             // (that's in order to make it more visible in the demo to people who are skimming quickly through it)

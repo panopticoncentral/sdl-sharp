@@ -18,8 +18,13 @@ namespace SdlSharp.Input;
 /// another thread). In every case it is valid only for the duration of the callback:
 /// storing the pointer and dereferencing it later reads reused or freed memory.
 /// </param>
-public readonly record struct RawEvent(EventType Type, nint Pointer)
+public readonly ref struct RawEvent(EventType Type, nint Pointer)
 {
+    /// <summary>The event type.</summary>
+    public EventType Type { get; } = Type;
+    /// <summary>Transient native address; valid only during the callback.</summary>
+    public nint Pointer { get; } = Pointer;
+
     /// <summary>
     /// Gets the window associated with this event, or <c>null</c> if it has none. The
     /// returned wrapper does not own the window; each access returns a new wrapper and
@@ -53,5 +58,12 @@ public readonly record struct RawEvent(EventType Type, nint Pointer)
                 return written <= 0 ? string.Empty : Marshal.PtrToStringUTF8((nint)buf) ?? string.Empty;
             }
         }
+    }
+    /// <summary>Copies event metadata and its formatted description for retention beyond this callback. Pointer-valued payloads are not retained.</summary>
+    public unsafe EventSnapshot ToSnapshot()
+    {
+        var native = (Native.SDL_Event*)Pointer;
+        var window = SDL_GetWindowFromEvent(native);
+        return new(Type, native->common.timestamp, window == null ? null : Native.Video.SDL_GetWindowID(window).Value, Description);
     }
 }

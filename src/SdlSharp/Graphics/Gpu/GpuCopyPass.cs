@@ -7,23 +7,26 @@ namespace SdlSharp.Graphics.Gpu;
 /// A managed wrapper around an SDL GPU copy pass (SDL_GPUCopyPass).
 /// Copy passes record data transfer operations and are ended by calling <see cref="End"/>.
 /// </summary>
-public sealed unsafe class GpuCopyPass
+public sealed unsafe class GpuCopyPass : IDisposable
 {
     /// <summary>
     /// The underlying native SDL_GPUCopyPass pointer.
     /// </summary>
+    private readonly GpuCommandBuffer _command;
+
     internal SDL_GPUCopyPass* Handle
     {
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            _command.CheckPass(this);
             return _handle;
         }
     }
 
     private SDL_GPUCopyPass* _handle;
 
-    internal GpuCopyPass(SDL_GPUCopyPass* handle) { _handle = handle; }
+    internal GpuCopyPass(GpuCommandBuffer command, SDL_GPUCopyPass* handle) { _command = command; command.BeginPass(this); _handle = handle; }
 
     /// <summary>
     /// Uploads data from a transfer buffer to a GPU texture.
@@ -33,8 +36,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="cycle">Whether to cycle the destination texture to avoid stalls.</param>
     public void UploadToTexture(in GpuTextureTransferInfo source, in GpuTextureRegion destination, bool cycle = false)
     {
-        var s = source.ToNative();
-        var d = destination.ToNative();
+        var s = source.ToNative(_command);
+        var d = destination.ToNative(_command);
         SDL_UploadToGPUTexture(Handle, &s, &d, cycle);
     }
 
@@ -46,8 +49,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="cycle">Whether to cycle the destination buffer to avoid stalls.</param>
     public void UploadToBuffer(in GpuTransferBufferLocation source, in GpuBufferRegion destination, bool cycle = false)
     {
-        var s = source.ToNative();
-        var d = destination.ToNative();
+        var s = source.ToNative(_command);
+        var d = destination.ToNative(_command);
         SDL_UploadToGPUBuffer(Handle, &s, &d, cycle);
     }
 
@@ -62,8 +65,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="cycle">Whether to cycle the destination texture to avoid stalls.</param>
     public void CopyTextureToTexture(in GpuTextureLocation source, in GpuTextureLocation destination, uint w, uint h, uint d, bool cycle = false)
     {
-        var s = source.ToNative();
-        var dst = destination.ToNative();
+        var s = source.ToNative(_command);
+        var dst = destination.ToNative(_command);
         SDL_CopyGPUTextureToTexture(Handle, &s, &dst, w, h, d, cycle);
     }
 
@@ -76,8 +79,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="cycle">Whether to cycle the destination buffer to avoid stalls.</param>
     public void CopyBufferToBuffer(in GpuBufferLocation source, in GpuBufferLocation destination, uint size, bool cycle = false)
     {
-        var s = source.ToNative();
-        var dst = destination.ToNative();
+        var s = source.ToNative(_command);
+        var dst = destination.ToNative(_command);
         SDL_CopyGPUBufferToBuffer(Handle, &s, &dst, size, cycle);
     }
 
@@ -88,8 +91,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="destination">The transfer buffer destination info.</param>
     public void DownloadFromTexture(in GpuTextureRegion source, in GpuTextureTransferInfo destination)
     {
-        var s = source.ToNative();
-        var d = destination.ToNative();
+        var s = source.ToNative(_command);
+        var d = destination.ToNative(_command);
         SDL_DownloadFromGPUTexture(Handle, &s, &d);
     }
 
@@ -100,8 +103,8 @@ public sealed unsafe class GpuCopyPass
     /// <param name="destination">The transfer buffer destination location.</param>
     public void DownloadFromBuffer(in GpuBufferRegion source, in GpuTransferBufferLocation destination)
     {
-        var s = source.ToNative();
-        var d = destination.ToNative();
+        var s = source.ToNative(_command);
+        var d = destination.ToNative(_command);
         SDL_DownloadFromGPUBuffer(Handle, &s, &d);
     }
 
@@ -111,7 +114,10 @@ public sealed unsafe class GpuCopyPass
     public void End()
     {
         var handle = Handle;
+        _command.EndPass(this);
         _handle = null;
         SDL_EndGPUCopyPass(handle);
     }
+    /// <summary>Ends this pass once.</summary>
+    public void Dispose() { if (_handle != null) End(); }
 }

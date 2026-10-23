@@ -11,7 +11,13 @@ namespace SdlSharp.Graphics.Gpu;
 public sealed unsafe class GpuTexture : IDisposable
 {
     private readonly GpuDevice _device;
+    private readonly Native.SDL_GPUDevice* _devicePointer;
+    private Native.SDL_GPUDevice* DeviceHandle { get { _device.Lifetime.Check(); return _devicePointer; } }
+    internal GpuDevice Device => _device;
+    internal GpuCommandBuffer? OwnerCommand { get; set; }
     private readonly bool _ownsHandle;
+    internal readonly NativeLifetime Lifetime;
+    private readonly NativeLifetime? _viewParent;
 
     /// <summary>
     /// The underlying native SDL_GPUTexture pointer.
@@ -21,6 +27,8 @@ public sealed unsafe class GpuTexture : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
+            _viewParent?.Check();
             return _handle;
         }
     }
@@ -34,26 +42,33 @@ public sealed unsafe class GpuTexture : IDisposable
     /// </summary>
     public nuint NativeHandle => (nuint)Handle;
 
-    internal GpuTexture(GpuDevice device, SDL_GPUTexture* handle, bool ownsHandle = true)
+    internal GpuTexture(GpuDevice device, SDL_GPUTexture* handle, bool ownsHandle = true, NativeLifetime? parent = null)
     {
-        _device = device;
+        _device = new GpuDevice(device.Handle, ownsHandle: false);
+        _devicePointer = device.Handle;
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(GpuTexture), (nint)handle, ownsHandle, threadAffine: false, parent: parent ?? device.Lifetime);
         _ownsHandle = ownsHandle;
+        _viewParent = ownsHandle ? null : parent;
     }
 
     /// <summary>
     /// Sets a debug name for this texture, visible in GPU debugging tools.
     /// </summary>
     /// <param name="name">The debug name.</param>
-    public void SetName(string name) => SDL_SetGPUTextureName(_device.Handle, Handle, ToUtf8(name));
+    public void SetName(string name) => SDL_SetGPUTextureName(DeviceHandle, Handle, ToUtf8(name));
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_ownsHandle && _handle != null && !_device.IsDisposed)
+        if (_ownsHandle && _handle != null && _device.Lifetime.IsAlive)
         {
-            SDL_ReleaseGPUTexture(_device.Handle, _handle);
+            Lifetime.Release(() =>
+            {
+                SDL_ReleaseGPUTexture(DeviceHandle, _handle);
+            });
         }
         _handle = null;
+        _device.Dispose();
     }
 }

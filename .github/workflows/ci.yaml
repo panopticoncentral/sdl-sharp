@@ -2,24 +2,39 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ master ]
+    branches: [main, sdl3]
   pull_request:
-    branches: [ master ]
+    branches: [main, sdl3]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
-
-    runs-on: windows-latest
-
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.101
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore
+        run: dotnet restore SdlSharp.slnx
+      - name: Verify ImGui API coverage against the restored package
+        run: python scripts/check-imgui-model-coverage.py
+      - name: Build without packing
+        run: dotnet build SdlSharp.slnx -c Release --no-restore -p:GeneratePackageOnBuild=false
+      - name: Download matching SDL release headers
+        shell: bash
+        run: |
+          curl --fail --location --retry 3 https://github.com/libsdl-org/SDL/releases/download/release-3.4.18/SDL3-3.4.18.tar.gz -o "$RUNNER_TEMP/SDL3.tar.gz"
+          tar -xzf "$RUNNER_TEMP/SDL3.tar.gz" -C "$RUNNER_TEMP"
+      - name: SDL ABI, coverage, and managed regressions
+        shell: bash
+        run: python scripts/test-sdl.py --headers "$RUNNER_TEMP/SDL3-3.4.18/include"
+      - name: ImGui regression and backend smoke tests
+        run: dotnet tests/SdlSharp.ImGui.Tests/bin/Release/net10.0/SdlSharp.ImGui.Tests.dll

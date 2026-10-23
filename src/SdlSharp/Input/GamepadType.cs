@@ -29,4 +29,6 @@ public enum GamepadType
     NintendoSwitchJoyConPair = (int)Native.SDL_GamepadType.SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR,
     /// <summary>Nintendo GameCube controller.</summary>
     GameCube = (int)Native.SDL_GamepadType.SDL_GAMEPAD_TYPE_GAMECUBE,
+    /// <summary>Steam Controller.</summary>
+    Steam = (int)Native.SDL_GamepadType.SDL_GAMEPAD_TYPE_STEAM,
 }

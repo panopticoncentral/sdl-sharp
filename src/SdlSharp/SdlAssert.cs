@@ -10,7 +10,7 @@ namespace SdlSharp;
 /// </summary>
 public static unsafe class SdlAssert
 {
-    private static GCHandle _callbackHandle;
+    private static CallbackHandle _callbackHandle;
 
     /// <summary>
     /// Sets a managed callback to handle SDL assertion failures.
@@ -22,17 +22,12 @@ public static unsafe class SdlAssert
     /// </param>
     public static void SetAssertionHandler(Func<AssertionData, AssertState>? handler)
     {
-        if (_callbackHandle.IsAllocated)
-            _callbackHandle.Free();
-
-        if (handler == null)
-        {
-            SDL_SetAssertionHandler(null, null);
-            return;
-        }
-
-        _callbackHandle = GCHandle.Alloc(handler);
-        SDL_SetAssertionHandler(&NativeAssertionHandler, (void*)(nint)_callbackHandle);
+        CallbackErrors.EnsureOutsideCallback();
+        var previous = _callbackHandle;
+        _callbackHandle = handler == null ? default : CallbackHandle.Alloc(handler);
+        if (handler == null) SDL_SetAssertionHandler(null, null);
+        else SDL_SetAssertionHandler(&NativeAssertionHandler, (void*)(nint)_callbackHandle);
+        previous.Free();
     }
 
     /// <summary>
@@ -62,10 +57,14 @@ public static unsafe class SdlAssert
     [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
     private static Native.SDL_AssertState NativeAssertionHandler(Native.SDL_AssertData* data, void* userdata)
     {
-        var handle = GCHandle.FromIntPtr((nint)userdata);
-        var handler = (Func<AssertionData, AssertState>)handle.Target!;
-        var result = handler(MarshalAssertData(data));
-        return (Native.SDL_AssertState)result;
+        try
+        {
+            using var scope = CallbackErrors.Enter();
+            if (CallbackHandle.FromIntPtr((nint)userdata).Target is Func<AssertionData, AssertState> handler)
+                return (Native.SDL_AssertState)handler(MarshalAssertData(data));
+        }
+        catch (Exception error) { CallbackErrors.Capture(error); }
+        return Native.SDL_AssertState.SDL_ASSERTION_IGNORE;
     }
 
     private static AssertionData MarshalAssertData(Native.SDL_AssertData* data) =>

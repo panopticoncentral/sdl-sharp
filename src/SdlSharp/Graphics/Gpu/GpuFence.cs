@@ -10,7 +10,11 @@ namespace SdlSharp.Graphics.Gpu;
 /// </summary>
 public sealed unsafe class GpuFence : IDisposable
 {
+    internal readonly NativeLifetime Lifetime;
     private readonly GpuDevice _device;
+    private readonly Native.SDL_GPUDevice* _devicePointer;
+    private Native.SDL_GPUDevice* DeviceHandle { get { _device.Lifetime.Check(); return _devicePointer; } }
+    internal GpuDevice Device => _device;
 
     /// <summary>
     /// The underlying native SDL_GPUFence pointer.
@@ -20,6 +24,7 @@ public sealed unsafe class GpuFence : IDisposable
         get
         {
             ObjectDisposedException.ThrowIf(_handle == null, this);
+            Lifetime.Check();
             return _handle;
         }
     }
@@ -28,14 +33,16 @@ public sealed unsafe class GpuFence : IDisposable
 
     internal GpuFence(GpuDevice device, SDL_GPUFence* handle)
     {
-        _device = device;
+        _device = new GpuDevice(device.Handle, ownsHandle: false);
+        _devicePointer = device.Handle;
         _handle = handle;
+        Lifetime = NativeLifetime.Get(typeof(GpuFence), (nint)handle, true, parent: device.Lifetime);
     }
 
     /// <summary>
     /// Gets whether this fence has been signaled by the GPU.
     /// </summary>
-    public bool IsSignaled => SDL_QueryGPUFence(_device.Handle, Handle);
+    public bool IsSignaled => SDL_QueryGPUFence(DeviceHandle, Handle);
 
     /// <summary>
     /// Blocks until all of the given fences are signaled.
@@ -55,18 +62,27 @@ public sealed unsafe class GpuFence : IDisposable
 
     private static void Wait(GpuDevice device, bool waitAll, ReadOnlySpan<GpuFence> fences)
     {
-        var pointers = stackalloc SDL_GPUFence*[fences.Length];
-        for (var i = 0; i < fences.Length; i++) pointers[i] = fences[i].Handle;
+        Span<nint> addresses = fences.Length <= 64 ? stackalloc nint[fences.Length] : new nint[fences.Length];
+        fixed (nint* rawPointers = addresses)
+        {
+        var pointers = (SDL_GPUFence**)rawPointers;
+        for (var i = 0; i < fences.Length; i++)
+        {
+            if (!ReferenceEquals(fences[i].Device.Lifetime, device.Lifetime)) throw new ArgumentException("Fences must belong to the same GPU device.", nameof(fences));
+            pointers[i] = fences[i].Handle;
+        }
         Check(SDL_WaitForGPUFences(device.Handle, waitAll, pointers, (uint)fences.Length));
+        }
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        if (_handle != null && !_device.IsDisposed)
+        if (_handle != null && _device.Lifetime.IsAlive)
         {
-            SDL_ReleaseGPUFence(_device.Handle, _handle);
+            Lifetime.Release(() => { SDL_ReleaseGPUFence(DeviceHandle, _handle); });
         }
         _handle = null;
+        _device.Dispose();
     }
 }

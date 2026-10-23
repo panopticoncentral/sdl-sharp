@@ -36,8 +36,7 @@ public enum SDL_FileDialogType
 [SuppressMessage("Interoperability", "CA1401:P/Invokes should not be visible")]
 public static partial class Dialog
 {
-    // Deferred: SDL_ShowFileDialogWithProperties (property-based variant — rarely needed,
-    // the specific open/save/folder functions cover common cases).
+    // Additional SDL 3.4 APIs are implemented in Additional.cs and CoreExtras.cs.
 
     /// <summary>Display an "Open File" dialog.</summary>
     [LibraryImport(Common.Sdl3, EntryPoint = "SDL_ShowOpenFileDialog")]
