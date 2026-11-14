@@ -19,7 +19,7 @@ Tests cover parent disposal, aliases, repeated lease disposal, active-resource s
 
 Follow-up regressions cover padded RGB storage widths and sub-byte indexed rows, stream/audio-completion/clipboard callback reentrancy, borrowed-window cleanup, shared joystick/gamepad properties and native references, and independently opened references first observed through borrowed views. Video-dependent fixtures explicitly select SDL's dummy driver for each application session; they do not touch the desktop clipboard.
 
-Physical HID transfers, BLE pairing, cloud/console storage, native GPU rendering, physical camera capture/haptics, native file dialogs/trays, Metal/Vulkan integration, and desktop clipboard interaction need separate integration tests. Local verification does not establish correctness on every supported architecture. The CI workflow adds Windows/macOS runs without packing or publishing.
+Physical HID transfers, BLE pairing, cloud/console storage, native GPU rendering, physical camera capture/haptics, native file dialogs/trays, Metal/Vulkan integration, and desktop clipboard interaction need separate integration tests. Local verification does not establish correctness on every supported architecture. CI runs the suites on Windows and macOS, then packs both libraries and verifies a fresh package consumer on each OS.
 
 After an intentional binding change, regenerate the probe and review coverage changes before running `check-sdl-coverage.py --write`. The coverage checker records .NET equivalents and explicit platform exclusions; it does not claim all SDL subsystems are implemented.
 

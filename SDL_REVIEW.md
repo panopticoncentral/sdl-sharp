@@ -117,6 +117,6 @@ The full solution and all samples build with .NET 10. The independent C probe co
 
 The SDL regression executable tests native CPU/dummy-video/audio behavior, parent/alias invalidation, lock/map idempotence, partial pixel rows, buffer bounds, callback replacement/failure/reentrancy, UTF-8 clipboard offers, pinned memory across GC, stream round trips and IO failures, virtual joystick input/reference counts, strict values, and application sessions. GPU state, camera-return ownership, and tray-descendant invalidation also have deterministic tests that do not need physical devices or operating-system UI. Those tests do not claim to exercise native GPU submission, camera capture, or tray integration.
 
-The existing ImGui regression suite is retained. CI now uses .NET 10, builds without packing, and runs ABI/coverage/managed tests on Windows and macOS. CI changes are prepared locally; remote runs require pushing the changes.
+The existing ImGui regression suite is retained. CI uses .NET 10, runs ABI, coverage, and managed tests on Windows and macOS, and verifies the resulting NuGet packages with a fresh consumer.
 
 See [the test instructions](tests/SdlSharp.Tests/README.md) for commands and platform limitations. Local runtime validation is macOS ARM64. Native GPU rendering, physical cameras/haptics, native dialogs/trays, Metal/Vulkan integration, desktop clipboard interaction, and other OS/architecture combinations still require integration runs. No managed package has been published by this work.

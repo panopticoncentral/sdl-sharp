@@ -47,7 +47,7 @@ There are **902 distinct SDL imports** and **266 hint constants**. The [SDL audi
 - [x] Keep independently opened native references alive when their identity was first observed through a borrowed parent.
 - [x] Reject clipboard text replacement from a clipboard data callback.
 - [x] Make parallel regression assertion counts thread-safe.
-- [x] Configure CI for pushes and pull requests to `main` and `sdl3`, plus manual dispatch; build and test without packing on Windows and macOS.
+- [x] Configure Windows/macOS CI for SDL3 changes to `main`, including package-consumer tests.
 - [x] Verify a fresh public NuGet restore. The clone fix is already in the referenced ImGui native package; publishing a native fix is no longer a prerequisite.
 
 ## Validation
@@ -77,13 +77,13 @@ The November 13 promotion also verified the Release build, both regression suite
 ## Remaining before a managed release
 
 - [x] Commit the reviewed implementation, regression tests, documentation, and CI changes on `sdl3`.
-- [ ] Confirm successful remote Windows/macOS CI on the promoted `main` branch.
+- [x] [SDL3 CI on main](https://github.com/panopticoncentral/sdl-sharp/actions/runs/43569471678) passed on Windows and macOS, including package-consumer tests. The [SDL2 maintenance build](https://github.com/panopticoncentral/sdl-sharp/actions/runs/43569309698) passed on Windows.
 - [ ] Run `ImGuiDemo` end to end on actual GPU backends: rendering, keyboard/mouse/scroll input, resize, fonts, drag/drop, custom draw lists/pipelines, and shutdown.
 - [ ] Validate native GPU submission, window/swapchain behavior, and Metal/Vulkan integration on the intended platforms.
 - [ ] Exercise physical cameras/haptics/HID devices and BLE pairing, native dialogs/trays, and desktop clipboard interaction. Headless tests cover their managed contracts, not these integrations.
 - [ ] Validate Steam/cloud or console storage with the relevant host SDK/backend before advertising support for those integrations.
 - [ ] Record runtime results for each architecture claimed by the managed release; the current CI matrix does not exercise every native package RID.
-- [ ] Update package-facing README/migration guidance for .NET 10 and the intentional alpha API breaks (disposable camera frames, locks/maps, guarded events, strict GUID/time handling, and ImGui ownership).
+- [x] Update package-facing README/migration guidance for .NET 10 and the intentional alpha API breaks (disposable camera frames, locks/maps, guarded events, strict GUID/time handling, and ImGui ownership).
 - [ ] Approve the release version and complete the NuGet trusted-publisher and GitHub environment setup. Both packages share a version and CI exercises a fresh NuGet consumer; see [release instructions](docs/releasing.md).
 
 ## Follow-up scope
