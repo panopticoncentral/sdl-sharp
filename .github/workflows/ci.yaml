@@ -1,25 +1,24 @@
-name: Continuous Integration
+name: SDL2 Continuous Integration
 
 on:
   push:
-    branches: [ master ]
+    branches: [sdl2]
   pull_request:
-    branches: [ master ]
+    branches: [sdl2]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
-
     runs-on: windows-latest
-
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.101
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Nerdbank.GitVersioning uses the SDL2 commit history.
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - run: dotnet restore SdlSharp.sln
+      - run: dotnet build SdlSharp.sln -c Release --no-restore

@@ -15,7 +15,7 @@
     <Description>A C# binding for the Simple DirectMedia Layer library (http://www.libsdl.org).</Description>
     <Copyright>Copyright 2019</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/panopticoncentral/sdk-sharp</RepositoryUrl>
+    <RepositoryUrl>https://github.com/panopticoncentral/sdl-sharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
