@@ -84,7 +84,8 @@ The November 13 promotion also verified the Release build, both regression suite
 - [ ] Validate Steam/cloud or console storage with the relevant host SDK/backend before advertising support for those integrations.
 - [ ] Record runtime results for each architecture claimed by the managed release; the current CI matrix does not exercise every native package RID.
 - [x] Update package-facing README/migration guidance for .NET 10 and the intentional alpha API breaks (disposable camera frames, locks/maps, guarded events, strict GUID/time handling, and ImGui ownership).
-- [ ] Approve the release version and complete the NuGet trusted-publisher and GitHub environment setup. Both packages share a version and CI exercises a fresh NuGet consumer; see [release instructions](docs/releasing.md).
+- [x] Configure and verify the GitHub `nuget` environment and the active NuGet trusted publisher for both managed package IDs.
+- [ ] Approve the preview version and perform the first authorized publish; the live OIDC exchange and package upload remain untested. See the [release instructions](docs/releasing.md).
 
 ## Follow-up scope
 
