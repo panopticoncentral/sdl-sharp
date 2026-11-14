@@ -20,8 +20,8 @@ a = p.parse_args()
 def strip_comments(text):
     return re.sub(r'//[^\n]*|/\*.*?\*/', '', text, flags=re.S)
 
-native = {str(f.relative_to(ROOT)): strip_comments(f.read_text()) for f in sorted((ROOT/'src/SdlSharp/Native').glob('*.cs'))}
-managed = {str(f.relative_to(ROOT)): strip_comments(f.read_text()) for f in sorted((ROOT/'src/SdlSharp').rglob('*.cs')) if 'Native' not in f.parts and 'obj' not in f.parts and 'bin' not in f.parts}
+native = {f.relative_to(ROOT).as_posix(): strip_comments(f.read_text()) for f in sorted((ROOT/'src/SdlSharp/Native').glob('*.cs'), key=lambda p: p.parts)}
+managed = {f.relative_to(ROOT).as_posix(): strip_comments(f.read_text()) for f in sorted((ROOT/'src/SdlSharp').rglob('*.cs'), key=lambda p: p.parts) if 'Native' not in f.parts and 'obj' not in f.parts and 'bin' not in f.parts}
 imports = {symbol: path for path, text in native.items() for symbol in re.findall(r'EntryPoint\s*=\s*"(SDL_\w+)"', text)}
 
 bcl = {
@@ -73,7 +73,7 @@ native_only = {
 }
 rows = []
 headers = {}
-for f in sorted(a.headers.glob('SDL_*.h')):
+for f in sorted(a.headers.glob('SDL_*.h'), key=lambda p: p.name):
     if f.name.startswith('SDL_test'): continue
     raw = f.read_text()
     text = strip_comments(raw)

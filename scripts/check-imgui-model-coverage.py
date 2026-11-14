@@ -25,7 +25,7 @@ exports = set(re.findall(r'EntryPoint = "(IGSharp_\w+)"', (bindings / 'Native.cs
 references = {}
 # Layout probes count as ABI implementations, just as they did when generated
 # locally. Preserve their filenames in the coverage manifest.
-for path in [*sorted(root.glob('*.cs')), bindings / 'Native.Layouts.cs']:
+for path in [*sorted(root.glob('*.cs'), key=lambda p: p.name), bindings / 'Native.Layouts.cs']:
     if path.name in ('Native.cs', 'Native.Utf8.cs', 'Enums.cs'):
         continue
     for symbol in set(re.findall(r'\b(IGSharp_\w+)\s*\(', path.read_text())) & exports:

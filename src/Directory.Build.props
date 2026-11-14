@@ -1,0 +1,12 @@
+<Project>
+  <!-- Ship the core and ImGui packages together; the latter references the former. -->
+  <PropertyGroup>
+    <Version>1.0.0-preview.1</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/panopticoncentral/sdl-sharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

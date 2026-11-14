@@ -135,6 +135,6 @@ public static unsafe string? GetError() =>
 
 - **Upstream SDL3 headers**: release 3.4.18, available in the matching `../sdl-sharp-redist/` extracted SDK. Pass its include path to the coverage/probe scripts.
 - **SDL3 redist packaging**: `../sdl-sharp-redist/`
-- **Old SDL2 wrappers**: `git show main:src/SdlSharp/` (for reference, not to copy)
+- **Old SDL2 wrappers**: `git show sdl2:src/SdlSharp/` (for reference, not to copy)
 - **SDL3 first draft**: `git show sdl3-first-draft:src/SdlSharp/` (for reference)
 - **Task tracking**: `TODO.md`; current ownership/API review and platform validation limits: `SDL_REVIEW.md`.

@@ -1,6 +1,6 @@
 # SdlSharp SDL3 — current status and remaining work
 
-Updated October 23, 2026. This describes the reviewed implementation on the `sdl3` branch.
+Updated November 13, 2026. SDL3 development is on `main`; the previous SDL2 implementation is maintained on `sdl2`.
 
 The core desktop facade is implemented against **SDL 3.4.18**, supplied by **SdlSharp.Redist 1.0.1**, on **.NET 10**. The managed ImGui facade targets **Dear ImGui 1.93.0 / ABI 1**, using **ImguiSharp.Redist 0.4.0-preview.3**. Implementation coverage is complete within the declared scope; cross-platform and hardware validation and managed release preparation remain.
 
@@ -72,17 +72,19 @@ dotnet tests/SdlSharp.ImGui.Tests/bin/Release/net10.0/SdlSharp.ImGui.Tests.dll
 
 The SDL script compiles an independent C probe covering 116 structures, nine scalar ID wrappers, enum values/sizes, offsets, alignment, and callback interfaces. Managed tests use dummy video/audio, virtual input, temporary storage, and deterministic lifetime fixtures. ImGui tests use the published native package and real native widgets with headless frames. See the [SDL test instructions](tests/SdlSharp.Tests/README.md) and [ImGui test instructions](tests/SdlSharp.ImGui.Tests/README.md) for limitations.
 
+The November 13 promotion also verified the Release build, both regression suites, and a clean .NET 10 app consuming the two local NuGet packages on macOS ARM64.
+
 ## Remaining before a managed release
 
 - [x] Commit the reviewed implementation, regression tests, documentation, and CI changes on `sdl3`.
-- [ ] Push and obtain successful remote Windows/macOS CI runs. Prepared workflow changes and local results do not establish remote success.
+- [ ] Confirm successful remote Windows/macOS CI on the promoted `main` branch.
 - [ ] Run `ImGuiDemo` end to end on actual GPU backends: rendering, keyboard/mouse/scroll input, resize, fonts, drag/drop, custom draw lists/pipelines, and shutdown.
 - [ ] Validate native GPU submission, window/swapchain behavior, and Metal/Vulkan integration on the intended platforms.
 - [ ] Exercise physical cameras/haptics/HID devices and BLE pairing, native dialogs/trays, and desktop clipboard interaction. Headless tests cover their managed contracts, not these integrations.
 - [ ] Validate Steam/cloud or console storage with the relevant host SDK/backend before advertising support for those integrations.
 - [ ] Record runtime results for each architecture claimed by the managed release; the current CI matrix does not exercise every native package RID.
 - [ ] Update package-facing README/migration guidance for .NET 10 and the intentional alpha API breaks (disposable camera frames, locks/maps, guarded events, strict GUID/time handling, and ImGui ownership).
-- [ ] Choose managed release versions, review package metadata, and perform a package-consumer smoke test. Publishing managed packages requires a separate explicit request.
+- [ ] Approve the release version and complete the NuGet trusted-publisher and GitHub environment setup. Both packages share a version and CI exercises a fresh NuGet consumer; see [release instructions](docs/releasing.md).
 
 ## Follow-up scope
 

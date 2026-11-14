@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -9,14 +9,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Paul Vick</Authors>
     <Company>Paul Vick</Company>
-    <Description>A C# binding for the Simple DirectMedia Layer library (http://www.libsdl.org).</Description>
+    <Description>SDL3 bindings for .NET 10, including graphics, audio, and input.</Description>
     <Copyright>Copyright 2019-2026</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/panopticoncentral/sdl-sharp</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>

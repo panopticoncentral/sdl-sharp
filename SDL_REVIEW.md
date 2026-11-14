@@ -111,7 +111,7 @@ The follow-up review corrected pixel buffer sizing for padded 12-/15-bit RGB for
 
 GPU properties follow their device lifetime. Gamepad properties share the underlying joystick's native property group. Gamepad opens account for SDL's implicit joystick reference, so either kind of independent open keeps that group valid when the other closes. A native identity first observed through a borrowed parent becomes independent when an owning reference is opened without a native parent. Borrowed views still retain their own view-parent validity checks.
 
-The CI branch filters now include `main` and `sdl3`, with manual dispatch available. A clean restore from public NuGet confirmed both dependencies, including `ImguiSharp.Redist` 0.4.0-preview.3 with the native clone fix. See [TODO.md](TODO.md) for the remaining release and platform checks.
+SDL3 CI now follows `main`; `sdl2` has its own maintenance build. A clean restore from public NuGet confirmed both dependencies, including `ImguiSharp.Redist` 0.4.0-preview.3 with the native clone fix. See [TODO.md](TODO.md) for the remaining release and platform checks.
 
 The full solution and all samples build with .NET 10. The independent C probe covers 116 concrete structs, nine scalar ID wrappers, enum sizes/values, field offsets/widths, alignment, and callback-interface fields. Every import is checked against the loaded native library.
 

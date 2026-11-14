@@ -1,5 +1,14 @@
-# SDL#
+# SDL# — SDL3 for .NET 10
 
-The SDL# library is a [.NET](https://dotnet.microsoft.com/) wrapper around the [Simple DirectMedia Layer](https://www.libsdl.org/index.php) (SDL) library, a cross-platform graphics, audio, and input library. It provides both a set of low-level APIs that enables calling most SDL APIs directly, and a set of high-level object-oriented classes that abstracts working with the SDL API in a more .NET-friendly way.
+[![SDL3 CI](https://github.com/panopticoncentral/sdl-sharp/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/panopticoncentral/sdl-sharp/actions/workflows/ci.yaml?query=branch%3Amain)
 
-You can include SDL# in your project using the [SDLSharp](https://www.nuget.org/packages/SdlSharp) NuGet package.
+`main` contains the C# bindings for **SDL 3.4.18**. Applications using SDL2 should stay on their existing package version; the [sdl2 maintenance branch](https://github.com/panopticoncentral/sdl-sharp/tree/sdl2) contains that API and its tutorials.
+
+- **SdlSharp** wraps SDL3 graphics, audio, input, and system APIs. Its native dependency is SdlSharp.Redist.
+- **SdlSharp.ImGui** adds Dear ImGui 1.93 and the SDL3 GPU backend. It brings in SdlSharp and ImguiSharp.Redist. The packaged ImGui native binaries target Windows and macOS.
+
+To try SDL3 from source, install the .NET 10 SDK and run `dotnet run --project Samples/Lifecycle`. For an interactive GPU example, run `dotnet run --project Samples/ImGuiDemo`.
+
+SDL3 is a breaking change for SDL2 consumers. Start with the [SDL3 samples](https://github.com/panopticoncentral/sdl-sharp/tree/main/Samples). Dispose acquired camera frames, pixel locks, and GPU maps when finished; borrowed views are valid only while their native owner is alive. The [API and ownership notes](https://github.com/panopticoncentral/sdl-sharp/blob/main/SDL_REVIEW.md) cover the remaining migration details.
+
+See the [release instructions](https://github.com/panopticoncentral/sdl-sharp/blob/main/docs/releasing.md) for package versions, validation, and publishing.

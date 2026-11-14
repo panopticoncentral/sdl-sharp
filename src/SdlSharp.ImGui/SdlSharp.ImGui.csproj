@@ -11,15 +11,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0-preview.1</Version>
     <Authors>Paul Vick</Authors>
     <Company>Paul Vick</Company>
     <Description>Dear ImGui bindings for SdlSharp, using SDL3 GPU backend.</Description>
     <Copyright>Copyright 2019-2026</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/panopticoncentral/sdk-sharp</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
